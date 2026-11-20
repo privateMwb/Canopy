@@ -1,0 +1,5 @@
+{
+  "title": "Promises in Depth",
+  "description": "Chaining, Promise.all, allSettled, race, and unhandled rejections.",
+  "order": 2
+}

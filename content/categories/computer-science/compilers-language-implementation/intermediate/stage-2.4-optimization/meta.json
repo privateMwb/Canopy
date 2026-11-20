@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Optimization",
+  "description": "Constant folding, dataflow analysis, inlining, loop optimizations, and correctness.",
+  "order": 4
+}

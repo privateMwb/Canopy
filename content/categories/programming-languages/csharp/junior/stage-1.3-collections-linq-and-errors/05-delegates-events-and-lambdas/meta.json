@@ -1,0 +1,5 @@
+{
+  "title": "Delegates, Events & Lambdas",
+  "description": "Passing behavior as data, and publishing and subscribing to events.",
+  "order": 5
+}

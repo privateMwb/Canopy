@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — APIs & Backend Logic",
+  "description": "Route handlers, middleware and the edge, background jobs and webhooks, uploads, and rate limiting.",
+  "order": 2
+}

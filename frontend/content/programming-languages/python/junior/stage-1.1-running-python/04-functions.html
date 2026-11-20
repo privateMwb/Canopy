@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Functions — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · running python</span> → lesson 04</p>
+  <h1>Functions</h1>
+  <p class="lede">A function packages reusable behavior behind a name, with parameters in and a return value out.</p>
+
+  <h2><span class="num">§1</span>Defining and Calling</h2>
+
+  <p><code>def</code> creates a function object and binds it to a name. A function with no <code>return</code> returns <code>None</code>. Arguments can be passed by position or by keyword.</p>
+
+  <pre>def area(width, height=1):
+    """Return the area of a rectangle."""
+    return width * height
+
+print(area(3, 4))          <span class="comment"># 12</span>
+print(area(width=5))       <span class="comment"># 5, height defaults to 1</span>
+print(area(height=2, width=6))   <span class="comment"># 12</span></pre>
+
+  <p>The string right after the <code>def</code> line is a <strong>docstring</strong>; <code>help(area)</code> shows it.</p>
+
+  <h2><span class="num">§2</span>*args and **kwargs</h2>
+
+  <p><code>*args</code> collects extra positional arguments into a tuple, and <code>**kwargs</code> collects extra keyword arguments into a dict. The same symbols at a call site unpack a sequence or mapping.</p>
+
+  <pre>def total(*nums):
+    return sum(nums)
+
+def show(**opts):
+    for key, value in opts.items():
+        print(key, "=", value)
+
+print(total(1, 2, 3))      <span class="comment"># 6</span>
+show(color="red", size=3)
+
+values = [4, 5, 6]
+print(total(*values))      <span class="comment"># 15</span></pre>
+
+  <p>A bare <code>*</code> in the signature forces later parameters to be keyword-only: <code>def connect(host, *, timeout=5)</code>.</p>
+
+  <h2><span class="num">§3</span>Scope</h2>
+
+  <p>Python looks up names in order: <strong>L</strong>ocal, <strong>E</strong>nclosing function, <strong>G</strong>lobal, <strong>B</strong>uilt-in. Assigning to a name inside a function makes it local unless you declare it <code>global</code> (or <code>nonlocal</code> for an enclosing function). Reading a global needs no declaration.</p>
+
+  <pre>count = 0
+
+def bump():
+    global count     <span class="comment"># without this, `count += 1` raises UnboundLocalError</span>
+    count += 1</pre>
+
+  <p>Prefer passing values in and returning results over mutating globals.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Functions are objects. You can store them in lists, pass them as arguments, and return them from other functions, which is the foundation of decorators later on.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting <code>return</code></td><td>The function quietly returns <code>None</code></td><td>Return the value explicitly; check with <code>print(f(...))</code></td></tr>
+    <tr><td>Assigning to a global inside a function</td><td><code>UnboundLocalError</code>, or a new local that hides the global</td><td>Return the new value, or declare <code>global</code> deliberately</td></tr>
+    <tr><td>Putting positional args after keyword args in a call</td><td><code>SyntaxError</code></td><td>Keep positional arguments first</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write <code>describe(name, *, age=None, **extras)</code> that prints the name, the age if given, and every extra key-value pair.</li>
+      <li>Write a function <code>stats(numbers)</code> that returns the minimum, maximum, and mean, and unpack the result into three variables.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Parameters can have defaults, be collected with <code>*args</code> / <code>**kwargs</code>, or be keyword-only.</li>
+      <li>Name lookup follows Local, Enclosing, Global, Built-in; assignment makes a name local.</li>
+      <li>A function without <code>return</code> returns <code>None</code>; return multiple values as a tuple.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Running Python — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

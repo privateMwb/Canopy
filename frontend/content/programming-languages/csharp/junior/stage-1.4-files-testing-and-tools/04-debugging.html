@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Debugging — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · files, testing &amp; tools</span> → lesson 04</p>
+  <h1>Debugging</h1>
+  <p class="lede">Debugging is a method, not guesswork: reproduce the problem, form a hypothesis, and use the debugger to test it.</p>
+
+  <h2><span class="num">§1</span>Breakpoints and Stepping</h2>
+
+  <p>Click in the margin (or press F9) to set a <strong>breakpoint</strong>, then start with the debugger (F5). Execution pauses on that line before it runs, and you can inspect every variable in scope.</p>
+  <table>
+    <tr><th>Action</th><th>Shortcut (VS / VS Code)</th><th>Use it to</th></tr>
+    <tr><td>Step Over</td><td>F10</td><td>Run this line, skip into called methods</td></tr>
+    <tr><td>Step Into</td><td>F11</td><td>Enter the method being called</td></tr>
+    <tr><td>Step Out</td><td>Shift+F11</td><td>Finish this method and return to the caller</td></tr>
+    <tr><td>Continue</td><td>F5</td><td>Run to the next breakpoint</td></tr>
+  </table>
+  <p>Step <em>over</em> by default, and step <em>into</em> only when you suspect that exact call.</p>
+
+  <h2><span class="num">§2</span>Watches, Conditions, and Logpoints</h2>
+
+  <ul>
+    <li><strong>Locals, Autos, and Watch</strong>: hover a variable or add an expression such as <code>orders.Count(o =&gt; o.Total &gt; 100)</code> to the Watch window to evaluate it at the paused point.</li>
+    <li><strong>Conditional breakpoint</strong>: right-click a breakpoint and add a condition such as <code>customerId == 42</code>, so it only stops on the bad case instead of 10,000 times.</li>
+    <li><strong>Hit count</strong>: stop on the 500th pass of a loop.</li>
+    <li><strong>Logpoint</strong>: print a message when the line is reached without pausing and without editing code.</li>
+    <li><strong>Call Stack</strong>: shows how you got here, and you can click any frame to see its variables.</li>
+  </ul>
+  <pre><span class="comment">// Temporary diagnostics that disappear in release builds</span>
+Debug.Assert(total &gt;= 0, "Total should never be negative");
+Debug.WriteLine($"Processing order {order.Id}");</pre>
+
+  <h2><span class="num">§3</span>Reading Exceptions</h2>
+
+  <p>An unhandled exception prints a <strong>stack trace</strong>: the chain of calls, newest first. Read it like this:</p>
+  <ul>
+    <li>Read the <strong>exception type and message</strong> first; they usually name the problem.</li>
+    <li>Find the first frame that points into <em>your</em> code, with a file and line number. Frames from the framework below it are how it got there.</li>
+    <li>Check <strong>InnerException</strong>: wrapped exceptions hold the original cause.</li>
+    <li>Turn on <em>break when exception is thrown</em> in the IDE's exception settings to stop at the exact line, with all variables still alive.</li>
+  </ul>
+  <p>Debug with a hypothesis: "I think <code>discount</code> is null here." Set the breakpoint, check, and either confirm or cross it off. Changing code at random is the opposite of debugging.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The cheapest bug to fix is the one you can reproduce on demand. Write a failing test that captures the bug <em>before</em> you start stepping through, then it also protects you from regressions.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Stepping through every line from the start</td><td>Hours spent in code that works</td><td>Place a breakpoint near the symptom and work backward using the call stack</td></tr>
+    <tr><td>Debugging a Release build and finding variables "optimized out"</td><td>Misleading values and skipped lines</td><td>Debug with the Debug configuration</td></tr>
+    <tr><td>Fixing the symptom, such as adding a null check, without finding why it was null</td><td>The real bug moves somewhere else</td><td>Trace back to where the bad value originated</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a loop that processes 1,000 items with one bad value. Use a conditional breakpoint to stop only on that item and inspect it.</li>
+      <li>Throw an exception wrapped in another (set <code>innerException</code>), let it go unhandled, and practice reading the trace to find your code's line.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Breakpoints, stepping, and the call stack let you inspect the program's real state.</li>
+      <li>Conditional breakpoints, hit counts, and logpoints save you from stopping thousands of times.</li>
+      <li>Read exception type, message, first frame in your code, and the inner exception, and test hypotheses.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Files, Testing &amp; Tools — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

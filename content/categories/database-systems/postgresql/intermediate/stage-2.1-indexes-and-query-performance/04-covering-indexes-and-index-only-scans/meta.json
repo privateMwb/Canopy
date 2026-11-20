@@ -1,0 +1,5 @@
+{
+  "title": "Covering Indexes & Index-Only Scans",
+  "description": "INCLUDE columns, the visibility map, and avoiding trips to the heap.",
+  "order": 4
+}

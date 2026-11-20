@@ -1,0 +1,5 @@
+{
+  "title": "Memory Leaks & Finalizers",
+  "description": "Event-handler leaks, finalization, IDisposable patterns, and heap analysis.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Architecture Patterns",
+  "description": "Where Redis sits in real systems, and which patterns create hidden coupling.",
+  "order": 4
+}

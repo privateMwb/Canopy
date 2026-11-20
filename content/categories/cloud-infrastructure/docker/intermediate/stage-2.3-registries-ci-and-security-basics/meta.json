@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Registries, CI & Security Basics",
+  "description": "Tagging and promoting images, building in CI, running with least privilege, scanning, and dev containers.",
+  "order": 3
+}

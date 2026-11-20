@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Compose in Depth & Single-Host Production",
+  "description": "Profiles and overrides, fast edit loops, container-based testing, and running Compose behind a reverse proxy with TLS.",
+  "order": 4
+}

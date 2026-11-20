@@ -1,0 +1,5 @@
+{
+  "title": "Three-Address Code & Lowering",
+  "description": "Flattening nested expressions and control flow into simple, explicit instructions.",
+  "order": 2
+}

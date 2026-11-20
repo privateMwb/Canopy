@@ -1,0 +1,5 @@
+{
+  "title": "Image Size Forensics",
+  "description": "Inspecting layers, finding bloat, and slimming an image methodically.",
+  "order": 5
+}

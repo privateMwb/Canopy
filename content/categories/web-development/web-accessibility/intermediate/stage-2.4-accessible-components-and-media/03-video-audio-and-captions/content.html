@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video, Audio &amp; Captions — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · accessible components &amp; media</span> → lesson 03</p>
+  <h1>Video, Audio &amp; Captions</h1>
+  <p class="lede">Audio and video are inaccessible by default to people who cannot hear or see them. Captions, transcripts, and audio description are the three tools that fix that, and each serves more people than you might expect.</p>
+
+  <h2><span class="num">§1</span>What WCAG Requires</h2>
+  <p>WCAG's requirements for time-based media depend on whether the media is recorded or live, and whether it is audio, video, or both.</p>
+  <table>
+    <tr><th>Criterion</th><th>Level</th><th>Applies to</th><th>Requirement</th></tr>
+    <tr><td><strong>1.2.1</strong></td><td>A</td><td>Audio-only or video-only (recorded)</td><td>A transcript or equivalent alternative</td></tr>
+    <tr><td><strong>1.2.2</strong></td><td>A</td><td>Recorded video with audio</td><td>Captions</td></tr>
+    <tr><td><strong>1.2.3</strong></td><td>A</td><td>Recorded video</td><td>Audio description or a text alternative</td></tr>
+    <tr><td><strong>1.2.4</strong></td><td>AA</td><td>Live video with audio</td><td>Live captions</td></tr>
+    <tr><td><strong>1.2.5</strong></td><td>AA</td><td>Recorded video</td><td>Audio description</td></tr>
+  </table>
+  <p>Captions serve deaf and hard-of-hearing viewers, but also people in noisy places, people watching on mute, and language learners. <strong>Transcripts</strong> help search, skimming, and screen reader and braille users. <strong>Audio description</strong> narrates important visual information for blind and low-vision viewers, such as actions and on-screen text.</p>
+
+  <h2><span class="num">§2</span>Good Captions</h2>
+  <p>Captions are not just a transcript of speech. Good captions are:</p>
+  <ul>
+    <li><strong>Accurate.</strong> Automatic captions are a starting point and need human review, especially for names and technical terms.</li>
+    <li><strong>Synchronized</strong> with the audio.</li>
+    <li><strong>Complete.</strong> They include speaker identification where needed, and meaningful sounds such as [applause] or [door slams].</li>
+    <li><strong>Readable.</strong> Short lines, sensible breaks, and enough time on screen.</li>
+  </ul>
+  <pre>&lt;video controls width="640" poster="intro.jpg"&gt;
+  &lt;source src="intro.mp4" type="video/mp4"&gt;
+  &lt;track kind="captions"     src="intro.en.vtt"      srclang="en" label="English" default&gt;
+  &lt;track kind="descriptions" src="intro.desc.en.vtt" srclang="en" label="Audio description"&gt;
+&lt;/video&gt;
+
+&lt;a href="intro-transcript.html"&gt;Read the transcript&lt;/a&gt;</pre>
+  <pre>WEBVTT
+
+00:00:01.000 --&gt; 00:00:04.000
+&lt;v Maria&gt;Welcome to the trail running guide.
+
+00:00:04.500 --&gt; 00:00:07.000
+[upbeat music]</pre>
+
+  <h2><span class="num">§3</span>Players, Autoplay, and Audio Description</h2>
+  <p>The player itself must be accessible. Controls need names, be reachable by keyboard, and be usable by screen readers. Native <code>video</code> and <code>audio</code> controls are a good default. Custom players need the same care as any custom widget.</p>
+  <ul>
+    <li><strong>No autoplay with sound.</strong> If audio plays for more than three seconds, users need a way to pause or control its volume (WCAG 1.4.2).</li>
+    <li><strong>Audio description:</strong> if the narration already describes what is shown, no extra description is needed. Otherwise, provide a described version, an extra audio track, or a text alternative with the visual details.</li>
+    <li><strong>Transcripts:</strong> for podcasts and videos, a full transcript on the page, in HTML, is the simplest and most flexible alternative.</li>
+    <li><strong>Live events:</strong> plan for live captioning, for example by a captioner or a service, before the event, not after.</li>
+  </ul>
+  <p>Embedding third-party players (video platforms, social posts) hands part of the accessibility to someone else. Check that their controls are keyboard operable, and that captions are available and turned on where you can control it.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Captions are for sound, audio description is for visuals, and transcripts do both in text. Different people need different ones, and many benefit from all three.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Relying on unreviewed auto-captions</td><td>Wrong words, missing speakers, and garbled terms mislead viewers</td><td>Correct captions by hand before publishing</td></tr>
+    <tr><td>Autoplaying video with sound</td><td>Disrupts screen readers and startles users</td><td>Do not autoplay, or provide a clear way to stop audio</td></tr>
+    <tr><td>Video with important visuals and no description</td><td>Blind users miss information that is only shown on screen</td><td>Narrate it, or add audio description or a text alternative</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add captions and a transcript to a short video you have made. Check the caption file against the audio, correcting names and terms.</li>
+      <li>Watch a video with the screen off, listening only. What information would you miss without audio description?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Provide captions for audio in video, transcripts for audio-only content, and audio description for important visuals.</li>
+      <li>Review automatic captions, and make sure players are keyboard operable with named controls.</li>
+      <li>Avoid autoplay with sound, and plan live captions in advance.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Accessible Components &amp; Media — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

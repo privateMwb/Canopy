@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Incident Response &amp; Blameless Postmortems — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · observability &amp; reliability</span> → lesson 04</p>
+  <h1>Incident Response &amp; Blameless Postmortems</h1>
+  <p class="lede">Incidents are inevitable, so reliability comes from responding in a calm and organized way, then learning from each one without blaming a person.</p>
+
+  <h2><span class="num">§1</span>Running an Incident</h2>
+  <p>Separate roles so people do not all debug at once. The <strong>incident commander</strong> coordinates and decides, a <strong>communications lead</strong> updates stakeholders, and <strong>responders</strong> investigate. Mitigate first, <strong>diagnose later</strong>: rolling back or failing over to restore service is better than hunting the root cause while users suffer.</p>
+  <pre><span class="comment"># the first 15 minutes</span>
+1. Declare the incident, and name an incident commander
+2. Open one channel and one shared timeline (who did what, when)
+3. Assess impact: who is affected and how badly?
+4. Mitigate: roll back, fail over, disable the feature flag, scale up
+5. Communicate on a fixed cadence, such as every 30 minutes, even if "no change"
+6. Confirm recovery from user-facing metrics, not just "the deploy finished"</pre>
+
+  <h2><span class="num">§2</span>Communicating Under Pressure</h2>
+  <p>Say what you know, what you do not know, and when the next update comes. Stakeholders can tolerate bad news, but not silence. Keep decisions and actions in the shared channel so a new responder can catch up in a minute.</p>
+  <pre>[10:42] STATUS: Elevated checkout errors (about 8%) since 10:15 UTC.
+[10:42] IMPACT: Some customers cannot complete payment.
+[10:42] ACTION: Rolled back release 1.4.3; monitoring recovery.
+[10:42] NEXT UPDATE: 11:12 UTC, or sooner if the situation changes.</pre>
+
+  <h2><span class="num">§3</span>Blameless Postmortems</h2>
+  <p>A <strong>postmortem</strong> explains what happened and how to make it less likely or less harmful next time. <strong>Blameless</strong> does not mean no accountability. It means we assume people acted reasonably with the information they had, and we look for the systemic causes: missing safeguards, unclear signals, and risky defaults. Individuals who fear blame hide facts, and then you lose the learning.</p>
+  <pre><span class="comment"># postmortem outline</span>
+Summary:        2-3 sentences on what happened and the impact
+Timeline:       key events with timestamps (detection, mitigation, recovery)
+Root causes:    contributing factors, asking "why" repeatedly, not "who"
+What went well: what limited the damage
+Action items:   specific, owned, dated: "add a canary stage" not "be careful"</pre>
+
+  <div class="callout">
+    <span class="label">Action items are the point</span>
+    A postmortem without tracked, prioritized follow-ups is just a story. Measure whether the actions get done, and watch for repeating themes across incidents, which show the weak places in the system.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Debugging root cause before restoring service</td><td>Users stay down longer than needed</td><td>Mitigate first, then investigate</td></tr>
+    <tr><td>Naming a person as the cause</td><td>People hide mistakes, and the system problem stays</td><td>Ask what let the mistake reach production and why it was not caught</td></tr>
+    <tr><td>Vague action items like "be more careful"</td><td>Nothing changes</td><td>Write specific, owned, dated engineering changes</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a blameless postmortem for a real or invented outage, with a timeline and three owned action items.</li>
+      <li>Draft a status update that states impact, action, and the time of the next update.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Assign incident roles, mitigate first, and communicate on a regular cadence.</li>
+      <li>Blameless postmortems look for systemic causes rather than a person to blame.</li>
+      <li>Follow-up actions are the real output, and they must be owned and tracked.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Observability &amp; Reliability — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

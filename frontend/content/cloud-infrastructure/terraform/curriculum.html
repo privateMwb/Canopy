@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Terraform &amp; Infrastructure as Code Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / terraform</p>
+    <h1>From your first resource to infrastructure code a team can trust</h1>
+    <p class="lede">Three levels, twelve stages — the core workflow, variables, state, and a first real stack first, then modules, remote state, delivery pipelines, and working with providers, built toward planning internals, platform design, security at scale, and the judgment to know when infrastructure as code helps.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I click around a console" to "I can describe and create infrastructure from code."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Infrastructure as Code Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why Infrastructure as Code</p><p class="lesson-desc">Drift, repeatability, and the difference between declarative and imperative.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Installing Terraform &amp; the Core Workflow</p><p class="lesson-desc">init, plan, apply, and destroy.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">HCL Syntax: Blocks, Arguments &amp; Expressions</p><p class="lesson-desc">Reading and writing the configuration language.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Providers &amp; Your First Resource</p><p class="lesson-desc">Configuring a provider and creating something real.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Reading Provider Documentation &amp; the Registry</p><p class="lesson-desc">Finding arguments, attributes, and examples without guessing.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a configuration that creates a storage bucket and a file in it, apply it, change it, and destroy it, reading every plan first.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Variables, Outputs &amp; Data</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Input Variables &amp; Types</p><p class="lesson-desc">Parameterizing a configuration with typed, validated inputs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Outputs &amp; Locals</p><p class="lesson-desc">Exposing results and naming repeated expressions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Data Sources</p><p class="lesson-desc">Reading existing infrastructure instead of creating it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Resource Dependencies &amp; the Graph</p><p class="lesson-desc">Implicit and explicit dependencies, and the order Terraform chooses.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Built-In Functions &amp; Type Conversions</p><p class="lesson-desc">Strings, collections, and the functions that remove repetition.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Refactor a hard-coded configuration into one with variables, outputs, and a data source, and deploy it to two configurations without copying files.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — State &amp; Safe Changes</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What State Is &amp; Why It Matters</p><p class="lesson-desc">The file that maps your code to real resources.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Reading Plans Carefully</p><p class="lesson-desc">Create, update, and replace, and spotting the change that destroys data.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">count, for_each &amp; Lifecycle Rules</p><p class="lesson-desc">Creating many resources and controlling replacement and deletion.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Formatting, Validation &amp; Version Constraints</p><p class="lesson-desc">fmt, validate, provider versions, and the lock file.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Debugging: Logs, Common Errors &amp; Fixes</p><p class="lesson-desc">Turning on TF_LOG and reading the errors you will meet most.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Change a resource in a way that forces replacement, predict it from the plan before applying, and then protect it with a lifecycle rule.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — A First Real Cloud Stack</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Networking Resources</p><p class="lesson-desc">A network, subnets, routes, and gateways described in code.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Compute &amp; Security Rules</p><p class="lesson-desc">A server, its access rules, and its identity.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Storage &amp; Database Resources</p><p class="lesson-desc">Buckets, volumes, and a managed database with sensible defaults.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Cleaning Up &amp; Cost Awareness</p><p class="lesson-desc">Destroying safely and avoiding forgotten, billable resources.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small web stack with a network, a server, and a database from an empty directory, then destroy it and confirm nothing is left running.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Modules &amp; Reuse</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Writing Modules</p><p class="lesson-desc">Packaging resources into a reusable unit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Module Inputs, Outputs &amp; Composition</p><p class="lesson-desc">Designing interfaces and combining modules.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Using the Registry &amp; Versioning Modules</p><p class="lesson-desc">Trusting, pinning, and upgrading shared modules.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Expressions in Depth: Conditionals, for &amp; Dynamic Blocks</p><p class="lesson-desc">Making configuration flexible without making it unreadable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Module Design Patterns &amp; Anti-Patterns</p><p class="lesson-desc">What makes a module easy to use and hard to misuse.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Extract a network and a server from a flat configuration into two modules, and reuse them for a second environment.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Remote State &amp; Environments</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Remote Backends &amp; State Locking</p><p class="lesson-desc">Sharing state safely and preventing concurrent applies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Environments: Workspaces vs. Directories</p><p class="lesson-desc">Separating dev, staging, and production.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Importing &amp; Refactoring Existing Infrastructure</p><p class="lesson-desc">Bringing resources under management and renaming without recreating.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Managing Secrets &amp; Sensitive Values</p><p class="lesson-desc">Keeping secrets out of code, plans, and state where possible.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">HCP Terraform &amp; Other Backends</p><p class="lesson-desc">Hosted state and runs, and how they compare with self-managed options.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Move local state to a locked remote backend, import a hand-made resource, and rename a resource without destroying it.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Delivery Workflows</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Terraform in CI/CD</p><p class="lesson-desc">Plans on pull requests and applies on merge.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Testing: Validate, Lint &amp; terraform test</p><p class="lesson-desc">Catching mistakes before they reach an account.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Policy as Code &amp; Guardrails</p><p class="lesson-desc">Enforcing rules automatically on every plan.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Provider Authentication &amp; Least Privilege</p><p class="lesson-desc">Short-lived credentials and narrow permissions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Atlantis, Spacelift &amp; Pull-Request Automation</p><p class="lesson-desc">Tools that run Terraform from review comments.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a pipeline that posts the plan on a pull request, blocks a policy violation, and applies only after approval.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Working With Real Providers</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Multiple Providers, Aliases &amp; Regions</p><p class="lesson-desc">Managing several accounts and regions in one configuration.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Provisioners, terraform_data &amp; Why to Avoid Them</p><p class="lesson-desc">Running scripts as a last resort.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Kubernetes &amp; Helm Providers</p><p class="lesson-desc">Managing cluster resources from Terraform, and where it gets awkward.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Managing SaaS With Terraform</p><p class="lesson-desc">GitHub, Cloudflare, and monitoring tools as code.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Manage a repository, a DNS record, and a cloud resource from one configuration using three different providers.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — State &amp; Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How Terraform Plans: Graph, Refresh &amp; Diff</p><p class="lesson-desc">Building the graph and computing what must change.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">State Surgery &amp; Recovery</p><p class="lesson-desc">Moving, removing, and repairing state safely.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Providers, the Plugin Protocol &amp; Custom Resources</p><p class="lesson-desc">How providers talk to Terraform and when to write one.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Drift Detection &amp; Reconciliation</p><p class="lesson-desc">Finding and resolving changes made outside Terraform.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Performance: Parallelism, Refresh &amp; Large States</p><p class="lesson-desc">Making slow plans fast.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Corrupt a copy of a state file in three different ways and recover from each without recreating real resources.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Platform Design</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Repository &amp; Stack Layout</p><p class="lesson-desc">Deciding what goes in which state and which repository.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Blast Radius, Layering &amp; Dependencies Between Stacks</p><p class="lesson-desc">Limiting the damage of one bad apply.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Module Libraries &amp; Governance</p><p class="lesson-desc">Versioning, ownership, and deprecating shared modules.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Multi-Account &amp; Multi-Region Patterns</p><p class="lesson-desc">Structuring configuration across accounts and regions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Terragrunt &amp; Orchestration Tools</p><p class="lesson-desc">Keeping many stacks consistent without copying code.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design the repository and state layout for a company with three environments and four teams, and justify each boundary.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Operations &amp; Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Zero-Downtime Changes &amp; Migrations</p><p class="lesson-desc">Replacing resources and moving infrastructure without outages.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Cost, Tagging &amp; Compliance Automation</p><p class="lesson-desc">Making cost and ownership visible by default.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Terraform, OpenTofu, Pulumi &amp; CloudFormation</p><p class="lesson-desc">The licensing change, the alternatives, and how to choose.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">When IaC Hurts: Pragmatism &amp; Exit Plans</p><p class="lesson-desc">What not to manage in code, and how to leave a tool.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Disaster Recovery for Infrastructure Code &amp; State</p><p class="lesson-desc">Rebuilding an environment when state or a whole account is lost.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write an infrastructure-as-code standard for a company, including what is deliberately not managed by code and why.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Security &amp; Compliance at Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Secrets &amp; Sensitive Data Deep Dive</p><p class="lesson-desc">Where secrets leak in Terraform and how to stop each leak.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Policy Engines: Sentinel, OPA &amp; Checkov Compared</p><p class="lesson-desc">Choosing and operating a policy layer.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Supply Chain: Provider &amp; Module Trust</p><p class="lesson-desc">Lock files, mirrors, signatures, and reviewing third-party code.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Auditing Changes &amp; Change Management</p><p class="lesson-desc">Proving who changed what, when, and why.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run a security review of a Terraform repository and produce a ranked list of its five most serious weaknesses with fixes.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> State appears at Junior as the file that maps code to resources, returns at Intermediate as remote backends and locking, and comes back at Senior as surgery, recovery, and drift. Safety follows the same arc: reading plans, then testing and policy, then blast radius. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how Terraform builds its graph is one skill; deciding how to split state, who owns which module, and what should deliberately stay out of code, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

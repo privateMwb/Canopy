@@ -1,0 +1,5 @@
+{
+  "title": "Copy Elision & Return Value Optimization",
+  "description": "When the compiler removes copies, and why std::move on a return is often wrong.",
+  "order": 4
+}

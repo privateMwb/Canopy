@@ -1,0 +1,5 @@
+{
+  "title": "CSRF, Cookies & Auth in the Browser",
+  "description": "SameSite, tokens, and session handling.",
+  "order": 4
+}

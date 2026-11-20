@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Querying Data",
+  "description": "SELECT, joins, aggregation, subqueries and CTEs, and NULL, date, and text handling.",
+  "order": 2
+}

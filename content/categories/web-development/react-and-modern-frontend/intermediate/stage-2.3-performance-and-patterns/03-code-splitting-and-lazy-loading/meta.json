@@ -1,0 +1,5 @@
+{
+  "title": "Code Splitting & Lazy Loading",
+  "description": "Smaller bundles with lazy and Suspense.",
+  "order": 3
+}

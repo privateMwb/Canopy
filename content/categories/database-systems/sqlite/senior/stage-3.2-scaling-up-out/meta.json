@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Scaling Up & Out",
+  "description": "Single-writer design, per-tenant databases, replication and sync, edge variants, and limits.",
+  "order": 2
+}

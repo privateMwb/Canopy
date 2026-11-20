@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What Containers Are (and Aren't) — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · containers from zero</span> → lesson 01</p>
+  <h1>What Containers Are (and Aren't)</h1>
+  <p class="lede">A container is an ordinary process on your machine that has been given its own isolated view of the filesystem, network, and process list; it is not a tiny virtual machine.</p>
+
+  <h2><span class="num">§1</span>The Problem Containers Solve</h2>
+  <p>"It works on my machine" usually means the app depends on something that differs elsewhere: a language version, a system library, an environment variable, a config file. A container <strong>packages the app together with everything it needs to run</strong> (except the kernel), so the same package behaves the same on a laptop, a CI server, and production.</p>
+  <p>Two words you will use constantly:</p>
+  <ul>
+    <li><strong>Image</strong>: a read-only package containing a filesystem snapshot plus metadata (default command, environment, ports). Think of it as the recipe and ingredients.</li>
+    <li><strong>Container</strong>: a running (or stopped) instance created from an image. Think of it as the meal. You can start many containers from one image.</li>
+  </ul>
+  <h2><span class="num">§2</span>Containers vs. Virtual Machines</h2>
+  <p>A virtual machine emulates hardware and boots a full guest operating system on top of a hypervisor. A container skips all of that: it runs directly on the <strong>host's kernel</strong>, with the kernel hiding everything except what the container is meant to see.</p>
+  <table>
+    <tr><th></th><th>Virtual machine</th><th>Container</th></tr>
+    <tr><td>Includes</td><td>Full guest OS and kernel</td><td>App, libraries, and files; shares the host kernel</td></tr>
+    <tr><td>Startup</td><td>Seconds to minutes</td><td>Typically milliseconds to a second</td></tr>
+    <tr><td>Typical size</td><td>Gigabytes</td><td>Megabytes to a few hundred MB</td></tr>
+    <tr><td>Isolation</td><td>Strong (separate kernel)</td><td>Weaker (shared kernel)</td></tr>
+    <tr><td>Density</td><td>Handfuls per host</td><td>Dozens to hundreds per host</td></tr>
+  </table>
+  <h2><span class="num">§3</span>What Is Actually Happening</h2>
+  <p>On Linux, "container" is not a single kernel feature. It is a process started with <strong>namespaces</strong> (which limit what it can see) and <strong>cgroups</strong> (which limit what it can use). From the host, a containerized process shows up in the normal process list.</p>
+  <pre>docker run -d --name web nginx
+ps aux | grep nginx      <span class="comment"># on a Linux host: the nginx processes are right there</span></pre>
+  <p>You will build this understanding up slowly; Senior-level lessons take the mechanism apart by hand. For now, hold one idea: <strong>a container is a process with boundaries, not a machine.</strong></p>
+  <div class="callout">
+    <span class="label">The shared-kernel catch</span>
+    A Linux container needs a Linux kernel. On macOS and Windows, Docker quietly runs a small Linux VM and puts your containers inside it. That is why containers are lightweight on Linux but you still see a VM in the Docker Desktop settings on other platforms.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Thinking a container is a lightweight VM</td><td>Expecting to ssh in, install an init system, and run many services</td><td>Run one main process per container and treat it as disposable</td></tr>
+    <tr><td>Assuming containers are a security boundary equal to VMs</td><td>Untrusted code shares your host kernel</td><td>Use VMs or sandboxed runtimes for hostile workloads; see the Senior level</td></tr>
+    <tr><td>Storing important data inside a container</td><td>Data vanishes when the container is removed</td><td>Keep state in volumes, which a later stage covers</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>In your own words, explain the difference between an image and a container, using one analogy that is not a recipe.</li>
+      <li>Name two things a container shares with its host and two things it has to itself.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A container is an isolated process that shares the host kernel, not a miniature virtual machine.</li>
+      <li>An image is the read-only package; a container is a running instance of it.</li>
+      <li>Containers trade some isolation strength for speed, size, and density.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Containers From Zero — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

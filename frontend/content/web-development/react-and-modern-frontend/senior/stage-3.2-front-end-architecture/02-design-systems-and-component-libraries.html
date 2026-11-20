@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Design Systems &amp; Component Libraries — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · front-end architecture</span> → lesson 02</p>
+  <h1>Design Systems &amp; Component Libraries</h1>
+  <p class="lede">A design system is shared UI plus the decisions behind it. Building one as a versioned package gives teams consistent, accessible components, and also gives you a long-term maintenance commitment worth planning for.</p>
+
+  <h2><span class="num">§1</span>What a Design System Includes</h2>
+
+  <p>A design system is more than a component folder. It has three layers that build on each other, and the lowest layer carries the most leverage.</p>
+
+  <table>
+    <tr><th>Layer</th><th>Contents</th><th>Example</th></tr>
+    <tr><td><strong>Design tokens</strong></td><td>Named values for color, spacing, type, radius, motion, elevation</td><td><code>--color-text</code>, <code>--space-4</code>, <code>--radius-md</code></td></tr>
+    <tr><td><strong>Components</strong></td><td>Accessible, tested building blocks that use the tokens</td><td><code>Button</code>, <code>Dialog</code>, <code>Select</code>, <code>Tabs</code></td></tr>
+    <tr><td><strong>Patterns and guidance</strong></td><td>How to combine components; content and accessibility rules</td><td>Form layout, empty states, error messages</td></tr>
+  </table>
+
+  <pre><span class="comment">/* tokens: one source of truth; themes override the same names */</span>
+:root {
+  --color-bg: #ffffff;       --color-text: #1c1f26;     --color-accent: #15803d;
+  --space-2: 0.5rem;         --space-4: 1rem;           --radius-md: 8px;
+  --font-body: system-ui, sans-serif;
+}
+[data-theme="dark"] { --color-bg: #12151a; --color-text: #e8eaee; --color-accent: #4ade80; }
+
+<span class="comment">/* components use tokens only, never raw values */</span>
+.button { background: var(--color-accent); color: var(--color-bg); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); }</pre>
+
+  <p>Because components consume <strong>tokens</strong>, not hard-coded values, re-theming, dark mode, and even rebranding become changes to one file. Store tokens in a platform-neutral format (such as the W3C design tokens JSON) when design tools or native apps need them too.</p>
+
+  <h2><span class="num">§2</span>Building Components That Last</h2>
+
+  <ul>
+    <li><strong>Accessibility is built in</strong>, not optional: roles, keyboard behavior, focus management, and contrast are part of each component's definition of done. Consider building on <strong>headless</strong> primitives (Radix UI, React Aria, Ariakit) that supply behavior and accessibility, and add your own styling.</li>
+    <li><strong>API design matters more than looks</strong>: prefer composition (<code>&lt;Dialog&gt;&lt;Dialog.Title /&gt;...</code>) and a small number of well-named props; forward <code>className</code> and native props with <code>...rest</code>.</li>
+    <li><strong>Variants as data</strong>: use a helper like <code>cva</code> to define variants (<code>size</code>, <code>tone</code>) so combinations are explicit and typed.</li>
+    <li><strong>Document with examples</strong>: Storybook (or similar) shows each component's states, props, and accessibility checks, and doubles as a visual test bed.</li>
+    <li><strong>Test at three levels</strong>: unit/component tests for behavior, accessibility checks (axe), and <strong>visual regression</strong> (Chromatic, Playwright screenshots) for appearance.</li>
+    <li><strong>Keep it free of product logic</strong>: a <code>Button</code> knows nothing about checkout. Business components belong in features, built from design system parts.</li>
+  </ul>
+
+  <pre>import { cva, type VariantProps } from "class-variance-authority";
+
+const button = cva("button", {
+  variants: {
+    tone: { primary: "button--primary", neutral: "button--neutral", danger: "button--danger" },
+    size: { sm: "button--sm", md: "button--md" },
+  },
+  defaultVariants: { tone: "primary", size: "md" },
+});
+
+type Props = React.ComponentProps&lt;"button"&gt; &amp; VariantProps&lt;typeof button&gt;;
+
+export function Button({ tone, size, className, ...rest }: Props) {
+  return &lt;button className={button({ tone, size, className })} {...rest} /&gt;;
+}</pre>
+
+  <h2><span class="num">§3</span>Packaging, Versioning, and Governance</h2>
+
+  <p>Once other teams depend on your components, <strong>changes become a compatibility problem</strong>. Treat the design system as a product with consumers.</p>
+
+  <ul>
+    <li><strong>Publish as a package</strong> (internal registry or npm) using <strong>semantic versioning</strong>: patch for fixes, minor for backward-compatible additions, <strong>major for breaking changes</strong>. Automate releases and changelogs with <strong>Changesets</strong>.</li>
+    <li><strong>Define what is breaking</strong>: removed props, changed defaults, DOM structure that consumers style, and visual changes that affect layouts all count.</li>
+    <li><strong>Deprecate before removing</strong>: mark APIs deprecated, warn in development, document the migration, and keep them for at least one major version. Offer <strong>codemods</strong> for large changes.</li>
+    <li><strong>Support tree-shaking</strong>: ship ES modules with <code>"sideEffects": false</code> and per-component exports, so consumers do not pay for what they do not use.</li>
+    <li><strong>Decide who contributes</strong>: a small core team, with a clear process for others to propose or add components, avoids both bottlenecks and a free-for-all.</li>
+    <li><strong>Measure adoption and consistency</strong> (how many one-off buttons remain?), and gather feedback; a design system nobody uses is a cost with no return.</li>
+    <li><strong>Know when not to build one</strong>: with one app and a small team, a good headless library plus your own tokens may be enough. Full design systems carry real, ongoing staffing costs.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">A design system is a product, and the teams using it are its customers</span>
+    It needs versioning, documentation, support, and a deprecation policy, or it becomes the thing everyone works around. Start with tokens and the five components you use most, and grow from real demand.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Hard-coding colors and spacing inside components</td><td>Theming and rebranding require touching every component</td><td>Use design tokens everywhere</td></tr>
+    <tr><td>Making breaking changes in minor or patch releases</td><td>Consuming apps break unexpectedly; trust erodes</td><td>Follow semver and use Changesets; deprecate before removing</td></tr>
+    <tr><td>Putting business logic in shared components</td><td>Components become coupled to one product</td><td>Keep the system presentational; compose business components in features</td></tr>
+    <tr><td>Building a large system before demand exists</td><td>Costly components nobody adopts</td><td>Start small from real, repeated needs</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Define a token set (color, space, radius, type) and rebuild a <code>Button</code> using only tokens, then add a dark theme by overriding the tokens.</li>
+      <li>Build a <code>Dialog</code> on a headless primitive, add a Storybook story for each state, and an accessibility check.</li>
+      <li>Write a deprecation plan for renaming a prop: warnings, documentation, version bump, and removal timeline.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A design system layers tokens, accessible components, and guidance; tokens carry the most leverage.</li>
+      <li>Build on headless primitives, design composable APIs, and test behavior, accessibility, and visuals.</li>
+      <li>Version it like a product: semver, changesets, deprecation, and clear governance.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Front-End Architecture — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

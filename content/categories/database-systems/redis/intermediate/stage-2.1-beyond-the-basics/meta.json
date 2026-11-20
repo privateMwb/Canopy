@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Beyond the Basics",
+  "description": "Streams, transactions with WATCH, Lua scripting, pipelining, and compact specialty structures.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Long Transactions & Bloat",
+  "description": "How one idle transaction holds back cleanup and quietly slows everything down.",
+  "order": 5
+}

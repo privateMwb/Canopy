@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Delivery Workflows",
+  "description": "CI/CD, testing, policy as code, provider authentication, and pull-request automation.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Instruction Selection",
+  "description": "Mapping IR operations onto machine instructions, tree-pattern matching, and addressing modes.",
+  "order": 1
+}

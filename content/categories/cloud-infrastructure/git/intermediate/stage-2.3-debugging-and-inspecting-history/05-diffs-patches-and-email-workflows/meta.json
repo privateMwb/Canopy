@@ -1,0 +1,5 @@
+{
+  "title": "Diffs, Patches & Email Workflows",
+  "description": "diff, apply, format-patch, and am for sharing changes without a hosting site.",
+  "order": 5
+}

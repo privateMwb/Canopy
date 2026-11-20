@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Small Functions with One Job — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · writing readable code</span> → lesson 02</p>
+  <h1>Small Functions with One Job</h1>
+  <p class="lede">Short functions are easier to understand, test, and reuse, but the real rule isn't a line count. It's that each function does one thing.</p>
+
+  <h2><span class="num">§1</span>One Job, One Level</h2>
+  <p>A function should do one thing, and do it at a single level of abstraction. A function that validates input, calculates a price, writes to a database, and sends an email is four jobs wearing one name.</p>
+  <pre><span class="comment"># before: parse, validate, calculate, save, notify, all in one</span>
+def checkout(form):
+    ...80 lines...
+
+<span class="comment"># after: reads like an outline</span>
+def checkout(form):
+    order = parse_order(form)
+    validate(order)
+    total = calculate_total(order)
+    save_order(order, total)
+    send_receipt(order)</pre>
+  <h2><span class="num">§2</span>How to Split a Function</h2>
+  <p>Look for blocks separated by blank lines or introduced by a comment. A comment that says <code># calculate the total</code> is a function name waiting to be written. Extract the block, give it that name, and the comment becomes unnecessary.</p>
+  <pre>def total_with_tax(items, rate):
+    <span class="comment"># sum prices</span>
+    subtotal = 0
+    for item in items:
+        subtotal += item.price * item.qty
+    <span class="comment"># apply tax</span>
+    return subtotal * (1 + rate)
+
+<span class="comment"># extracted: each piece has a name instead of a comment</span>
+def subtotal(items):
+    return sum(i.price * i.qty for i in items)
+
+def total_with_tax(items, rate):
+    return subtotal(items) * (1 + rate)</pre>
+  <h2><span class="num">§3</span>Arguments and Side Effects</h2>
+  <p>Functions are easiest to use with few arguments. Zero to two is ideal; past three, the arguments probably belong together in an object. Boolean flags are a warning sign too, since <code>render(page, True)</code> says nothing, and often means the function does two things.</p>
+  <pre>render(page, True, False)                 <span class="comment"># what do these mean?</span>
+render_preview(page)                     <span class="comment"># clearer: separate functions</span>
+render(page, RenderOptions(dark=True))   <span class="comment"># or a named options object</span></pre>
+  <div class="callout">
+    <span class="label">A practical test</span>
+    If you can't describe what a function does in one short sentence without using the word "and," it probably does more than one thing.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Splitting by line count alone</td><td>Functions are chopped into meaningless pieces that must be read together</td><td>Split by purpose; every piece should have a name worth reading</td></tr>
+    <tr><td>Boolean flag arguments</td><td>Callers can't tell what <code>True</code> means and the function branches internally</td><td>Make two functions, or pass a named option</td></tr>
+    <tr><td>Hidden side effects in functions with innocent names</td><td><code>get_user()</code> that also updates a database surprises callers</td><td>Keep queries free of side effects; name the ones that change things</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a long function and extract three named helpers, keeping its tests green.</li>
+      <li>Find a function with a boolean flag and split it into two.</li>
+      <li>Write a one-sentence description for five functions. Which need an 'and'?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>One function, one job, one level of abstraction.</li>
+      <li>A comment explaining a block is usually a function name in disguise.</li>
+      <li>Keep argument counts low and side effects visible in the name.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Writing Readable Code — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

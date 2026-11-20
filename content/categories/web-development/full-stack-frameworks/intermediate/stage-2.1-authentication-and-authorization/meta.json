@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Authentication & Authorization",
+  "description": "Sessions and tokens, auth libraries, protected routes, roles, and account security.",
+  "order": 1
+}

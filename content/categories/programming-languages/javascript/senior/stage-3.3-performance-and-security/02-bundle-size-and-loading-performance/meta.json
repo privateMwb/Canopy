@@ -1,0 +1,5 @@
+{
+  "title": "Bundle Size & Loading Performance",
+  "description": "Code splitting, lazy loading, and measuring what users actually download.",
+  "order": 2
+}

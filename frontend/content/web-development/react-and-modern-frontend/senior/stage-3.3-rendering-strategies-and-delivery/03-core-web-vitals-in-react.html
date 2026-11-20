@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Core Web Vitals in React — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · rendering strategies &amp; delivery</span> → lesson 03</p>
+  <h1>Core Web Vitals in React</h1>
+  <p class="lede">Core Web Vitals measure what users actually feel: how fast the main content appears, how quickly the page responds, and whether it jumps around. Each has typical React causes and specific fixes.</p>
+
+  <h2><span class="num">§1</span>The Three Metrics</h2>
+
+  <table>
+    <tr><th>Metric</th><th>Measures</th><th>Good (75th percentile)</th><th>Typical React culprit</th></tr>
+    <tr><td><strong>LCP</strong> Largest Contentful Paint</td><td>When the biggest visible element renders</td><td>≤ 2.5 s</td><td>Client rendering, slow data, unoptimized hero image, render-blocking JS</td></tr>
+    <tr><td><strong>INP</strong> Interaction to Next Paint</td><td>Delay from interaction to the next frame, across the visit</td><td>≤ 200 ms</td><td>Heavy handlers, large re-renders, hydration, long tasks</td></tr>
+    <tr><td><strong>CLS</strong> Cumulative Layout Shift</td><td>Unexpected movement of content</td><td>≤ 0.1</td><td>Images without dimensions, late-loading content, injected banners, font swaps</td></tr>
+  </table>
+
+  <p>Measure in two ways. <strong>Lab</strong> tools (Lighthouse, DevTools Performance) reproduce problems and diagnose causes. <strong>Field</strong> data from real users (the <code>web-vitals</code> library, CrUX, your monitoring) tells you whether it matters, on real devices and networks. Always look at the <strong>75th percentile</strong>, not the average.</p>
+
+  <pre>import { onLCP, onINP, onCLS } from "web-vitals/attribution";
+
+function report({ name, value, rating, attribution }) {
+  navigator.sendBeacon("/rum", JSON.stringify({
+    name, value, rating,
+    page: location.pathname,
+    <span class="comment">// attribution says WHAT was slow: the LCP element, the INP event target, the shifting node</span>
+    detail: attribution,
+  }));
+}
+onLCP(report); onINP(report); onCLS(report);</pre>
+
+  <h2><span class="num">§2</span>Fixing LCP and CLS</h2>
+
+  <p><strong>LCP</strong> is usually a hero image or a heading. The fastest page is one where that element is in the <strong>initial HTML</strong> and starts loading immediately.</p>
+
+  <ul>
+    <li><strong>Do not client-render the LCP element.</strong> If the hero depends on <code>useEffect</code> + fetch, LCP waits for JS, then the API. Server-render or statically generate it.</li>
+    <li><strong>Prioritize the LCP image</strong>: <code>&lt;img fetchpriority="high"&gt;</code> and a <code>&lt;link rel="preload" as="image"&gt;</code>, never <code>loading="lazy"</code> for above-the-fold images.</li>
+    <li><strong>Optimize images</strong>: modern formats (AVIF/WebP), responsive <code>srcset</code>/<code>sizes</code>, correct dimensions, and a CDN. Framework image components automate much of this.</li>
+    <li><strong>Cut render-blocking work</strong>: reduce JavaScript before first render, inline critical CSS, preconnect to critical origins.</li>
+    <li><strong>Reduce TTFB</strong> with caching and edge rendering, since LCP cannot be earlier than the first byte.</li>
+  </ul>
+
+  <pre>&lt;img src="/hero.avif" alt="..." width="1200" height="630" fetchpriority="high"
+     srcset="/hero-600.avif 600w, /hero-1200.avif 1200w" sizes="100vw" /&gt;
+
+<span class="comment">/* reserve space so late content does not shift the layout (CLS) */</span>
+.thumb { aspect-ratio: 16 / 9; width: 100%; }
+.ad-slot { min-height: 250px; }
+@font-face { font-family: Inter; src: url(/inter.woff2) format("woff2"); font-display: swap; size-adjust: 100%; }</pre>
+
+  <p><strong>CLS</strong> is mostly about <strong>reserving space</strong>: give images and embeds explicit dimensions or <code>aspect-ratio</code>, use skeletons that match final size, avoid inserting content above existing content, and animate with <code>transform</code> rather than layout properties. In React, watch components that render <code>null</code> first and content later, since they push everything below down when they appear.</p>
+
+  <h2><span class="num">§3</span>Fixing INP in React</h2>
+
+  <p>INP covers the <strong>whole</strong> interaction: input delay (main thread busy), handler time, and the render and paint that follow. Most React INP problems are <strong>too much synchronous work after a click or keystroke</strong>.</p>
+
+  <pre><span class="comment">// keep input urgent; defer the expensive result</span>
+const [text, setText] = useState("");
+const deferred = useDeferredValue(text);
+&lt;input value={text} onChange={(e) =&gt; setText(e.target.value)} /&gt;
+&lt;Results query={deferred} /&gt;                          {/* memoized, can lag behind */}
+
+<span class="comment">// transitions for navigation and big updates</span>
+startTransition(() =&gt; setTab("reports"));
+
+<span class="comment">// break up long handler work, give feedback first</span>
+async function onClick() {
+  setBusy(true);                                       <span class="comment">// cheap, paints next frame</span>
+  await new Promise((r) =&gt; setTimeout(r));             <span class="comment">// yield to the browser</span>
+  heavyWork();
+}</pre>
+
+  <ul>
+    <li><strong>Profile the interaction</strong> in the Performance panel and read the INP breakdown; find the long task and the component that dominates.</li>
+    <li><strong>Shrink re-render scope</strong>: move state down, split contexts, use selectors, and let the React Compiler or <code>memo</code> skip unchanged subtrees.</li>
+    <li><strong>Virtualize long lists</strong>, and avoid rendering hidden UI.</li>
+    <li><strong>Reduce hydration and third-party JS</strong>, which often cause the input delay part of INP.</li>
+    <li><strong>Offload CPU work</strong> to a Web Worker, and debounce high-frequency handlers.</li>
+    <li>Set <strong>performance budgets</strong> in CI (Lighthouse CI) and alert on field regressions after each release.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Fix the biggest metric for real users first</span>
+    Use field data to find which vital fails on which pages and devices, use lab tools to find the cause, and change one thing at a time. A single hero image or one heavy handler is often most of the problem.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Lazy loading the hero image</td><td>LCP is delayed by deferred loading</td><td>Use <code>fetchpriority="high"</code> and no <code>loading="lazy"</code> above the fold</td></tr>
+    <tr><td>Images and embeds with no dimensions</td><td>Content jumps as they load; high CLS</td><td>Set <code>width</code>/<code>height</code> or <code>aspect-ratio</code></td></tr>
+    <tr><td>Fetching the main content in <code>useEffect</code></td><td>LCP waits for JS plus the API round trip</td><td>Render it on the server or at build time</td></tr>
+    <tr><td>Judging by a fast laptop's Lighthouse score</td><td>Real users on phones fail the vitals</td><td>Use field data and CPU throttling</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add <code>web-vitals</code> with attribution to an app and find the LCP element and the worst INP interaction on a throttled device.</li>
+      <li>Fix a CLS problem by reserving space for images and a late-loading banner, and confirm with the Layout Shift regions overlay.</li>
+      <li>Use <code>useDeferredValue</code> or <code>startTransition</code> to bring a slow typing interaction under 200 ms INP.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>LCP, INP, and CLS measure loading, responsiveness, and stability, at the 75th percentile of real users.</li>
+      <li>Server-render and prioritize the LCP element; reserve space for everything that loads late.</li>
+      <li>Improve INP by shrinking render work, deferring non-urgent updates, and cutting hydration and long tasks.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Rendering Strategies &amp; Delivery — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Testing in Depth",
+  "description": "Fixtures, mocking, parametrization, coverage, and testing code that touches the network or disk.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Configuration & Basic Security",
+  "description": "Binding, passwords, ACL users, and not exposing Redis to the internet.",
+  "order": 3
+}

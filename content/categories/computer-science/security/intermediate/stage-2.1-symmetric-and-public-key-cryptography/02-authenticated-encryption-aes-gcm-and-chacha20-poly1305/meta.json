@@ -1,0 +1,1 @@
+{"title": "Authenticated Encryption: AES-GCM & ChaCha20-Poly1305", "description": "The AEAD ciphers named in the TLS lesson, up close: why nonce reuse is catastrophic and why to reach for a vetted library's high-level API.", "order": 2}

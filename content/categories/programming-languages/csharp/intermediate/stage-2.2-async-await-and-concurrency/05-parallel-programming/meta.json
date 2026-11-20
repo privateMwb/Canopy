@@ -1,0 +1,5 @@
+{
+  "title": "Parallel Programming",
+  "description": "Parallel.ForEach, PLINQ, and when CPU-bound work benefits from parallelism.",
+  "order": 5
+}

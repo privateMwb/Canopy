@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Advanced SQL",
+  "description": "Window functions, recursive CTEs, JSONB, full-text search, and upserts.",
+  "order": 2
+}

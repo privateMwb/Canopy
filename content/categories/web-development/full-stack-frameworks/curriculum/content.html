@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Full-Stack Frameworks Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style></head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / full-stack-frameworks</p>
+    <h1>From pages and routes to full-stack apps in one framework</h1>
+    <p class="lede">Three levels, twelve stages — routing, rendering, data, and deployment in a modern framework such as Next.js, built toward full-stack apps that are secure, fast, and maintainable. The concepts carry over to Remix, Nuxt, and SvelteKit.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I know React" to "I can build and deploy a multi-page full-stack app with routing, data fetching, forms, and a database."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Framework Fundamentals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What a Full-Stack Framework Gives You</p><p class="lesson-desc">Routing, rendering, data, and build tooling in one package.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Project Setup &amp; File-Based Routing</p><p class="lesson-desc">Folders as routes, layouts, and dynamic segments.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Server vs. Client Components</p><p class="lesson-desc">What runs where, and how to choose.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Navigation &amp; Links</p><p class="lesson-desc">Client-side navigation, prefetching, and loading states.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Styling in the Framework</p><p class="lesson-desc">CSS Modules, Tailwind, and global styles.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a five-page site with shared layouts, dynamic routes, and clear server and client boundaries.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Data Fetching &amp; Rendering</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Fetching on the Server</p><p class="lesson-desc">Async components and data close to where it's used.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Static vs. Dynamic Rendering</p><p class="lesson-desc">When pages are built, and when they are built per request.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Caching &amp; Revalidation</p><p class="lesson-desc">Time-based and on-demand revalidation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Loading &amp; Error UI</p><p class="lesson-desc">Streaming skeletons and error boundaries per route.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Metadata &amp; SEO</p><p class="lesson-desc">Titles, Open Graph, sitemaps, and robots.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a blog that renders statically, revalidates on publish, and has complete SEO metadata.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Forms, Mutations &amp; Databases</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Server Actions &amp; Form Handling</p><p class="lesson-desc">Submitting forms without writing separate API routes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Connecting a Database</p><p class="lesson-desc">An ORM such as Prisma or Drizzle and a hosted Postgres.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">CRUD End to End</p><p class="lesson-desc">Create, read, update, and delete with validation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Validation with Zod</p><p class="lesson-desc">Validating input on both the client and the server.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Environment Variables &amp; Secrets</p><p class="lesson-desc">Config that stays out of the repo and the browser.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a task manager with a real database, validated forms, and persisted data.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Shipping</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Deploying to Vercel</p><p class="lesson-desc">Previews, production, and environment config.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Domains, HTTPS &amp; DNS Basics</p><p class="lesson-desc">Pointing a domain at your app.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Git Workflow &amp; Preview Deployments</p><p class="lesson-desc">Branches, pull requests, and reviewing live previews.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Debugging Full-Stack Apps</p><p class="lesson-desc">Logs, the network tab, and server errors.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Project Structure &amp; Conventions</p><p class="lesson-desc">Keeping a growing codebase readable.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Deploy your task manager on a custom domain with a preview deployment for every pull request.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can build a full-stack app" to "I implement authentication, design APIs, optimize rendering, and test an app that real users depend on."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Authentication &amp; Authorization</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Sessions, Cookies &amp; JWTs</p><p class="lesson-desc">How logins actually persist.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Auth Libraries &amp; Providers</p><p class="lesson-desc">Auth.js, Clerk, and OAuth flows.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Protecting Routes &amp; Data</p><p class="lesson-desc">Middleware and server-side checks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Roles &amp; Permissions</p><p class="lesson-desc">Modeling access control.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Passwords, MFA &amp; Account Recovery</p><p class="lesson-desc">Doing the unglamorous parts safely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add sign-in, role-based access, and protected API routes to an app, and prove an unauthorized request is rejected on the server.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — APIs &amp; Backend Logic</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Route Handlers &amp; API Design</p><p class="lesson-desc">Building REST endpoints inside the framework.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Middleware &amp; the Edge Runtime</p><p class="lesson-desc">Running code before a request and near the user.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Background Jobs &amp; Webhooks</p><p class="lesson-desc">Handling work that outlives a request.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">File Uploads &amp; External Services</p><p class="lesson-desc">Storage, email, and payments integrations.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Rate Limiting &amp; Abuse Prevention</p><p class="lesson-desc">Protecting endpoints from misuse.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a webhook-driven feature (payments or email) with signature verification and retries.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Performance &amp; Rendering Strategy</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Streaming &amp; Suspense</p><p class="lesson-desc">Showing useful content as soon as it's ready.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Caching Layers</p><p class="lesson-desc">Data cache, full-route cache, CDN, and invalidation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Image, Font &amp; Script Optimization</p><p class="lesson-desc">Built-in optimization and what it replaces.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Partial Prerendering &amp; Rendering Modes</p><p class="lesson-desc">Mixing static and dynamic content on one page.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Measuring with Web Vitals &amp; Lighthouse</p><p class="lesson-desc">Field data vs. lab data.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a slow app, apply caching and streaming, and show Web Vitals improving with real numbers.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Testing &amp; Quality</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Unit &amp; Integration Testing</p><p class="lesson-desc">Testing components and server logic.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">End-to-End Tests with Playwright</p><p class="lesson-desc">Critical user flows in CI.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Testing Server Actions &amp; APIs</p><p class="lesson-desc">Contract and integration tests.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Type Safety End to End</p><p class="lesson-desc">Shared types from database to UI.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">CI/CD &amp; Environments</p><p class="lesson-desc">Pipelines, staging, and safe releases.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a CI pipeline that runs types, tests, and a preview deployment on every pull request.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I ship full-stack apps" to "I design systems that scale, understand framework internals, and can defend architecture and platform choices."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Framework Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Build &amp; Compilation Pipeline</p><p class="lesson-desc">What the bundler and compiler do to your code.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Routing, Rendering &amp; the RSC Payload</p><p class="lesson-desc">How the server and client exchange UI.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Caching Internals</p><p class="lesson-desc">How each cache layer decides what is fresh.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Edge vs. Node Runtimes</p><p class="lesson-desc">Capabilities, limits, and cold starts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Self-Hosting vs. Platforms</p><p class="lesson-desc">What a managed platform does that you would have to rebuild.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Trace a request through the framework's layers and explain, with evidence, why it was served from cache or rendered fresh.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Architecture &amp; Data</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Data Access Layers</p><p class="lesson-desc">Keeping database code out of components.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Multi-Tenancy &amp; Scaling Patterns</p><p class="lesson-desc">Isolating customers and growing safely.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Database Migrations &amp; Scaling</p><p class="lesson-desc">Schema changes without downtime.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Queues, Events &amp; Eventual Consistency</p><p class="lesson-desc">Designing workflows that tolerate delay.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Observability</p><p class="lesson-desc">Logs, traces, metrics, and alerts for full-stack apps.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design the architecture for a multi-tenant SaaS app, including data isolation, background work, and observability.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Security &amp; Reliability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Threat Modeling Full-Stack Apps</p><p class="lesson-desc">Finding where the trust boundaries sit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Common Vulnerabilities</p><p class="lesson-desc">XSS, CSRF, SSRF, and injection in framework apps.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Secrets, Supply Chain &amp; Dependency Risk</p><p class="lesson-desc">Locking down what you ship.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Resilience &amp; Failure Modes</p><p class="lesson-desc">Timeouts, retries, and graceful degradation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Compliance &amp; Privacy Basics</p><p class="lesson-desc">Handling personal data responsibly.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run a security review of a real app, fix the top findings, and write the residual-risk report.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Choosing a Framework</p><p class="lesson-desc">Next.js, Remix, Nuxt, SvelteKit, and when plain beats all of them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Cost &amp; Performance Trade-offs</p><p class="lesson-desc">Serverless economics and scaling limits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Migrations &amp; Long-Term Maintenance</p><p class="lesson-desc">Upgrading without freezing development.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Writing Architecture Decisions</p><p class="lesson-desc">Design docs and RFCs for full-stack systems.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write an architecture decision record for choosing a framework and hosting model, argued for a skeptical reviewer.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Rendering arrives at Junior as server vs. client components, returns at Intermediate as caching, streaming, and rendering modes, and comes back at Senior as how the framework's layers decide what is fresh. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how a framework's caches and runtimes behave is one skill; deciding whether to adopt it, self-host it, or skip it for something simpler, and writing that down, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

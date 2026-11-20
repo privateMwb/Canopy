@@ -1,0 +1,5 @@
+{
+  "title": "Templating & Server-Rendered HTML",
+  "description": "Layouts, partials, and keeping output valid.",
+  "order": 2
+}

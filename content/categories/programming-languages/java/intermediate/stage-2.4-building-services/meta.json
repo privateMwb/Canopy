@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 \u2014 Building Services",
+  "description": "Spring Boot, REST APIs, JDBC and JPA, service testing, and packaging.",
+  "order": 4
+}

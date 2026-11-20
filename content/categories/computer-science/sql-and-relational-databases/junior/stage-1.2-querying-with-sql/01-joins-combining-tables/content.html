@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Joins: Combining Tables — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · querying with sql</span> → lesson 01</p>
+  <h1>Joins: Combining Tables</h1>
+  <p class="lede">A join combines rows from two tables whenever a condition matches, which is how the relationships you modeled with foreign keys turn back into useful answers.</p>
+
+  <h2><span class="num">§1</span>INNER JOIN: Only the Matches</h2>
+  <p>The examples use <code>customers(id, name)</code> and <code>orders(id, customer_id, total)</code>. An <code>INNER JOIN</code> returns a row for each pair of rows that satisfy the <code>ON</code> condition. Rows with no partner on the other side are dropped.</p>
+  <pre>SELECT c.name, o.id AS order_id, o.total
+FROM customers AS c
+JOIN orders    AS o ON o.customer_id = c.id     <span class="comment">-- JOIN means INNER JOIN</span>
+ORDER BY c.name, o.id;</pre>
+  <p>Table aliases (<code>c</code>, <code>o</code>) keep the query short and make it clear which table each column comes from. A customer with three orders appears three times; a customer with no orders doesn't appear at all.</p>
+
+  <h2><span class="num">§2</span>LEFT JOIN: Keep Everything from One Side</h2>
+  <p>A <code>LEFT JOIN</code> keeps every row from the left table, filling the right table's columns with <code>NULL</code> when there is no match. It answers "show me all customers, with their orders if any".</p>
+  <pre>SELECT c.name, o.id AS order_id
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id;
+
+<span class="comment">-- A classic use: find rows with NO match (the "anti-join")</span>
+SELECT c.name
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+WHERE o.id IS NULL;                 <span class="comment">-- customers who never ordered</span></pre>
+  <p><code>RIGHT JOIN</code> is the mirror image (and rarely needed; just swap the table order). <code>FULL OUTER JOIN</code> keeps unmatched rows from both sides.</p>
+
+  <h2><span class="num">§3</span>Reasoning About Joins</h2>
+  <p>A helpful mental model: a join first pairs rows, then filters by <code>ON</code>.</p>
+  <pre>customers          orders                 INNER JOIN result
+ 1 Ada     ─┬─►   101  cust=1  45.00      Ada   101  45.00
+            └─►   102  cust=1  12.50      Ada   102  12.50
+ 2 Alan            (none)                 (Alan missing)
+ 3 Grace   ───►   103  cust=3  99.99      Grace 103  99.99</pre>
+  <p>Joining across <strong>several</strong> tables is just repeating the pattern: <code>FROM a JOIN b ON ... JOIN c ON ...</code>. Each join adds columns from one more table. A <code>CROSS JOIN</code> has no condition and pairs every row with every row (rarely what you want by accident).</p>
+
+  <h2><span class="num">§4</span>Filtering with LEFT JOIN: ON vs. WHERE</h2>
+  <p>With an outer join, where you put a condition changes the meaning.</p>
+  <pre><span class="comment">-- Keeps all customers; only counts orders over 50</span>
+SELECT c.name, o.id
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id AND o.total &gt; 50;
+
+<span class="comment">-- Looks similar, but drops customers with no big order entirely</span>
+SELECT c.name, o.id
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+WHERE o.total &gt; 50;</pre>
+  <p>In the second query the <code>WHERE</code> rejects the <code>NULL</code> rows the outer join produced, quietly turning it back into an inner join.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Decide first which table's rows must always appear. That table goes on the preserved side of a LEFT JOIN, and conditions on the other table belong in ON, not WHERE.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Joining without an <code>ON</code> condition (or with a wrong one)</td><td>Every row pairs with every row: a huge, meaningless result</td><td>Join on the foreign key; sanity-check row counts</td></tr>
+    <tr><td>Filtering the right table in <code>WHERE</code> after a <code>LEFT JOIN</code></td><td>Unmatched rows vanish; the join behaves like <code>INNER</code></td><td>Put the condition in <code>ON</code>, or test <code>IS NULL</code> deliberately</td></tr>
+    <tr><td>Ambiguous column names (<code>id</code> in two tables)</td><td>Error, or the wrong column is selected</td><td>Qualify columns with table aliases</td></tr>
+    <tr><td>Expecting one row per customer after joining orders</td><td>Customers repeat once per order, inflating counts and sums</td><td>Aggregate (next lesson) or join to a pre-aggregated subquery</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write queries on <code>customers</code> and <code>orders</code> for: customers with their orders, all customers including those with none, and only the customers with no orders.</li>
+      <li>Add an <code>order_items(order_id, product_id, qty)</code> table and a <code>products</code> table. Write a four-table join listing customer name, product name, and quantity.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>INNER JOIN keeps matches only; LEFT JOIN keeps every left row and fills gaps with NULL.</li>
+      <li>A LEFT JOIN plus <code>IS NULL</code> finds rows that have no match.</li>
+      <li>Outer-join conditions in WHERE can silently turn them into inner joins.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Querying with SQL — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

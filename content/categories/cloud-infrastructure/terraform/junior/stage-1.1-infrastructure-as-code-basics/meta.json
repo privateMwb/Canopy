@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — Infrastructure as Code Basics",
+  "description": "Why infrastructure as code, the init/plan/apply workflow, HCL, providers, and reading the registry.",
+  "order": 1
+}

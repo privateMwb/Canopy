@@ -1,0 +1,1 @@
+{"title": "Stage 3.1 — Advanced Concurrency", "description": "Atomics, memory ordering, lock-free structures, futexes, and async I/O.", "order": 1}

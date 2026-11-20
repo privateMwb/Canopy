@@ -1,0 +1,5 @@
+{
+  "title": "The Render and Commit Phases",
+  "description": "What React does between a state change and the screen.",
+  "order": 1
+}

@@ -1,0 +1,1 @@
+{"title": "Symmetric Encryption: Block Ciphers & Modes", "description": "AES, why ECB leaks patterns, what CBC and CTR add, and how keys, IVs, and nonces differ.", "order": 1}

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JavaScript Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / javascript</p>
+    <h1>From the language core to the browser and Node.js, and the engine underneath</h1>
+    <p class="lede">Three levels, twelve stages — types, closures, the event loop, and async code, built toward the judgment to ship fast, safe, typed JavaScript on both the client and the server.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've copied some JavaScript" to "I can write, run, and debug JavaScript that manipulates data and responds to the browser."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Language Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Running JavaScript</p><p class="lesson-desc">The browser console, script tags, Node, and ES modules — the places your code can live.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Values, Types &amp; Coercion</p><p class="lesson-desc">Primitives vs. objects, typeof, null vs. undefined, and why == and === differ.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">let, const, var &amp; Scope</p><p class="lesson-desc">Block vs. function scope, hoisting, and the temporal dead zone.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Functions &amp; Arrow Functions</p><p class="lesson-desc">Declarations, expressions, defaults, rest parameters, and first-class functions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Control Flow &amp; Truthiness</p><p class="lesson-desc">Conditionals, loops, optional chaining, nullish coalescing, and the falsy values.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a small program (a unit converter or text-adventure engine) that runs in both the console and Node, with no accidental type coercion.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Data &amp; Collections</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Strings &amp; Template Literals</p><p class="lesson-desc">String methods, Unicode, and building text safely.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Arrays &amp; Array Methods</p><p class="lesson-desc">map, filter, reduce, find, and sort — and which ones mutate.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Objects, Destructuring &amp; Spread</p><p class="lesson-desc">Property access, shorthand syntax, and copying or merging objects.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Map, Set &amp; JSON</p><p class="lesson-desc">When a Map beats an object, what a Set gives you, and round-tripping data through JSON.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">References, Copies &amp; Immutability</p><p class="lesson-desc">Why assignment shares objects, shallow vs. deep copies, and structuredClone.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a nested JSON dataset and answer five questions about it using only array methods and destructuring, with no mutation of the original.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Functions in Depth</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Closures</p><p class="lesson-desc">Functions that remember their scope, and the classic loop-variable bug.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">this, call, apply &amp; bind</p><p class="lesson-desc">How this is decided at call time, and why arrow functions behave differently.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Prototypes &amp; Classes</p><p class="lesson-desc">The prototype chain underneath class syntax, getters, setters, and private fields.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Modules: ESM &amp; CommonJS</p><p class="lesson-desc">import/export, default vs. named exports, and the two module systems you'll meet.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Errors &amp; Debugging</p><p class="lesson-desc">try/catch, Error types, stack traces, and the browser DevTools debugger.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small module-based utility library (a shopping cart or event emitter) using closures and classes, and debug three planted bugs with DevTools.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — The Browser &amp; First Async</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The DOM</p><p class="lesson-desc">Selecting, creating, and changing elements, and what the DOM actually is.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Events &amp; Event Delegation</p><p class="lesson-desc">Listeners, bubbling, preventDefault, and handling many elements with one handler.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Callbacks &amp; Promises</p><p class="lesson-desc">Why async exists, callback pitfalls, and chaining with .then and .catch.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">async/await &amp; fetch</p><p class="lesson-desc">Writing asynchronous code that reads top to bottom, and calling an HTTP API.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Forms, Storage &amp; Simple State</p><p class="lesson-desc">Reading form input, localStorage, and keeping UI and data in sync by hand.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a to-do or weather page that fetches data, handles loading and failure states, and persists across reloads, with no framework.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can make a page work" to "I understand how asynchronous JavaScript is scheduled, I use types, and I can build full-stack apps with real tooling."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — The Event Loop &amp; Async in Depth</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Call Stack, Tasks &amp; Microtasks</p><p class="lesson-desc">How the event loop orders your code, and why promise callbacks run before setTimeout.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Promise Combinators &amp; Error Handling</p><p class="lesson-desc">all, allSettled, race, any — and where unhandled rejections come from.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Cancellation &amp; Concurrency Control</p><p class="lesson-desc">AbortController, timeouts, and running N requests at a time instead of all at once.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Blocking the Main Thread</p><p class="lesson-desc">Long tasks, requestAnimationFrame, and keeping a UI responsive.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Web Workers &amp; Streams</p><p class="lesson-desc">Moving work off the main thread and processing data as it arrives.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Predict the output of six tricky async-ordering snippets, then build a rate-limited, cancellable batch fetcher.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — TypeScript</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why TypeScript &amp; Basic Types</p><p class="lesson-desc">What static types catch, what they don't, and how TS compiles away.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Unions, Narrowing &amp; Generics</p><p class="lesson-desc">Modeling data precisely and letting the compiler follow your checks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Utility, Mapped &amp; Conditional Types</p><p class="lesson-desc">Deriving types from other types instead of copying them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Typing Real Code</p><p class="lesson-desc">tsconfig, strict mode, third-party type definitions, and migrating a JS file at a time.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Migrate a 400-line JavaScript module to strict TypeScript, and list the real bugs the compiler found.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Node.js &amp; Tooling</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Node Runtime</p><p class="lesson-desc">Modules, fs, streams, process, and what Node adds beyond the language.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Building an HTTP Server</p><p class="lesson-desc">The http module, then Express or Fastify: routing, middleware, and error handling.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">npm, package.json &amp; Semver</p><p class="lesson-desc">Dependencies, lockfiles, scripts, and what a version range really permits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Bundlers &amp; Build Tools</p><p class="lesson-desc">What Vite and esbuild do, and when you actually need a build step.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing JavaScript</p><p class="lesson-desc">Vitest, Jest, or node:test: unit tests, mocks, and async assertions.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a tested REST API with validation, error handling, and a build pipeline, and run it from a clean checkout.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Browser Apps in Practice</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">UI State &amp; Rendering</p><p class="lesson-desc">Why frameworks exist: state, derived views, and the component mental model.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Fetching Data &amp; Handling Failure</p><p class="lesson-desc">Loading, error, and stale states, caching, and retry behavior in a real UI.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Routing, History &amp; Browser APIs</p><p class="lesson-desc">Client-side routing, URL state, IntersectionObserver, and the platform features you don't need a library for.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Accessibility Basics</p><p class="lesson-desc">Semantic HTML, keyboard navigation, focus, and ARIA used sparingly.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Web Performance Basics</p><p class="lesson-desc">Core Web Vitals, loading strategy, and what to measure first.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit a small app with Lighthouse and an accessibility checker, fix the top five issues, and show the measurements before and after.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I build apps that work" to "I understand what the engine does with my code, secure and scale it, and can make architecture calls and defend them."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Engine &amp; Language Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How V8 Runs Your Code</p><p class="lesson-desc">Parsing, the Ignition interpreter, and TurboFan optimization.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Hidden Classes, Inline Caches &amp; Deoptimization</p><p class="lesson-desc">Why object shape matters and how code silently loses its fast path.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Garbage Collection &amp; Memory Leaks</p><p class="lesson-desc">Generational GC, what keeps objects alive, and the common leak patterns.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Proxy, Reflect, Symbols &amp; the Prototype Chain</p><p class="lesson-desc">Metaprogramming tools, and when they are warranted.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Module Resolution &amp; Tree Shaking</p><p class="lesson-desc">How ESM and CommonJS are resolved, interop traps, and why dead code can't always be removed.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Find and fix a memory leak in a long-running page or service using heap snapshots, and explain the retaining path.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Advanced Async &amp; Runtime Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Async Iterators, Generators &amp; Streams</p><p class="lesson-desc">Backpressure-aware pipelines in both the browser and Node.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Workers, SharedArrayBuffer &amp; Atomics</p><p class="lesson-desc">Real shared-memory parallelism in JavaScript, and what it costs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">libuv, the Thread Pool &amp; Node Internals</p><p class="lesson-desc">What actually runs off the main thread in Node, and what blocks it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Resilient Async Design</p><p class="lesson-desc">Retries, idempotency, timeouts, and failure handling across unreliable calls.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Reproduce an event-loop stall in a Node service, trace it to its cause, and fix it without adding workers blindly.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Performance &amp; Security</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Profiling in the Browser &amp; Node</p><p class="lesson-desc">DevTools performance panels, CPU profiles, and flame graphs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Bundle Size &amp; Loading Performance</p><p class="lesson-desc">Code splitting, lazy loading, and measuring what users actually download.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Web Security: XSS, CSP &amp; Prototype Pollution</p><p class="lesson-desc">How injection happens in JavaScript apps and the layered defenses against it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">npm Supply Chain &amp; Dependency Hygiene</p><p class="lesson-desc">Lockfiles, install scripts, auditing, and deciding what to depend on.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a small app with seeded security and performance flaws, find and fix each one, and write up the evidence.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Architecture &amp; Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Monorepos &amp; Large Codebases</p><p class="lesson-desc">Workspaces, shared packages, and keeping builds fast as a codebase grows.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Designing &amp; Publishing Libraries</p><p class="lesson-desc">Dual ESM/CommonJS packages, exports maps, and API stability.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">SSR, Edge &amp; Where Code Should Run</p><p class="lesson-desc">Server, client, and edge: choosing where each piece of work belongs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Observability for JavaScript</p><p class="lesson-desc">Error tracking, source maps, tracing, and diagnosing user-side failures you can't reproduce.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Choosing &amp; Defending Technology</p><p class="lesson-desc">JS vs. TS, framework and runtime choices, and communicating tradeoffs to a team.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write an architecture decision record for a real project: stack, runtime, rendering strategy, and the risks you're accepting.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Async code appears at Junior as promises and fetch, returns at Intermediate as the event loop and cancellation, and comes back at Senior as streams, workers, and runtime internals. Types work the same way: coercion first, then TypeScript, then engine-level behavior. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Senior is about the engine, the attack surface, and the architecture as much as the syntax. Knowing why an object's shape affects speed and being able to defend a rendering strategy to a team are different skills, and the last two stages are built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

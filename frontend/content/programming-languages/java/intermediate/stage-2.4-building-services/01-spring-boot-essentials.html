@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spring Boot Essentials — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · building services</span> → lesson 01</p>
+  <h1>Spring Boot Essentials</h1>
+  <p class="lede">Spring Boot gives you a working, configurable application from a few dependencies and one annotation, with the framework creating your objects and wiring them together.</p>
+
+  <h2><span class="num">§1</span>Inversion of Control and Beans</h2>
+  <p>In plain Java you create your own objects and pass them to each other. In Spring, an <strong>application context</strong> creates objects called <strong>beans</strong>, finds their dependencies, and injects them. You declare what you need, and the container supplies it. This is dependency inversion, automated.</p>
+  <pre>@SpringBootApplication
+public class App {
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);        <span class="comment">// starts the context, and the web server if present</span>
+    }
+}
+
+@Service
+public class GreetingService {
+    private final Clock clock;                          <span class="comment">// a dependency</span>
+    public GreetingService(Clock clock) { this.clock = clock; }    <span class="comment">// constructor injection</span>
+    public String greet(String name) { return "Hello " + name + " at " + clock.instant(); }
+}
+
+@Configuration
+class AppConfig {
+    @Bean Clock clock() { return Clock.systemUTC(); }  <span class="comment">// a bean defined by a factory method</span>
+}</pre>
+  <p><code>@SpringBootApplication</code> combines three things: <code>@Configuration</code>, <code>@EnableAutoConfiguration</code>, and <code>@ComponentScan</code>. Component scanning finds classes annotated with <code>@Component</code> or its specializations (<code>@Service</code>, <code>@Repository</code>, <code>@Controller</code>, <code>@RestController</code>) in the application's package and below, so keep your main class in the root package.</p>
+
+  <h2><span class="num">§2</span>Dependency Injection Done Right</h2>
+  <p>Prefer <strong>constructor injection</strong>: dependencies are <code>final</code>, the class can't exist half-built, and you can instantiate it in a unit test with plain <code>new</code> and a fake. With a single constructor, <code>@Autowired</code> isn't even needed. Avoid field injection (<code>@Autowired private Foo foo;</code>), which hides dependencies and requires the container to test your class. By default beans are <strong>singletons</strong>: one shared instance per context, so they must be safe for concurrent use and should not hold per-request mutable state.</p>
+  <pre>@Service
+class OrderService {
+    private final OrderRepository repo;
+    private final PaymentGateway payments;
+    OrderService(OrderRepository repo, PaymentGateway payments) {    <span class="comment">// both injected</span>
+        this.repo = repo;
+        this.payments = payments;
+    }
+}</pre>
+  <p>If there are two beans of the same type, Spring can't choose; mark one <code>@Primary</code> or select with <code>@Qualifier("name")</code>.</p>
+
+  <h2><span class="num">§3</span>Auto-Configuration and Starters</h2>
+  <p>Boot's magic is <strong>auto-configuration</strong>: it looks at what is on the classpath and what you have defined, and configures sensible defaults. Add <code>spring-boot-starter-web</code> and you get an embedded web server and JSON support; add a database driver and a <code>DataSource</code> appears, unless you define your own. <strong>Starters</strong> are dependency bundles named for a purpose (<code>-web</code>, <code>-data-jpa</code>, <code>-validation</code>, <code>-actuator</code>, <code>-test</code>) so you don't assemble versions by hand. You can ask Boot what it decided with <code>--debug</code>, which prints a conditions report.</p>
+
+  <h2><span class="num">§4</span>Configuration and Lifecycle</h2>
+  <p>Settings live in <code>application.properties</code> or <code>application.yml</code>, and Boot binds them to typed objects.</p>
+  <pre>server:
+  port: 8081
+app:
+  greeting:
+    prefix: "Hi"</pre>
+  <pre>@ConfigurationProperties(prefix = "app.greeting")
+record GreetingProps(String prefix) { }               <span class="comment">// enable with @ConfigurationPropertiesScan</span>
+
+@Value("${server.port}") int port;                    <span class="comment">// fine for one-off values</span></pre>
+  <p>The lifecycle: the context is created, beans are instantiated in dependency order, <code>@PostConstruct</code> methods and <code>ApplicationRunner</code> beans run, the application serves, and on shutdown the context closes, calling <code>@PreDestroy</code> methods. Spring's <code>@Transactional</code>, <code>@Cacheable</code>, and <code>@Async</code> work by wrapping your bean in a <strong>proxy</strong>, which has a consequence: calling an annotated method from another method in the <em>same</em> class bypasses the proxy, so the annotation does nothing.</p>
+
+  <div class="callout">
+    <span class="label">You still write plain Java</span>
+    Spring Boot's value is wiring, defaults, and operational features. Keep your business logic in ordinary classes with constructor parameters, so you can test them without starting a container.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Field injection with <code>@Autowired</code></td><td>Hidden dependencies; can't build the object without Spring</td><td>Use constructor injection</td></tr>
+    <tr><td>Main class in a sub-package</td><td>Component scan misses other packages</td><td>Put <code>@SpringBootApplication</code> in the root package</td></tr>
+    <tr><td>Storing per-request state in a singleton bean</td><td>Data leaks and races between requests</td><td>Keep beans stateless, or pass state as parameters</td></tr>
+    <tr><td>Calling a <code>@Transactional</code> method from the same class</td><td>The proxy is bypassed, so no transaction</td><td>Call it from another bean, or restructure</td></tr>
+    <tr><td>Two beans of one type, with no qualifier</td><td><code>NoUniqueBeanDefinitionException</code></td><td>Use <code>@Primary</code> or <code>@Qualifier</code></td></tr>
+    <tr><td>Hardcoding secrets in <code>application.yml</code></td><td>Credentials in version control</td><td>Read from environment variables or a secrets store</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a Boot project with <code>spring-boot-starter-web</code>, run it, and add a <code>@Service</code> injected into a <code>@RestController</code>.</li>
+      <li>Run with <code>--debug</code> and find which auto-configurations were applied and which were skipped, and why.</li>
+      <li>Bind a <code>@ConfigurationProperties</code> record to values in <code>application.yml</code>, then override one with an environment variable.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Spring creates and wires beans from your declarations; prefer constructor injection and stateless singletons.</li>
+      <li>Auto-configuration and starters supply defaults based on the classpath, and you override what you need.</li>
+      <li>Annotations like <code>@Transactional</code> work through proxies, so same-class calls bypass them.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Building Services — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mentoring Engineers — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · technical leadership</span> → lesson 04</p>
+  <h1>Mentoring Engineers</h1>
+  <p class="lede">Diagnosing why someone is actually stuck, instead of just handing them the fix.</p>
+
+  <h2><span class="num">§1</span>Fixing the Bug vs. Fixing the Understanding</h2>
+  <p>Handing someone the corrected code solves today's problem. Helping them understand why they got stuck solves the next ten problems too. Mentoring well means noticing which kind of help a situation actually calls for.</p>
+
+  <h2><span class="num">§2</span>Diagnosing, Not Just Answering</h2>
+  <p>When someone asks "why isn't my model learning," the useful response usually isn't the answer directly — it's a question that helps them find it themselves: "What does your loss curve look like?" "Did you check your learning rate?" "Have you verified gradients are actually flowing?" This mirrors exactly the debugging instinct behind loss-curve diagnosis from earlier lessons, now applied to teaching.</p>
+
+  <h2><span class="num">§3</span>Recognizing Common Stuck Points</h2>
+  <table>
+    <tr><th>Symptom</th><th>Likely underlying gap</th></tr>
+    <tr><td>Confused about why train/test scores differ wildly</td><td>Hasn't internalized overfitting vs. underfitting</td></tr>
+    <tr><td>Surprised a "95% accurate" model is useless</td><td>Hasn't connected class imbalance to misleading metrics</td></tr>
+    <tr><td>Can't explain why their test set score looks "too good"</td><td>Likely has a leakage bug, doesn't recognize the pattern yet</td></tr>
+  </table>
+  <p>Recognizing these patterns lets you address the real gap, not just the surface symptom someone happened to ask about.</p>
+
+  <h2><span class="num">§4</span>Giving Feedback That Lands</h2>
+  <div class="callout">
+    <span class="label">A useful habit</span>
+    Separate "this is wrong" from "here's the gap in understanding causing it." The first feels like criticism; the second feels like help. Both can be true about the same mistake, but how you frame it changes whether someone learns from it or just feels bad about it.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Always just giving the direct answer</td><td>The person doesn't build the diagnostic skill to solve it next time</td><td>Ask guiding questions when the goal is learning, not just unblocking</td></tr>
+    <tr><td>Treating every mistake as needing the same level of explanation</td><td>Over-explaining wastes time, under-explaining leaves gaps</td><td>Gauge the person's actual gap before deciding how much to explain</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>A colleague says their model has 99% training accuracy but performs terribly in production. Write two diagnostic questions you'd ask before giving any answer.</li>
+      <li>In one or two sentences, describe the difference between fixing someone's bug and fixing their understanding.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Good mentoring often means asking diagnostic questions rather than handing over the direct fix.</li>
+      <li>Recognizing common stuck points (overfitting confusion, imbalance blind spots, leakage) lets you address the real underlying gap.</li>
+      <li>Separating "this is wrong" from "here's the gap causing it" changes whether feedback helps someone learn or just feels like criticism.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Technical Leadership — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

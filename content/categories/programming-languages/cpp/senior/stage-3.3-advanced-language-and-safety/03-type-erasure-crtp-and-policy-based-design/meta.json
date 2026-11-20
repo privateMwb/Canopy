@@ -1,0 +1,5 @@
+{
+  "title": "Type Erasure, CRTP & Policy-Based Design",
+  "description": "Advanced patterns for abstraction, and what each costs.",
+  "order": 3
+}

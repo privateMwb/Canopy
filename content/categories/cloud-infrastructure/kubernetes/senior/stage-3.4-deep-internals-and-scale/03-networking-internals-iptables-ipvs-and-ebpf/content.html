@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Networking Internals: iptables, IPVS &amp; eBPF — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · deep internals &amp; scale</span> → lesson 03</p>
+  <h1>Networking Internals: iptables, IPVS &amp; eBPF</h1>
+  <p class="lede">A Service address is a promise implemented by packet-rewriting rules on every node, and reading those rules shows exactly how traffic is routed.</p>
+
+  <h2><span class="num">§1</span>The Service Data Path</h2>
+  <p>A ClusterIP has no interface and no listener. When a pod sends a packet to it, rules on the node (installed by kube-proxy or an eBPF datapath) rewrite the destination to a real pod IP: <strong>DNAT</strong> (destination network address translation). The kernel's <strong>conntrack</strong> table remembers the translation so replies and later packets of the same connection follow the same path.</p>
+  <h2><span class="num">§2</span>iptables Mode</h2>
+  <p>In iptables mode, kube-proxy writes chains into the <code>nat</code> table:</p>
+  <pre>iptables-save -t nat | grep -E 'KUBE-SERVICES|KUBE-SVC|KUBE-SEP' | head
+<span class="comment"># KUBE-SERVICES  : match destination ClusterIP:port, jump to the service chain</span>
+<span class="comment"># KUBE-SVC-XXXX  : one chain per Service; picks an endpoint with probability rules</span>
+<span class="comment"># KUBE-SEP-YYYY  : one chain per endpoint; DNAT to podIP:port</span></pre>
+  <p>For a Service with three endpoints, the <code>KUBE-SVC</code> chain uses statistic rules: 1/3 chance of the first endpoint, then 1/2 of the remainder, then the last. The selection is random and <strong>per connection</strong>, not per request, so a long-lived connection sticks to one pod.</p>
+  <p>The cost: rule matching in iptables is <strong>linear</strong>, and large rulesets (tens of thousands of services and endpoints) make both packet processing and rule updates slow, since kube-proxy rewrites rules and the kernel locks tables while loading them.</p>
+  <h2><span class="num">§3</span>IPVS Mode</h2>
+  <p>IPVS uses the kernel's L4 load balancer with <strong>hash-table lookups</strong>, so lookups stay fast as services grow, and it offers more algorithms (round robin, least connections, source hash). It still relies on iptables or ipsets for some functions, and has been losing favor, with the community moving toward other backends.</p>
+  <h2><span class="num">§4</span>nftables Mode</h2>
+  <p>The <strong>nftables</strong> backend of kube-proxy uses the newer netfilter framework, with maps and sets that give constant-time service lookups and faster incremental updates than iptables. It is the direction the in-tree kube-proxy is moving, and needs recent kernels and kube-proxy versions.</p>
+  <h2><span class="num">§5</span>eBPF and kube-proxy Replacement</h2>
+  <p>Cilium (and other eBPF CNIs) can replace kube-proxy: a small program attached at the socket or network interface layer maps service IPs to backends using eBPF <strong>hash maps</strong>, often translating the address <strong>at connect time</strong>, before a packet exists. That avoids per-packet DNAT and conntrack for in-cluster traffic and gives lower latency and richer flow visibility.</p>
+  <table>
+    <tr><th>Backend</th><th>Lookup</th><th>Update cost</th><th>Notes</th></tr>
+    <tr><td>iptables</td><td>Linear chain walk</td><td>Full or large rule reloads</td><td>Universal, simple to read</td></tr>
+    <tr><td>IPVS</td><td>Hash table</td><td>Incremental</td><td>More algorithms; falling out of favor</td></tr>
+    <tr><td>nftables</td><td>Maps and sets</td><td>Incremental</td><td>Modern in-tree path</td></tr>
+    <tr><td>eBPF</td><td>Hash maps in kernel</td><td>Incremental</td><td>Needs a CNI that provides it</td></tr>
+  </table>
+  <h2><span class="num">§6</span>Inspecting a Live Path</h2>
+  <pre>kubectl get svc web -o wide                      <span class="comment"># ClusterIP and port</span>
+kubectl get endpointslices -l kubernetes.io/service-name=web
+conntrack -L | grep 10.96.12.34                  <span class="comment"># active translations for this ClusterIP</span>
+iptables-save -t nat | grep 10.96.12.34          <span class="comment"># the rules matching it (iptables mode)</span>
+cilium service list                              <span class="comment"># eBPF mode equivalent</span></pre>
+  <p>Symptoms and where they point: new connections failing intermittently suggests stale endpoints or an unhealthy backend still in rotation; connection resets after a pod is replaced often implicate conntrack entries for pods that no longer exist; slow service updates on large clusters point to rule-programming cost.</p>
+  <p>Externally, <code>externalTrafficPolicy: Local</code> preserves the client source IP and avoids an extra hop, but only nodes with local endpoints pass health checks, which can cause imbalance. <code>Cluster</code> spreads traffic but may SNAT the source address.</p>
+  <div class="callout">
+    <span class="label">Rules explain behavior</span>
+    Random-per-connection balancing, source IP changes, and stale connection problems all read directly from the NAT rules and conntrack state. When the abstraction misbehaves, look one layer down.
+  </div>
+  <h2><span class="num">§7</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Expecting request-level load balancing from a Service</td><td>One long-lived HTTP/2 or gRPC connection pins to one pod</td><td>Use client-side balancing, a mesh, or an L7 proxy</td></tr>
+    <tr><td>Assuming iptables mode scales indefinitely</td><td>Large clusters see slow updates and latency</td><td>Move to nftables or eBPF at scale</td></tr>
+    <tr><td>Ignoring conntrack limits</td><td>New connections are dropped when the table fills</td><td>Monitor conntrack usage and raise limits where justified</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>On a node, find the <code>KUBE-SVC</code> chain for one Service and count its endpoint rules.</li>
+      <li>Explain why a gRPC client sees uneven load across pods behind a ClusterIP.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Service routing is DNAT performed by node rules plus conntrack, chosen per connection.</li>
+      <li>iptables scales linearly; nftables and eBPF use maps for constant-time lookup.</li>
+      <li>Inspecting rules and conntrack state explains many network oddities.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Deep Internals &amp; Scale — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Direct Client Access vs. a Backend Layer",
+  "description": "When security rules are enough and when an API is safer.",
+  "order": 1
+}

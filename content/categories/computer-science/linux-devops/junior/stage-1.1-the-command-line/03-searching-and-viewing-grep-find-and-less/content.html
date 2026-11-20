@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Searching &amp; Viewing: grep, find &amp; less — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · the command line</span> → lesson 03</p>
+  <h1>Searching &amp; Viewing: grep, find &amp; less</h1>
+  <p class="lede"><code>find</code> locates files by their properties, <code>grep</code> locates text inside them, and <code>less</code> lets you read the results without opening an editor.</p>
+
+  <h2><span class="num">§1</span>find: Search by Property</h2>
+  <p><code>find</code> walks a directory tree and tests each file against conditions. You can combine tests by name, type, size, age, and owner, then run an action.</p>
+  <pre>find . -name "*.log"                    <span class="comment"># by name (quote the pattern!)</span>
+find /var/log -type f -size +10M        <span class="comment"># files larger than 10 MB</span>
+find . -mtime -1                        <span class="comment"># modified in the last day</span>
+find . -name "*.tmp" -delete            <span class="comment"># act on each match</span>
+find . -name "*.sh" -exec chmod +x {} + <span class="comment"># run a command on matches</span></pre>
+  <p>Quote patterns like <code>"*.log"</code> so the shell does not expand them first. Otherwise a matching file in the current directory silently changes what <code>find</code> receives.</p>
+
+  <h2><span class="num">§2</span>grep: Search Inside Files</h2>
+  <p><code>grep</code> prints lines matching a pattern. The flags you will use constantly are <code>-i</code> (ignore case), <code>-r</code> (recurse), <code>-n</code> (line numbers), <code>-v</code> (invert), <code>-c</code> (count), and <code>-E</code> (extended regular expressions).</p>
+  <pre>grep -rn "TODO" src/                    <span class="comment"># recursive, with line numbers</span>
+grep -i "error" app.log                 <span class="comment"># case-insensitive</span>
+grep -v "^#" config.conf                <span class="comment"># lines that are not comments</span>
+grep -E "timeout|refused" app.log       <span class="comment"># either word</span>
+grep -c "404" access.log                <span class="comment"># count matching lines</span></pre>
+  <p>A match's exit code is 0 and no match is 1. Scripts rely on this, as the exit-code lesson shows later.</p>
+
+  <h2><span class="num">§3</span>Reading Output with less</h2>
+  <p><code>less</code> shows a file one screen at a time without loading it all. Inside it, <code>/word</code> searches forward, <code>n</code> jumps to the next match, <code>G</code> goes to the end, <code>g</code> to the start, and <code>q</code> quits. <code>less +F app.log</code> follows a growing file like <code>tail -f</code>.</p>
+  <pre>less /var/log/syslog
+tail -n 50 app.log                      <span class="comment"># last 50 lines</span>
+tail -f app.log                         <span class="comment"># follow new lines as they arrive</span>
+head -n 5 data.csv                      <span class="comment"># first 5 lines</span></pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Use <code>find</code> when the question is about the file (name, size, age) and <code>grep</code> when it is about the contents. Combining them, with <code>find ... -exec grep ...</code> or <code>grep -r</code>, covers most searching you will ever do.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Leaving <code>find</code> patterns unquoted</td><td>The shell expands the glob and <code>find</code> gets the wrong arguments</td><td>Quote: <code>-name "*.log"</code></td></tr>
+    <tr><td>Running <code>find ... -delete</code> first</td><td>Deletes everything that matches, including surprises</td><td>Run without <code>-delete</code> first and read the list</td></tr>
+    <tr><td>Using <code>cat</code> on a huge file</td><td>Floods the terminal and hides what you wanted</td><td>Use <code>less</code>, <code>head</code>, <code>tail</code>, or <code>grep</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Find every file under <code>/etc</code> modified in the last 7 days.</li>
+      <li>Count how many lines containing "ERROR" appear in each <code>.log</code> file in a directory.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>find</code> searches by file properties, and <code>grep</code> searches text inside files.</li>
+      <li>Quote patterns so the shell does not expand them before the command sees them.</li>
+      <li>Preview with <code>less</code>, <code>head</code>, and <code>tail</code> instead of dumping whole files.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · The Command Line — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

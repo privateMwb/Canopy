@@ -1,0 +1,5 @@
+{
+  "title": "Repository Surgery: Packfiles, filter-repo & Recovery",
+  "description": "Removing secrets and large files from history, repairing corruption, and what rewriting shared history costs.",
+  "order": 5
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Designing an Instruction Set",
+  "description": "Opcodes, operands, constant pools, and a compact binary format.",
+  "order": 2
+}

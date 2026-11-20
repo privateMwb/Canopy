@@ -1,0 +1,5 @@
+{
+  "title": "Failover & Switchover",
+  "description": "Promoting a standby, avoiding split-brain, and the tools that automate it.",
+  "order": 2
+}

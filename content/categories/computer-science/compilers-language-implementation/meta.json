@@ -1,0 +1,6 @@
+{
+  "title": "Compilers & Language Implementation",
+  "description": "Parsing, type checking, and code generation, from lexer to native code.",
+  "order": 11,
+  "compileRoot": true
+}

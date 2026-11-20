@@ -1,0 +1,5 @@
+{
+  "title": "Threads, Locks & Concurrent Collections",
+  "description": "lock, SemaphoreSlim, ConcurrentDictionary, and thread-safety by design.",
+  "order": 4
+}

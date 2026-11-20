@@ -1,0 +1,5 @@
+{
+  "title": "Constant Folding & Propagation",
+  "description": "Computing at compile time what is already known, and where doing so is unsafe.",
+  "order": 1
+}

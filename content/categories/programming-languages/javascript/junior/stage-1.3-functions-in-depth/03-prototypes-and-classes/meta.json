@@ -1,0 +1,5 @@
+{
+  "title": "Prototypes & Classes",
+  "description": "The prototype chain underneath class syntax, getters, setters, and private fields.",
+  "order": 3
+}

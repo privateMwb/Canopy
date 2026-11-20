@@ -1,0 +1,5 @@
+{
+  "title": "Systems Manager & Patch Management",
+  "description": "Managing and patching servers without opening SSH.",
+  "order": 5
+}

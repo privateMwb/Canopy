@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Running Workloads",
+  "description": "Deployments, rolling updates, Services, namespaces, labels, pod lifecycle, and batch jobs.",
+  "order": 2
+}

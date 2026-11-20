@@ -1,0 +1,5 @@
+{
+  "title": "Shaping History: Interactive Rebase, Fixup & Cherry-Pick",
+  "description": "Reordering, squashing, and moving commits so a branch reviews well, and the rules for shared history.",
+  "order": 2
+}

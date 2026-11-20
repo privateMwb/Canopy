@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compilers &amp; Language Implementation Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / compilers &amp; language implementation</p>
+    <h1>From a string of characters to a running program</h1>
+    <p class="lede">Three levels, twelve stages — how a language is parsed, checked, compiled, and run, built around one small toy language, Twig, and aimed at the judgment to design an implementation, tune its runtime, and defend the tradeoffs.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I use programming languages" to "I can build a lexer, parser, and tree-walking interpreter for a small language, and give useful error messages."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — The Big Picture</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What a Language Implementation Does</p><p class="lesson-desc">The pipeline from source text to running program, and how interpreters, compilers, and VMs differ.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Meet Twig</p><p class="lesson-desc">The toy language used throughout the course: its syntax, its semantics, and what it deliberately leaves out.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Grammars &amp; EBNF</p><p class="lesson-desc">Describing syntax precisely with rules, and why ambiguity is the enemy.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Abstract Syntax Trees</p><p class="lesson-desc">Why programs become trees, and how to design a node type for each construct.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write the EBNF for a new Twig construct, then hand-draw the AST for three programs that use it.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Lexing &amp; Parsing</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Scanning: Characters to Tokens</p><p class="lesson-desc">Token types, lexemes, and a hand-written scanner that walks the source one character at a time.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Source Positions &amp; Lexical Errors</p><p class="lesson-desc">Tracking line and column, handling comments and string escapes, and reporting bad characters usefully.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Recursive Descent Parsing</p><p class="lesson-desc">One function per grammar rule, lookahead, and building the AST as you go.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Operator Precedence &amp; Pratt Parsing</p><p class="lesson-desc">Binding power, associativity, and parsing expressions without a rule per precedence level.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Syntax Errors &amp; Recovery</p><p class="lesson-desc">Reporting the first error clearly, then resynchronizing so parsing can continue and find the next one.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a lexer and parser for all of Twig that produces an AST, with test inputs for every grammar rule and every error path.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Evaluating Programs</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Evaluating Expressions</p><p class="lesson-desc">Walking the AST recursively, runtime values, and arithmetic, comparison, and logic.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Environments &amp; Lexical Scope</p><p class="lesson-desc">Variables, shadowing, nested blocks, and chains of environments.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Control Flow &amp; Loops</p><p class="lesson-desc">if, while, and for as tree walks, plus break and short-circuit evaluation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Functions, Calls &amp; Return</p><p class="lesson-desc">Parameters, arguments, the call stack, and implementing return without special cases everywhere.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Closures &amp; Captured Variables</p><p class="lesson-desc">Functions that remember the environment they were defined in, and the classic counter example.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Finish the interpreter and pass a test suite of programs: recursive Fibonacci, FizzBuzz, a counter closure, and a handful of runtime-error cases.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Data, Diagnostics &amp; Testing</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Values, Truthiness &amp; Dynamic Typing</p><p class="lesson-desc">How an interpreter represents values at runtime, and the rules for equality and truthiness.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Arrays &amp; Records</p><p class="lesson-desc">Adding compound data to the language, from parsing the syntax to indexing and field access at runtime.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Error Messages That Help</p><p class="lesson-desc">Source spans, carets under the offending code, and the difference between syntax, static, and runtime errors.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Testing a Language Implementation</p><p class="lesson-desc">Golden-file tests, one feature per test program, and keeping error messages from regressing.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add arrays and records to Twig with golden tests, including at least five error cases that produce precise, readable diagnostics.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can interpret a program" to "I can type-check it, lower it to an intermediate representation, optimize it, and run it on a bytecode VM with garbage collection."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Static Analysis &amp; Type Checking</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Name Resolution &amp; Symbol Tables</p><p class="lesson-desc">A resolver pass that binds every identifier to its declaration before anything runs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Static vs. Dynamic Typing</p><p class="lesson-desc">What a type system buys, what it costs, and which errors it moves from run time to compile time.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Type Checking Expressions &amp; Statements</p><p class="lesson-desc">Typing rules written as inference rules, then turned into a checker.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Type Inference &amp; Unification</p><p class="lesson-desc">Inferring types from use, type variables, and the idea behind Hindley–Milner.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Generics &amp; Subtyping</p><p class="lesson-desc">Parametric polymorphism, subtyping, and where soundness holes come from.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add a static type checker to Twig that rejects ill-typed programs with clear errors and accepts every valid program in the test suite.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Intermediate Representations</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why Intermediate Representations</p><p class="lesson-desc">Separating the front end from the back end, and what makes a good IR.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Three-Address Code &amp; Lowering</p><p class="lesson-desc">Flattening nested expressions and control flow into simple, explicit instructions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Control-Flow Graphs &amp; Basic Blocks</p><p class="lesson-desc">Splitting code into blocks, drawing edges for jumps, and why analyses want a graph.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Static Single Assignment</p><p class="lesson-desc">One definition per variable, phi nodes, and why SSA makes optimizations simpler.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Lower Twig to a control-flow-graph IR, with a printer and a verifier that catches malformed blocks and undefined values.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Bytecode Virtual Machines</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Stack Machines vs. Register Machines</p><p class="lesson-desc">Two ways to design a VM, and what each does to code size and speed.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Designing an Instruction Set</p><p class="lesson-desc">Opcodes, operands, constant pools, and a compact binary format.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Compiling the AST to Bytecode</p><p class="lesson-desc">Emitting code for expressions, variables, jumps, and loops.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">The VM Loop &amp; Dispatch</p><p class="lesson-desc">The fetch-decode-execute loop, the value stack, and where the time goes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Calls, Frames &amp; Closures in a VM</p><p class="lesson-desc">Call frames, locals on the stack, and upvalues for captured variables.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Garbage Collection: Mark-Sweep</p><p class="lesson-desc">Heap objects, finding roots, and reclaiming memory nobody can reach.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Replace the tree-walking interpreter with a bytecode VM that has a mark-sweep collector, and check it against the interpreter on every test program.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Optimization</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Constant Folding &amp; Propagation</p><p class="lesson-desc">Computing at compile time what is already known, and where doing so is unsafe.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Dataflow Analysis &amp; Dead Code Elimination</p><p class="lesson-desc">Liveness and reaching definitions as iterative analyses, and removing code that can't matter.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Inlining &amp; Loop Optimizations</p><p class="lesson-desc">Inlining calls, hoisting invariant code, and strength reduction.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Proving an Optimization Correct</p><p class="lesson-desc">Semantics preservation, undefined behavior, and testing passes against an unoptimized baseline.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement three optimization passes on the IR, show before-and-after instruction counts, and verify every program still gives identical output.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I can build the pipeline" to "I can generate native code, tune a runtime, implement advanced language features, and defend design decisions to other engineers."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Native Code Generation</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Instruction Selection</p><p class="lesson-desc">Mapping IR operations onto machine instructions, tree-pattern matching, and addressing modes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Register Allocation</p><p class="lesson-desc">Live ranges, interference graphs, linear scan, and spilling to the stack.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Calling Conventions &amp; ABIs</p><p class="lesson-desc">Argument registers, caller-saved vs. callee-saved registers, and stack frame layout.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Object Files, Linking &amp; Loading</p><p class="lesson-desc">Sections, symbols, relocations, and how separate pieces become a running executable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Targeting an Existing Backend</p><p class="lesson-desc">Emitting LLVM-style IR or WebAssembly instead of writing your own code generator.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Compile a subset of Twig to native assembly for one real architecture, assemble and link it, and handle register spills correctly.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Advanced Runtime Systems</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Generational &amp; Copying Garbage Collection</p><p class="lesson-desc">Semispaces, the generational hypothesis, and write barriers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Concurrent GC &amp; Pause-Time Tradeoffs</p><p class="lesson-desc">Tri-color marking, incremental collection, and trading throughput for latency.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Making Interpreters Fast</p><p class="lesson-desc">Value tagging, NaN boxing, threaded dispatch, and inline caches.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">JIT Compilation &amp; Tiered Execution</p><p class="lesson-desc">Profiling hot code, compiling it at run time, and deoptimizing when assumptions break.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Replace the mark-sweep collector with a copying one, verify heap integrity under randomized stress, and report pause times and throughput for both.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Advanced Language Features</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Pattern Matching &amp; Algebraic Data Types</p><p class="lesson-desc">Compiling match expressions into decision trees, and checking exhaustiveness.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Exceptions &amp; Non-Local Control Flow</p><p class="lesson-desc">Unwinding the stack, running cleanup code, and the cost of the happy path.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Coroutines, Generators &amp; Async</p><p class="lesson-desc">Turning suspendable functions into state machines or continuations.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Implementing Generics: Monomorphization vs. Erasure</p><p class="lesson-desc">Code size, speed, and separate-compilation tradeoffs for each strategy.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add one of these features to Twig end to end — syntax, type checking, lowering, and execution — and write up the compilation strategy you chose.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Correctness, Tooling &amp; Design Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Testing Compilers: Differential Testing &amp; Fuzzing</p><p class="lesson-desc">Generating random programs, comparing implementations, and reducing a failing case.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Language Servers &amp; Incremental Compilation</p><p class="lesson-desc">Error-tolerant parsing, caching, and recomputing only what changed.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Language Design Tradeoffs</p><p class="lesson-desc">Weighing a feature's cost to implement, to teach, and to the rest of the language.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Writing &amp; Defending a Design Document</p><p class="lesson-desc">Stating the problem, the alternatives, and the risks so reviewers can disagree usefully.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design proposal for a new Twig feature covering semantics, implementation plan, risks, and alternatives, then answer three hostile review questions.</p></div></div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>One toy language, start to finish.</strong> Every lesson builds on Twig, a small language introduced in stage 1.1. Nothing here teaches a production language; the point is the machinery, and snippets use plain pseudocode so you can build Twig in whatever language you like.</p>
+    <p><strong>Levels aren't strict walls.</strong> The AST from Junior becomes a typed tree, then an IR, then machine code. Closures appear as environments, return as upvalues in a VM, and come back at Senior as calling conventions and ABIs. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how register allocation or a copying collector works and being able to choose, defend, and test a design decision are different skills, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

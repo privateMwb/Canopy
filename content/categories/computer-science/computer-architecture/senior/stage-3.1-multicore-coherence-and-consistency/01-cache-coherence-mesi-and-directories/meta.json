@@ -1,0 +1,1 @@
+{"title": "Cache Coherence: MESI & Directories", "description": "How cores keep their private caches consistent, and how it scales.", "order": 1}

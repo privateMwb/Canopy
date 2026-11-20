@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tree Shaking &amp; Dependency Choices — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · javascript & bundle performance</span> → lesson 03</p>
+  <h1>Tree Shaking &amp; Dependency Choices</h1>
+  <p class="lede">Tree shaking removes code you imported but never used, but only when your code and your dependencies cooperate. Choosing dependencies well matters more.</p>
+
+  <h2><span class="num">§1</span>How Tree Shaking Works</h2>
+  <p><strong>Tree shaking</strong> is dead-code elimination for modules. The bundler analyses which exports are actually used and drops the rest. It relies on the <strong>static structure of ES modules</strong> (<code>import</code> and <code>export</code>), because it can tell at build time what is referenced.</p>
+  <pre><span class="comment">// math.js</span>
+export function add(a, b) { return a + b; }
+export function multiply(a, b) { return a * b; }   <span class="comment">// never imported anywhere</span>
+
+<span class="comment">// app.js</span>
+import { add } from './math.js';
+console.log(add(1, 2));
+
+<span class="comment">// The production bundle contains add() and drops multiply()</span></pre>
+  <p>CommonJS (<code>require</code>) is dynamic, so it generally can't be tree shaken. Prefer libraries that publish <strong>ES module</strong> builds.</p>
+
+  <h2><span class="num">§2</span>What Defeats It</h2>
+  <table>
+    <tr><th>Problem</th><th>Why it blocks shaking</th></tr>
+    <tr><td>CommonJS dependencies</td><td>Exports can't be analyzed statically</td></tr>
+    <tr><td>Side effects at import time</td><td>The bundler can't safely drop a module that does work when loaded</td></tr>
+    <tr><td>Barrel files (<code>index.js</code> re-exporting everything)</td><td>Can pull in a whole package if side effects aren't declared</td></tr>
+    <tr><td>Importing a default object (<code>import _ from "lodash"</code>)</td><td>Brings the entire object along</td></tr>
+    <tr><td>Dynamic access (<code>obj[name]</code>)</td><td>The bundler can't tell what is used</td></tr>
+  </table>
+  <p>Libraries can mark themselves safe to prune by setting <code>"sideEffects": false</code> in <code>package.json</code>, which tells the bundler that unused modules can be removed without changing behavior. Only set this if it is true.</p>
+  <pre><span class="comment">// package.json of a well-behaved library</span>
+{
+  "name": "my-lib",
+  "type": "module",
+  "sideEffects": false,
+  "exports": { ".": "./dist/index.js" }
+}</pre>
+
+  <h2><span class="num">§3</span>Choosing Dependencies Wisely</h2>
+  <p>Tree shaking helps, but the biggest lever is <strong>what you depend on</strong> in the first place.</p>
+  <ul>
+    <li><strong>Check size before installing</strong>, including transitive dependencies, with bundlephobia or your analyzer.</li>
+    <li><strong>Prefer modular, ESM-first libraries</strong>: <code>date-fns</code> over <code>moment</code>, individual imports over whole-library defaults.</li>
+    <li><strong>Use the platform.</strong> Native <code>fetch</code>, <code>Intl</code>, <code>URL</code>, <code>structuredClone</code>, and CSS often replace a library.</li>
+    <li><strong>Don't import a utility library for one function.</strong> Write it, or import it narrowly.</li>
+    <li><strong>Audit periodically.</strong> Remove packages that are no longer used.</li>
+  </ul>
+  <pre><span class="comment">// Narrow imports so the bundler can drop the rest</span>
+import { format } from 'date-fns';       <span class="comment">// shaken to just format()</span>
+import debounce from 'lodash-es/debounce';   <span class="comment">// one function from an ESM build</span></pre>
+  <p>Always verify with the analyzer. Whether something was actually shaken is a measurable fact, not an assumption.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    Marking a package <code>sideEffects: false</code> when it does have side effects, such as registering styles or polyfills, can silently delete code your app needs. Declare it accurately.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using a CommonJS-only library</td><td>The whole library is bundled, whatever you use</td><td>Choose an ESM build or an alternative</td></tr>
+    <tr><td>Importing the whole library by default</td><td>Large bundle for one function</td><td>Use named or per-function imports</td></tr>
+    <tr><td>Assuming tree shaking worked</td><td>Dead code is still shipped</td><td>Confirm in the bundle analyzer</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Import one function from a library two different ways and compare the bundle size of each in an analyzer.</li>
+      <li>Replace a heavy dependency with a lighter one or a native API, and record the saving.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Tree shaking removes unused exports, but relies on static ES modules and side-effect-free code.</li>
+      <li>CommonJS, barrel files, and import-time side effects can all defeat it.</li>
+      <li>Choose small, modular dependencies, prefer native APIs, and verify with an analyzer.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · JavaScript &amp; Bundle Performance — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "The Garbage Collector",
+  "description": "Generations, the large object heap, GC modes, and what makes allocations expensive.",
+  "order": 2
+}

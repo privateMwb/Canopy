@@ -1,0 +1,5 @@
+{
+  "title": "Compiling the AST to Bytecode",
+  "description": "Emitting code for expressions, variables, jumps, and loops.",
+  "order": 3
+}

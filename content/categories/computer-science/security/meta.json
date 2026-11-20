@@ -1,0 +1,6 @@
+{
+  "title": "Information Security",
+  "description": "Cryptography, web security, and threat modeling, from hashing to defense.",
+  "order": 9,
+  "compileRoot": true
+}

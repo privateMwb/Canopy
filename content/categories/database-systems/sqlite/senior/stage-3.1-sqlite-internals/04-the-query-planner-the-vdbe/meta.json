@@ -1,0 +1,5 @@
+{
+  "title": "The Query Planner & the VDBE",
+  "description": "How SQL becomes bytecode, and how to read it.",
+  "order": 4
+}

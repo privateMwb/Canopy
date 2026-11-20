@@ -1,0 +1,5 @@
+{
+  "title": "Python Services in Production",
+  "description": "ASGI vs. WSGI, worker models, deployment shape, and what actually limits throughput.",
+  "order": 1
+}

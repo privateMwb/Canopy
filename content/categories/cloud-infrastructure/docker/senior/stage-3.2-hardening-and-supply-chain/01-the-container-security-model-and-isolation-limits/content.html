@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Container Security Model &amp; Isolation Limits — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · hardening & supply chain</span> → lesson 01</p>
+  <h1>The Container Security Model &amp; Isolation Limits</h1>
+  <p class="lede">Containers share the host kernel, so their security is a stack of kernel restrictions layered on one boundary, and understanding each layer shows where it can fail.</p>
+
+  <h2><span class="num">§1</span>The Layers of Defense</h2>
+  <p>A container process is constrained by several overlapping mechanisms:</p>
+  <table>
+    <tr><th>Layer</th><th>Restricts</th><th>Default in Docker</th></tr>
+    <tr><td>Namespaces</td><td>What the process can see</td><td>On</td></tr>
+    <tr><td>cgroups</td><td>What it can consume</td><td>Optional limits</td></tr>
+    <tr><td>Capabilities</td><td>Which root powers it has</td><td>Reduced default set</td></tr>
+    <tr><td>seccomp</td><td>Which system calls it may make</td><td>Default profile blocks dozens of syscalls</td></tr>
+    <tr><td>AppArmor / SELinux</td><td>Files and operations by policy</td><td>Default profile where available</td></tr>
+    <tr><td>Non-root user</td><td>Privileges inside the container</td><td><strong>Off</strong>: root unless configured</td></tr>
+    <tr><td>Read-only filesystem</td><td>Writes to the container FS</td><td><strong>Off</strong></td></tr>
+  </table>
+  <p>No single layer is a wall. Together they raise the cost of an attack, but all of them depend on the <strong>one kernel</strong> the container shares with the host.</p>
+  <h2><span class="num">§2</span>seccomp and Capabilities in Practice</h2>
+  <p>seccomp filters system calls with a profile. Docker's default blocks dangerous ones (such as <code>mount</code>, <code>reboot</code>, and kernel module loading), and you can tighten or replace it:</p>
+  <pre>docker run --security-opt seccomp=./profile.json myapi
+docker run --security-opt seccomp=unconfined myapi     <span class="comment"># removes the filter. Avoid.</span>
+docker run --cap-drop ALL --cap-add NET_BIND_SERVICE myapi
+capsh --print                                          <span class="comment"># inspect capabilities</span></pre>
+  <p>Generate a minimal profile by tracing which syscalls your app uses in tests, then enforce that list. Treat <code>seccomp=unconfined</code>, <code>--privileged</code>, <code>--pid=host</code>, <code>--net=host</code>, mounting <code>/</code>, and mounting the Docker socket as <strong>escape-enabling settings</strong> that need explicit justification.</p>
+  <h2><span class="num">§3</span>What an Escape Looks Like</h2>
+  <p>Container escapes come from a few categories:</p>
+  <ul>
+    <li><strong>Misconfiguration</strong>: a privileged container, a mounted Docker socket, or a writable host path lets the process simply act on the host.</li>
+    <li><strong>Runtime or kernel vulnerabilities</strong>: flaws in the kernel or in <code>runc</code> (past examples include a runc file-descriptor leak, CVE-2019-5736, and the overlayfs and cgroup release-agent issues) let code in a container affect the host.</li>
+    <li><strong>Shared resources</strong>: side channels and noisy neighbors, which leak information or availability rather than control.</li>
+  </ul>
+  <p>Most real incidents are misconfiguration, which is controllable. Kernel and runtime bugs are mitigated by <strong>patching quickly</strong>, running as non-root, using user namespaces, and sandboxed runtimes for untrusted code.</p>
+  <pre>docker run --rm --privileged alpine sh -c 'ls /dev | head'   <span class="comment"># sees host devices</span>
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock docker:cli ps</pre>
+  <p>The second command shows why a mounted socket is a full takeover: the container can launch any other container with any mount.</p>
+  <div class="callout">
+    <span class="label">Decide who the adversary is</span>
+    Containers are good isolation for <strong>your own code from your other code</strong>, with defense in depth. They are not sufficient alone for <strong>hostile tenants</strong> running arbitrary code; that requires VM-level or sandboxed isolation, covered later in this stage.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating the default profile as sufficient for untrusted code</td><td>Kernel attack surface remains large</td><td>Use sandboxed runtimes or VMs for hostile workloads</td></tr>
+    <tr><td>Using <code>--privileged</code> for convenience</td><td>All protections disabled</td><td>Grant the specific capability or device only</td></tr>
+    <tr><td>Delaying kernel and runtime updates</td><td>Known escapes remain exploitable</td><td>Patch hosts and the container runtime on a schedule</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>List the capabilities of a default container and of one started with <code>--cap-drop ALL</code>, and explain each missing one.</li>
+      <li>Demonstrate what a mounted Docker socket allows from inside a throwaway test container, then describe how you would detect it with a policy check.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Container security is namespaces, cgroups, capabilities, seccomp, and MAC policy over a shared kernel.</li>
+      <li>Most escapes are misconfigurations you can forbid with policy.</li>
+      <li>Match the isolation mechanism to the threat; containers are not VM-strength boundaries.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Hardening & Supply Chain — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

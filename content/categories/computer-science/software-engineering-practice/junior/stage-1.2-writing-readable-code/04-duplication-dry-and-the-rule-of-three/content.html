@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Duplication, DRY &amp; the Rule of Three — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · writing readable code</span> → lesson 04</p>
+  <h1>Duplication, DRY &amp; the Rule of Three</h1>
+  <p class="lede">DRY says not to repeat knowledge, but copying a few lines is sometimes cheaper than the wrong abstraction. The skill is knowing the difference.</p>
+
+  <h2><span class="num">§1</span>What DRY Really Means</h2>
+  <p><strong>Don't Repeat Yourself</strong> is about duplicated *knowledge*: one fact or rule that lives in several places and must be changed in all of them. If the tax rate appears in four files, that is a bug waiting to happen.</p>
+  <pre><span class="comment"># knowledge repeated: change the rate and you must find every copy</span>
+total_a = price * 1.2
+total_b = cost * 1.2
+total_c = fee * 1.2
+
+<span class="comment"># one source of truth</span>
+VAT_RATE = 0.20
+def with_vat(amount): return amount * (1 + VAT_RATE)</pre>
+  <h2><span class="num">§2</span>Coincidental Duplication</h2>
+  <p>Two pieces of code can look alike without being the same idea. A shipping-cost formula and a discount formula might both multiply and round today, yet change for entirely different reasons. Merging them couples two things that should evolve separately.</p>
+  <p>The test is: <strong>would these two always change together?</strong> If a change to one would never require changing the other, the similarity is coincidental, and leaving them separate is correct.</p>
+  <h2><span class="num">§3</span>The Rule of Three</h2>
+  <p>Wait for the third occurrence before abstracting. With one case you don't know what varies; with two you are guessing; with three the pattern is real and you can see what the parameters should be.</p>
+  <pre><span class="comment"># first and second time: tolerate the copy</span>
+<span class="comment"># third time: the shape is clear, so extract it</span>
+def paginate(items, page, size=20):
+    start = (page - 1) * size
+    return items[start:start + size]</pre>
+  <p>A wrong abstraction is harder to remove than duplication, because every caller is now bent around it. When a shared function grows boolean flags and special cases to suit different callers, inline it back and start over.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Duplication is cheap to fix later and expensive abstractions are not. When unsure, wait.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Merging code that only looks alike</td><td>A shared function accumulates flags and exceptions for each caller</td><td>Ask whether they change for the same reason; if not, keep them apart</td></tr>
+    <tr><td>Abstracting after the first repeat</td><td>You guess the wrong parameters and bend later cases to fit</td><td>Wait for three real examples</td></tr>
+    <tr><td>Ignoring true duplicated rules</td><td>A rule changes in one place and the copies are forgotten</td><td>Give each business rule a single home with a clear name</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Find a constant or rule that appears in three places and give it one home.</li>
+      <li>Find two similar functions and decide whether they would always change together.</li>
+      <li>Find a shared helper with flag arguments and consider inlining it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>DRY is about duplicated knowledge, not duplicated text.</li>
+      <li>Similar-looking code that changes for different reasons should stay separate.</li>
+      <li>Wait for three occurrences; the wrong abstraction costs more than a copy.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Writing Readable Code — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

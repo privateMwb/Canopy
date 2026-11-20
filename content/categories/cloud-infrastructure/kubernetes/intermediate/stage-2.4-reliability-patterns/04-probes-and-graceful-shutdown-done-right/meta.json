@@ -1,0 +1,5 @@
+{
+  "title": "Probes & Graceful Shutdown Done Right",
+  "description": "Readiness, liveness, startup, and draining connections on termination.",
+  "order": 4
+}

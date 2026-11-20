@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 \u2014 Performance & Diagnosis",
+  "description": "Profiling, JMH benchmarks, container memory sizing, and reading thread and heap dumps.",
+  "order": 2
+}

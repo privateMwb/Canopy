@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Planner &amp; Join Algorithms — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · postgres internals</span> → lesson 03</p>
+  <h1>The Planner &amp; Join Algorithms</h1>
+  <p class="lede">Postgres uses three join algorithms, and the planner picks among them by estimating the cost of each from row counts and available indexes.</p>
+
+  <h2><span class="num">§1</span>Nested Loop, Hash, and Merge Joins</h2>
+
+  <ul>
+    <li><strong>Nested Loop:</strong> for each row from the outer input, look for matches in the inner input. Cheap when the outer side is small and the inner side has an index on the join column, because each lookup is fast. Terrible when both sides are large and unindexed (work grows with outer times inner rows).</li>
+    <li><strong>Hash Join:</strong> build an in-memory hash table from one input (the smaller), then scan the other and probe the table. Excellent for large, unsorted inputs and equality joins; needs memory (<code>work_mem</code>), and spills to disk in batches if the hash does not fit.</li>
+    <li><strong>Merge Join:</strong> sort both inputs on the join key (or read them already sorted from an index) and walk them together. Good for large inputs that are already ordered, and supports non-equality range conditions partly.</li>
+  </ul>
+  <pre>EXPLAIN (ANALYZE)
+SELECT * FROM orders o JOIN customers c ON c.id = o.customer_id WHERE c.country = 'NZ';
+
+ Hash Join  (rows=4200 ...)
+   Hash Cond: (o.customer_id = c.id)
+   -&gt;  Seq Scan on orders o
+   -&gt;  Hash
+         -&gt;  Index Scan using customers_country_idx on customers c</pre>
+
+  <h2><span class="num">§2</span>How the Planner Chooses</h2>
+
+  <p>The planner enumerates join orders and methods (exhaustively for small queries; with a genetic search, <code>geqo</code>, beyond <code>geqo_threshold</code> tables), costs each plan from row estimates and the cost parameters, and keeps the cheapest. The cost of a node is built from page reads (<code>seq_page_cost</code>, <code>random_page_cost</code>) and CPU work per tuple, operator, and index entry.</p>
+  <pre>SELECT name, setting FROM pg_settings WHERE name LIKE '%\_cost';
+
+SET enable_nestloop = off;      <span class="comment">-- diagnostic only: forbid a method to see the next-best plan</span>
+EXPLAIN ANALYZE SELECT ...;
+RESET enable_nestloop;</pre>
+  <p>The <code>enable_*</code> settings do not fix anything in production but are valuable experiments: if forbidding a method makes the query fast, the planner mis-estimated, and the real fix is better statistics, a better index, or a query rewrite. The join order is the other big lever: joining the most selective tables first keeps intermediate results small.</p>
+
+  <h2><span class="num">§3</span>Reading Join Problems</h2>
+
+  <p>Typical join pathologies and where to look:</p>
+  <table>
+    <tr><th>Symptom in <code>EXPLAIN ANALYZE</code></th><th>Likely cause</th></tr>
+    <tr><td>Nested Loop with <code>loops=500000</code> over a slow inner scan</td><td>Underestimated outer rows; missing index on the inner join column</td></tr>
+    <tr><td>Hash with <code>Batches: 16</code> and <code>Disk:</code> usage</td><td><code>work_mem</code> too small for the hash</td></tr>
+    <tr><td>Sort feeding a Merge Join with <code>external merge</code></td><td>Sorting large inputs that an index could supply pre-sorted</td></tr>
+    <tr><td>Estimated 1 row, actual 100,000</td><td>Stale or missing statistics, or correlated columns (Lesson 2.1.5)</td></tr>
+  </table>
+  <p>Raising <code>join_collapse_limit</code> or <code>from_collapse_limit</code> lets the planner reorder more tables at the price of more planning time. Plan caching matters too: a prepared statement may use a <strong>generic plan</strong> that ignores the actual parameter values, and for skewed data that can be worse than a custom plan. <code>plan_cache_mode</code> controls this.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The three join algorithms are different answers to the same question. When the planner picks the wrong one, the cause is almost always a bad row estimate rather than a bad algorithm.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Leaving <code>enable_nestloop = off</code> (or similar) in production</td><td>The planner is forced into poor plans for other queries</td><td>Use <code>enable_*</code> only as a diagnostic, then fix the estimates or indexes</td></tr>
+    <tr><td>Missing an index on the inner side of a nested-loop join</td><td>Each outer row triggers a sequential scan</td><td>Index the join column on the larger or inner table</td></tr>
+    <tr><td>Hashing a huge input with a tiny <code>work_mem</code></td><td>Multi-batch hash spills to disk and slows the query</td><td>Raise <code>work_mem</code> for that role or transaction</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create two tables of a million rows and a hundred rows, join them, and use <code>enable_*</code> settings to see all three join methods in <code>EXPLAIN ANALYZE</code>.</li>
+      <li>Find a query where estimated and actual rows differ greatly and show how <code>ANALYZE</code> or extended statistics changes the join method.</li>
+      <li>Reduce <code>work_mem</code> until a hash join reports multiple batches and read the disk usage line.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Nested loop suits small outer sets with indexed lookups; hash suits large equality joins; merge suits sorted inputs.</li>
+      <li>The planner costs alternatives from estimated rows, so bad join choices usually trace back to bad estimates.</li>
+      <li>Use <code>enable_*</code> settings as experiments only, and fix root causes: statistics, indexes, and memory.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Postgres Internals — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

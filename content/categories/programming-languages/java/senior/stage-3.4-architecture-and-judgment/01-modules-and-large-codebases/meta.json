@@ -1,0 +1,5 @@
+{
+  "title": "Modules & Large Codebases",
+  "description": "Multi-module builds, JPMS, and keeping dependencies directional.",
+  "order": 1
+}

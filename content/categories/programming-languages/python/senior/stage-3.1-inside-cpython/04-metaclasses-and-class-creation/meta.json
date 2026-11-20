@@ -1,0 +1,5 @@
+{
+  "title": "Metaclasses & Class Creation",
+  "description": "type(), __init_subclass__, and the narrow cases where metaclasses are warranted.",
+  "order": 4
+}

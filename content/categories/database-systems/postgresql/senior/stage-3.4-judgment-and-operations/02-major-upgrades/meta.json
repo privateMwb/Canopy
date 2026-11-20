@@ -1,0 +1,5 @@
+{
+  "title": "Major Upgrades",
+  "description": "pg_upgrade, logical upgrades, and planning rollback.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Query performance, locking and WAL, advanced built-in features, and integration.",
+  "order": 2
+}

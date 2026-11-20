@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Errors: Common Failures &amp; Fixes — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · cli fluency & troubleshooting</span> → lesson 04</p>
+  <h1>Reading Errors: Common Failures &amp; Fixes</h1>
+  <p class="lede">Most Docker problems are one of a small set of failures, and a repeatable routine of logs, state, and exit code finds the cause quickly.</p>
+
+  <h2><span class="num">§1</span>A Diagnosis Routine</h2>
+  <p>Work from the outside in, and <strong>read the actual message</strong> before changing anything:</p>
+  <pre>docker ps -a                                   <span class="comment"># is it running? did it exit?</span>
+docker logs --tail 100 NAME                    <span class="comment"># what did it say?</span>
+docker inspect NAME --format '{{.State.ExitCode}} {{.State.OOMKilled}}'
+docker compose config                          <span class="comment"># what did Compose really resolve?</span>
+docker run --rm -it --entrypoint sh IMAGE      <span class="comment"># get a shell in the image itself</span></pre>
+  <p>Exit codes help: <code>0</code> is a clean exit, <code>1</code> is a general application error, <code>125</code>/<code>126</code>/<code>127</code> mean Docker or the command could not run or was not found, <code>137</code> means killed by SIGKILL (often out of memory), and <code>143</code> means terminated by SIGTERM.</p>
+  <h2><span class="num">§2</span>The Ten Usual Suspects</h2>
+  <table>
+    <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+    <tr><td><code>Cannot connect to the Docker daemon</code></td><td>Daemon not running or no permission</td><td>Start Docker; on Linux add your user to the <code>docker</code> group</td></tr>
+    <tr><td><code>port is already allocated</code></td><td>Host port in use</td><td>Choose another host port or stop the other process</td></tr>
+    <tr><td>Container exits immediately</td><td>Main process finished or crashed</td><td>Read <code>docker logs</code>; a container lives only as long as its main process</td></tr>
+    <tr><td><code>exec format error</code></td><td>Wrong CPU architecture or bad shebang</td><td>Build for the right platform; check script line endings</td></tr>
+    <tr><td><code>no such file or directory</code> on start</td><td>Wrong <code>CMD</code> path or CRLF endings</td><td>Verify the file exists in the image with <code>ls</code></td></tr>
+    <tr><td><code>permission denied</code> on a mount</td><td>UID mismatch or read-only mount</td><td>Check ownership and the <code>:ro</code> flag</td></tr>
+    <tr><td><code>pull access denied</code> / <code>not found</code></td><td>Typo, private image, or not logged in</td><td>Check the name and tag; run <code>docker login</code></td></tr>
+    <tr><td>Exit 137, <code>OOMKilled: true</code></td><td>Out of memory</td><td>Raise limits or fix the leak</td></tr>
+    <tr><td>Cannot reach the app from the host</td><td>App bound to <code>127.0.0.1</code>, or port not published</td><td>Bind to <code>0.0.0.0</code> and add <code>-p</code></td></tr>
+    <tr><td><code>name already in use</code></td><td>Old container with that name exists</td><td><code>docker rm</code> it first</td></tr>
+  </table>
+  <h2><span class="num">§3</span>Narrowing the Cause</h2>
+  <p>Ask three questions in order: <strong>Did the container start? Did the process stay running? Is the network path open?</strong> For the last one, test from inside the network rather than from your host:</p>
+  <pre>docker exec web wget -qO- http://localhost:3000/health   <span class="comment"># does the app itself answer?</span>
+docker run --rm --network appnet curlimages/curl -sS http://web:3000/health</pre>
+  <p>If the first works and the second fails, the problem is networking or binding, not the app.</p>
+  <div class="callout">
+    <span class="label">Change one thing at a time</span>
+    The fastest debugging is a small experiment: reproduce the failure with the shortest command, change one variable, and observe. Rebuilding everything after each guess hides the cause.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Rerunning the same command hoping it works</td><td>No new information</td><td>Read the logs and exit code first</td></tr>
+    <tr><td>Debugging a Compose file by eye</td><td>Missed indentation or variable defaults</td><td>Run <code>docker compose config</code> to see the resolved file</td></tr>
+    <tr><td>Reading only the last line of an error</td><td>Root cause is often a few lines above</td><td>Read from the first error, not the last one</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Intentionally start a container that exits (for example <code>docker run alpine false</code>) and find the exit code with <code>docker inspect</code>.</li>
+      <li>Publish a service bound to <code>127.0.0.1</code> inside the container, observe the failure from the host, then fix the binding.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Diagnose with <code>ps -a</code>, <code>logs</code>, <code>inspect</code>, and an exit code before changing anything.</li>
+      <li>Most failures fall into a short list: daemon, ports, exit paths, architecture, permissions, names, memory, and binding.</li>
+      <li>Test connectivity from inside the network to separate app problems from network problems.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · CLI Fluency & Troubleshooting — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

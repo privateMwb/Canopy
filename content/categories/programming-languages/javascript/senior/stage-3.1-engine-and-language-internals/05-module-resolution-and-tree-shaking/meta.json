@@ -1,0 +1,5 @@
+{
+  "title": "Module Resolution & Tree Shaking",
+  "description": "How ESM and CommonJS are resolved, interop traps, and why dead code can't always be removed.",
+  "order": 5
+}

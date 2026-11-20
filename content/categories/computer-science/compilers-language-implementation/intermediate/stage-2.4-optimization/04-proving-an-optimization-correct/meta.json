@@ -1,0 +1,5 @@
+{
+  "title": "Proving an Optimization Correct",
+  "description": "Semantics preservation, undefined behavior, and testing passes against an unoptimized baseline.",
+  "order": 4
+}

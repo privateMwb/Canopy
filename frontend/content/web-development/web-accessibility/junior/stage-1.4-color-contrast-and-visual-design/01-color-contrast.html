@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Color Contrast — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · color, contrast &amp; visual design</span> → lesson 01</p>
+  <h1>Color Contrast</h1>
+  <p class="lede">Text that looks fine to you on a bright monitor can be unreadable to someone with low vision, an aging eye, or a phone in sunlight. Contrast is measured, not guessed, and it is one of the easiest barriers to fix.</p>
+
+  <h2><span class="num">§1</span>The Contrast Ratio</h2>
+  <p><strong>Contrast ratio</strong> compares the relative luminance of two colors, on a scale from 1:1 (identical) to 21:1 (black on white). WCAG sets minimums for different kinds of content.</p>
+  <table>
+    <tr><th>Content</th><th>Minimum ratio</th><th>WCAG criterion</th></tr>
+    <tr><td>Normal text</td><td><strong>4.5:1</strong></td><td>1.4.3 Contrast (Minimum), AA</td></tr>
+    <tr><td>Large text (at least 24px, or 18.66px bold)</td><td><strong>3:1</strong></td><td>1.4.3 Contrast (Minimum), AA</td></tr>
+    <tr><td>UI components and graphics (borders, icons, focus rings, chart elements)</td><td><strong>3:1</strong></td><td>1.4.11 Non-text Contrast, AA</td></tr>
+    <tr><td>Normal text, enhanced</td><td>7:1</td><td>1.4.6 Contrast (Enhanced), AAA</td></tr>
+  </table>
+  <p>Large text is allowed a lower ratio because bigger letterforms are easier to read. Logos, purely decorative elements, and disabled controls are exempt, but placeholder text and text over images are not.</p>
+
+  <h2><span class="num">§2</span>Measuring and Fixing</h2>
+  <p>You never need to compute ratios by hand. Browser DevTools show the ratio when you inspect a color, and tools like the WebAIM Contrast Checker and the Colour Contrast Analyser accept any two colors.</p>
+  <pre><span class="comment">/* On a white background */</span>
+.text-ok      { color: #767676; }   <span class="comment">/* 4.54:1 passes AA for normal text */</span>
+.text-fail    { color: #777777; }   <span class="comment">/* 4.48:1 just misses AA */</span>
+.text-better  { color: #595959; }   <span class="comment">/* 7.0:1 passes AAA */</span>
+
+<span class="comment">/* UI boundaries need 3:1 too */</span>
+input { border: 1px solid #767676; }  <span class="comment">/* the field edge must be perceivable */</span></pre>
+  <p>To fix a failure, adjust the <strong>lightness</strong> of one color, usually darkening text or lightening a dark background, until it passes. Work this into your design tokens so every use inherits the fix.</p>
+
+  <h2><span class="num">§3</span>Tricky Cases</h2>
+  <p>A handful of situations cause most contrast failures in practice:</p>
+  <ul>
+    <li><strong>Text on images or gradients.</strong> Measure against the worst spot behind the text, or add a solid or semi-opaque overlay.</li>
+    <li><strong>Placeholder text.</strong> It is text, so it must also meet 4.5:1. Never use placeholder as the only label.</li>
+    <li><strong>Hover and focus states.</strong> Each state is its own color pair. Check them all.</li>
+    <li><strong>Brand colors.</strong> A brand color may not be usable for text on white. Use it for large areas or darker variants for text.</li>
+    <li><strong>Icon-only buttons and chart lines.</strong> Meaningful graphics need 3:1 against their surroundings.</li>
+  </ul>
+  <pre><span class="comment">/* Semi-opaque overlay to guarantee legible text on a photo */</span>
+.hero { position: relative; }
+.hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: rgb(0 0 0 / 0.55);
+}
+.hero h1 { position: relative; color: #fff; }</pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Pick accessible colors at the design-token level, once, rather than checking each screen. A palette where every text and background pairing is pre-approved prevents most contrast bugs before they exist.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Light gray text on white "for elegance"</td><td>Low-vision users and anyone in glare cannot read it</td><td>Check every pair and meet 4.5:1 for normal text</td></tr>
+    <tr><td>Checking only the default state</td><td>Hover, focus, and disabled-looking states fail unnoticed</td><td>Test every state of every interactive element</td></tr>
+    <tr><td>Forgetting borders and icons</td><td>Inputs and icon buttons become invisible</td><td>Meet 3:1 for UI components and meaningful graphics</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Open DevTools on a real site and use its color picker to find the contrast ratio of body text, a link, and a placeholder. Which fail?</li>
+      <li>Choose a brand color that fails on white as text. Find the nearest darker shade that passes 4.5:1, and note both hex values.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Normal text needs 4.5:1, large text 3:1, and UI components and meaningful graphics 3:1.</li>
+      <li>Measure with DevTools or a contrast checker, and fix by adjusting lightness.</li>
+      <li>Check every state, backgrounds behind images, and placeholder text, and bake accessible pairs into design tokens.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Color, Contrast &amp; Visual Design — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "AOF Rewrite & fsync Policies",
+  "description": "What each setting trades between speed and data loss.",
+  "order": 1
+}

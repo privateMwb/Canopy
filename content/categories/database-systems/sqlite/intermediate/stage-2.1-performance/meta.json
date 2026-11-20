@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Performance",
+  "description": "EXPLAIN QUERY PLAN, advanced indexes, ANALYZE, performance pragmas, and bulk loading.",
+  "order": 1
+}

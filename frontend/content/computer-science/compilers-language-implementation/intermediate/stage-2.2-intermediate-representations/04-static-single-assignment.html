@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Static Single Assignment — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · intermediate representations</span> → lesson 04</p>
+  <h1>Static Single Assignment</h1>
+  <p class="lede">In static single assignment form every variable is defined exactly once, which makes 'where did this value come from?' a lookup instead of an analysis.</p>
+
+  <h2><span class="num">§1</span>One definition per name</h2>
+  <p>In ordinary IR a variable like <code>x</code> can be assigned many times, so at any use you need to work out which assignment reached it. <strong>SSA</strong> removes the question by renaming: every assignment creates a new name, and every use refers to exactly one definition.</p>
+  <pre>before:             after (SSA):
+x = 1               x1 = 1
+x = x + 2           x2 = x1 + 2
+y = x * 3           y1 = x2 * 3</pre>
+  <p>Now <code>x2</code> is defined once, at one place, and everything that uses it can find that definition directly. Facts like 'x1 is the constant 1' stay true forever, because x1 can never change.</p>
+
+  <h2><span class="num">§2</span>Phi nodes</h2>
+  <p>Straight-line code renames easily. The problem is <strong>joins</strong>, where two paths merge and a variable might have come from either.</p>
+  <pre>if (c) { x = 1; } else { x = 2; }
+print x;</pre>
+  <p>In SSA each branch defines its own version, and the join needs a way to pick one. A <strong>phi</strong> (φ) instruction does it, choosing a value based on which block control came from.</p>
+  <pre> entry:   branch c, then, else
+ then:    x1 = 1;  jump join
+ else:    x2 = 2;  jump join
+ join:    x3 = phi [x1, then], [x2, else]
+          print x3</pre>
+  <p><code>phi</code> isn't a real machine instruction. It is a notation meaning 'x3 is x1 if we came from <code>then</code>, and x2 if we came from <code>else</code>.' Back ends eventually replace phis with copies on the incoming edges.</p>
+
+  <h2><span class="num">§3</span>Where to put phis</h2>
+  <p>You don't need a phi for every variable at every join, only where different definitions actually meet. The standard algorithm uses <strong>dominance frontiers</strong>: for each variable, put a phi at the blocks just beyond the region where a definition dominates.</p>
+  <pre><span class="comment"># outline of SSA construction</span>
+1. Compute dominators and dominance frontiers for the CFG.
+2. For each variable v, for each block that defines v:
+       place a phi for v at every block in its dominance frontier
+       (repeat, since a phi is itself a new definition)
+3. Walk the dominator tree, renaming:
+       each definition gets a fresh version;
+       each use refers to the latest version on the current path.</pre>
+  <p>Simpler compilers can skip this and put phis for every variable at every join, then clean up. The result is correct but larger.</p>
+  <p>SSA pays off in optimization. Constant propagation becomes 'replace uses of x1 with 1.' Dead code elimination becomes 'delete a definition with no uses.' Both are simple because each name has exactly one definition.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    SSA turns the question 'which assignment reached this use?' into a lookup, because every use points at one definition. Most classic optimizations get simpler as a result.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Renaming in straight-line code but forgetting loops</td><td>A loop-carried variable has no phi, and uses of its previous value become wrong</td><td>Put a phi at the loop header for each variable assigned in the loop</td></tr>
+    <tr><td>Treating <code>phi</code> as an ordinary instruction in the middle of a block</td><td>The 'which predecessor' meaning breaks</td><td>Keep all phis at the start of a block, with one entry per predecessor</td></tr>
+    <tr><td>Assuming phis cost something at run time</td><td>You avoid SSA for fear of overhead</td><td>Phis are eliminated before code generation, usually by copies on edges</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Convert <code>i = 0; while (i &lt; 3) { i = i + 1; }</code> to SSA by hand, including the phi at the loop header.</li>
+      <li>Write the phi for a variable assigned in only one arm of an <code>if</code>, and say what its other incoming value is.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>SSA gives each variable exactly one definition by renaming on every assignment.</li>
+      <li>Phi nodes merge values at control-flow joins, selecting by which block control came from.</li>
+      <li>Single definitions make constant propagation and dead code elimination simple.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Intermediate Representations — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

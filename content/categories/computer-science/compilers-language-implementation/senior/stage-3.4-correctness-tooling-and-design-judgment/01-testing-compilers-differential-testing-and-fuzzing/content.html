@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Testing Compilers: Differential Testing &amp; Fuzzing — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · correctness, tooling &amp; design judgment</span> → lesson 01</p>
+  <h1>Testing Compilers: Differential Testing &amp; Fuzzing</h1>
+  <p class="lede">A compiler has an unbounded space of valid inputs, so the best bug-finders generate programs automatically and compare what different implementations do with them.</p>
+
+  <h2><span class="num">§1</span>Why hand-written tests aren't enough</h2>
+  <p>Golden tests (Stage 1.4) check what you thought of. Compiler bugs live in what you didn't: unusual combinations of features, odd corner cases, interactions between passes. The space of programs is far too large to enumerate by hand.</p>
+  <p><strong>Fuzzing</strong> generates inputs automatically and watches for failures. For compilers there are two levels.</p>
+  <ul>
+    <li><strong>Crash fuzzing:</strong> feed random or mutated text and look for crashes and hangs in the front end. Easy to set up, and effective at finding parser bugs.</li>
+    <li><strong>Semantic fuzzing:</strong> generate *valid* programs and check that the compiler handles them correctly. Much harder, but finds miscompilation bugs, the worst kind.</li>
+  </ul>
+
+  <h2><span class="num">§2</span>Differential testing</h2>
+  <p>Checking correctness needs an <strong>oracle</strong>: some way to know the right answer. For a random program you don't have one, but you can compare implementations.</p>
+  <pre>def differential_test(program):
+    results = {}
+    results["tree-walker"] = run_interpreter(program)
+    results["vm"]          = run_vm(compile(program, opt=0))
+    results["vm-opt"]      = run_vm(compile(program, opt=2))
+    results["native"]      = run_native(compile_native(program))
+    assert len(set(results.values())) == 1, results</pre>
+  <p>If the tree-walker, unoptimized VM, optimized VM, and native build disagree, at least one is wrong, and you didn't need to know the right answer to find that out. The tree-walker you built in Stage 1.3 becomes your reference.</p>
+  <p>Generating good programs is the hard part. A generator that picks random tokens produces gibberish. A grammar-based generator produces syntactically valid programs, and one that tracks types and scopes produces <strong>well-typed, deterministic</strong> programs, with no undefined behaviour, so differences can't be blamed on the program.</p>
+  <pre>def gen_expr(depth, env):
+    if depth == 0: return random_literal() or random_var(env)
+    return Binary(gen_expr(depth - 1, env), random_op(), gen_expr(depth - 1, env))</pre>
+
+  <h2><span class="num">§3</span>Reducing a failing case</h2>
+  <p>A random program that exposes a bug is usually huge and mostly irrelevant. Before you can debug it, shrink it. <strong>Test-case reduction</strong> repeatedly tries to delete or simplify parts of the program and keeps each change that still triggers the same failure.</p>
+  <pre>def reduce(program, still_fails):
+    changed = true
+    while changed:
+        changed = false
+        for candidate in simplifications(program):   <span class="comment"># delete a statement, replace an expr by a literal, ...</span>
+            if is_valid(candidate) and still_fails(candidate):
+                program = candidate; changed = true; break
+    return program</pre>
+  <p>A 500-line failing program often reduces to five lines, and a five-line program tells you what is wrong. Together with a per-pass bisect (Stage 2.4), this gives a systematic path from 'the fuzzer found something' to 'this pass mishandles this construct.'</p>
+  <p>Every reduced failure should become a permanent regression test.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    You don't need to know the right answer to find a compiler bug, only two implementations that should agree. Randomized programs plus differential comparison turn your own earlier work into a bug detector.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Generating programs with undefined or nondeterministic behaviour</td><td>Implementations disagree for legitimate reasons and the results are noise</td><td>Generate only programs with fully defined semantics</td></tr>
+    <tr><td>Not reducing failing cases</td><td>You debug a 500-line program for hours</td><td>Automate reduction and keep the result as a regression test</td></tr>
+    <tr><td>Running the fuzzer without recording the random seed</td><td>A failure can't be reproduced</td><td>Log the seed with every failure</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a generator for random well-typed Twig integer expressions with variables in scope, and use it to check the tree-walker against the VM on 10,000 programs.</li>
+      <li>Design the simplification steps a reducer for Twig should try, in the order you'd try them.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Fuzzing finds bugs your tests didn't think of; semantic fuzzing needs valid programs.</li>
+      <li>Differential testing compares implementations when you have no oracle.</li>
+      <li>Automated reduction turns a huge failing program into a small, debuggable regression test.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Correctness, Tooling &amp; Design Judgment — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

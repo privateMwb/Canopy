@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prioritizing Barriers by User Impact — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 01</p>
+  <h1>Prioritizing Barriers by User Impact</h1>
+  <p class="lede">An audit of a real product can return hundreds of findings. Treating them as equal wastes effort and demoralizes teams. A senior engineer ranks barriers by what they do to real people, and can explain why.</p>
+
+  <h2><span class="num">§1</span>Why WCAG Level Is Not Severity</h2>
+  <p>WCAG levels describe the kind of requirement, not how much harm a failure does in a given product. A Level A failure on a decorative icon can be trivial, while a Level AA failure on the checkout button can stop every keyboard user from buying. Ranking by level alone sends teams to the wrong work.</p>
+  <p>Instead, judge each barrier by its <strong>impact on the task</strong>, who is affected, and how hard it is to work around.</p>
+  <table>
+    <tr><th>Severity</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><strong>Blocker</strong></td><td>Prevents a user from completing a core task, with no workaround</td><td>Keyboard trap in the payment form</td></tr>
+    <tr><td><strong>Serious</strong></td><td>Makes a core task very hard, or forces a poor workaround</td><td>Form errors not announced to screen readers</td></tr>
+    <tr><td><strong>Moderate</strong></td><td>Causes friction or confusion, but the task can be done</td><td>Skipped heading levels on an article</td></tr>
+    <tr><td><strong>Minor</strong></td><td>A small annoyance or inconsistency</td><td>Redundant alt text on a decorative image</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Factors That Decide Priority</h2>
+  <p>Severity is the main factor, but it is not the only one. A fair prioritization weighs several.</p>
+  <ul>
+    <li><strong>Impact on the task:</strong> does it block, hinder, or merely annoy?</li>
+    <li><strong>Reach:</strong> how many users and how many pages are affected? A bug in a shared component hits everything that uses it.</li>
+    <li><strong>Journey criticality:</strong> sign-in, checkout, account recovery, and anything people cannot avoid rank higher than a rarely visited page.</li>
+    <li><strong>Workaround:</strong> can someone get it done another way, such as a phone number or a different page?</li>
+    <li><strong>Legal and contractual exposure:</strong> public-sector, regulated, or contractually committed areas carry extra weight.</li>
+    <li><strong>Effort:</strong> cheap fixes with real benefit go first, and a high-effort low-impact fix may wait.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>A Simple Scoring Model</h2>
+  <p>A light scoring model keeps triage consistent, and makes the reasoning visible to people who disagree. Keep it simple, and adjust by judgment.</p>
+  <pre>Priority score = Impact (1-4)  x  Reach (1-3)  x  Journey (1-3)  - Workaround (0-2)
+
+Impact:     4 blocker, 3 serious, 2 moderate, 1 minor
+Reach:      3 shared component or most pages, 2 several pages, 1 single page
+Journey:    3 core (sign-in, checkout), 2 important, 1 peripheral
+Workaround: 2 easy workaround exists, 1 awkward, 0 none
+
+Example A: Keyboard trap in checkout modal
+  4 x 2 x 3 - 0 = 24  -&gt; fix now
+
+Example B: Missing alt on a decorative banner on the About page
+  1 x 1 x 1 - 2 = -1 -&gt; fix in routine cleanup</pre>
+  <p>The number is not the point. The point is that the team agrees on the factors, and that each finding comes with a short, clear statement of <strong>who cannot do what</strong>. "A screen reader user cannot complete payment" persuades far better than "violation of 4.1.2".</p>
+  <p>Re-rank as you learn. User reports, analytics on page traffic, and results from testing with assistive technology users will all change your view of what matters most.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Prioritization is how you turn an overwhelming audit into a plan people will actually follow. Rank by what stops people from doing what they came to do, and explain it in those terms.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Sorting findings by WCAG level only</td><td>Trivial Level A items outrank serious Level AA blockers</td><td>Rank by task impact, reach, and journey criticality</td></tr>
+    <tr><td>Treating all findings as equal</td><td>Teams lose heart, and effort goes into low-value fixes</td><td>Use a consistent severity scale and scoring model</td></tr>
+    <tr><td>Reporting violations without describing user impact</td><td>Leaders and developers do not see why it matters</td><td>Say who cannot do what, on which journey</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take ten audit findings from a product you know, and rate each by impact, reach, journey, and workaround. Which three come first, and why?</li>
+      <li>Rewrite three findings as "who cannot do what" statements suited to a product manager.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>WCAG level is not severity. Judge barriers by their impact on tasks.</li>
+      <li>Weigh impact, reach, journey criticality, workarounds, legal exposure, and effort.</li>
+      <li>Use a simple, shared scoring model, and always explain findings in terms of the people affected.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

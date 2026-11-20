@@ -1,0 +1,5 @@
+{
+  "title": "CLI Profiles, SSO & Credentials",
+  "description": "Working with several accounts without long-lived keys on your laptop.",
+  "order": 1
+}

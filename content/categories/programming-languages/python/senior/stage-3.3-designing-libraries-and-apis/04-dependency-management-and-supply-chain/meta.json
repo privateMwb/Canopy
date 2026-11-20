@@ -1,0 +1,5 @@
+{
+  "title": "Dependency Management & Supply Chain",
+  "description": "Lockfiles, hash pinning, auditing, and deciding what you're willing to depend on.",
+  "order": 4
+}

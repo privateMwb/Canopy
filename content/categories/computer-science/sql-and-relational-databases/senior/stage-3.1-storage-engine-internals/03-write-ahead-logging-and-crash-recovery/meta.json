@@ -1,0 +1,1 @@
+{"title": "Write-Ahead Logging & Crash Recovery", "description": "How a database stays durable and consistent after power loss.", "order": 3}

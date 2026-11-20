@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Advanced Runtime Systems",
+  "description": "Copying and concurrent garbage collection, fast interpreters, and JIT compilation.",
+  "order": 2
+}

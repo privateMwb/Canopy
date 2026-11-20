@@ -1,0 +1,5 @@
+{
+  "title": "Observability & Performance of Containers",
+  "description": "Metrics, CPU throttling, out-of-memory kills, and noisy neighbors.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Code Splitting & Dynamic Imports",
+  "description": "Shipping only what the page needs.",
+  "order": 2
+}

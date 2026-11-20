@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Abstract Syntax Trees — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · the big picture</span> → lesson 04</p>
+  <h1>Abstract Syntax Trees</h1>
+  <p class="lede">An abstract syntax tree keeps only the structure that matters for meaning, so every later stage can work on a clean, uniform tree.</p>
+
+  <h2><span class="num">§1</span>Concrete versus abstract</h2>
+  <p>The grammar describes <strong>concrete syntax</strong>: every parenthesis, semicolon, and keyword. Once the parser has used those to understand the structure, they have done their job. The <strong>abstract syntax tree</strong> (AST) keeps only what changes the meaning.</p>
+  <pre>source:   print (1 + 2) * 3;
+
+AST:      Print
+            └─ Binary(*)
+                 ├─ Binary(+)
+                 │    ├─ Literal(1)
+                 │    └─ Literal(2)
+                 └─ Literal(3)</pre>
+  <p>The parentheses are gone, but their effect remains: the <code>+</code> sits below the <code>*</code>. Shape carries the precedence.</p>
+
+  <h2><span class="num">§2</span>Designing node types</h2>
+  <p>Give every construct its own node type, holding exactly its children. Expressions and statements are separate families.</p>
+  <pre><span class="comment"># pseudocode</span>
+Expr = Literal(value)
+     | Variable(name)
+     | Unary(op, operand)
+     | Binary(left, op, right)
+     | Call(callee, args)
+
+Stmt = Print(expr)
+     | Let(name, init)
+     | If(cond, then_block, else_block)
+     | While(cond, body)
+     | Block(stmts)</pre>
+  <p>Each node should also remember where it came from (line and column). You will want that for error messages in Stage 1.4, and adding it later touches every node.</p>
+  <pre>Binary(left, op, right, span)   <span class="comment"># span = start..end in the source</span></pre>
+
+  <h2><span class="num">§3</span>Working with the tree</h2>
+  <p>Later stages are all functions over this tree. In a language with pattern matching, each is a <code>match</code> over the node type; in others it is the <strong>visitor pattern</strong>. Either way the shape is the same: handle each node kind, recurse into children.</p>
+  <pre>def count_nodes(e):
+    match e:
+        Literal | Variable:   return 1
+        Unary(_, x):          return 1 + count_nodes(x)
+        Binary(l, _, r):      return 1 + count_nodes(l) + count_nodes(r)
+        Call(f, args):        return 1 + count_nodes(f) + sum(count_nodes(a) for a in args)</pre>
+  <p>A printer that shows the tree is the best debugging tool you will build early on. Write it first.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The AST is the contract between the front end and everything after it. Keep it small and regular, and every later pass, from the interpreter to the optimizer, stays easy to write.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Keeping parentheses as nodes</td><td>Every pass has to skip a node that adds nothing</td><td>Drop them; the tree shape already records grouping</td></tr>
+    <tr><td>Forgetting source positions</td><td>Error messages can only say 'syntax error' with no location</td><td>Store a span on every node from the start</td></tr>
+    <tr><td>One big node type with optional fields</td><td>Passes check which fields are present, and bugs hide in unusual combinations</td><td>Use one node type per construct</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Draw the AST for <code>let x = -a + f(1, 2);</code>.</li>
+      <li>Write the node types you would add for Twig's <code>for</code> loop, and say what the parser could rewrite it into using only <code>Block</code> and <code>While</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The AST drops syntax like parentheses and semicolons but keeps structure and meaning.</li>
+      <li>Use one node type per construct, with expressions and statements as separate families, plus a source span.</li>
+      <li>Every later stage is a function over the tree, and a tree printer is the first tool to build.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · The Big Picture — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

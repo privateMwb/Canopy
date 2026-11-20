@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inheritance &amp; Virtual Functions — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · classes &amp; ownership</span> → lesson 04</p>
+  <h1>Inheritance &amp; Virtual Functions</h1>
+  <p class="lede">Virtual functions let code call the right behavior through a base-class interface, and a few rules keep this safe.</p>
+
+  <h2><span class="num">§1</span>Base and Derived Classes</h2>
+
+  <p>A derived class inherits the base's members and can be used wherever the base is expected. Mark functions <code>virtual</code> in the base, and override them in the derived class.</p>
+
+  <pre>class Shape {
+public:
+    virtual ~Shape() = default;              <span class="comment">// always virtual in a polymorphic base</span>
+    virtual double area() const = 0;         <span class="comment">// pure virtual: Shape is abstract</span>
+};
+class Circle : public Shape {
+    double r_;
+public:
+    explicit Circle(double r) : r_{r} {}
+    double area() const override { return 3.14159265 * r_ * r_; }
+};
+class Square : public Shape {
+    double s_;
+public:
+    explicit Square(double s) : s_{s} {}
+    double area() const override { return s_ * s_; }
+};</pre>
+
+  <p><code>= 0</code> makes a function pure virtual, so the class can't be instantiated and acts as an interface. <code>override</code> makes the compiler check that you really are overriding something.</p>
+
+  <h2><span class="num">§2</span>Dynamic Dispatch</h2>
+
+  <p>Calling a virtual function through a pointer or reference to the base runs the <strong>derived</strong> version, chosen at run time.</p>
+
+  <pre>std::vector&lt;std::unique_ptr&lt;Shape&gt;&gt; shapes;
+shapes.push_back(std::make_unique&lt;Circle&gt;(1.0));
+shapes.push_back(std::make_unique&lt;Square&gt;(2.0));
+for (const auto&amp; s : shapes)
+    std::cout &lt;&lt; s-&gt;area() &lt;&lt; '\n';          <span class="comment">// Circle::area, then Square::area</span></pre>
+
+  <p>Virtual calls go through a table of function pointers (the vtable), costing one indirect call and blocking inlining.</p>
+
+  <h2><span class="num">§3</span>Virtual Destructors</h2>
+
+  <p>Deleting a derived object through a base pointer is undefined behavior unless the base destructor is <code>virtual</code>, since only the base destructor would run.</p>
+
+  <pre>Shape* p = new Circle{1.0};
+delete p;          <span class="comment">// UB without virtual ~Shape(); derived part never destroyed</span></pre>
+
+  <h2><span class="num">§4</span>Slicing</h2>
+
+  <p>Copying a derived object into a base <strong>object</strong> (not pointer or reference) cuts off the derived part, and virtual behavior is lost.</p>
+
+  <pre>Circle c{1.0};
+Shape s = c;                 <span class="comment">// does not compile for abstract Shape; for a concrete base it slices</span>
+void f(Shape by_value);      <span class="comment">// calling f(c) slices</span>
+void g(const Shape&amp; ref);    <span class="comment">// calling g(c) is fine: no copy</span></pre>
+
+  <p>Always hold polymorphic objects by pointer or reference, and pass them by reference.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A class with virtual functions must have a virtual destructor. A good rule: if it has any <code>virtual</code> function, add <code>virtual ~T() = default;</code> and <code>override</code> every derived function.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Base class with virtual functions but a non-virtual destructor</td><td>Derived destructors skipped on delete through base</td><td>Add <code>virtual ~Base() = default;</code></td></tr>
+    <tr><td>Omitting <code>override</code> and getting a signature slightly wrong (a missing <code>const</code>)</td><td>Silently creates a new function instead of overriding</td><td>Always write <code>override</code></td></tr>
+    <tr><td>Passing polymorphic objects by value</td><td>Slicing</td><td>Pass <code>const Base&amp;</code> or smart pointers</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a <code>Triangle</code> to the shapes example and a <code>perimeter()</code> virtual function.</li>
+      <li>Break <code>override</code> on purpose by dropping <code>const</code> from the derived signature and read the compiler's complaint.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Virtual functions dispatch on the object's real type at run time.</li>
+      <li>Give polymorphic bases a virtual destructor and mark overrides with <code>override</code>.</li>
+      <li>Never pass polymorphic objects by value; slicing erases the derived behavior.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Classes &amp; Ownership — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

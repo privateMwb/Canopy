@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.4 — Tooling, Automation & Alternatives",
+  "description": "Running containers without the Docker daemon, declarative builds, driving the Engine API from code, and newer isolation models.",
+  "order": 4
+}

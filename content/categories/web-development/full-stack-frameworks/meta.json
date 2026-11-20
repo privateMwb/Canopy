@@ -1,0 +1,7 @@
+{
+  "title": "Full-Stack Frameworks",
+  "description": "Server rendering, routing, and APIs together in one framework.",
+  "order": 5,
+  "compileRoot": true,
+  "icon": "web_fullstack"
+}

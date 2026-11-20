@@ -1,0 +1,5 @@
+{
+  "title": "Network Security: WAF, Shield & Firewall Manager",
+  "description": "Protecting public endpoints and enforcing rules across accounts.",
+  "order": 5
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leading Code Review: Standards, Mentoring &amp; Culture — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · engineering judgment &amp; communication</span> → lesson 03</p>
+  <h1>Leading Code Review: Standards, Mentoring &amp; Culture</h1>
+  <p class="lede">As a lead, you shape how a whole team reviews code. Good review culture spreads knowledge and standards, and bad review culture slows everyone down.</p>
+
+  <h2><span class="num">§1</span>Set Clear Standards</h2>
+  <p>A team without shared expectations argues about the same issues in every review. Write down a short review guide: what reviewers must check, what is automated, what counts as blocking, and how fast to respond. The goal is that two reviewers would reach the same decision on the same change.</p>
+  <pre>Review guide (excerpt)
+  Blocking:   correctness bugs, security risks, missing tests for new
+              behavior, breaking a public interface without a plan
+  Not blocking (say 'nit:'):  naming taste, minor style the linter misses
+  Approve when the change improves the codebase overall, even if it
+  isn't how *you* would have written it.
+  Response time: first review within one working day.
+  Size: more than ~400 lines? Ask the author to split it.</pre>
+  <p>Google's engineering practices put it well: approve a change once it <strong>definitely improves the overall health of the code</strong>, even if it isn't perfect. Waiting for perfection makes review a bottleneck.</p>
+  <h2><span class="num">§2</span>Keep Latency Low and Quality High</h2>
+  <p>Slow review is one of the biggest hidden costs of a team. Authors context-switch, branches go stale, and people start batching changes into large unreviewable ones.</p>
+  <ul>
+    <li>Treat review as <strong>part of the job</strong>, not an interruption; make time for it daily</li>
+    <li>Track <strong>time to first review</strong> and <strong>review cycles</strong> as team health signals, not performance scores</li>
+    <li><strong>Distribute</strong> reviews so knowledge spreads and nobody becomes a bottleneck</li>
+    <li>Use <strong>code owners</strong> for sensitive areas, but don't gate everything on one person</li>
+    <li>Move long debates to a call; summarize the decision in the thread</li>
+  </ul>
+  <h2><span class="num">§3</span>Review as Mentoring</h2>
+  <p>Review is the main place where standards are taught. A senior who only corrects leaves juniors guessing; one who explains why teaches them to see it themselves next time.</p>
+  <pre>Corrects:   "Don't do this. Use a map."
+Teaches:    "A map lookup here is O(1) instead of scanning the list each
+             time; with 10k orders that's the difference between
+             milliseconds and seconds. Want to pair on it?"</pre>
+  <ul>
+    <li>Explain principles, link to docs and earlier examples</li>
+    <li>Praise specific good decisions, especially from newer engineers</li>
+    <li>Let authors make decisions where several options are fine; don't impose preferences</li>
+    <li>Review your own pull requests visibly and accept feedback gracefully; the team copies what you do</li>
+    <li>Notice patterns: repeated comments point to a missing guide, lint rule, or training</li>
+  </ul>
+  <p>When review turns toxic, with nitpicking, point-scoring, or silence, address it early and privately. A healthy review culture is built from many small behaviors, most of them yours.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    What you approve, how fast you respond, and how you phrase feedback sets the norm for everyone. Leading review means leading by example.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No written standards</td><td>The same arguments repeat, and results depend on who reviews</td><td>Write a short guide: blocking vs. optional, size, and response time</td></tr>
+    <tr><td>Holding changes for perfection</td><td>Review becomes a bottleneck and authors lose motivation</td><td>Approve changes that improve the codebase; leave style to tools</td></tr>
+    <tr><td>Only senior people review</td><td>Knowledge doesn't spread and seniors burn out</td><td>Have everyone review, and pair juniors with seniors on feedback</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Draft a one-page review guide for your team with blocking and non-blocking examples.</li>
+      <li>Measure your team's time to first review over two weeks.</li>
+      <li>Rewrite three of your recent review comments so each explains why.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Written standards make reviews consistent and faster.</li>
+      <li>Low latency and an 'improves the codebase' bar keep review from blocking work.</li>
+      <li>Review is mentoring: explain the reasoning and set the example.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Engineering Judgment &amp; Communication — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

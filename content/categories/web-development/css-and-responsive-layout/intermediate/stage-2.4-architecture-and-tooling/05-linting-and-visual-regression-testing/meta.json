@@ -1,0 +1,5 @@
+{
+  "title": "Linting & Visual Regression Testing",
+  "description": "Stylelint and screenshot tests that catch regressions.",
+  "order": 5
+}

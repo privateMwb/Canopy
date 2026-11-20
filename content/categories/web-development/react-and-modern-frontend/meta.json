@@ -1,0 +1,7 @@
+{
+  "title": "React & Modern Frontend",
+  "description": "Components, state, routing, and data, from first component to production.",
+  "order": 4,
+  "compileRoot": true,
+  "icon": "web_react"
+}

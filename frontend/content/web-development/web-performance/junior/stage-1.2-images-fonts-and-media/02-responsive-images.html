@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Responsive Images — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · images, fonts & media</span> → lesson 02</p>
+  <h1>Responsive Images</h1>
+  <p class="lede">A phone doesn't need a 3000-pixel-wide photo. Responsive images let the browser download only the size it will actually use.</p>
+
+  <h2><span class="num">§1</span>Why Size Matters</h2>
+  <p>If you serve one large image to everyone, a small screen downloads many times more pixels than it can show. The goal is to offer <strong>several sizes</strong> of the same image and let the browser choose, based on the layout width and the screen's pixel density.</p>
+  <table>
+    <tr><th>Concept</th><th>Meaning</th></tr>
+    <tr><td><strong>CSS pixels</strong></td><td>The layout unit; a phone might be 390 wide</td></tr>
+    <tr><td><strong>Device pixel ratio (DPR)</strong></td><td>Physical pixels per CSS pixel; 2× or 3× on many phones</td></tr>
+    <tr><td><strong>Intrinsic width</strong></td><td>The real pixel width of an image file</td></tr>
+  </table>
+  <p>An image shown 400 CSS pixels wide on a 2× screen needs about 800 pixels of real width to look sharp. More than that is wasted, and less will look blurry.</p>
+
+  <h2><span class="num">§2</span>srcset and sizes</h2>
+  <p><code>srcset</code> lists candidate files with their widths, using the <code>w</code> descriptor. <code>sizes</code> tells the browser how wide the image will be in the layout, <strong>before</strong> the CSS is available, so it can pick early.</p>
+  <pre>&lt;img
+  src="photo-800.jpg"
+  srcset="photo-400.jpg 400w,
+          photo-800.jpg 800w,
+          photo-1600.jpg 1600w"
+  sizes="(min-width: 900px) 600px, 100vw"
+  width="800" height="533"
+  alt="Harbour at dusk"&gt;</pre>
+  <p>Read <code>sizes</code> like this: on screens at least 900px wide the image is 600px wide, otherwise it fills the viewport. The browser multiplies by the pixel density and picks the closest candidate.</p>
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    If <code>sizes</code> is wrong or missing, the browser assumes the image is <code>100vw</code> and may download a far larger file than needed. Setting <code>sizes</code> accurately is where most of the saving comes from.
+  </div>
+
+  <h2><span class="num">§3</span>Art Direction and Density Switching</h2>
+  <p>Sometimes you want a <strong>different crop</strong> at different sizes, such as a wide banner on desktop and a tight portrait on mobile. That is <strong>art direction</strong>, and it uses <code>&lt;picture&gt;</code> with media queries.</p>
+  <pre>&lt;picture&gt;
+  &lt;source media="(max-width: 600px)" srcset="hero-portrait.jpg"&gt;
+  &lt;img src="hero-wide.jpg" width="1600" height="600" alt="Team at work"&gt;
+&lt;/picture&gt;</pre>
+  <p>For fixed-size images such as an avatar, a simpler density descriptor works: <code>srcset="a.jpg 1x, a@2x.jpg 2x"</code>. Use <code>w</code> plus <code>sizes</code> for fluid images, and <code>x</code> for fixed ones.</p>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Omitting <code>sizes</code> with a <code>w</code> srcset</td><td>The browser assumes full-width and over-downloads</td><td>Describe the real layout width in <code>sizes</code></td></tr>
+    <tr><td>Using <code>srcset</code> with only one huge file</td><td>No saving on small screens</td><td>Generate at least three widths</td></tr>
+    <tr><td>Using <code>&lt;picture&gt;</code> when only resolution differs</td><td>Extra markup for nothing</td><td>Use <code>srcset</code> and <code>sizes</code>; reserve <code>&lt;picture&gt;</code> for art direction and formats</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Generate three widths of one image and add <code>srcset</code> and <code>sizes</code>. In DevTools, resize the window and watch which file loads.</li>
+      <li>Test on a 2× screen or emulated device. Compare the downloaded file to what a 1× window picks.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Serve several widths so each device downloads only what it can display.</li>
+      <li><code>srcset</code> lists the candidates and <code>sizes</code> tells the browser the layout width, and both matter.</li>
+      <li>Use <code>&lt;picture&gt;</code> for different crops or formats, and <code>srcset</code> alone for plain resolution switching.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Images, Fonts &amp; Media — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Data & Delivery",
+  "description": "Managed databases, DNS and certificates, CDN delivery, first monitoring, and a complete deployment of a small app.",
+  "order": 3
+}

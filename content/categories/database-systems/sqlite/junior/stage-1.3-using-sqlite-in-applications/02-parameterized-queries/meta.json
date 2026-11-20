@@ -1,0 +1,5 @@
+{
+  "title": "Parameterized Queries",
+  "description": "Binding values and avoiding SQL injection.",
+  "order": 2
+}

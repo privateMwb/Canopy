@@ -1,0 +1,1 @@
+{"title": "NUMA & Memory Placement", "description": "Local vs. remote memory, first-touch policy, and pinning threads next to their data.", "order": 2}

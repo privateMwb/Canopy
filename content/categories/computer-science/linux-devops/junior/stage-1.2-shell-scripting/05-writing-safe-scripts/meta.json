@@ -1,0 +1,1 @@
+{"title": "Writing Safe Scripts", "description": "set -euo pipefail, trap, temporary files, and linting with ShellCheck.", "order": 5}

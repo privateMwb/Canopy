@@ -1,0 +1,5 @@
+{
+  "title": "Web Security: XSS, CSP & Prototype Pollution",
+  "description": "How injection happens in JavaScript apps and the layered defenses against it.",
+  "order": 3
+}

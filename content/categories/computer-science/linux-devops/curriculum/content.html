@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linux &amp; DevOps Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / linux &amp; devops</p>
+    <h1>From typing commands to shipping and running software</h1>
+    <p class="lede">Three levels, twelve stages — the command line and scripting, containers, pipelines, and deployment, built toward the judgment to design delivery systems, keep them reliable, and explain the tradeoffs.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I click through a GUI" to "I can work fluently in a Linux shell, write safe scripts, administer a machine, and collaborate through Git."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — The Command Line</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Navigating the Filesystem &amp; the FHS</p><p class="lesson-desc">Paths, the directory tree, and where Linux keeps programs, config, logs, and user data.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Files, Permissions &amp; Ownership</p><p class="lesson-desc">Read, write, and execute bits, chmod and chown, and why 'permission denied' happens.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Searching &amp; Viewing: grep, find &amp; less</p><p class="lesson-desc">Finding files and finding text inside them, without opening an editor.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Pipes, Redirection &amp; Streams</p><p class="lesson-desc">Chaining small tools together, and splitting stdout from stderr on purpose.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Processes &amp; Job Control</p><p class="lesson-desc">Foreground and background jobs, ps, top, kill, and signals from the shell.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a messy directory of log files, use only shell tools to report the ten most frequent error messages and which files they came from.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Shell Scripting</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Variables, Quoting &amp; Expansion</p><p class="lesson-desc">Why "$var" and $var differ, and how the shell rewrites your command before running it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Conditionals, Loops &amp; Exit Codes</p><p class="lesson-desc">if, for, while, and using $? as the contract between commands.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Functions &amp; Arguments</p><p class="lesson-desc">Positional parameters, getopts, and structuring a script so it can be reused.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Text Processing: sed, awk &amp; cut</p><p class="lesson-desc">Reshaping columns, rewriting lines, and extracting fields from command output.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Writing Safe Scripts</p><p class="lesson-desc">set -euo pipefail, trap, temporary files, and linting with ShellCheck.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a backup script that takes arguments, validates input, fails loudly on any error, cleans up after itself, and passes ShellCheck.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Administering a Linux Machine</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Users, Groups &amp; sudo</p><p class="lesson-desc">Who can do what, the root account, and granting privileges without handing out root.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Package Management</p><p class="lesson-desc">apt and dnf, repositories, and what 'installing' a package actually puts on disk.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Services with systemd</p><p class="lesson-desc">Units, start and enable, dependencies, and writing your own service file.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Logs: journalctl &amp; /var/log</p><p class="lesson-desc">Reading, filtering, and following logs to find out what a service is doing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">SSH &amp; Key-Based Access</p><p class="lesson-desc">Key pairs, authorized_keys, ssh config, and copying files securely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Provision a fresh VM from scratch: create a user, lock down SSH to keys only, install a service, and run it under systemd so it survives a reboot.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Git &amp; Collaboration</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Commits, Branches &amp; History</p><p class="lesson-desc">Snapshots, the staging area, and reading history with log and diff.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Merging vs. Rebasing</p><p class="lesson-desc">Two ways to combine work, what each does to history, and when to use which.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Remotes, Pull Requests &amp; Code Review</p><p class="lesson-desc">Pushing, pulling, and the review loop that every CI pipeline hangs off.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Undoing Mistakes: reset, revert &amp; reflog</p><p class="lesson-desc">Recovering lost commits and choosing the right undo for shared vs. local history.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Resolve a three-way merge conflict, rewrite a messy branch into clean commits, and recover a deleted commit using the reflog.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can use Linux and Git" to "I can package an application into a container, build a pipeline that tests and ships it, and deploy it to a server without downtime."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Containers with Docker</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Images, Layers &amp; the Container Runtime</p><p class="lesson-desc">How the namespaces and cgroups from the OS track become docker run, and what an image really is.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Running Containers: Ports, Volumes &amp; Environment</p><p class="lesson-desc">Publishing ports, persisting data, and passing configuration into a container.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Writing Dockerfiles</p><p class="lesson-desc">FROM, COPY, RUN, CMD vs. ENTRYPOINT, and building an image for a real app.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Build Caching &amp; Multi-Stage Builds</p><p class="lesson-desc">Ordering layers for fast rebuilds, and shipping small images without compilers in them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Container Networking &amp; Docker Compose</p><p class="lesson-desc">Bridge networks, service discovery by name, and running a multi-container app from one file.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Registries, Tags &amp; Image Hygiene</p><p class="lesson-desc">Pushing and pulling, why 'latest' is a trap, and pinning versions and digests.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Containerize a small web app with a database: a multi-stage Dockerfile under 100 MB, a Compose file, persistent data, and no secrets baked into the image.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — CI/CD Pipelines</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Anatomy of a Pipeline</p><p class="lesson-desc">Triggers, stages, jobs, and what continuous integration and continuous delivery each promise.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">GitHub Actions: Workflows, Jobs &amp; Runners</p><p class="lesson-desc">YAML workflows, matrix builds, and how a job maps onto a fresh runner.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Tests, Caching &amp; Artifacts in CI</p><p class="lesson-desc">Making pipelines fast and trustworthy, and passing build output between jobs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Secrets &amp; Credentials in Pipelines</p><p class="lesson-desc">Encrypted secrets, scoping, and why a pull request from a fork must not see them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Building &amp; Publishing Images from CI</p><p class="lesson-desc">Tagging by commit, pushing to a registry, and promoting the same artifact across environments.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a pipeline that lints, tests on two language versions, builds a container image, and pushes it to a registry only when the main branch passes.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Deploying to Servers</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Reverse Proxies &amp; TLS with nginx</p><p class="lesson-desc">Terminating HTTPS, routing by host and path, and getting certificates with Let's Encrypt.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Deploying to a VM: SSH, systemd &amp; Containers</p><p class="lesson-desc">The simplest real deployment, scripted so it is repeatable instead of hand-typed.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Rolling, Blue-Green &amp; Canary Releases</p><p class="lesson-desc">Three ways to replace a running version, and what each costs in risk and capacity.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Configuration &amp; Environments</p><p class="lesson-desc">The twelve-factor approach: config in the environment, and keeping dev, staging, and prod honest.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Rollbacks &amp; Database Migrations</p><p class="lesson-desc">Why code rolls back easily and schemas don't, and the expand-and-contract pattern.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Deploy a containerized app behind nginx with HTTPS, push a new version with zero dropped requests, then roll it back.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Infrastructure as Code</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Cloud Building Blocks</p><p class="lesson-desc">Compute, networks, storage, and IAM — the four primitives under every cloud provider.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Terraform Basics: Providers, Resources &amp; Variables</p><p class="lesson-desc">Declaring infrastructure in code instead of clicking through a console.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">State, Plans &amp; Drift</p><p class="lesson-desc">What the state file is, reading a plan before applying it, and detecting out-of-band changes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Configuration Management &amp; Idempotency with Ansible</p><p class="lesson-desc">Playbooks that converge a machine to a described state, and safe to run twice.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Modules, Environments &amp; Safe Changes</p><p class="lesson-desc">Reusing infrastructure code and reviewing infrastructure changes like application code.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Define a network, a VM, and a firewall in Terraform, configure the VM with Ansible, then tear it all down and rebuild it from nothing with two commands.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I can build and ship a service" to "I can design delivery platforms, keep them reliable and secure under failure, and explain the tradeoffs clearly to others."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Orchestration with Kubernetes</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why Orchestrators: Desired State &amp; Reconciliation</p><p class="lesson-desc">Control loops, declarative config, and what problem Kubernetes solves that Compose doesn't.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Pods, Deployments &amp; Services</p><p class="lesson-desc">The core objects, how traffic finds a pod, and how a rollout replaces replicas.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Config, Secrets &amp; Persistent Storage</p><p class="lesson-desc">ConfigMaps, Secrets, volumes, and running stateful workloads without losing data.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Requests, Limits &amp; Scheduling</p><p class="lesson-desc">How cgroups surface as CPU and memory limits, throttling, evictions, and OOM kills.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Probes, Autoscaling &amp; Safe Rollouts</p><p class="lesson-desc">Readiness and liveness probes, horizontal scaling, and rolling updates that don't drop traffic.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Deploy a multi-service app to a cluster with probes, resource limits, autoscaling, and a rolling update, then break it on purpose and explain each failure.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Observability &amp; Reliability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Metrics, Logs &amp; Traces</p><p class="lesson-desc">The three pillars, what question each answers, and instrumenting a service to emit them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">SLIs, SLOs &amp; Error Budgets</p><p class="lesson-desc">Turning 'reliable enough' into a number, and using the budget to decide when to ship.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Alerting That Doesn't Cry Wolf</p><p class="lesson-desc">Symptom-based alerts, paging rules, and the cost of noisy on-call.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Incident Response &amp; Blameless Postmortems</p><p class="lesson-desc">Running an incident, communicating during it, and learning from it without finding a scapegoat.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Define SLOs for a service, build a dashboard and two alerts from them, then run a game-day failure and write the postmortem.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Security &amp; Supply Chain</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Least Privilege for Hosts &amp; Containers</p><p class="lesson-desc">Non-root users, dropped capabilities, read-only filesystems, and scoped IAM roles.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Secrets Management &amp; Workload Identity</p><p class="lesson-desc">Vaults, short-lived credentials, and OIDC so pipelines hold no long-lived keys.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Image Scanning, SBOMs &amp; Supply-Chain Risk</p><p class="lesson-desc">Dependency and base-image vulnerabilities, provenance, and signing what you ship.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Hardening Pipelines &amp; Policy as Code</p><p class="lesson-desc">Treating CI as an attack surface, and enforcing rules automatically instead of by review.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Threat-model a CI/CD pipeline end to end, then fix the three worst findings and justify what you chose to accept.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Operating &amp; Designing Platforms</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Debugging Production: Linux &amp; Container Internals</p><p class="lesson-desc">Using strace, /proc, nsenter, and cgroup files to diagnose what a container is really doing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Capacity, Cost &amp; Performance Tradeoffs</p><p class="lesson-desc">Right-sizing, autoscaling economics, and spending reliability where it matters.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Designing a Delivery Platform</p><p class="lesson-desc">Golden paths, environments, and promotion flows that make the right thing the easy thing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Runbooks, ADRs &amp; Leading Operational Change</p><p class="lesson-desc">Writing down decisions and procedures, and persuading a team to adopt a new way of working.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design doc for a delivery platform serving ten teams: architecture, rollout plan, failure modes, cost, and the tradeoffs you rejected.</p></div></div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Containers appear at Intermediate as a tool, return at Senior as scheduling and resource limits, and connect back to namespaces and cgroups in the Operating Systems track. Security and observability follow the same pattern: basics early, rigor later. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about operating and judgment as much as tooling.</strong> Writing a pipeline and keeping a platform reliable, secure, and understood by ten teams are different skills, and the last stages are built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

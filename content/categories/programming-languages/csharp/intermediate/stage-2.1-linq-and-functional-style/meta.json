@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 \u2014 LINQ & Functional Style",
+  "description": "Deferred execution, iterators, pattern matching, extension methods, and immutable models.",
+  "order": 1
+}

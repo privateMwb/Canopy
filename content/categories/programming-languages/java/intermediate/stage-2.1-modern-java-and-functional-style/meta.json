@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 \u2014 Modern Java & Functional Style",
+  "description": "Lambdas, streams, collectors, records, sealed types, and recent language features.",
+  "order": 1
+}

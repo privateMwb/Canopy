@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Indexes and EXPLAIN, advanced SQL, concurrency, and running Postgres in production.",
+  "order": 2
+}

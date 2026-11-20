@@ -1,0 +1,5 @@
+{
+  "title": "Caching with ElastiCache",
+  "description": "Putting a cache in front of a database on AWS.",
+  "order": 3
+}

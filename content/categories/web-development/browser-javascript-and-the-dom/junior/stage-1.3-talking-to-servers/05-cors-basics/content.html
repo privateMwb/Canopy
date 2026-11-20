@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CORS Basics — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · talking to servers</span> → lesson 05</p>
+  <h1>CORS Basics</h1>
+  <p class="lede">CORS errors are among the most confusing things a front-end developer sees. They make sense once you know what the browser is protecting and who is responsible for the fix.</p>
+
+  <h2><span class="num">§1</span>Origins and the Same-Origin Rule</h2>
+
+  <p>An <strong>origin</strong> is the combination of scheme, host, and port: <code>https://app.example.com:443</code>. By default, script running on one origin can send requests to another origin but is <strong>not allowed to read the response</strong> unless the other server says so. This protects users: otherwise any website you visit could read your email by calling a mail server where you are logged in.</p>
+
+  <table>
+    <tr><th>Page</th><th>Request to</th><th>Same origin?</th></tr>
+    <tr><td><code>https://a.com</code></td><td><code>https://a.com/api</code></td><td>Yes</td></tr>
+    <tr><td><code>https://a.com</code></td><td><code>http://a.com/api</code></td><td>No (scheme)</td></tr>
+    <tr><td><code>https://a.com</code></td><td><code>https://api.a.com</code></td><td>No (host)</td></tr>
+    <tr><td><code>https://a.com</code></td><td><code>https://a.com:8443</code></td><td>No (port)</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>How CORS Works</h2>
+
+  <p><strong>Cross-Origin Resource Sharing (CORS)</strong> is the mechanism a server uses to say "yes, that origin may read my responses." It does this with response headers. The browser enforces it; the server grants it.</p>
+
+  <pre><span class="comment">// page at https://app.com fetches another origin</span>
+fetch("https://api.other.com/data");
+
+<span class="comment">// browser sends:</span>
+<span class="comment">//   Origin: https://app.com</span>
+<span class="comment">// server must answer with:</span>
+<span class="comment">//   Access-Control-Allow-Origin: https://app.com</span>
+<span class="comment">// otherwise the browser blocks your script from reading the response</span></pre>
+
+  <p>Some requests trigger a <strong>preflight</strong>: before the real request, the browser sends an <code>OPTIONS</code> request asking whether the method and headers are allowed. This happens for methods other than <code>GET</code>/<code>HEAD</code>/<code>POST</code>, for custom headers, and for <code>Content-Type: application/json</code>. The server must respond with <code>Access-Control-Allow-Methods</code> and <code>Access-Control-Allow-Headers</code>.</p>
+
+  <table>
+    <tr><th>Header</th><th>Sent by</th><th>Meaning</th></tr>
+    <tr><td><code>Origin</code></td><td>Browser</td><td>Where the request came from</td></tr>
+    <tr><td><code>Access-Control-Allow-Origin</code></td><td>Server</td><td>Which origin may read the response</td></tr>
+    <tr><td><code>Access-Control-Allow-Methods</code></td><td>Server (preflight)</td><td>Allowed methods</td></tr>
+    <tr><td><code>Access-Control-Allow-Headers</code></td><td>Server (preflight)</td><td>Allowed request headers</td></tr>
+    <tr><td><code>Access-Control-Allow-Credentials</code></td><td>Server</td><td>Cookies may be included</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>Fixing and Avoiding CORS Errors</h2>
+
+  <p>The error message shows up in the console, but the request often <strong>did</strong> reach the server; only your script is blocked from seeing the result. The fix is on the server (or in how you route requests), not in your fetch call.</p>
+
+  <ul>
+    <li>Configure the API to send the correct <code>Access-Control-Allow-Origin</code> for your front-end origin (an explicit origin, not <code>*</code>, if cookies are involved).</li>
+    <li>During development, proxy API calls through your dev server so the browser sees one origin (Vite's <code>server.proxy</code> does this).</li>
+    <li>Serve the front end and API from the same origin (or behind one domain) in production.</li>
+  </ul>
+
+  <pre><span class="comment">// credentials need a specific origin and an explicit opt-in on both sides</span>
+fetch("https://api.other.com/me", { credentials: "include" });
+<span class="comment">// server: Access-Control-Allow-Origin: https://app.com</span>
+<span class="comment">//         Access-Control-Allow-Credentials: true</span>
+
+<span class="comment">// `mode: "no-cors"` does NOT fix it: you just get an opaque, unreadable response</span></pre>
+
+  <div class="callout">
+    <span class="label">CORS protects users, not servers</span>
+    A blocked response does not mean the server was unreachable. It means the server did not opt in to sharing with your origin. You cannot work around it from front-end code, and you should not try to.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Trying to "fix" CORS in the fetch call</td><td>Nothing changes, or you get an unreadable opaque response</td><td>Change the server's headers or use a proxy</td></tr>
+    <tr><td>Using <code>Access-Control-Allow-Origin: *</code> with credentials</td><td>Browser rejects the response</td><td>Return the exact origin and allow credentials</td></tr>
+    <tr><td>Not handling the <code>OPTIONS</code> preflight</td><td>Every non-simple request fails</td><td>Respond to <code>OPTIONS</code> with allowed methods and headers</td></tr>
+    <tr><td>Using a public CORS proxy for private data</td><td>A third party sees your traffic</td><td>Run your own proxy or fix the API</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Call a public API that allows CORS and one that does not; compare the console error and the Network panel entry.</li>
+      <li>Identify which of three URL pairs are same-origin, and explain which part differs in each.</li>
+      <li>Configure a Vite dev-server proxy so <code>/api</code> is forwarded to a backend on another port.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>An origin is scheme + host + port; scripts cannot read cross-origin responses by default.</li>
+      <li>CORS is the server opting in through <code>Access-Control-*</code> headers; preflight <code>OPTIONS</code> checks non-simple requests.</li>
+      <li>Fix CORS on the server or with a proxy, never in the client request.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Talking to Servers — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

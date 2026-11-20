@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Concurrent GC &amp; Pause-Time Tradeoffs — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · advanced runtime systems</span> → lesson 02</p>
+  <h1>Concurrent GC &amp; Pause-Time Tradeoffs</h1>
+  <p class="lede">Concurrent and incremental collectors trade total throughput for shorter pauses, using tri-color marking and barriers to let the program keep running during collection.</p>
+
+  <h2><span class="num">§1</span>Pauses matter</h2>
+  <p>A <strong>stop-the-world</strong> collector halts the program while it collects. For a batch job that's fine. For an interactive app or a server with latency targets, a 200 ms pause is a visible failure.</p>
+  <pre>throughput:  how much work gets done per second
+latency:     how long the program is paused at once
+
+stop-the-world:   high throughput, long pauses
+incremental:      slice the work into small steps between program steps
+concurrent:       collector threads run alongside the program</pre>
+  <p>You can't improve both for free: doing collection work while the program runs needs extra coordination, and that costs total throughput.</p>
+
+  <h2><span class="num">§2</span>Tri-color marking</h2>
+  <p>Concurrent marking is tricky because the program changes the object graph while the collector is traversing it. <strong>Tri-color marking</strong> gives a precise way to reason about it.</p>
+  <ul>
+    <li><strong>White:</strong> not yet reached. If it stays white at the end, it is garbage.</li>
+    <li><strong>Grey:</strong> reached, but its references haven't all been scanned yet.</li>
+    <li><strong>Black:</strong> reached and fully scanned.</li>
+  </ul>
+  <pre>roots → grey.  Repeat: take a grey object, mark its white children grey, make it black.
+When no grey remain: everything white is garbage.</pre>
+  <p>The <strong>tri-color invariant</strong> says that a black object never points to a white one. If it did, the collector would never scan that white object, because it has already finished with the black one, and live data would be freed.</p>
+  <pre>collector:  A is black (scanned), B is white.
+program:    A.field = B ; remove the other reference to B
+result:     B is reachable only through A, but A won't be scanned again → B freed. Bug!</pre>
+
+  <h2><span class="num">§3</span>Barriers keep the invariant</h2>
+  <p>To preserve the invariant while the program runs, the program executes a <strong>write barrier</strong> on pointer stores during marking. There are two common designs.</p>
+  <pre><span class="comment"># incremental-update barrier: when storing white B into black A, make A grey again</span>
+def barrier(A, B):
+    if A.color == BLACK and B.color == WHITE: A.color = GREY; grey_set.add(A)
+
+<span class="comment"># snapshot-at-the-beginning barrier: before overwriting a reference, grey the old target</span>
+def barrier(A, field, new):
+    old = A.fields[field]
+    if marking and old.color == WHITE: old.color = GREY; grey_set.add(old)
+    A.fields[field] = new</pre>
+  <p>Both keep the collector correct while the program mutates the graph. The first rescans what the program touches; the second preserves a snapshot of the graph as it was when marking began.</p>
+  <p>Real concurrent collectors also handle moving objects while the program runs, using <strong>read barriers</strong> or forwarding pointers. They achieve pauses of a millisecond or less on huge heaps, at a throughput cost, which is why collectors come in flavours: throughput-oriented batch collectors versus low-latency ones.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Concurrent collection is mostly about one invariant: a fully scanned object must never point at an unscanned one. Everything else, barriers included, is bookkeeping to maintain it.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Letting the program write pointers without a barrier during marking</td><td>A live object stays white and is freed</td><td>Run the barrier on every pointer store while a collection is in progress</td></tr>
+    <tr><td>Choosing a low-latency collector for a batch job</td><td>You lose throughput and gain nothing</td><td>Match the collector to the latency and throughput goals</td></tr>
+    <tr><td>Forgetting to rescan roots at the end of concurrent marking</td><td>References created during marking are missed</td><td>Finish with a short stop-the-world step that re-scans roots and grey objects</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Construct a scenario with two objects and a mutation during marking where, without a barrier, a live object is freed. Then show how each barrier prevents it.</li>
+      <li>Compare which kinds of program would prefer a stop-the-world collector, an incremental one, and a concurrent one, and justify each.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Stop-the-world pauses hurt latency, and shorter pauses cost throughput.</li>
+      <li>Tri-color marking reasons about collection with white, grey, and black objects and one invariant.</li>
+      <li>Write barriers during marking keep a scanned object from hiding an unscanned one.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Advanced Runtime Systems — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

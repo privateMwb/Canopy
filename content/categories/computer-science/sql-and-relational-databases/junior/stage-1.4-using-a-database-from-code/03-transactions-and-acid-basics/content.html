@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Transactions &amp; ACID Basics — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · using a database from code</span> → lesson 03</p>
+  <h1>Transactions &amp; ACID Basics</h1>
+  <p class="lede">A transaction groups several statements into one all-or-nothing unit, and ACID names the four guarantees that make that dependable.</p>
+
+  <h2><span class="num">§1</span>Why You Need Transactions</h2>
+  <p>Transferring $100 between two accounts takes two updates. If the server crashes between them, money has vanished.</p>
+  <pre>UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+<span class="comment">-- crash here?  the $100 is gone, never credited to account 2</span>
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;</pre>
+  <p>A <strong>transaction</strong> makes both updates succeed together or not at all.</p>
+  <pre>BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;            <span class="comment">-- make it permanent</span>
+<span class="comment">-- or ROLLBACK;    -- undo everything since BEGIN</span></pre>
+
+  <h2><span class="num">§2</span>ACID, One Letter at a Time</h2>
+  <table>
+    <tr><th>Letter</th><th>Property</th><th>Meaning</th></tr>
+    <tr><td><strong>A</strong></td><td>Atomicity</td><td>All the statements take effect, or none of them do</td></tr>
+    <tr><td><strong>C</strong></td><td>Consistency</td><td>A transaction moves the database from one valid state to another; constraints always hold</td></tr>
+    <tr><td><strong>I</strong></td><td>Isolation</td><td>Concurrent transactions don't see each other's half-finished work (details in Stage 2.2)</td></tr>
+    <tr><td><strong>D</strong></td><td>Durability</td><td>Once committed, the change survives a crash or power loss</td></tr>
+  </table>
+  <p>Durability is achieved by writing changes to a <strong>write-ahead log</strong> on disk before reporting success, and Stage 3.1 explains how that works.</p>
+
+  <h2><span class="num">§3</span>Using Transactions from Code</h2>
+  <pre>conn = psycopg.connect(DSN)
+try:
+    with conn.transaction():                     <span class="comment"># BEGIN ... COMMIT, or ROLLBACK on exception</span>
+        conn.execute("UPDATE accounts SET balance = balance - %s WHERE id = %s", (100, 1))
+        conn.execute("UPDATE accounts SET balance = balance + %s WHERE id = %s", (100, 2))
+except Exception as e:
+    log.error("transfer failed: %s", e)            <span class="comment"># nothing was applied</span></pre>
+  <p>Most drivers start a transaction implicitly and require an explicit <code>commit()</code>; others auto-commit each statement. Learn which mode your driver uses, since a forgotten <code>commit()</code> silently loses your writes.</p>
+
+  <h2><span class="num">§4</span>Keep Transactions Short</h2>
+  <p>A transaction holds locks and resources until it finishes. Do the thinking (HTTP calls, user waits, heavy computation) <strong>outside</strong> the transaction, then open it, apply the writes, and commit quickly.</p>
+  <pre>bad:   BEGIN → read → call payment API (2 s) → write → COMMIT     (locks held for 2 s)
+good:  call payment API → BEGIN → write → COMMIT                  (locks held for ms)</pre>
+  <p>Long-running transactions block other writers, bloat storage, and are a common cause of production slowdowns.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Put statements in the same transaction when they must succeed or fail together: they protect an invariant (like "money isn't created or destroyed"). Don't wrap unrelated work in one, since that only makes locks last longer.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Multi-step changes without a transaction</td><td>A failure in the middle leaves inconsistent data</td><td>Wrap statements that must succeed together in <code>BEGIN</code>/<code>COMMIT</code></td></tr>
+    <tr><td>Forgetting <code>commit()</code> in a driver with implicit transactions</td><td>Writes vanish when the connection closes</td><td>Use the driver's transaction context manager</td></tr>
+    <tr><td>Calling external services inside a transaction</td><td>Locks are held across slow, unreliable network calls</td><td>Do slow work before or after, not during</td></tr>
+    <tr><td>Swallowing an error and committing anyway</td><td>Partial results become permanent</td><td>Roll back on any exception</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Implement the money transfer with two accounts. Force a failure between the two updates (raise an exception) and show that the balances are unchanged after rollback.</li>
+      <li>Add a CHECK constraint <code>balance &gt;= 0</code>, then try to transfer more than the source holds. Which statement fails, and what happens to the other?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A transaction makes a group of statements atomic: commit applies all, rollback applies none.</li>
+      <li>ACID: atomicity, consistency, isolation, durability.</li>
+      <li>Keep transactions short and free of slow external calls.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Using a Database from Code — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

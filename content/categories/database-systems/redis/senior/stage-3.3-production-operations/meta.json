@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.3 — Production Operations",
+  "description": "Capacity planning, security hardening, observability, upgrades, and managed versus self-hosted Redis.",
+  "order": 3
+}

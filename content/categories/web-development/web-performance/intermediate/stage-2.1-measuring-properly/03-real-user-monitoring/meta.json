@@ -1,0 +1,5 @@
+{
+  "title": "Real User Monitoring",
+  "description": "Collecting field metrics with the web-vitals library.",
+  "order": 3
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sockets: Writing a Client and Server — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · tcp & udp basics</span> → lesson 04</p>
+  <h1>Sockets: Writing a Client and Server</h1>
+  <p class="lede">The sockets API is how programs use TCP and UDP, and a handful of calls is enough to build a working client and server.</p>
+
+  <h2><span class="num">§1</span>The Server Side</h2>
+  <p>A TCP server creates a socket, binds it to an address and port, marks it as listening, and then repeatedly accepts connections. Each <code>accept</code> returns a <strong>new socket</strong> for one client, while the original keeps listening.</p>
+  <pre>import socket
+
+srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   <span class="comment"># SOCK_STREAM = TCP</span>
+srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  <span class="comment"># allow quick restarts</span>
+srv.bind(("0.0.0.0", 8000))
+srv.listen(128)                                            <span class="comment"># backlog of waiting connections</span>
+
+while True:
+    conn, addr = srv.accept()        <span class="comment"># blocks until a client connects</span>
+    with conn:
+        data = conn.recv(4096)       <span class="comment"># up to 4096 bytes; may return fewer</span>
+        conn.sendall(data.upper())   <span class="comment"># sendall loops until everything is sent</span></pre>
+  <p><code>SO_REUSEADDR</code> lets you restart the server immediately even while old connections sit in TIME_WAIT. Without it, you'd see 'Address already in use'.</p>
+
+  <h2><span class="num">§2</span>The Client Side</h2>
+  <pre>import socket
+
+c = socket.create_connection(("127.0.0.1", 8000))   <span class="comment"># resolves, connects, handshakes</span>
+c.sendall(b"hello")
+print(c.recv(4096))                                 <span class="comment"># b'HELLO'</span>
+c.close()</pre>
+  <p><code>connect</code> triggers the three-way handshake. The OS picks a free source port for the client automatically.</p>
+
+  <h2><span class="num">§3</span>Partial Reads, Framing, and Many Clients</h2>
+  <p>Because TCP is a byte stream, a single <code>recv</code> may return part of a message, or two messages joined. Code that assumes otherwise works in testing on localhost and breaks on real networks.</p>
+  <pre>def recv_exact(sock, n):
+    buf = b""
+    while len(buf) &lt; n:
+        chunk = sock.recv(n - len(buf))
+        if not chunk:                      <span class="comment"># empty bytes = peer closed the connection</span>
+            raise ConnectionError("closed early")
+        buf += chunk
+    return buf
+
+<span class="comment"># Framing: send a 4-byte length, then the payload</span>
+sock.sendall(len(msg).to_bytes(4, "big") + msg)
+size = int.from_bytes(recv_exact(sock, 4), "big")
+msg = recv_exact(sock, size)</pre>
+  <p>The server above handles one client at a time. To serve several, start a thread per connection, or use an event loop such as <code>selectors</code> or <code>asyncio</code>. The system calls underneath are the same <code>socket</code>, <code>bind</code>, <code>listen</code>, <code>accept</code>, <code>connect</code>, <code>send</code>, and <code>recv</code> of the Berkeley sockets API in C.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    <code>recv</code> returning an empty result means the peer closed the connection, not 'no data yet'. A loop that treats it as 'try again' will spin at 100% CPU.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Assuming <code>recv(n)</code> returns exactly <code>n</code> bytes</td><td>Truncated or merged messages</td><td>Loop until you have the bytes you need, or use length-prefixed framing</td></tr>
+    <tr><td>Using <code>send</code> and ignoring its return value</td><td>Only part of the data was sent</td><td>Use <code>sendall</code>, or loop on the returned byte count</td></tr>
+    <tr><td>Binding to 127.0.0.1 and expecting remote access</td><td>Other machines can't connect</td><td>Bind to <code>0.0.0.0</code> (or a specific interface) to accept external connections</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build the server and client above, then test the client by sending a 1 MB message. Does one <code>recv</code> get it all?</li>
+      <li>Modify the server to handle several clients at once using a thread per connection.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A TCP server calls <code>bind</code>, <code>listen</code>, and <code>accept</code>; a client calls <code>connect</code>.</li>
+      <li><code>recv</code> may return any amount up to the limit, and an empty result means the peer closed.</li>
+      <li>Define message framing yourself because TCP carries bytes, not messages.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · TCP & UDP Basics — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

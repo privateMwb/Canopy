@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>From C to Assembly — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · the instruction set & the cpu</span> → lesson 04</p>
+  <h1>From C to Assembly</h1>
+  <p class="lede">Seeing what a compiler produces from your C turns performance from folklore into something you can check, and the difference between optimization levels is often dramatic.</p>
+
+  <h2><span class="num">§1</span>Looking at Compiler Output</h2>
+  <p>You can ask the compiler for assembly instead of a finished program, or use an interactive viewer such as Compiler Explorer (godbolt.org) to see it side by side with your source.</p>
+  <pre>gcc -S -O1 -masm=intel sum.c -o sum.s    <span class="comment"># write assembly instead of an executable</span>
+objdump -d -M intel ./a.out | less        <span class="comment"># disassemble a built binary</span>
+
+int sum(const int *a, int n) {
+    int s = 0;
+    for (int i = 0; i &lt; n; i++) s += a[i];
+    return s;
+}</pre>
+  <p>Typical x86-64 output at <code>-O1</code> (exact instructions vary by compiler version, and the shape is what matters):</p>
+  <pre>sum:
+    test  esi, esi          <span class="comment"># is n &lt;= 0 ?</span>
+    jle   .Lzero
+    mov   rax, rdi          <span class="comment"># rax = pointer to a[0]  (first argument is in rdi)</span>
+    movsx rsi, esi
+    lea   rdx, [rdi+rsi*4]  <span class="comment"># rdx = end pointer = a + n</span>
+    mov   ecx, 0            <span class="comment"># s = 0</span>
+.Lloop:
+    add   ecx, DWORD PTR [rax]   <span class="comment"># s += *p   (load and add in one instruction)</span>
+    add   rax, 4                 <span class="comment"># p++</span>
+    cmp   rax, rdx
+    jne   .Lloop
+    mov   eax, ecx          <span class="comment"># return value goes in eax</span>
+    ret
+.Lzero:
+    mov   eax, 0
+    ret</pre>
+
+  <h2><span class="num">§2</span>What Optimization Changes</h2>
+  <p>Compare <code>-O0</code> and <code>-O2</code> on the same function and you'll see:</p>
+  <ul>
+    <li><strong><code>-O0</code>:</strong> every variable lives in memory on the stack, and each statement loads and stores it again. Easy to debug, but slow</li>
+    <li><strong><code>-O1</code> and above:</strong> values stay in registers, the index becomes a moving pointer, and redundant work disappears</li>
+    <li><strong><code>-O2</code> and <code>-O3</code>:</strong> the loop may be unrolled or <strong>vectorized</strong> with SIMD instructions, and the compiler may remove code whose result is unused</li>
+    <li><strong>Inlining:</strong> small functions are copied into their callers, so the call and return overhead vanishes</li>
+  </ul>
+  <p>Compilers are very good at this, so reading output is mostly for checking that an expected optimization happened, such as whether a hot loop was vectorized, and for understanding performance surprises.</p>
+
+  <h2><span class="num">§3</span>The Calling Convention Seen From Outside</h2>
+  <p>On x86-64 Linux (the System V ABI), the first six integer arguments go in <code>rdi, rsi, rdx, rcx, r8, r9</code> and the return value in <code>rax</code>. On RISC-V they're <code>a0</code> to <code>a7</code>, with the result in <code>a0</code>. When assembly looks puzzling, find which registers carry the arguments, then follow how each is used.</p>
+  <pre><span class="comment"># Ask GCC what it did with a loop</span>
+gcc -O3 -fopt-info-vec-optimized sum.c       <span class="comment"># reports which loops were vectorized</span>
+gcc -O2 -fopt-info-vec-missed sum.c          <span class="comment"># reports why a loop could not be</span></pre>
+  <p>The same C produces different machine code on different ISAs, because the compiler targets the instruction set. This is why binaries built for x86-64 don't run on ARM without recompiling or emulation.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Assembly is the ground truth of what runs. When a benchmark surprises you, reading the generated code is often the fastest way to find out why.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Benchmarking an <code>-O0</code> build</td><td>Results reflect memory traffic the optimizer would remove</td><td>Measure with the optimization level you ship</td></tr>
+    <tr><td>Writing a microbenchmark whose result is never used</td><td>The compiler deletes the work, and you time an empty loop</td><td>Use the result, or mark a sink as volatile</td></tr>
+    <tr><td>Assuming the compiler will vectorize any loop</td><td>Aliasing, dependencies, or branches can block it</td><td>Check <code>-fopt-info</code> output, and restructure the loop if needed</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Compile a small function at <code>-O0</code>, <code>-O1</code>, and <code>-O2</code>, and compare the instruction counts and where variables live.</li>
+      <li>Find a simple loop in your own code on Compiler Explorer and note which instruction does the load and which does the add.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>gcc -S</code> and Compiler Explorer show the machine code a compiler generates.</li>
+      <li>Optimization moves values into registers, simplifies addressing, inlines, unrolls, and vectorizes.</li>
+      <li>Calling conventions tell you which registers hold arguments and results.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · The Instruction Set & the CPU — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

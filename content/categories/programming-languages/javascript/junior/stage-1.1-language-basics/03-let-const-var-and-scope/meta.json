@@ -1,0 +1,5 @@
+{
+  "title": "let, const, var & Scope",
+  "description": "Block vs. function scope, hoisting, and the temporal dead zone.",
+  "order": 3
+}

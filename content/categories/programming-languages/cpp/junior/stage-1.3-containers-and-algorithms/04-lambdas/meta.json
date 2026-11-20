@@ -1,0 +1,5 @@
+{
+  "title": "Lambdas",
+  "description": "Capture lists, by value vs. by reference, and lambdas as arguments.",
+  "order": 4
+}

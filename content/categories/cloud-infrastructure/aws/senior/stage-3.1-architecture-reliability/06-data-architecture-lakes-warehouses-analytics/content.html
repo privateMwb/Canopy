@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Architecture: Lakes, Warehouses &amp; Analytics — Lesson 06</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · architecture & reliability</span> → lesson 06</p>
+  <h1>Data Architecture: Lakes, Warehouses &amp; Analytics</h1>
+  <p class="lede">A data lake stores raw data cheaply in S3, a warehouse serves fast structured analytics, and choosing between them is mostly about workload shape and governance.</p>
+
+  <h2><span class="num">§1</span>Lake, Warehouse, and Lakehouse</h2>
+  <table>
+    <tr><th></th><th>Data lake</th><th>Data warehouse</th></tr>
+    <tr><td>Data</td><td>Raw and varied: files, logs, JSON, Parquet</td><td>Modeled, structured tables</td></tr>
+    <tr><td>Schema</td><td>Applied on read</td><td>Defined on write</td></tr>
+    <tr><td>Typical store</td><td>S3</td><td>Redshift</td></tr>
+    <tr><td>Strength</td><td>Cheap, flexible, any engine</td><td>Fast, concurrent SQL and BI</td></tr>
+  </table>  <p>A <strong>lakehouse</strong> blends them: open table formats such as Apache Iceberg on S3, queried by several engines, with warehouse-like features.</p>
+  <h2><span class="num">§2</span>The AWS Building Blocks</h2>
+  <table>
+    <tr><th>Service</th><th>Role</th></tr>
+    <tr><td>S3</td><td>Durable, cheap storage for the lake</td></tr>
+    <tr><td>Glue Data Catalog and crawlers</td><td>Central metadata: databases, tables, schemas</td></tr>
+    <tr><td>Glue ETL</td><td>Serverless Spark jobs to clean and transform data</td></tr>
+    <tr><td>Athena</td><td>Serverless SQL directly over S3; pay per data scanned</td></tr>
+    <tr><td>Redshift (provisioned or Serverless)</td><td>Warehouse for heavy, repeated, concurrent analytics</td></tr>
+    <tr><td>Lake Formation</td><td>Fine-grained permissions and governance over lake data</td></tr>
+    <tr><td>QuickSight</td><td>Dashboards and BI</td></tr>
+  </table>  <pre>-- Athena over partitioned Parquet
+SELECT region, SUM(amount)
+FROM sales
+WHERE year = 2026 AND month = 10
+GROUP BY region;</pre>
+  <h2><span class="num">§3</span>Design Choices That Matter</h2>
+  <ul>
+    <li>Store as columnar, compressed formats (Parquet, ORC), not raw CSV or JSON, to cut scan cost and time.</li>
+    <li><strong>Partition</strong> by commonly filtered columns, such as date, so queries read less data.</li>
+    <li>Organize zones: raw, cleaned, curated, with different access and retention.</li>
+    <li>Govern with Lake Formation, classify sensitive data, and log access.</li>
+    <li>Use Athena for ad-hoc and infrequent queries; use Redshift when dashboards and many users hit the same data constantly.</li>
+  </ul>
+  <div class="callout">
+    <span class="label">Cost follows bytes scanned</span>
+    In Athena, a query that scans less data is cheaper and faster. Columnar formats and partitions are the main levers, long before any query tuning.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Querying raw CSV or JSON at scale</td><td>Slow, expensive scans</td><td>Convert to partitioned Parquet</td></tr>
+    <tr><td>No catalog or ownership</td><td>Nobody trusts or finds the data</td><td>Use the Glue catalog and assign data owners</td></tr>
+    <tr><td>Loading everything into a warehouse by default</td><td>High cost for rarely used data</td><td>Keep cold data in the lake; load what is hot</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Convert a CSV dataset to partitioned Parquet and compare Athena scanned bytes for the same query.</li>
+      <li>Draw the zones and access rules for a lake serving analysts and data scientists.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Lakes store flexible raw data; warehouses serve fast structured analytics.</li>
+      <li>S3, Glue, Athena, Redshift, and Lake Formation cover storage, catalog, query, and governance.</li>
+      <li>Parquet and partitions drive Athena cost and speed.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Architecture & Reliability — Lesson 6 of 6</p>
+  </footer>
+</div>
+</body>
+</html>

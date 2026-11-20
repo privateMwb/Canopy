@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pages, Heap Files &amp; the Buffer Pool — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · storage engine internals</span> → lesson 01</p>
+  <h1>Pages, Heap Files &amp; the Buffer Pool</h1>
+  <p class="lede">Databases don't read individual rows from disk; they read fixed-size pages, and a buffer pool in memory decides which pages stay close at hand. Most performance behavior follows from that.</p>
+
+  <h2><span class="num">§1</span>Everything Is a Page</h2>
+  <p>Disks and SSDs transfer data in blocks, so a database organizes storage into fixed-size <strong>pages</strong> (8 KB in PostgreSQL, 16 KB in MySQL InnoDB, 4 KB in SQLite by default). A table is a collection of pages; each page holds many rows. Reading one row means reading its whole page.</p>
+  <pre>Page (8 KB)
+┌────────────────────────────────────────────┐
+│ header │ item pointers →                   │
+│        │ (offset, length) per row          │
+│                free space                  │
+│                  ← row data grows from end │
+│ row 3 │ row 2 │ row 1                      │
+└────────────────────────────────────────────┘</pre>
+  <p>The <strong>slotted page</strong> layout lets rows vary in size: pointers at the front point to row data packed from the back. A row's address is its (page number, slot). PostgreSQL exposes it as <code>ctid</code>, which is what indexes store.</p>
+
+  <h2><span class="num">§2</span>Heap Files and Row Layout</h2>
+  <p>A table without an inherent order is a <strong>heap file</strong>: rows go wherever there's room. Indexes then map keys to row locations. InnoDB instead stores the table <em>as</em> its primary-key B-tree (a <strong>clustered index</strong>), so rows are physically ordered by primary key and secondary indexes store the primary key rather than a physical address.</p>
+  <table>
+    <tr><th>Design</th><th>Pros</th><th>Cons</th></tr>
+    <tr><td>Heap + separate indexes (PostgreSQL)</td><td>Simple inserts; any index is equal</td><td>Extra hop from index to heap; updates create new row versions</td></tr>
+    <tr><td>Clustered primary key (InnoDB, SQL Server)</td><td>Range scans on the key read adjacent pages; no hop for key lookups</td><td>Random primary keys (UUIDs) scatter inserts; secondary lookups need two index walks</td></tr>
+  </table>
+  <p>Very large values (long text, blobs) are moved out of the page into <strong>TOAST</strong> (PostgreSQL) or overflow pages so rows stay small.</p>
+
+  <h2><span class="num">§3</span>The Buffer Pool</h2>
+  <p>Reading from disk takes microseconds to milliseconds; from RAM, nanoseconds. The <strong>buffer pool</strong> (PostgreSQL calls it <code>shared_buffers</code>) is a region of memory caching recently used pages.</p>
+  <pre>query needs page 812
+  → in buffer pool?  yes → use it (a "hit")
+                     no  → pick a victim page, evict it (write it first if dirty),
+                           read page 812 from disk (a "miss")</pre>
+  <p>Pages modified in memory are <strong>dirty</strong>; a background writer or <strong>checkpoint</strong> flushes them to disk later. Eviction uses an LRU-like policy (PostgreSQL uses clock-sweep) with protection so one big table scan doesn't flush the entire cache.</p>
+  <pre><span class="comment">-- PostgreSQL: cache hit ratio per database</span>
+SELECT datname, blks_hit::float / NULLIF(blks_hit + blks_read, 0) AS hit_ratio
+FROM pg_stat_database;</pre>
+
+  <h2><span class="num">§4</span>Why This Explains Performance</h2>
+  <ul>
+    <li><strong>Hot data in RAM is fast; cold data costs I/O.</strong> A query is "slow after restart" because the cache is empty.</li>
+    <li><strong>Random I/O is expensive; sequential is cheap</strong>, so the planner prefers scans when many pages are needed.</li>
+    <li><strong>Row width matters</strong>: narrow rows mean more rows per page, so fewer page reads.</li>
+    <li><strong>Index-only scans</strong> win by skipping heap pages.</li>
+    <li><strong>The OS cache also helps</strong>: PostgreSQL relies on it as a second layer (double buffering), while some databases bypass it with direct I/O.</li>
+  </ul>
+  <p>Sizing rule of thumb: you want the <strong>working set</strong> (the data and indexes actively used) to fit in memory.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The unit of cost in a database is the page, not the row. To speed something up, reduce the number of pages it must touch, or make sure those pages are already in the buffer pool.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Evaluating performance on a warm cache only</td><td>Production cold starts and cache misses look much worse</td><td>Test both warm and cold; check hit ratios</td></tr>
+    <tr><td>Wide rows with rarely used large columns</td><td>Few rows per page; scans read lots of unneeded bytes</td><td>Move big, rarely read columns to a separate table or rely on TOAST</td></tr>
+    <tr><td>Random UUID primary keys in a clustered-index engine</td><td>Inserts scatter across the tree, causing page splits and cache churn</td><td>Use time-ordered ids (UUIDv7, ULID) or sequential keys</td></tr>
+    <tr><td>Setting the buffer pool to nearly all RAM</td><td>The OS and other processes starve; swapping begins</td><td>Leave headroom; follow engine-specific sizing guidance</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>In PostgreSQL, run <code>SELECT ctid, * FROM customers LIMIT 5;</code> and <code>SELECT pg_relation_size('customers') / 8192 AS pages;</code>. Compute average rows per page.</li>
+      <li>Install the <code>pg_buffercache</code> extension (or use InnoDB status) and see which tables occupy the buffer pool after running a big query.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Data is stored and transferred in fixed-size pages, not individual rows.</li>
+      <li>The buffer pool caches pages in memory; hits are fast, misses cost disk I/O, and writes are deferred.</li>
+      <li>Performance work often means touching fewer pages or keeping the working set in memory.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Storage Engine Internals — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feature-Based Architecture — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · front-end architecture</span> → lesson 01</p>
+  <h1>Feature-Based Architecture</h1>
+  <p class="lede">In a large codebase, how files are organized determines how fast people can find, change, and delete things. Organizing by feature keeps related code together and makes the boundaries between parts of the product explicit.</p>
+
+  <h2><span class="num">§1</span>From Layers to Features</h2>
+
+  <p>A small app is often organized <strong>by layer</strong>: all components in one folder, all hooks in another, all API calls in a third. As the app grows, a single feature (say, checkout) is scattered across six folders, every change touches many places, and nobody knows what is safe to delete.</p>
+
+  <pre><span class="comment">// by layer: one feature is spread everywhere</span>
+src/
+  components/   CartItem.tsx  ProductCard.tsx  CheckoutForm.tsx  ...(200 files)
+  hooks/        useCart.ts  useCheckout.ts  ...
+  api/          cart.ts  products.ts  orders.ts
+  utils/        ...
+
+<span class="comment">// by feature: a feature is a folder you can read, move, or delete</span>
+src/
+  features/
+    cart/        components/  hooks/  api.ts  store.ts  index.ts   &lt;- public API
+    checkout/    components/  hooks/  api.ts  schema.ts  index.ts
+    products/    ...
+  shared/        ui/  lib/  hooks/       &lt;- used by many features, no feature knowledge
+  app/           routes, providers, layout  &lt;- wires features together</pre>
+
+  <p>A <strong>feature</strong> is a slice of product behavior with a clear owner (search, cart, onboarding), not a technical category. The test: *can I describe it to a product manager?* Each folder contains everything that feature needs: UI, state, data access, types, and tests.</p>
+
+  <h2><span class="num">§2</span>Boundaries and Dependency Rules</h2>
+
+  <p>Folders alone do not create architecture; <strong>rules about who may import whom</strong> do. Without them, features quietly depend on each other's internals and the structure becomes decoration.</p>
+
+  <ul>
+    <li><strong>Direction of dependencies</strong>: <code>app</code> can import from <code>features</code> and <code>shared</code>; <code>features</code> can import from <code>shared</code>; <code>shared</code> imports from nothing above it. <strong>Features should not import from other features' internals.</strong></li>
+    <li>Each feature exposes a <strong>public API</strong> through its <code>index.ts</code>. Other code imports only from that entry point, never from deep paths like <code>features/cart/hooks/useCartInternal</code>.</li>
+    <li>When two features need to cooperate, prefer <strong>composition at the app level</strong> (the page wires the cart button into the product card via props or slots) or a narrow, explicit interface, instead of one feature reaching into another.</li>
+    <li>Code used by <strong>two or more</strong> features moves to <code>shared</code>. Do not pre-emptively share: duplication is cheaper than the wrong abstraction.</li>
+    <li><code>shared</code> must not know about any feature (no <code>if (feature === "cart")</code> in shared UI).</li>
+  </ul>
+
+  <pre><span class="comment">// features/cart/index.ts : the public surface</span>
+export { CartButton } from "./components/CartButton";
+export { useCartCount } from "./hooks/useCartCount";
+export type { CartItem } from "./types";
+<span class="comment">// everything else in cart/ is private</span>
+
+<span class="comment">// app/ProductPage.tsx : composition at the app layer</span>
+import { CartButton } from "@/features/cart";
+import { ProductDetails } from "@/features/products";
+&lt;ProductDetails renderActions={(p) =&gt; &lt;CartButton productId={p.id} /&gt;} /&gt;
+
+<span class="comment">// enforce it with lint: eslint-plugin-boundaries or import/no-restricted-paths</span>
+<span class="comment">// rule: features/* may not import from features/*/(components|hooks|...) of another feature</span></pre>
+
+  <h2><span class="num">§3</span>Making It Work Over Time</h2>
+
+  <table>
+    <tr><th>Concern</th><th>Practice</th></tr>
+    <tr><td>Finding code</td><td>Name folders after the product domain, not technology</td></tr>
+    <tr><td>Deleting a feature</td><td>Remove its folder and its few references from <code>app/</code></td></tr>
+    <tr><td>Ownership</td><td>Map each feature folder to a team (CODEOWNERS)</td></tr>
+    <tr><td>Enforcing boundaries</td><td>Lint rules or tools (<code>eslint-plugin-boundaries</code>, Nx module boundaries, <code>dependency-cruiser</code>) that <strong>fail CI</strong></td></tr>
+    <tr><td>Shared UI</td><td>A design system or <code>shared/ui</code> with no business logic</td></tr>
+    <tr><td>Cross-feature state</td><td>Lift to the app layer, or a small shared store with a narrow API</td></tr>
+    <tr><td>Growth</td><td>Split a feature that gets large into sub-features, and promote shared pieces only when a second user appears</td></tr>
+  </table>
+
+  <ul>
+    <li>Colocate <strong>tests, styles, and types</strong> with the code they cover.</li>
+    <li>Keep <strong>routing</strong> thin: route files import from features and compose them, rather than holding logic.</li>
+    <li>Resist the urge to create a perfect structure up front. <strong>Start simple, reorganize as boundaries become clear</strong>, and use the dependency rules to guide the move.</li>
+    <li>Feature folders and <strong>domain-driven</strong> thinking help most when several teams work in the same repo; for a solo project, a flat structure can be perfectly fine.</li>
+    <li>Beware over-abstraction: a <code>features/</code> folder with ten tiny features and elaborate indirection is as hard to navigate as the layered mess it replaced.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">A boundary nobody enforces is a suggestion</span>
+    Folders express intent; lint rules and CI make it real. Add an automated check for the one rule that matters most: features do not reach into each other's internals.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Organizing by file type in a large app</td><td>One change touches many folders; nothing is safely deletable</td><td>Group by feature and colocate</td></tr>
+    <tr><td>Features importing each other's internals</td><td>Hidden coupling; changes ripple unpredictably</td><td>Expose a small public API and compose at the app layer</td></tr>
+    <tr><td>Moving everything to <code>shared</code> "in case"</td><td>A dumping ground full of feature-specific code</td><td>Promote only when a second feature needs it</td></tr>
+    <tr><td>Defining boundaries without enforcement</td><td>They erode within months</td><td>Add lint or tooling rules that fail CI</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a layered project and reorganize one feature (such as cart) into a feature folder with an <code>index.ts</code> public API.</li>
+      <li>Add a lint rule that forbids importing from another feature's internal paths, and fix the violations it finds.</li>
+      <li>Draw the dependency diagram of an app you know and mark every arrow that violates the intended direction.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Organize large apps by product feature, with each folder holding its UI, state, data, and tests.</li>
+      <li>Define dependency directions and a public API per feature, and enforce them with tooling.</li>
+      <li>Share only when a second consumer exists, and keep <code>shared</code> free of feature knowledge.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Front-End Architecture — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Testing Strategy",
+  "description": "The test pyramid, test doubles, designing for testability, integration and contract tests, flaky tests, and coverage and mutation testing.",
+  "order": 1
+}

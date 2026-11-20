@@ -1,0 +1,6 @@
+{
+  "title": "Computer Architecture",
+  "description": "CPUs, caches, and pipelines, from logic gates to performance.",
+  "order": 6,
+  "compileRoot": true
+}

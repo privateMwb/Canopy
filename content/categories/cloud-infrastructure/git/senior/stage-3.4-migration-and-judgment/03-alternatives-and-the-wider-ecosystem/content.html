@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alternatives &amp; the Wider Ecosystem — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · migration &amp; judgment</span> → lesson 03</p>
+  <h1>Alternatives &amp; the Wider Ecosystem</h1>
+  <p class="lede">Jujutsu, Mercurial, Fossil, and Sapling take different approaches to version control, and each shows a design choice Git made, or could have made differently.</p>
+
+  <h2><span class="num">§1</span>Why Look Beyond Git</h2>
+  <p>Git dominates, but its interface is widely criticized, and several tools redesign the user experience, the data model, or the scale story. Knowing them sharpens your understanding of Git itself, and some can be used <strong>on top of</strong> a Git repository without changing how your team works.</p>
+
+  <h2><span class="num">§2</span>A Tour</h2>
+  <table>
+    <tr><th>Tool</th><th>Idea</th><th>What it teaches</th></tr>
+    <tr><td><strong>Jujutsu (<code>jj</code>)</strong></td><td>Works on Git repositories; the working copy is itself a commit that is amended automatically; no staging area; conflicts are stored in commits; every operation is recorded and undoable (<code>jj undo</code>)</td><td>How much of Git's friction comes from the index and from fear of rewriting</td></tr>
+    <tr><td><strong>Mercurial (<code>hg</code>)</strong></td><td>Distributed like Git, with a simpler interface and strong extension system; history is harder to rewrite by default (phases)</td><td>A different balance between safety and flexibility</td></tr>
+    <tr><td><strong>Sapling</strong></td><td>Meta's source control, compatible with Git hosting; smartlog view, stacked commits as the norm, built for very large monorepos</td><td>How stacked, small-commit workflows and scale feel when they are first-class</td></tr>
+    <tr><td><strong>Fossil</strong></td><td>One executable bundling version control, wiki, tickets, and a web UI, stored in one SQLite file; used by SQLite itself</td><td>The value of integrated project management in a single portable file</td></tr>
+    <tr><td><strong>Perforce / Plastic SCM</strong></td><td>Centralized with locking and strong binary/asset handling</td><td>Why game studios and others with huge binaries still use them</td></tr>
+  </table>
+  <pre>jj git clone https://example.com/repo.git     <span class="comment"># use a normal Git remote</span>
+jj new main -m "experiment"                      <span class="comment"># start a change; no add or commit needed</span>
+jj log                                            <span class="comment"># change graph</span>
+jj undo                                           <span class="comment"># undo the last operation, whatever it was</span>
+jj git push                                       <span class="comment"># push to the Git remote</span></pre>
+
+  <h2><span class="num">§3</span>What These Tools Reveal About Git</h2>
+  <ul>
+    <li>The <strong>staging area</strong> is a design choice, and you can have a good workflow without it</li>
+    <li><strong>Commit identity</strong> can be a stable change ID rather than only a hash, which makes rewriting and stacking easier to follow</li>
+    <li><strong>Conflicts</strong> can be first-class data, recorded in commits and resolved later</li>
+    <li><strong>Safety</strong> (operation logs, undo) can be built into the tool rather than left to the reflog</li>
+    <li>Git's <strong>hosting ecosystem</strong> (pull requests, CI, tooling) is a stronger reason to stay than its interface</li>
+  </ul>
+  <p>Evaluate a switch by asking what problem it solves for your team, whether it interoperates with your host and CI, and how much retraining it costs.</p>
+  <div class="callout">
+    <span class="label">Interoperability lowers the risk</span>
+    Tools that speak Git, such as Jujutsu and Sapling, let one person try a different workflow while everyone else keeps using ordinary Git. That makes experimentation cheap and reversible.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Switching a whole team for interface preference alone</td><td>Retraining and tooling cost without a measurable gain</td><td>Pilot individually, via a Git-compatible tool</td></tr>
+    <tr><td>Assuming alternatives are unfinished or obscure</td><td>Missing real innovations in workflow and scale</td><td>Try them on a throwaway repository</td></tr>
+    <tr><td>Judging Git only by its commands</td><td>Overlooking that its strength is its ecosystem and data model</td><td>Separate the interface from the storage and hosting layers</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Install Jujutsu (or Sapling) and use it on a clone of a small Git repository; list three things that felt different and the Git concept each one maps to.</li>
+      <li>Write a short argument for and against moving a team to a non-Git tool, naming the specific problem it would solve.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Jujutsu, Sapling, Mercurial, and Fossil rethink the interface, data model, or scale of version control.</li>
+      <li>Several work on top of Git repositories, so you can try them without switching the team.</li>
+      <li>They show that the staging area, commit identity, and conflict handling are design choices.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Migration &amp; Judgment — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

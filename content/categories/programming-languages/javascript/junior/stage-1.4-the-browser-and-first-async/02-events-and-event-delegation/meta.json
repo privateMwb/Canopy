@@ -1,0 +1,5 @@
+{
+  "title": "Events & Event Delegation",
+  "description": "Listeners, bubbling, preventDefault, and handling many elements with one handler.",
+  "order": 2
+}

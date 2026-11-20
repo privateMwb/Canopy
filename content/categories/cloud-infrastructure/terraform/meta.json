@@ -1,0 +1,7 @@
+{
+  "title": "Terraform & Infrastructure as Code",
+  "description": "Infrastructure as code, from your first resource to state, modules, pipelines, and platform design.",
+  "order": 4,
+  "compileRoot": true,
+  "icon": "lang_terraform"
+}

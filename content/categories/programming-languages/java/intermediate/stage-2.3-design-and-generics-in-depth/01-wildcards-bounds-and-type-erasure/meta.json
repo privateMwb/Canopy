@@ -1,0 +1,5 @@
+{
+  "title": "Wildcards, Bounds & Type Erasure",
+  "description": "? extends, ? super, PECS, and what generics can't do at runtime.",
+  "order": 1
+}

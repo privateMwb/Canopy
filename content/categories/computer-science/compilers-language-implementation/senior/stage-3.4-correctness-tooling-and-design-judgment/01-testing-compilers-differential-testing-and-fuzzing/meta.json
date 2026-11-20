@@ -1,0 +1,5 @@
+{
+  "title": "Testing Compilers: Differential Testing & Fuzzing",
+  "description": "Generating random programs, comparing implementations, and reducing a failing case.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Extension Methods & Expression Trees",
+  "description": "Extending types you don't own, and code that can be inspected as data.",
+  "order": 4
+}

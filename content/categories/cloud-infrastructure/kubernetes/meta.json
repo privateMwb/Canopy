@@ -1,0 +1,7 @@
+{
+  "title": "Kubernetes & Container Orchestration",
+  "description": "Running containers at scale: core objects, scaling, networking, security, and when the complexity is worth it.",
+  "order": 3,
+  "compileRoot": true,
+  "icon": "lang_kubernetes"
+}

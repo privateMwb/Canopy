@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Handling Events — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · state &amp; events</span> → lesson 02</p>
+  <h1>Handling Events</h1>
+  <p class="lede">Event handlers connect the user's actions to state changes. React's event system looks like the DOM's, with a few differences worth knowing before they trip you up.</p>
+
+  <h2><span class="num">§1</span>Attaching Handlers</h2>
+
+  <p>Pass a <strong>function</strong> to an event prop such as <code>onClick</code>, <code>onChange</code>, or <code>onSubmit</code>. React calls it with an <strong>event object</strong> when the event happens. Handler props are written in camelCase.</p>
+
+  <pre>function Like() {
+  const [likes, setLikes] = useState(0);
+
+  function handleClick(event) {
+    console.log(event.type);          <span class="comment">// "click"</span>
+    setLikes((n) =&gt; n + 1);
+  }
+
+  return &lt;button onClick={handleClick}&gt;Like ({likes})&lt;/button&gt;;
+}</pre>
+
+  <p>Define handlers inside the component so that they can see its props and state. Name them <code>handleSomething</code>, and name handler <strong>props</strong> <code>onSomething</code> (<code>&lt;Menu onSelect={handleSelect} /&gt;</code>), a convention that makes the data flow easy to read.</p>
+
+  <h2><span class="num">§2</span>Pass the Function, Do Not Call It</h2>
+
+  <p>The most common beginner bug is calling the function while rendering instead of passing it. <code>onClick={handleClick()}</code> runs <code>handleClick</code> immediately during render, and gives React its return value. If it sets state, you also get an infinite loop.</p>
+
+  <pre>&lt;button onClick={handleClick}&gt;OK&lt;/button&gt;         <span class="comment">// passes the function</span>
+&lt;button onClick={handleClick()}&gt;Bug&lt;/button&gt;      <span class="comment">// calls it during render</span>
+
+<span class="comment">// to pass an argument, wrap it in an arrow function</span>
+&lt;button onClick={() =&gt; handleDelete(item.id)}&gt;Delete&lt;/button&gt;
+
+<span class="comment">// an inline arrow is fine for short handlers</span>
+&lt;button onClick={() =&gt; setOpen(!open)}&gt;Toggle&lt;/button&gt;</pre>
+
+  <p>Creating an arrow function on each render is cheap and almost never a performance problem, so do not avoid inline handlers out of habit.</p>
+
+  <h2><span class="num">§3</span>The Event Object and Default Behavior</h2>
+
+  <p>React wraps the browser's event in a <strong>synthetic event</strong> with the same interface (<code>target</code>, <code>currentTarget</code>, <code>preventDefault</code>, <code>stopPropagation</code>, and so on) that behaves consistently across browsers. The most useful calls are <code>preventDefault</code> (stop the browser's built-in action) and reading values from <code>event.target</code>.</p>
+
+  <pre>function SearchForm({ onSearch }) {
+  function handleSubmit(event) {
+    event.preventDefault();                       <span class="comment">// do not reload the page</span>
+    const data = new FormData(event.currentTarget);
+    onSearch(data.get("q"));
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input name="q" /&gt;
+      &lt;button&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre>
+
+  <ul>
+    <li>Events <strong>bubble</strong> up the tree, as in the DOM. Use <code>event.stopPropagation()</code> only when you must.</li>
+    <li>To run a handler in the capture phase, add <code>Capture</code> to the name: <code>onClickCapture</code>.</li>
+    <li>Use <code>onKeyDown</code> with <code>event.key</code> for keyboard shortcuts, and make sure keyboard users can do everything mouse users can.</li>
+    <li>Prefer real <code>&lt;button&gt;</code> elements for clicks. They give you keyboard and screen reader support for free; a clickable <code>&lt;div&gt;</code> does not.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">A handler is a value, not a call</span>
+    Parentheses run the function. Without them, you hand the function to React so it can run it later, when the user acts.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Writing <code>onClick={doIt()}</code></td><td>Runs during render; can loop forever</td><td>Write <code>onClick={doIt}</code> or <code>onClick={() =&gt; doIt(arg)}</code></td></tr>
+    <tr><td>Forgetting <code>event.preventDefault()</code> in a submit handler</td><td>The page reloads and state is lost</td><td>Call it first in <code>onSubmit</code></td></tr>
+    <tr><td>Using <code>onclick</code> (lowercase)</td><td>Nothing happens; React ignores it</td><td>Use camelCase: <code>onClick</code></td></tr>
+    <tr><td>Making a <code>&lt;div onClick&gt;</code> the button</td><td>Not focusable or keyboard-operable</td><td>Use <code>&lt;button&gt;</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a button that toggles a panel open and closed using an inline arrow handler.</li>
+      <li>Create a delete button per list row that calls <code>handleDelete(item.id)</code> using an arrow wrapper.</li>
+      <li>Intercept a form's submit, read its fields with <code>FormData</code>, and log them without reloading the page.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Pass handler functions to camelCase props like <code>onClick</code>; React calls them with an event.</li>
+      <li>Do not call the function in the JSX; wrap it in an arrow to pass arguments.</li>
+      <li>Use <code>preventDefault</code> for submits, and real buttons for accessibility.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · State &amp; Events — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

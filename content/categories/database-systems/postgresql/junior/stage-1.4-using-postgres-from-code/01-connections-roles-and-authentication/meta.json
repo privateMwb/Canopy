@@ -1,0 +1,5 @@
+{
+  "title": "Connections, Roles & Authentication",
+  "description": "Connection strings, least-privilege roles, and what pg_hba.conf decides.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Syntax Errors & Recovery",
+  "description": "Reporting the first error clearly, then resynchronizing so parsing can continue and find the next one.",
+  "order": 5
+}

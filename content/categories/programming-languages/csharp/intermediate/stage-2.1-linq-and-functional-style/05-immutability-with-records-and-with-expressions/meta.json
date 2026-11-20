@@ -1,0 +1,5 @@
+{
+  "title": "Immutability with Records & with-Expressions",
+  "description": "Non-destructive mutation and designing around immutable models.",
+  "order": 5
+}

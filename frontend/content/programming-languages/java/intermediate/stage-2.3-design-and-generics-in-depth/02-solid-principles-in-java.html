@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOLID Principles in Java — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · design &amp; generics in depth</span> → lesson 02</p>
+  <h1>SOLID Principles in Java</h1>
+  <p class="lede">SOLID is a set of five guidelines for keeping object-oriented code easy to change, and each one is a response to a specific kind of pain that becomes real as a codebase grows.</p>
+
+  <h2><span class="num">§1</span>S: Single Responsibility</h2>
+  <p>A class should have <strong>one reason to change</strong>. If invoicing logic, formatting, and email delivery live in one class, a change to any of them risks breaking the others and every test must set up all three.</p>
+  <pre><span class="comment">// Tangled: three reasons to change</span>
+class InvoiceService {
+    Invoice build(Order o) { <span class="comment">/* pricing rules */</span> return null; }
+    String toHtml(Invoice i) { <span class="comment">/* presentation */</span> return ""; }
+    void email(Invoice i) { <span class="comment">/* SMTP */</span> }
+}
+
+<span class="comment">// Separated</span>
+class InvoiceBuilder { Invoice build(Order o) { return null; } }
+class InvoiceRenderer { String toHtml(Invoice i) { return ""; } }
+class InvoiceMailer { void send(Invoice i) { } }</pre>
+
+  <h2><span class="num">§2</span>O: Open/Closed</h2>
+  <p>Code should be <strong>open for extension, closed for modification</strong>: you add new behavior by adding new code, not by editing tested code. A growing <code>if</code>/<code>switch</code> over types is the usual smell.</p>
+  <pre>interface Discount { long apply(long cents); }
+record PercentOff(int pct) implements Discount { public long apply(long c) { return c - c * pct / 100; } }
+record FlatOff(long off) implements Discount { public long apply(long c) { return Math.max(0, c - off); } }
+
+long total(long cents, List&lt;Discount&gt; discounts) {
+    for (Discount d : discounts) cents = d.apply(cents);       <span class="comment">// new discounts need no change here</span>
+    return cents;
+}</pre>
+  <p>(With sealed types and a closed set of cases, a <code>switch</code> can be the better choice; see the earlier lesson. The principle applies where you expect new variants from outside.)</p>
+
+  <h2><span class="num">§3</span>L: Liskov Substitution</h2>
+  <p>A subtype must be usable anywhere its supertype is, <strong>without breaking the caller's expectations</strong>. The textbook violation is a <code>Square</code> that extends <code>Rectangle</code> and breaks <code>setWidth</code>/<code>setHeight</code> assumptions. In practice, watch for subclasses that throw <code>UnsupportedOperationException</code>, tighten preconditions, or weaken guarantees.</p>
+  <pre>class ReadOnlyList&lt;T&gt; extends ArrayList&lt;T&gt; {
+    @Override public boolean add(T t) { throw new UnsupportedOperationException(); }   <span class="comment">// callers expecting a List break</span>
+}</pre>
+  <p>If a subclass can't honor the contract, it probably shouldn't be a subclass; model the relationship differently, with a separate interface or by composition.</p>
+
+  <h2><span class="num">§4</span>I: Interface Segregation</h2>
+  <p>Don't force clients to depend on methods they don't use. A fat interface makes implementers write stubs and makes fakes in tests painful.</p>
+  <pre>interface Worker { void work(); void eat(); }            <span class="comment">// a Robot must implement eat()?</span>
+interface Workable { void work(); }                       <span class="comment">// split into small, role-based interfaces</span>
+interface Feedable { void eat(); }</pre>
+
+  <h2><span class="num">§5</span>D: Dependency Inversion</h2>
+  <p>High-level policy should depend on <strong>abstractions</strong>, not on concrete low-level details, and the concrete pieces are handed in from outside rather than created inside.</p>
+  <pre>class ReportJob {
+    private final ReportStore store;                      <span class="comment">// abstraction</span>
+    ReportJob(ReportStore store) { this.store = store; }  <span class="comment">// injected</span>
+    void run() { store.save("report"); }
+}
+interface ReportStore { void save(String data); }
+class S3Store implements ReportStore { public void save(String d) { } }
+class InMemoryStore implements ReportStore { public void save(String d) { } }   <span class="comment">// for tests</span></pre>
+  <p>This is what dependency injection frameworks automate, but you can do it by hand with constructor parameters.</p>
+
+  <h2><span class="num">§6</span>Knowing When Not to Apply Them</h2>
+  <p>SOLID can be overapplied. An interface with a single implementation that will never have another, a class split into ten tiny ones that must be read together, or an "extension point" nobody uses are all costs without benefits. Apply a principle when you feel the pain it addresses (hard-to-test code, ripple-effect changes, brittle subclasses), not in advance. The question is always: <em>what kind of change do I expect, and does this design make it cheap?</em></p>
+
+  <div class="callout">
+    <span class="label">Principles, not laws</span>
+    SOLID describes tradeoffs. Duplication is sometimes cheaper than the wrong abstraction. Use the principles to explain why a design hurts, and as a checklist when you review code.
+  </div>
+
+  <h2><span class="num">§7</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>A giant <code>Manager</code> or <code>Util</code> class</td><td>Many unrelated reasons to change; hard to test</td><td>Split by responsibility</td></tr>
+    <tr><td>Growing <code>if (type == ...)</code> chains</td><td>Each new case edits tested code</td><td>Replace with polymorphism, or a sealed type with exhaustive <code>switch</code></td></tr>
+    <tr><td>A subclass throwing <code>UnsupportedOperationException</code></td><td>Violates substitutability, so callers crash</td><td>Rework the hierarchy; prefer composition</td></tr>
+    <tr><td>One huge interface for all clients</td><td>Stubs and unneeded dependencies</td><td>Split into focused interfaces</td></tr>
+    <tr><td>Creating dependencies with <code>new</code> inside business logic</td><td>Impossible to test or swap</td><td>Inject through constructors</td></tr>
+    <tr><td>An interface for every class "just in case"</td><td>Indirection with no benefit</td><td>Introduce abstractions when a second use appears</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a class that reads a CSV, validates it, and writes to a database, and split it by responsibility. Which seams became easy to test?</li>
+      <li>Replace a <code>switch</code> on a <code>type</code> string with a polymorphic design, then discuss whether a sealed-type <code>switch</code> would have been better.</li>
+      <li>Find a place where a fake implementation would make a test simpler, and introduce an interface plus constructor injection.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Each SOLID principle answers a concrete pain: tangled responsibilities, edited-in-place code, brittle subclasses, fat interfaces, and hard-wired dependencies.</li>
+      <li>Prefer small, focused types, composition over fragile inheritance, and constructor injection.</li>
+      <li>Apply the principles when the pain appears, and don't create abstraction speculatively.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Design &amp; Generics in Depth — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

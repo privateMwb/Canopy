@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Designing and Defending a Network Architecture — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · security architecture & design judgment</span> → lesson 04</p>
+  <h1>Designing and Defending a Network Architecture</h1>
+  <p class="lede">A good design isn't just a diagram that works; it's a set of choices whose tradeoffs you can state, justify, and revisit when the facts change.</p>
+
+  <h2><span class="num">§1</span>Start With Requirements</h2>
+  <p>Before drawing boxes, write down what the system must do and how well. Vague goals produce arbitrary designs.</p>
+  <table>
+    <tr><th>Ask</th><th>Example answers</th></tr>
+    <tr><td>Who are the clients, and where?</td><td>Mobile apps worldwide; internal services; partners</td></tr>
+    <tr><td>What are the traffic patterns?</td><td>Read-heavy, bursty at 9 a.m.; 2,000 requests per second peak</td></tr>
+    <tr><td>What are the availability and latency targets?</td><td>99.95% monthly; p99 under 300 ms</td></tr>
+    <tr><td>What data is sensitive?</td><td>Payment data, personal data, regulated records</td></tr>
+    <tr><td>What are the constraints?</td><td>Budget, team size, compliance, existing systems</td></tr>
+  </table>
+  <p>Requirements also tell you what *not* to build. A 50-request-per-second internal tool doesn't need multi-region active-active failover.</p>
+
+  <h2><span class="num">§2</span>Make Tradeoffs Explicit</h2>
+  <p>For each significant decision, list the realistic options and what each gains and costs, then record why you chose one. A short <strong>decision record</strong> is enough.</p>
+  <pre>Decision: Load balancing for the public API
+Context:  ~2k rps peak, REST + a few WebSocket endpoints, 3 engineers on call
+Options:
+  A. Cloud L7 load balancer       + managed, TLS termination, WebSocket support
+                                  - per-request cost, less routing flexibility
+  B. Self-managed nginx fleet     + full control   - we must patch and operate it
+Decision: A.   Revisit if: cost exceeds budget, or we need custom routing logic.
+Risks:    vendor limits on idle WebSocket timeouts → mitigated with 30 s heartbeats.</pre>
+  <p>The 'revisit if' line is what makes a decision defensible later. It says what evidence would change your mind, so a change of direction is a planned response rather than an admission of error.</p>
+
+  <h2><span class="num">§3</span>Design for Failure and Explain It</h2>
+  <p>Walk the design through failures in order of likelihood: an instance dies, an availability zone fails, a dependency slows down, a certificate expires, a deploy goes wrong, a client misbehaves. For each, name what detects it, what limits the impact, and how recovery happens, tying back to the tools you know: health checks and draining, timeouts and retry budgets, circuit breakers, rate limits, and segmentation.</p>
+  <ul>
+    <li><strong>Show the path of a request</strong> end to end: DNS, CDN, load balancer, service, database, naming where TLS terminates and where authentication happens</li>
+    <li><strong>Identify single points of failure</strong> and either remove them or accept them knowingly</li>
+    <li><strong>State the security model:</strong> what's public, what's internal, who can call what, and what a breach of each component exposes</li>
+    <li><strong>Say what you measured versus assumed:</strong> assumptions are where designs fail</li>
+  </ul>
+  <p>Adjust the explanation for the audience. Engineers want request paths, failure modes, and numbers. Executives and non-technical stakeholders want the risk, cost, and the decision in plain terms: 'If one data center fails, users see a brief slowdown rather than an outage, at about 30% higher cost.' Analogies help, but state the limits of the analogy.</p>
+  <p>When challenged, separate facts, assumptions, and preferences. Concede quickly when a challenge exposes a real gap, defend the choices you've reasoned through, and say 'I don't know yet, and here's how I'd find out' when that's true.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The strongest designs aren't the most elaborate. They match the requirements, show their tradeoffs, and say in advance what would make them change.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Designing for imagined scale</td><td>Complexity and cost with no benefit</td><td>Design for known requirements, with a clear path to grow</td></tr>
+    <tr><td>Presenting one option as the only option</td><td>Reviewers can't tell whether alternatives were considered</td><td>Show the options you rejected and why</td></tr>
+    <tr><td>Leaving failure modes for later</td><td>Outages reveal them first</td><td>Walk through failures during design and record the mitigations</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Pick a service you know and write a one-page decision record for its load balancing or data-path choice, including a 'revisit if' condition.</li>
+      <li>Explain the same architecture twice: once to an engineer in three minutes, and once to a non-technical stakeholder in three sentences.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Start from requirements: clients, traffic, targets, sensitivity, and constraints.</li>
+      <li>Record decisions with options, tradeoffs, and a 'revisit if' trigger.</li>
+      <li>Walk through failures, show request paths, and tailor the explanation to the audience.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Security Architecture & Design Judgment — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

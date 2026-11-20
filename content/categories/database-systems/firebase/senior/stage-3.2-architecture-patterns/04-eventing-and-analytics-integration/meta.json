@@ -1,0 +1,5 @@
+{
+  "title": "Eventing & Analytics Integration",
+  "description": "Pub/Sub, BigQuery export, and feeding other systems.",
+  "order": 4
+}

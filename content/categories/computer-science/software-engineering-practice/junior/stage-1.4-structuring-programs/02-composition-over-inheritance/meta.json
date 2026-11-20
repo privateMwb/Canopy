@@ -1,0 +1,5 @@
+{
+  "title": "Composition over Inheritance",
+  "description": "Why deep class hierarchies turn brittle, and how has-a relationships keep code flexible.",
+  "order": 2
+}

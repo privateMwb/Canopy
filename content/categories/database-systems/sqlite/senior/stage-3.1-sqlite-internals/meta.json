@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — SQLite Internals",
+  "description": "The B-tree file format, the pager and cache, WAL internals, the VDBE, and atomic commit.",
+  "order": 1
+}

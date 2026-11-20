@@ -1,0 +1,5 @@
+{
+  "title": "kubectl & a Local Cluster",
+  "description": "Running a local cluster and the everyday kubectl commands.",
+  "order": 3
+}

@@ -1,0 +1,1 @@
+{"title": "Sandboxing & Memory Protection", "description": "seccomp, capabilities, ASLR, NX, and stack canaries as layers of defense.", "order": 3}

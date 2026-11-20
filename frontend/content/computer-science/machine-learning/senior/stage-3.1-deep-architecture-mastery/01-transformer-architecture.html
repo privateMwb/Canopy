@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Transformer Architecture — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · deep architecture mastery</span> → lesson 01</p>
+  <h1>Transformer Architecture</h1>
+  <p class="lede">Inside the block: multi-head attention, positional encoding, and layer normalization — the pieces that make a transformer work.</p>
+
+  <h2><span class="num">§1</span>Multi-Head Attention</h2>
+  <p>A single attention mechanism learns one way of relating positions to each other. <strong>Multi-head attention</strong> runs several attention computations in parallel, each with its own learned weights — one head might learn to track grammatical relationships, another might track topical similarity. Their outputs are concatenated and combined.</p>
+  <pre><span class="comment"># conceptually, for h heads:</span>
+head_i = Attention(Q @ W_q_i, K @ W_k_i, V @ W_v_i)
+output = Concat(head_1, ..., head_h) @ W_o</pre>
+  <p>Each head operates on a smaller dimension than the full model, so multi-head attention costs roughly the same compute as one large attention head, while letting the model attend to several different kinds of relationships simultaneously.</p>
+
+  <h2><span class="num">§2</span>Positional Encoding — Giving Attention a Sense of Order</h2>
+  <p>Attention itself has no inherent notion of sequence order — swapping two tokens' positions wouldn't change attention's output on its own. Positional encodings inject order information directly into each token's representation before attention is applied, often using fixed sine/cosine patterns or learned position embeddings.</p>
+  <pre>x = token_embedding(tokens) + positional_encoding(positions)</pre>
+
+  <h2><span class="num">§3</span>Layer Normalization — Keeping Training Stable</h2>
+  <pre>x = layer_norm(x + sublayer(x))   <span class="comment"># a "residual connection" plus normalization, repeated after every sublayer</span></pre>
+  <p>Layer norm rescales activations within each layer to have a consistent distribution, which substantially stabilizes training in deep networks. The residual connection (adding the input back to the sublayer's output) helps gradients flow through very deep stacks of transformer blocks without vanishing.</p>
+
+  <h2><span class="num">§4</span>Putting the Block Together</h2>
+  <pre>x = x + MultiHeadAttention(x)
+x = LayerNorm(x)
+x = x + FeedForward(x)
+x = LayerNorm(x)</pre>
+  <p>A full transformer stacks many of these blocks — each one refining the representation further, with attention mixing information across positions and the feed-forward layer processing each position independently.</p>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Omitting positional encoding</td><td>The model can't distinguish "dog bites man" from "man bites dog"</td><td>Always inject positional information before attention</td></tr>
+    <tr><td>Treating multi-head attention as just "attention but bigger"</td><td>Misses that heads can specialize in different relationship types</td><td>Understand heads as parallel, independently-learned attention patterns</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>In your own words, explain why attention alone can't distinguish word order without positional encoding.</li>
+      <li>Describe what a residual connection does, and why it helps very deep networks train.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Multi-head attention runs several attention patterns in parallel, letting the model capture different kinds of relationships at once.</li>
+      <li>Positional encoding injects sequence order, which attention itself doesn't inherently have.</li>
+      <li>Layer normalization and residual connections keep very deep transformer stacks trainable.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Deep Architecture Mastery — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

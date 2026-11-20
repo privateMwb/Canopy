@@ -1,0 +1,5 @@
+{
+  "title": "Composite, Partial & Expression Indexes",
+  "description": "Column order, indexing a subset of rows, and indexing a computed value.",
+  "order": 3
+}

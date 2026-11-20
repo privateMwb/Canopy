@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Configuration That Matters — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · operating postgres</span> → lesson 02</p>
+  <h1>Configuration That Matters</h1>
+  <p class="lede">A handful of Postgres settings account for most tuning gains, and each one should be changed because a measurement says so.</p>
+
+  <h2><span class="num">§1</span>Where Settings Live</h2>
+
+  <p>Settings come from <code>postgresql.conf</code>, <code>postgresql.auto.conf</code> (written by <code>ALTER SYSTEM</code>), per-database and per-role overrides, and the session. The <code>pg_settings</code> view shows the current value, its source, and whether a change needs a reload or a restart.</p>
+  <pre>SHOW shared_buffers;
+SELECT name, setting, unit, source, context FROM pg_settings WHERE name = 'work_mem';
+
+ALTER SYSTEM SET work_mem = '32MB';
+SELECT pg_reload_conf();                       <span class="comment">-- enough for context = 'sighup' or 'user'</span>
+
+ALTER ROLE report_user SET work_mem = '256MB'; <span class="comment">-- override for one role</span>
+SET LOCAL work_mem = '256MB';                  <span class="comment">-- for one transaction</span></pre>
+  <p>A <code>context</code> of <code>postmaster</code> means a restart is required (for example <code>shared_buffers</code>). Keep configuration in version control or configuration management so changes are reviewed and reproducible.</p>
+
+  <h2><span class="num">§2</span>The Settings That Matter Most</h2>
+
+  <table>
+    <tr><th>Setting</th><th>What it does</th><th>Starting point</th></tr>
+    <tr><td><code>shared_buffers</code></td><td>Postgres's own page cache</td><td>About 25% of RAM on a dedicated server</td></tr>
+    <tr><td><code>effective_cache_size</code></td><td>Planner's guess of total cache (Postgres plus OS)</td><td>50 to 75% of RAM</td></tr>
+    <tr><td><code>work_mem</code></td><td>Memory per sort or hash operation, per node, per connection</td><td>4 to 64 MB; raise for specific roles</td></tr>
+    <tr><td><code>maintenance_work_mem</code></td><td>Memory for <code>VACUUM</code> and <code>CREATE INDEX</code></td><td>256 MB to 2 GB</td></tr>
+    <tr><td><code>max_wal_size</code></td><td>How much WAL accumulates between checkpoints</td><td>Raise (e.g. 4 to 16 GB) if checkpoints fire too often</td></tr>
+    <tr><td><code>random_page_cost</code></td><td>Planner's cost of non-sequential reads</td><td>About 1.1 on SSDs</td></tr>
+    <tr><td><code>max_connections</code></td><td>Hard limit on connections</td><td>Keep modest; use a pooler</td></tr>
+  </table>
+  <p>Mind the multiplication in <code>work_mem</code>: a complex query can use it several times, and with 200 connections the total can far exceed RAM. Raise it carefully, for the roles or transactions that need it, and look for <code>Sort Method: external merge Disk</code> in <code>EXPLAIN ANALYZE</code> to see when it is too small.</p>
+
+  <h2><span class="num">§3</span>Tune from Evidence</h2>
+
+  <p>Settings advice on the internet is a starting point, not an answer. Make one change at a time and measure with a realistic workload.</p>
+  <ul>
+    <li>Check <strong><code>log_checkpoints</code></strong> and the <code>pg_stat_checkpointer</code> view (<code>pg_stat_bgwriter</code> before PostgreSQL 17): checkpoints triggered by size rather than time mean <code>max_wal_size</code> is too low.</li>
+    <li>Check <strong>cache hit ratios</strong> in <code>pg_stat_database</code> and per-query <code>shared_blks_read</code> in <code>pg_stat_statements</code>.</li>
+    <li>Check <strong><code>EXPLAIN (ANALYZE, BUFFERS)</code></strong> for disk-based sorts and hashes before touching <code>work_mem</code>.</li>
+    <li>Use <strong><code>log_min_duration_statement</code></strong> to log slow queries, then fix the queries first. Bad queries cost more than bad settings.</li>
+  </ul>
+  <p>Tools like PGTune produce reasonable first values from your hardware, but they cannot see your workload. Record what you changed, why, and the before-and-after numbers.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Queries and indexes usually matter more than settings. Tune configuration after you have found a measured bottleneck, and change one thing at a time.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Raising <code>work_mem</code> globally to a large value</td><td>Many concurrent sorts and hashes exhaust memory and the server is killed</td><td>Raise it per role or per transaction, and size for connections times operations</td></tr>
+    <tr><td>Changing many settings at once from a blog post</td><td>You cannot tell which change helped or hurt</td><td>Change one thing, measure, and record the result</td></tr>
+    <tr><td>Editing <code>postgresql.conf</code> and not reloading, or needing a restart and not planning it</td><td>Settings silently stay unchanged, or an unplanned restart interrupts service</td><td>Check <code>pg_settings.context</code> and <code>pending_restart</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Query <code>pg_settings</code> for the table's settings, and note which need a restart.</li>
+      <li>Run a sort-heavy query with a small and then larger <code>work_mem</code> and compare the plans and times.</li>
+      <li>Enable <code>log_min_duration_statement = 500</code> and review the slow queries your workload produces.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Settings can be set globally, per role, or per transaction; <code>pg_settings</code> shows the source and whether a restart is needed.</li>
+      <li>The core knobs are <code>shared_buffers</code>, <code>effective_cache_size</code>, <code>work_mem</code>, <code>maintenance_work_mem</code>, <code>max_wal_size</code>, and <code>random_page_cost</code>.</li>
+      <li>Change one setting at a time, from measurements, and fix slow queries before fiddling with configuration.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Operating Postgres — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

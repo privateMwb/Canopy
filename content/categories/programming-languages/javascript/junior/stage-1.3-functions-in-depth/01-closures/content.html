@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Closures — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · functions in depth</span> → lesson 01</p>
+  <h1>Closures</h1>
+  <p class="lede">A closure is a function that keeps access to the variables of the scope where it was created, even after that scope has finished running.</p>
+
+  <h2><span class="num">§1</span>Functions Remember Their Scope</h2>
+
+  <p>When a function is created, it captures a reference to the variables around it. Calling it later still reads and writes those variables — they aren't copied, and they aren't destroyed while the function is reachable.</p>
+
+  <pre>function makeCounter() {
+  let count = 0;                 <span class="comment">// private to each counter</span>
+  return () =&gt; ++count;
+}
+
+const a = makeCounter();
+const b = makeCounter();
+a(); a();                        <span class="comment">// 1, 2</span>
+b();                             <span class="comment">// 1 — separate closure, separate count</span>
+<span class="comment">// There is no way to touch `count` from outside.</span></pre>
+
+  <h2><span class="num">§2</span>Practical Uses</h2>
+
+  <p>Closures give you private state, function factories, and partial application without needing classes. Many common utilities are closures: <code>once</code>, <code>debounce</code>, and memoization.</p>
+
+  <pre>function once(fn) {
+  let called = false, result;
+  return (...args) =&gt; {
+    if (!called) { called = true; result = fn(...args); }
+    return result;
+  };
+}
+const init = once(() =&gt; { console.log("setup"); return 42; });
+init(); init();                  <span class="comment">// logs "setup" a single time</span>
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) =&gt; {
+    clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn(...args), ms);
+  };
+}</pre>
+
+  <h2><span class="num">§3</span>The Loop-Variable Bug</h2>
+
+  <p>With <code>var</code>, a loop has <strong>one</strong> shared variable, so every callback created inside it sees the final value. <code>let</code> creates a new binding for each iteration, which is why modern code rarely hits this.</p>
+
+  <pre>for (var i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i));   <span class="comment">// 3, 3, 3</span>
+}
+for (let j = 0; j &lt; 3; j++) {
+  setTimeout(() =&gt; console.log(j));   <span class="comment">// 0, 1, 2</span>
+}
+
+<span class="comment">// The pre-ES6 workaround: an IIFE creating a new scope per iteration</span>
+for (var k = 0; k &lt; 3; k++) {
+  ((n) =&gt; setTimeout(() =&gt; console.log(n)))(k);
+}</pre>
+
+  <p>Because closures hold references, a closure that captures a large object keeps it alive. That's usually fine, but it is the root of many memory leaks (revisited in the senior track).</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A closure captures <strong>variables</strong>, not values. If the variable changes later, the closure sees the new value — which is both its power and the source of the loop bug.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Creating callbacks in a <code>var</code> loop</td><td>All callbacks see the loop's final value</td><td>Use <code>let</code></td></tr>
+    <tr><td>Expecting a closure to snapshot a value</td><td>It sees later changes to the variable</td><td>Copy the value into a new <code>const</code> inside the loop</td></tr>
+    <tr><td>Keeping a closure around that captures a huge object</td><td>Object can't be garbage collected</td><td>Capture only what you need, or release the reference</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write <code>makeAccount(balance)</code> returning <code>deposit</code>, <code>withdraw</code>, and <code>getBalance</code>, with the balance impossible to change directly.</li>
+      <li>Write <code>memoize(fn)</code> that caches results by argument using a closure over a <code>Map</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A closure is a function plus the variables of the scope it was created in.</li>
+      <li>Closures enable private state, factories, <code>once</code>, <code>debounce</code>, and memoization.</li>
+      <li>They capture variables by reference, which explains the <code>var</code> loop bug.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Functions in Depth — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

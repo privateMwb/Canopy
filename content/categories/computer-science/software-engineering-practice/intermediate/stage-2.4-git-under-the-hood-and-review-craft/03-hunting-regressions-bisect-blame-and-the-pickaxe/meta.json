@@ -1,0 +1,5 @@
+{
+  "title": "Hunting Regressions: bisect, blame & the Pickaxe",
+  "description": "Binary-searching history for the commit that broke something, and tracing a line back to its reasons.",
+  "order": 3
+}

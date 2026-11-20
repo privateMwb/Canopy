@@ -1,0 +1,5 @@
+{
+  "title": "Launch Templates, Scaling Policies & Instance Refresh",
+  "description": "Tuning how groups grow, shrink, and roll out new images.",
+  "order": 6
+}

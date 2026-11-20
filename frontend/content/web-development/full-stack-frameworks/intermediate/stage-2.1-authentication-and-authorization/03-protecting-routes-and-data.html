@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Protecting Routes &amp; Data — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · authentication &amp; authorization</span> → lesson 03</p>
+  <h1>Protecting Routes &amp; Data</h1>
+  <p class="lede">Middleware and server-side checks.</p>
+
+  <h2><span class="num">§1</span>Authentication Is Not Enough</h2>
+
+  <p>A route being hidden from the navigation is not protection. Every request must be checked on the server. There are three layers, and a secure app uses more than one.</p>
+
+  <table>
+    <tr><th>Layer</th><th>Good at</th><th>Limit</th></tr>
+    <tr><td>Middleware / proxy</td><td>Fast, broad redirects (send logged-out users to <code>/login</code>)</td><td>Runs before rendering; shouldn't be your only check</td></tr>
+    <tr><td>Page / layout check</td><td>Gating whole sections</td><td>Layouts don't re-run on every navigation, so don't rely on them alone</td></tr>
+    <tr><td>Data layer check</td><td>Authorizing each record access</td><td>Must be applied consistently</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Check Close to the Data</h2>
+
+  <p>The safest pattern is a <strong>data access function that authorizes every read and write</strong>. Whatever calls it, a page, an action, or an API route, gets the same protection, so a missed check in one place can't expose data.</p>
+
+  <pre><span class="comment">// lib/data/tasks.ts</span>
+import "server-only";
+
+export async function getTask(id: string) {
+  const user = await requireUser();                    <span class="comment">// throws or redirects if signed out</span>
+  const task = await db.task.findUnique({ where: { id } });
+  if (!task || task.ownerId !== user.id) notFound();   <span class="comment">// authorize the record</span>
+  return task;
+}
+
+<span class="comment">// Server Action: authorize again, it is a public endpoint</span>
+export async function deleteTask(id: string) {
+  const user = await requireUser();
+  await db.task.deleteMany({ where: { id, ownerId: user.id } });
+}</pre>
+
+  <h2><span class="num">§3</span>Middleware as a First Gate</h2>
+
+  <p>Middleware (called <code>proxy</code> in the newest Next.js versions) is great for cheap, early redirects, such as sending visitors without a session cookie to the login page. Treat it as a convenience layer: a 2025 Next.js middleware vulnerability showed that relying on middleware as the only barrier is risky. Always re-check in the data layer.</p>
+
+  <div class="callout">
+    <span class="label">IDOR: the most common authorization bug</span>
+    Insecure direct object reference means a user changes an id in a URL or request and reads someone else's record. The fix is always the same: verify ownership on the server for every record access.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Hiding links instead of enforcing access</td><td>Anyone can still request the URL or call the action</td><td>Check permissions on the server for every request</td></tr>
+    <tr><td>Protecting only the page, not the action or API</td><td>Data can still be read or changed via direct calls</td><td>Put checks in shared data-access functions</td></tr>
+    <tr><td>Trusting an id from the client for ownership</td><td>Users edit or read other people's data</td><td>Always include the user's id in the query or verify ownership</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add middleware that redirects signed-out users from <code>/dashboard</code> to <code>/login</code>, then add a second, independent check in the data layer.</li>
+      <li>Try to read or delete another user's record by changing an id. Make your code return not-found or forbidden.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Hiding UI isn't security; every request needs a server-side check.</li>
+      <li>Centralise authorization in data-access functions so every caller is protected.</li>
+      <li>Middleware is a good first gate, but never the only one.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Authentication &amp; Authorization — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

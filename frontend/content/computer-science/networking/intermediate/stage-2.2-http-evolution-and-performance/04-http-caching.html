@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HTTP Caching — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · http evolution & performance</span> → lesson 04</p>
+  <h1>HTTP Caching</h1>
+  <p class="lede">The fastest request is the one never sent, and a few headers decide whether a response can be reused, for how long, and by whom.</p>
+
+  <h2><span class="num">§1</span>Freshness: Cache-Control</h2>
+  <p>A response can tell caches how long it stays <strong>fresh</strong>, during which the cached copy is used with no network request at all.</p>
+  <table>
+    <tr><th>Directive</th><th>Meaning</th></tr>
+    <tr><td><code>max-age=3600</code></td><td>Fresh for 3600 seconds</td></tr>
+    <tr><td><code>s-maxage=600</code></td><td>Like max-age, but for shared caches such as CDNs</td></tr>
+    <tr><td><code>public</code> / <code>private</code></td><td>Any cache may store it / only the user's own browser may</td></tr>
+    <tr><td><code>no-cache</code></td><td>May be stored, but must be revalidated before every use</td></tr>
+    <tr><td><code>no-store</code></td><td>Never store it (for sensitive data)</td></tr>
+    <tr><td><code>immutable</code></td><td>Won't change while fresh; skip revalidation even on reload</td></tr>
+  </table>
+  <p><code>no-cache</code> doesn't mean 'don't cache'; it means 'check first'. <code>no-store</code> is the one that forbids storing.</p>
+
+  <h2><span class="num">§2</span>Validation: ETag and 304</h2>
+  <p>When a response goes stale, the cache doesn't have to download it again. It <strong>revalidates</strong> by asking whether it changed. The server provides a validator, an <strong>ETag</strong> (a fingerprint of the content) or a <code>Last-Modified</code> date, and the client sends it back.</p>
+  <pre>GET /logo.png HTTP/1.1
+If-None-Match: "a1b2c3"          <span class="comment"># I have version a1b2c3; has it changed?</span>
+
+HTTP/1.1 304 Not Modified         <span class="comment"># no body: reuse your copy</span>
+ETag: "a1b2c3"
+Cache-Control: max-age=3600</pre>
+  <p>A 304 costs one round trip but no body, which is far cheaper than re-sending a large file. Responses that differ by request header, such as <code>Accept-Encoding</code> or <code>Accept-Language</code>, must say so with <code>Vary</code>, so the cache stores each variant separately.</p>
+
+  <h2><span class="num">§3</span>A Practical Strategy and CDNs</h2>
+  <ul>
+    <li><strong>Fingerprinted static assets</strong> (<code>app.3f9a1c.js</code>): <code>Cache-Control: public, max-age=31536000, immutable</code>. A content change produces a new URL, so it never needs invalidation</li>
+    <li><strong>HTML pages:</strong> short <code>max-age</code> or <code>no-cache</code> with an ETag, so users see updates promptly</li>
+    <li><strong>Personalized or sensitive responses:</strong> <code>private</code> or <code>no-store</code></li>
+    <li><strong>APIs:</strong> cache read-heavy endpoints with modest <code>max-age</code> and validators</li>
+  </ul>
+  <p>A <strong>CDN</strong> is a shared cache close to users. It obeys the same headers, with <code>s-maxage</code> giving CDN-specific control. Purging is slow and error-prone, so versioned URLs are the reliable way to ship changes.</p>
+  <pre>curl -sI https://example.com/app.js | grep -i -E 'cache-control|etag|age|x-cache'
+<span class="comment"># 'Age' shows how many seconds the response has sat in a cache</span></pre>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    A response with no caching headers isn't uncacheable; caches may apply heuristics, such as a fraction of its age since <code>Last-Modified</code>. Always state your intent explicitly.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>no-cache</code> to mean 'don't store'</td><td>Sensitive data is stored and reused after revalidation</td><td>Use <code>no-store</code> for data that must never be kept</td></tr>
+    <tr><td>Long max-age on non-fingerprinted files</td><td>Users see stale code for days after a deploy</td><td>Version file names, or keep max-age short</td></tr>
+    <tr><td>Forgetting <code>Vary</code> on content-negotiated responses</td><td>A cache serves the wrong language or encoding</td><td>List every request header that changes the response</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Request the same static file twice with <code>curl -sI</code> and <code>If-None-Match</code>, and show the server returning 304.</li>
+      <li>Design caching headers for a site with a hashed JS bundle, an HTML page, and a personalized dashboard API.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>Cache-Control</code> sets freshness, and <code>no-store</code> is the only directive that forbids storing.</li>
+      <li>ETags and conditional requests let a stale copy be revalidated with a body-less 304.</li>
+      <li>Fingerprinted URLs with long max-age are the reliable way to cache and still ship changes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · HTTP Evolution & Performance — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Built-In Functions &amp; Type Conversions — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · variables, outputs &amp; data</span> → lesson 05</p>
+  <h1>Built-In Functions &amp; Type Conversions</h1>
+  <p class="lede">Built-in functions replace repetition and manual conversion. You can try every one of them interactively before using it.</p>
+
+  <h2><span class="num">§1</span>Trying Functions in the Console</h2>
+  <p><code>terraform console</code> opens a prompt where you can evaluate expressions against your configuration. It is the fastest way to learn a function.</p>
+  <pre>$ terraform console
+&gt; upper("web")
+"WEB"
+&gt; length(["a", "b", "c"])
+3
+&gt; cidrsubnet("10.0.0.0/16", 8, 2)
+"10.0.2.0/24"</pre>
+  <p>Functions are grouped by purpose: string (<code>format</code>, <code>join</code>, <code>split</code>, <code>replace</code>), collection (<code>length</code>, <code>merge</code>, <code>concat</code>, <code>lookup</code>, <code>keys</code>, <code>flatten</code>), numeric, encoding (<code>jsonencode</code>, <code>base64encode</code>), filesystem (<code>file</code>, <code>templatefile</code>), and network (<code>cidrsubnet</code>).</p>
+  <h2><span class="num">§2</span>Useful Everyday Patterns</h2>
+  <pre>locals {
+  tags       = merge(var.base_tags, { Name = "web" })       <span class="comment"># combine maps</span>
+  all_cidrs  = concat(var.office_cidrs, var.vpn_cidrs)      <span class="comment"># join lists</span>
+  subnet     = cidrsubnet(var.vpc_cidr, 8, 1)               <span class="comment"># carve a subnet</span>
+  policy     = jsonencode({ Version = "2012-10-17", Statement = [] })
+  script     = templatefile("${path.module}/init.sh.tpl", { name = var.name })
+  port       = try(var.settings.port, 8080)                 <span class="comment"># fall back if missing</span>
+}</pre>
+  <p><code>jsonencode</code> is safer than writing JSON by hand inside a heredoc. <code>try</code> returns the first expression that does not error, which is handy for optional values.</p>
+  <h2><span class="num">§3</span>Type Conversion</h2>
+  <p>Terraform converts between compatible types automatically (the string <code>"5"</code> becomes the number 5), but when it cannot, use <code>tostring</code>, <code>tonumber</code>, <code>tolist</code>, <code>toset</code>, and <code>tomap</code>. <code>toset</code> also removes duplicates, which you will use heavily with <code>for_each</code>.</p>
+  <div class="callout">
+    <span class="label">No user-defined functions</span>
+    Terraform has no way to write your own functions in HCL. If an expression grows hard to read, move it into a <code>locals</code> block with a descriptive name, split it, or put the logic in a module.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Writing JSON policies as raw strings</td><td>Quoting errors and formatting drift</td><td>Use <code>jsonencode</code> on an HCL object</td></tr>
+    <tr><td>Passing a list where a set is expected</td><td>Type error from <code>for_each</code> or an argument</td><td>Convert with <code>toset()</code> or <code>tolist()</code></td></tr>
+    <tr><td>Building complex expressions inline</td><td>Unreadable, hard to debug</td><td>Test in <code>terraform console</code> and split into named locals</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>In <code>terraform console</code>, compute four <code>/24</code> subnets from <code>10.1.0.0/16</code> using <code>cidrsubnet</code>.</li>
+      <li>Use <code>merge</code> to combine default tags with per-resource tags, where per-resource values win.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>terraform console</code> is the best place to learn and debug functions.</li>
+      <li><code>jsonencode</code>, <code>merge</code>, <code>concat</code>, <code>cidrsubnet</code>, and <code>try</code> cover a large share of real needs.</li>
+      <li>Convert types explicitly when automatic conversion is not enough.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Variables, Outputs &amp; Data — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

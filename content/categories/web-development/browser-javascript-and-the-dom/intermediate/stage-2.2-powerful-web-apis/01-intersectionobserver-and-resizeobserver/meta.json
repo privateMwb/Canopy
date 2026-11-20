@@ -1,0 +1,5 @@
+{
+  "title": "IntersectionObserver & ResizeObserver",
+  "description": "Lazy loading, infinite scroll, and responsive behavior in script.",
+  "order": 1
+}

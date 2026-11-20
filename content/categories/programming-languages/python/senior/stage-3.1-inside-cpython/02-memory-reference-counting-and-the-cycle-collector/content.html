@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memory: Reference Counting &amp; the Cycle Collector — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · inside cpython</span> → lesson 02</p>
+  <h1>Memory: Reference Counting &amp; the Cycle Collector</h1>
+  <p class="lede">CPython frees most objects the instant their reference count hits zero, and a separate cycle collector reclaims objects that only reference each other.</p>
+
+  <h2><span class="num">§1</span>Reference Counting</h2>
+
+  <p>Every object carries a count of how many references point to it. Binding a name, adding to a list, or passing an argument increments it, and the matching removal decrements it. At zero, the object is freed immediately.</p>
+
+  <pre>import sys
+
+a = []
+print(sys.getrefcount(a))     <span class="comment"># 2: the name `a` plus the temporary argument</span>
+b = a
+print(sys.getrefcount(a))     <span class="comment"># 3</span>
+del b
+print(sys.getrefcount(a))     <span class="comment"># 2</span></pre>
+
+  <p>This makes cleanup <strong>deterministic</strong>: when the last reference disappears, <code>__del__</code> (if any) runs and memory is released, right then. It's why <code>with open(...)</code> isn't strictly needed for CPython to close a file when the variable goes out of scope, though relying on that is non-portable (PyPy, for instance, doesn't behave this way).</p>
+
+  <h2><span class="num">§2</span>Reference Cycles</h2>
+
+  <p>Reference counting can't free a cycle, because each object keeps the others' counts above zero.</p>
+
+  <pre>import gc
+
+class Node:
+    def __init__(self):
+        self.other = None
+
+a, b = Node(), Node()
+a.other, b.other = b, a       <span class="comment"># a cycle</span>
+del a, b                       <span class="comment"># counts drop to 1 each, not 0: unreachable but not freed</span>
+
+print(gc.collect())            <span class="comment"># the cycle collector finds and frees them</span></pre>
+
+  <p>The <strong>cycle collector</strong> (the <code>gc</code> module) periodically traverses container objects that could participate in cycles, finds groups unreachable from outside, and frees them. It's <strong>generational</strong>: new objects are examined often, and survivors are checked less frequently, controlled by thresholds you can see with <code>gc.get_threshold()</code>. Collection strategy details are tuned from release to release.</p>
+
+  <h2><span class="num">§3</span>Why Leaks Still Happen</h2>
+
+  <p>Garbage collection frees *unreachable* objects. A "leak" in Python is almost always an object that's <strong>still reachable</strong> when you don't expect it to be:</p>
+
+  <ul>
+    <li>Module-level or class-level caches and registries that grow forever (<code>_cache = {}</code>).</li>
+    <li>Lists of results, or listeners and callbacks that are added and never removed.</li>
+    <li>Closures, exception tracebacks, or frames holding references to large objects.</li>
+    <li>Cycles with the collector disabled (<code>gc.disable()</code>), or frozen (<code>gc.freeze()</code>).</li>
+    <li>Memory leaked by C extensions that mismanage their own references, which no Python tool can see.</li>
+  </ul>
+
+  <p>Also, freed memory isn't always returned to the operating system: Python's allocator keeps arenas around, so resident memory may stay high even when objects were freed.</p>
+
+  <h2><span class="num">§4</span>Finding Out</h2>
+
+  <pre>import tracemalloc, gc
+
+tracemalloc.start()
+run_workload()
+snap = tracemalloc.take_snapshot()
+for stat in snap.statistics("lineno")[:5]:
+    print(stat)                    <span class="comment"># top allocation sites</span>
+
+print(gc.get_count(), len(gc.get_objects()))
+gc.set_debug(gc.DEBUG_SAVEALL)     <span class="comment"># keep unreachable objects in gc.garbage to inspect</span></pre>
+
+  <p>Compare two snapshots (<code>snap2.compare_to(snap1, "lineno")</code>) to see what grew. <code>weakref</code> lets you reference an object <strong>without</strong> keeping it alive, which breaks accidental ownership in caches and observer lists.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Ask "who still holds a reference?" not "why didn't the collector run?" <code>gc.get_referrers(obj)</code> and <code>tracemalloc</code> snapshots answer the question directly.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Assuming the garbage collector prevents all leaks</td><td>Reachable-but-unneeded objects accumulate</td><td>Bound caches (<code>lru_cache(maxsize=...)</code>), remove listeners, and use <code>weakref</code> where appropriate</td></tr>
+    <tr><td>Disabling <code>gc</code> for speed without understanding cycles</td><td>Memory grows unboundedly if cycles exist</td><td>Keep it on, or call <code>gc.collect()</code> at known safe points</td></tr>
+    <tr><td>Relying on <code>__del__</code> for cleanup</td><td>Timing is unreliable outside CPython's refcounting</td><td>Use <code>with</code> and context managers for resources</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a cycle of two objects with <code>gc.disable()</code>, observe memory or object counts grow, then call <code>gc.collect()</code> and see them reclaimed.</li>
+      <li>Use <code>tracemalloc</code> snapshots before and after a function runs 1,000 times to find the line that retains memory.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Reference counts free most objects immediately; the generational cycle collector handles unreachable cycles.</li>
+      <li>Most Python leaks are still-reachable objects such as unbounded caches and forgotten callbacks.</li>
+      <li><code>tracemalloc</code>, <code>gc.get_referrers</code>, and <code>weakref</code> are the main tools for finding and preventing them.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Inside CPython — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

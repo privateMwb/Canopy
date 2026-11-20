@@ -1,0 +1,7 @@
+{
+  "title": "Git & Collaboration Workflows",
+  "description": "Version control and collaboration, from your first commit to branching and release strategy for whole teams.",
+  "order": 1,
+  "compileRoot": true,
+  "icon": "lang_git"
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Distributed Locks",
+  "description": "Lock patterns, expiry, fencing, and why the simple versions are unsafe.",
+  "order": 2
+}

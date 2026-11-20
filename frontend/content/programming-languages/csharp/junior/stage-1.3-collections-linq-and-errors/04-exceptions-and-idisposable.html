@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exceptions &amp; IDisposable — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · collections, linq &amp; errors</span> → lesson 04</p>
+  <h1>Exceptions &amp; IDisposable</h1>
+  <p class="lede">Exceptions report failures that code can't continue past, and <code>IDisposable</code> with <code>using</code> ensures files, connections, and handles are released even when they happen.</p>
+
+  <h2><span class="num">§1</span>try, catch, and finally</h2>
+
+  <pre>try
+{
+    var text = File.ReadAllText(path);
+    var value = int.Parse(text);
+}
+catch (FileNotFoundException)
+{
+    Console.WriteLine("No such file.");
+}
+catch (FormatException ex) when (ex.Message.Length &gt; 0)
+{
+    Console.WriteLine("Not a number.");
+}
+finally
+{
+    Console.WriteLine("Always runs.");
+}</pre>
+  <p>Catch the <strong>most specific</strong> exception type you can actually handle, most specific first. A <code>when</code> filter adds a condition. <code>finally</code> runs whether or not an exception occurred. Don't catch <code>Exception</code> unless you're at the outermost boundary (a request handler or the top of the program) where you log and turn the failure into a response.</p>
+
+  <h2><span class="num">§2</span>Throwing and Rethrowing</h2>
+
+  <pre>static void Withdraw(decimal amount)
+{
+    if (amount &lt;= 0) throw new ArgumentOutOfRangeException(nameof(amount));
+    <span class="comment">// ...</span>
+}
+
+try { Process(); }
+catch (Exception ex)
+{
+    Log(ex);
+    throw;            <span class="comment">// rethrow, preserving the stack trace</span>
+    <span class="comment">// throw ex;      // WRONG: resets the stack trace</span>
+}
+
+throw new InvalidOperationException("Could not load config", innerException);</pre>
+  <p>Use exceptions for exceptional conditions, not normal control flow. When an operation commonly fails, use the <code>Try</code> pattern (<code>int.TryParse</code>) so callers can handle failure without a <code>try</code> block. Wrap with an <strong>inner exception</strong> when you add context, so the original cause isn't lost.</p>
+
+  <h2><span class="num">§3</span>IDisposable and using</h2>
+
+  <p>Some objects hold resources that the garbage collector doesn't release promptly: file handles, database connections, sockets. They implement <code>IDisposable</code>, and <code>using</code> guarantees <code>Dispose()</code> is called even when an exception occurs.</p>
+  <pre>using var reader = new StreamReader(path);       <span class="comment">// disposed at end of scope</span>
+string? line = reader.ReadLine();
+
+using (var conn = new SqlConnection(cs))             <span class="comment">// classic block form</span>
+{
+    conn.Open();
+}                                                    <span class="comment">// Dispose called here</span>
+
+public sealed class TempFile : IDisposable
+{
+    private readonly string _path = Path.GetTempFileName();
+    public void Dispose() =&gt; File.Delete(_path);
+}</pre>
+  <p>If a type implements <code>IDisposable</code>, you own it once you create it, so wrap it in <code>using</code>. Async resources use <code>await using</code> with <code>IAsyncDisposable</code>.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    <code>using</code> is <code>try/finally</code> with the cleanup written for you. Any time a method both acquires a resource and can fail, make the release automatic instead of remembering to do it.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td><code>catch (Exception) { }</code> with an empty body</td><td>Failures vanish and bugs become mysteries</td><td>Handle it, log it, or let it propagate</td></tr>
+    <tr><td><code>throw ex;</code> instead of <code>throw;</code></td><td>The original stack trace is lost</td><td>Use bare <code>throw;</code> to rethrow</td></tr>
+    <tr><td>Forgetting <code>using</code> on streams and connections</td><td>Locked files and exhausted connection pools</td><td>Wrap every <code>IDisposable</code> you create in <code>using</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a method that reads a file and parses an integer from it. Handle a missing file and a bad number separately, and wrap the reader in <code>using</code>.</li>
+      <li>Create a <code>Timer</code> class implementing <code>IDisposable</code> that prints the elapsed time when disposed, and use it in a <code>using</code> block around some work.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Catch specific exceptions you can handle, and rethrow with <code>throw;</code> to keep the stack trace.</li>
+      <li>Use <code>Try</code> methods for expected failures and exceptions for unexpected ones.</li>
+      <li><code>using</code> guarantees <code>Dispose</code> runs, so use it for every disposable you create.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Collections, LINQ &amp; Errors — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

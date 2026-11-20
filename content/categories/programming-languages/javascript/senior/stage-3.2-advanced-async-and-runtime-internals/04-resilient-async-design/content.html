@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resilient Async Design — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · advanced async &amp; runtime internals</span> → lesson 04</p>
+  <h1>Resilient Async Design</h1>
+  <p class="lede">Networks fail in the middle of operations, so reliable systems combine timeouts, careful retries, idempotency, and clear failure semantics.</p>
+
+  <h2><span class="num">§1</span>Timeouts Everywhere</h2>
+
+  <p>Without a timeout, a hung dependency becomes a hung request, then a hung server. Every outbound call needs a deadline, and the deadlines should nest: the total budget for the operation must be smaller than what the caller will wait for.</p>
+
+  <pre>async function callApi(url, { timeoutMs = 3000, signal } = {}) {
+  const combined = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
+  const res = await fetch(url, { signal: combined });
+  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });
+  return res.json();
+}
+
+<span class="comment">// Budget the whole operation, then pass what's left to each step</span>
+const deadline = Date.now() + 8000;
+const remaining = () =&gt; Math.max(0, deadline - Date.now());
+await callApi(a, { timeoutMs: remaining() });</pre>
+
+  <h2><span class="num">§2</span>Retries, Backoff, and Idempotency</h2>
+
+  <p>Retrying makes transient failures invisible — and makes permanent ones worse if done badly. Retry only <strong>transient</strong> errors (network failures, 502/503/504, 429 honoring <code>Retry-After</code>), use <strong>exponential backoff with jitter</strong>, cap attempts, and never retry a non-idempotent operation unless the server can deduplicate it. An <strong>idempotency key</strong> lets a server recognize a repeated request and return the original result instead of charging twice.</p>
+
+  <pre>async function retry(fn, { retries = 4, base = 200, max = 5000, shouldRetry = isTransient } = {}) {
+  for (let attempt = 0; ; attempt++) {
+    try { return await fn(attempt); }
+    catch (err) {
+      if (attempt &gt;= retries || !shouldRetry(err)) throw err;
+      const delay = Math.min(max, base * 2 ** attempt) * (0.5 + Math.random() / 2);  <span class="comment">// jitter</span>
+      await new Promise((r) =&gt; setTimeout(r, delay));
+    }
+  }
+}
+const isTransient = (e) =&gt; !e.status || [429, 502, 503, 504].includes(e.status);
+
+const key = crypto.randomUUID();                    <span class="comment">// same key on every retry of ONE logical action</span>
+await retry(() =&gt; fetch("/payments", {
+  method: "POST",
+  headers: { "Idempotency-Key": key, "Content-Type": "application/json" },
+  body: JSON.stringify(order),
+}));</pre>
+
+  <h2><span class="num">§3</span>Failing Well</h2>
+
+  <p>When a dependency is down, hammering it makes recovery harder. A <strong>circuit breaker</strong> stops calling a failing service for a cool-down period and fails fast. Limit concurrency with a bulkhead so one slow dependency can't use all your capacity. Decide per feature whether to degrade (serve cached/partial data) or fail.</p>
+
+  <pre>class CircuitBreaker {
+  #failures = 0; #openUntil = 0;
+  constructor(fn, { threshold = 5, coolDownMs = 10_000 } = {}) { Object.assign(this, { fn, threshold, coolDownMs }); }
+  async call(...args) {
+    if (Date.now() &lt; this.#openUntil) throw new Error("circuit open: failing fast");
+    try {
+      const result = await this.fn(...args);
+      this.#failures = 0;
+      return result;
+    } catch (err) {
+      if (++this.#failures &gt;= this.threshold) this.#openUntil = Date.now() + this.coolDownMs;
+      throw err;
+    }
+  }
+}
+
+const results = await Promise.allSettled([getProfile(), getRecommendations()]);   <span class="comment">// degrade: recommendations are optional</span></pre>
+
+  <p>Retry layering multiplies: three layers that each retry three times produce up to 27 attempts. Retry at one layer, and propagate failure from the rest.</p>
+
+  <div class="callout">
+    <span class="label">Idempotency is the foundation</span>
+    Retries are only safe on operations that can be repeated without changing the result. Design endpoints and handlers so that doing the same thing twice is harmless, then retries become a simple tool instead of a risk.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No timeout on outbound calls</td><td>A hung dependency hangs your own requests</td><td>Set a deadline on every call, with a total budget</td></tr>
+    <tr><td>Retrying immediately and in lockstep</td><td>Thundering herd hammers the recovering service</td><td>Exponential backoff with jitter</td></tr>
+    <tr><td>Retrying non-idempotent writes without a key</td><td>Duplicate charges or records</td><td>Send an idempotency key; dedupe on the server</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Implement <code>retry</code> with backoff and jitter, then test it against a fake function that fails twice before succeeding, asserting call counts and delays.</li>
+      <li>Design the idempotency-key flow for a <code>POST /orders</code> endpoint: what does the server store, and what does it return on a repeated key?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Put a timeout on every outbound call and budget deadlines end to end.</li>
+      <li>Retry only transient failures, with backoff and jitter, at a single layer — and make writes idempotent.</li>
+      <li>Fail fast with circuit breakers and degrade gracefully when optional dependencies are down.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Advanced Async &amp; Runtime Internals — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "The Core Moves: Extract, Inline, Rename & Move",
+  "description": "The handful of mechanical refactorings behind most real cleanup, and when your IDE can do them for you.",
+  "order": 2
+}

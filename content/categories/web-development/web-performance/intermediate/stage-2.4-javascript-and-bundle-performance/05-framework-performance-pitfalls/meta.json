@@ -1,0 +1,5 @@
+{
+  "title": "Framework Performance Pitfalls",
+  "description": "Hydration, re-renders, and state cost.",
+  "order": 5
+}

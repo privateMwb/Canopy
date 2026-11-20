@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>URLs, Query Strings &amp; Encoding — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · http fundamentals</span> → lesson 04</p>
+  <h1>URLs, Query Strings &amp; Encoding</h1>
+  <p class="lede">A URL packs several pieces of information into one string, and most encoding bugs come from not knowing which piece you're in.</p>
+
+  <h2><span class="num">§1</span>Anatomy of a URL</h2>
+  <pre>https://alice@example.com:8443/shop/items?color=red&amp;size=m#reviews
+└─┬─┘   └──┬──┘ └────┬────┘└─┬─┘└─────┬─────┘└──────┬──────┘└──┬──┘
+scheme  userinfo    host    port    path          query      fragment</pre>
+  <table>
+    <tr><th>Part</th><th>Role</th></tr>
+    <tr><td>Scheme</td><td>The protocol (<code>http</code>, <code>https</code>)</td></tr>
+    <tr><td>Host</td><td>The server's name, resolved by DNS</td></tr>
+    <tr><td>Port</td><td>Defaults to 80 for HTTP and 443 for HTTPS</td></tr>
+    <tr><td>Path</td><td>Which resource on the server</td></tr>
+    <tr><td>Query</td><td>Extra parameters as <code>key=value</code> pairs separated by <code>&amp;</code></td></tr>
+    <tr><td>Fragment</td><td>A position within the page, handled by the browser and <strong>never sent to the server</strong></td></tr>
+  </table>
+  <p>Because the fragment stays on the client, a server can't see it, and it can't be used for anything the server must know.</p>
+
+  <h2><span class="num">§2</span>Percent-Encoding</h2>
+  <p>URLs may only contain a limited set of characters. Anything else, including spaces, non-ASCII text, and characters with special meaning like <code>&amp;</code> and <code>#</code>, must be <strong>percent-encoded</strong> as <code>%</code> plus two hex digits.</p>
+  <pre>from urllib.parse import urlencode, quote, urlparse, parse_qs
+
+quote("a b&amp;c")                         <span class="comment"># 'a%20b%26c'</span>
+urlencode({"q": "rock &amp; roll", "page": 2})
+<span class="comment"># 'q=rock+%26+roll&amp;page=2'   (in a query string, a space may be written as +)</span>
+
+u = urlparse("https://example.com/search?q=cats&amp;page=2")
+u.netloc, u.path                       <span class="comment"># ('example.com', '/search')</span>
+parse_qs(u.query)                      <span class="comment"># {'q': ['cats'], 'page': ['2']}</span></pre>
+  <p>The reason to encode is that an unescaped <code>&amp;</code> inside a value would be read as the start of the next parameter, silently changing the meaning of the request.</p>
+
+  <h2><span class="num">§3</span>Encoding Pitfalls</h2>
+  <ul>
+    <li><strong>Encoding twice:</strong> <code>%2520</code> is an encoded <code>%20</code>, a sign that something encoded an already-encoded value</li>
+    <li><strong>Building URLs by string concatenation:</strong> use a library, since values you don't control can contain <code>&amp;</code>, <code>=</code>, <code>/</code>, or <code>#</code></li>
+    <li><strong>Space as <code>+</code> vs. <code>%20</code>:</strong> <code>+</code> means a space only in query strings and form data, not in paths</li>
+    <li><strong>Path vs. query:</strong> use the path to identify *which* resource, and the query to filter, sort, or modify the view of it</li>
+  </ul>
+  <p>Security matters here too. User-supplied URLs and encoded values are a common route for injection and path-traversal attacks (such as <code>..%2f</code>), so servers should decode once, validate, and reject surprises.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Always build and parse URLs with a library. Hand-assembling strings is how an <code>&amp;</code> in a user's search term ends up changing the request.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Concatenating user input into a URL</td><td>Special characters change the structure of the URL</td><td>Encode each component with a URL library</td></tr>
+    <tr><td>Expecting the server to receive the <code>#fragment</code></td><td>It's never sent; logic depending on it fails server-side</td><td>Use the query or path for anything the server needs</td></tr>
+    <tr><td>Double-encoding values</td><td>Bad data such as <code>%2520</code> shows up in logs and queries</td><td>Encode exactly once, at the point of building the URL</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take the URL <code>https://example.com/a b?name=Tom &amp; Jerry</code> and produce a correctly encoded version using a library.</li>
+      <li>Parse a URL with <code>urlparse</code> and list each component. Which parts would a web server actually receive?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A URL has scheme, host, port, path, query, and fragment, and the fragment never reaches the server.</li>
+      <li>Percent-encode characters outside the allowed set, and encode each component exactly once.</li>
+      <li>Use a URL library rather than string concatenation.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · HTTP Fundamentals — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

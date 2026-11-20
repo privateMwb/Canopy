@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Time Limits &amp; Re-authentication — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · forms &amp; interactive controls</span> → lesson 05</p>
+  <h1>Time Limits &amp; Re-authentication</h1>
+  <p class="lede">Some people need more time to read, type, or operate a control. A session that expires without warning, or a form that loses everything on timeout, punishes exactly the users who are already working hardest.</p>
+
+  <h2><span class="num">§1</span>Who Needs More Time</h2>
+  <p>People using screen readers, switch devices, or voice control often take longer to complete a task. So do people with cognitive disabilities, people reading in a second language, and anyone interrupted mid-task. <strong>WCAG 2.2.1 Timing Adjustable (Level A)</strong> requires that when a page has a time limit set by the content, users can adjust it.</p>
+  <table>
+    <tr><th>Option</th><th>What the user can do</th></tr>
+    <tr><td><strong>Turn off</strong></td><td>Disable the time limit before it starts</td></tr>
+    <tr><td><strong>Adjust</strong></td><td>Change the limit to at least ten times the default</td></tr>
+    <tr><td><strong>Extend</strong></td><td>Be warned before time runs out, with at least 20 seconds to extend, and be able to do so at least ten times with a simple action</td></tr>
+  </table>
+  <p>Exceptions include real-time events such as an auction, limits that are essential to the activity, and limits longer than 20 hours.</p>
+
+  <h2><span class="num">§2</span>A Session Timeout Warning</h2>
+  <p>Most real sites meet this with a warning dialog shortly before a session expires, which lets users stay signed in with one action. The dialog should be announced to screen reader users and be operable by keyboard.</p>
+  <pre>&lt;dialog id="timeout" role="alertdialog" aria-labelledby="t-title" aria-describedby="t-desc"&gt;
+  &lt;h2 id="t-title"&gt;Your session is about to expire&lt;/h2&gt;
+  &lt;p id="t-desc"&gt;You will be signed out in 2 minutes unless you continue.&lt;/p&gt;
+  &lt;button id="stay"&gt;Stay signed in&lt;/button&gt;
+  &lt;button id="out"&gt;Sign out&lt;/button&gt;
+&lt;/dialog&gt;
+
+&lt;script&gt;
+  const dlg = document.getElementById('timeout');
+  function warn() { dlg.showModal(); }              <span class="comment">// focus moves into the dialog</span>
+  document.getElementById('stay').onclick = () =&gt; {
+    refreshSession();                                <span class="comment">// extend with a simple action</span>
+    dlg.close();
+    scheduleWarning();
+  };
+&lt;/script&gt;</pre>
+  <p>The default focus lands inside the dialog, so the message is announced. Closing it returns focus to where the user was, so no work is lost.</p>
+
+  <h2><span class="num">§3</span>Protecting Work and Re-authentication</h2>
+  <p>Even with warnings, sessions end. Two stronger criteria describe the ideal. <strong>2.2.6 Timeouts (Level AAA)</strong> says users should be told how long inactivity lasts before data loss. <strong>2.2.5 Re-authenticating (Level AAA)</strong> says that after a session expires, users can sign in again and <strong>continue without losing data</strong>.</p>
+  <ul>
+    <li>Save drafts automatically on long forms, either locally or on the server.</li>
+    <li>After re-authentication, return users to the same place with their data intact.</li>
+    <li>Say up front if a form has a limit: "This form times out after 20 minutes of inactivity".</li>
+    <li>Do not set short limits just to be safe. Make them as long as the security needs allow.</li>
+  </ul>
+  <pre><span class="comment">// Keep an unsaved draft so a timeout does not destroy the user's work</span>
+form.addEventListener('input', () =&gt; {
+  sessionStorage.setItem('draft', JSON.stringify(Object.fromEntries(new FormData(form))));
+});</pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Time pressure is a barrier by itself. The best fix is to avoid needless limits, and the second best is to warn early, make extending trivial, and protect everything the user typed.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Logging users out with no warning</td><td>Work is lost, and users with slower input have no chance to react</td><td>Warn before expiry and let users extend with one action</td></tr>
+    <tr><td>A timeout warning that is not announced or reachable</td><td>Screen reader and keyboard users never see it</td><td>Use a dialog that takes focus and works with the keyboard</td></tr>
+    <tr><td>Discarding form data on re-authentication</td><td>Users must start long tasks again</td><td>Preserve data, and return users to where they left off</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>List every time limit you can find in a product you use (sessions, carts, codes). Which warn you, and which let you extend?</li>
+      <li>Prototype a timeout warning dialog and test it with a keyboard and a screen reader.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Content-set time limits must be turn-off-able, adjustable, or extendable (WCAG 2.2.1).</li>
+      <li>Warn before a session ends, make extending easy, and ensure the warning is announced and keyboard-operable.</li>
+      <li>Protect user data across timeouts and re-authentication.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Forms &amp; Interactive Controls — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

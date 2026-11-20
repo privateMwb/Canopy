@@ -1,0 +1,1 @@
+{"title": "Query Execution & Join Algorithms", "description": "Nested loop, hash, and merge joins, and when the planner picks each.", "order": 4}

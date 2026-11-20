@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ABI, Linking &amp; Symbol Visibility — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced language &amp; safety</span> → lesson 04</p>
+  <h1>ABI, Linking &amp; Symbol Visibility</h1>
+  <p class="lede">The ABI is the binary-level contract between compiled code, and changing it without recompiling every user breaks programs in ways the compiler can't warn you about.</p>
+
+  <h2><span class="num">§1</span>API vs. ABI</h2>
+
+  <p>The <strong>API</strong> is what source code sees: function names and types. The <strong>ABI</strong> (Application Binary Interface) is what compiled code depends on: struct layouts and sizes, calling conventions, vtable layouts, name mangling, and the standard library's own internals. A change that is source-compatible can still be ABI-breaking.</p>
+
+  <pre><span class="comment">// v1:  struct Config { int a; };            // sizeof == 4</span>
+<span class="comment">// v2:  struct Config { int a; int b; };     // sizeof == 8</span>
+<span class="comment">// A binary compiled against v1 that links to v2 reads and writes the wrong layout. No error.</span></pre>
+
+  <p>Adding a data member, reordering members, adding a virtual function, or changing an inline function's body (which was copied into callers) all change the ABI.</p>
+
+  <h2><span class="num">§2</span>Name Mangling</h2>
+
+  <p>C++ allows overloading, so the compiler encodes parameter types (and namespaces) into each symbol's name. <code>int f(double)</code> becomes something like <code>_Z1fd</code> under the Itanium ABI.</p>
+
+  <pre>nm -C libfoo.so              # list symbols, demangled
+nm libfoo.so | grep _Z       # raw mangled names
+c++filt _Z3addii             # add(int, int)</pre>
+
+  <p>Mangling differs between compilers (Itanium on Linux/macOS, MSVC's scheme on Windows) and encodes enough that mixing mismatched declarations usually becomes a <strong>linker error</strong>, a good outcome. The dangerous cases are the ones that link fine but disagree about layout.</p>
+
+  <h2><span class="num">§3</span>Shared Libraries and Visibility</h2>
+
+  <p>By default on Linux, every non-static symbol in a shared library is exported, which bloats the library, slows loading, and freezes internal details into your ABI. Hide by default and export deliberately.</p>
+
+  <pre>g++ -shared -fPIC -fvisibility=hidden -o libfoo.so foo.cpp
+
+#define FOO_API __attribute__((visibility("default")))
+FOO_API int publicFunction(int);         <span class="comment">// exported</span>
+int internalHelper(int);                 <span class="comment">// hidden</span></pre>
+
+  <p>On Windows use <code>__declspec(dllexport)</code> / <code>dllimport</code>. Fewer exported symbols means a smaller ABI surface to maintain.</p>
+
+  <h2><span class="num">§4</span>Keeping an ABI Stable</h2>
+
+  <ul>
+    <li>Expose a <strong>C interface</strong> (<code>extern "C"</code>) or opaque handles: <code>struct Foo; Foo* foo_create(); void foo_destroy(Foo*);</code>.</li>
+    <li>The <strong>pimpl idiom</strong> hides data members behind a pointer, so layout changes don't affect callers.</li>
+    <li>Don't expose standard library types across a DLL boundary if the library and caller might use different standard library versions or settings.</li>
+    <li>Avoid inline and template code in public headers when you want to change it without recompiling callers.</li>
+    <li>Use inline namespaces or versioned symbols when you must evolve.</li>
+  </ul>
+
+  <p>The standard library has its own ABI hazards, such as the libstdc++ dual ABI for <code>std::string</code> (<code>_GLIBCXX_USE_CXX11_ABI</code>), where mismatched settings give mysterious link errors.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    ABI breaks are silent because nothing checks them: the program links and then misbehaves. Treat anything in a public header as frozen once shipped, and keep implementation details behind opaque pointers.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Adding a data member or virtual function to a public class in a minor release</td><td>Old binaries read the wrong layout</td><td>Use pimpl, or bump the major version and require a rebuild</td></tr>
+    <tr><td>Exporting every symbol</td><td>Bloat, and internals become de-facto API</td><td>Use <code>-fvisibility=hidden</code> and annotate the public API</td></tr>
+    <tr><td>Passing <code>std::string</code> or <code>std::vector</code> across a plugin boundary</td><td>Differing allocators and ABIs corrupt the heap</td><td>Use C types and let one side own allocation</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a small shared library with <code>-fvisibility=hidden</code> and an exported function, and verify what <code>nm -D</code> shows.</li>
+      <li>Convert a class with private data members into a pimpl, and demonstrate that adding a member no longer changes <code>sizeof</code> for callers.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The ABI is layouts, calling conventions, and mangled names, and changes can be invisible to source-level checks.</li>
+      <li>Hide symbols by default, and export a deliberate, small API.</li>
+      <li>C interfaces, opaque handles, and pimpl are the tools for stable binary interfaces.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Language &amp; Safety — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

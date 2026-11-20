@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Derived &amp; Normalized State — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · state at scale</span> → lesson 05</p>
+  <h1>Derived &amp; Normalized State</h1>
+  <p class="lede">Two copies of the same fact will eventually disagree. Deriving values instead of storing them, and normalizing nested data so each entity lives in exactly one place, keeps the UI consistent as the app grows.</p>
+
+  <h2><span class="num">§1</span>Derive, Do Not Duplicate</h2>
+
+  <p>Store the <strong>minimum</strong> state needed to describe the UI, and compute everything else during render. Every extra copy is a chance for the two to drift apart when only one gets updated.</p>
+
+  <pre><span class="comment">// duplicated: selectedItem is a copy that goes stale</span>
+const [items, setItems] = useState(initialItems);
+const [selectedItem, setSelectedItem] = useState(items[0]);
+<span class="comment">// rename items[0] in setItems and selectedItem still shows the old name</span>
+
+<span class="comment">// minimal: store the id, derive the object</span>
+const [items, setItems] = useState(initialItems);
+const [selectedId, setSelectedId] = useState(items[0].id);
+const selected = items.find((i) =&gt; i.id === selectedId);
+
+<span class="comment">// other derived values: counts, filtered lists, totals, validity</span>
+const doneCount = todos.filter((t) =&gt; t.done).length;
+const visible = todos.filter(matchesFilter(filter));
+const isValid = email.includes("@") &amp;&amp; password.length &gt;= 8;</pre>
+
+  <p>Ask of every piece of state: *can I calculate this from other state or props?* If yes, it should not be state. If calculating it is <strong>expensive</strong>, cache it with <code>useMemo</code> (or let the React Compiler do it), but do not move it into state.</p>
+
+  <h2><span class="num">§2</span>Normalizing Nested Data</h2>
+
+  <p>APIs often return <strong>nested</strong> data: a list of posts, each with its author and comments. If the same author appears in many posts and you store each copy inside its post, updating the author means finding and changing every copy, and missing one leaves the UI inconsistent.</p>
+
+  <pre><span class="comment">// nested: the same author is duplicated in every post</span>
+const posts = [
+  { id: 1, title: "A", author: { id: 7, name: "Ada" } },
+  { id: 2, title: "B", author: { id: 7, name: "Ada" } },
+];
+
+<span class="comment">// normalized: each entity once, referenced by id</span>
+const state = {
+  users: { 7: { id: 7, name: "Ada" } },
+  posts: { 1: { id: 1, title: "A", authorId: 7 }, 2: { id: 2, title: "B", authorId: 7 } },
+  postIds: [1, 2],                              <span class="comment">// order</span>
+};
+
+<span class="comment">// update the name once and every post shows it</span>
+const renameUser = (state, id, name) =&gt; ({
+  ...state,
+  users: { ...state.users, [id]: { ...state.users[id], name } },
+});
+
+<span class="comment">// join at read time</span>
+const postView = (id) =&gt; ({ ...state.posts[id], author: state.users[state.posts[id].authorId] });</pre>
+
+  <p>Normalized state looks like a small database: <strong>tables</strong> keyed by id, with <strong>foreign keys</strong> instead of embedded copies. Updates become simple and local, and lookups are O(1). It also makes deep updates in nested arrays much simpler than copy-spreading through many levels.</p>
+
+  <h2><span class="num">§3</span>When to Normalize (and When Not To)</h2>
+
+  <ul>
+    <li><strong>Normalize</strong> when entities are <strong>shared</strong> across places, edited frequently, or deeply nested.</li>
+    <li><strong>Do not normalize</strong> read-only data you display once and never update, or small, flat lists; the extra bookkeeping is not worth it.</li>
+    <li>Server data usually lives in a <strong>query cache</strong>, where TanStack Query already deduplicates by key. Normalize in the cache only if you have clear cross-list consistency problems. Libraries such as RTK Query and Apollo offer normalization for that.</li>
+    <li>Redux Toolkit's <code>createEntityAdapter</code> provides ready-made normalized state with selectors and CRUD reducers.</li>
+    <li>Prefer <code>Map</code> or plain objects keyed by id, and keep a separate array of ids when order matters.</li>
+    <li>Keep <strong>UI state</strong> (which row is expanded, what is selected) separate from <strong>entity data</strong>, and reference entities by id.</li>
+  </ul>
+
+  <pre>import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+
+const usersAdapter = createEntityAdapter();       <span class="comment">// { ids: [], entities: {} } plus helpers</span>
+const usersSlice = createSlice({
+  name: "users",
+  initialState: usersAdapter.getInitialState(),
+  reducers: {
+    loaded: usersAdapter.setAll,
+    renamed: (state, { payload }) =&gt; usersAdapter.updateOne(state, { id: payload.id, changes: { name: payload.name } }),
+  },
+});</pre>
+
+  <div class="callout">
+    <span class="label">One fact, one place</span>
+    Whenever the same data exists twice, ask which is the source of truth, and delete the other. Store ids, derive objects, and keep each entity in exactly one spot.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Storing the selected object instead of its id</td><td>Selection shows stale data after the item is edited</td><td>Store <code>selectedId</code> and derive the item</td></tr>
+    <tr><td>Keeping <code>filteredItems</code> in state alongside <code>items</code> and <code>filter</code></td><td>Lists get out of sync</td><td>Compute the filtered list during render</td></tr>
+    <tr><td>Updating a duplicated entity in only one place</td><td>Different parts of the UI disagree</td><td>Normalize so each entity is stored once</td></tr>
+    <tr><td>Normalizing small read-only data</td><td>More code and complexity with no benefit</td><td>Normalize only shared, frequently updated data</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Refactor a component that stores <code>selectedItem</code> and <code>filteredItems</code> in state so that it stores only <code>selectedId</code> and <code>filter</code> and derives the rest.</li>
+      <li>Normalize a posts-with-authors array into <code>users</code> and <code>posts</code> maps, and write a function that renames a user once.</li>
+      <li>Identify one place in a project where two copies of the same data could disagree, and describe the fix.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Store the minimal state; derive selections, counts, filters, and validity during render.</li>
+      <li>Normalize shared nested data into id-keyed tables so each entity is stored once.</li>
+      <li>Normalize where it removes real duplication, and keep UI state separate from entity data.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · State at Scale — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

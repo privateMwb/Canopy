@@ -1,0 +1,5 @@
+{
+  "title": "Automated Testing",
+  "description": "axe, Lighthouse, and CI integration.",
+  "order": 3
+}

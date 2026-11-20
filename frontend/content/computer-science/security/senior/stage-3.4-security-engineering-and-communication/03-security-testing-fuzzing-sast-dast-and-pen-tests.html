@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security Testing: Fuzzing, SAST, DAST &amp; Pen Tests — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · security engineering &amp; communication</span> → lesson 03</p>
+  <h1>Security Testing: Fuzzing, SAST, DAST &amp; Pen Tests</h1>
+  <p class="lede">Each testing technique finds a different slice of bugs, and a mature program uses several because none of them sees everything.</p>
+
+  <h2><span class="num">§1</span>What Each Technique Finds</h2>
+  <table>
+    <tr><th>Technique</th><th>What it does</th><th>Good at</th><th>Misses</th></tr>
+    <tr><td><strong>SAST</strong> (static analysis)</td><td>Analyzes source code without running it</td><td>Injection patterns, dangerous APIs, early in development</td><td>Runtime and configuration issues; many false positives</td></tr>
+    <tr><td><strong>DAST</strong> (dynamic testing)</td><td>Probes a running app from outside</td><td>Misconfigurations, exposed endpoints, some injection</td><td>Code paths it can't reach; logic flaws</td></tr>
+    <tr><td><strong>SCA</strong> (dependency scanning)</td><td>Matches dependencies to known vulnerabilities</td><td>Known-vulnerable libraries</td><td>Unknown flaws; whether the vulnerable code is reachable</td></tr>
+    <tr><td><strong>Fuzzing</strong></td><td>Feeds large volumes of mutated input to find crashes</td><td>Parsers and memory-safety bugs</td><td>Logic and authorization flaws</td></tr>
+    <tr><td><strong>Penetration test</strong></td><td>Skilled humans try to break in</td><td>Chained flaws, logic and authorization bugs, realistic paths</td><td>Broad coverage; findings are a point-in-time snapshot</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Fuzzing, a Closer Look</h2>
+  <p>A fuzzer generates inputs, feeds them to a parser or function, and watches for crashes, hangs, or sanitizer errors. Coverage-guided fuzzers (such as AFL++ or libFuzzer) mutate inputs that reach new code paths, so they explore deeply. Fuzzing is especially effective for file-format parsers, protocol decoders, and any code written in a memory-unsafe language. Run it in CI and keep the crashing inputs as regression tests.</p>
+
+  <h2><span class="num">§3</span>Commissioning a Penetration Test</h2>
+  <ul>
+    <li><strong>Scope:</strong> which systems, environments, and techniques are in or out (and get written authorization).</li>
+    <li><strong>Goals:</strong> a general assessment, a specific feature before launch, or an attack simulation.</li>
+    <li><strong>Provide access:</strong> test accounts of different roles, documentation, and a staging environment make the time more productive.</li>
+    <li><strong>Act on the report:</strong> triage findings by risk (Stage 3.1), assign owners, fix, and <strong>retest</strong>. A report nobody follows up on is wasted money.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Reducing the Noise</h2>
+  <p>Automated tools produce false positives, and a flood of low-value alerts trains developers to ignore them. Tune rules, suppress known-safe findings with documented reasons, gate builds only on high-confidence issues, and track the signal that matters: time to fix serious findings.</p>
+
+  <div class="callout">
+    <span class="label">Tools find patterns, humans find intent</span>
+    Scanners match known shapes. Whether a coupon should work twice, or whether user A may see user B's invoice, is something only a person who understands the product will test.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating a clean scan as proof of security</td><td>Logic and authorization flaws remain</td><td>Combine tools with code review, threat modeling, and testing by humans</td></tr>
+    <tr><td>Commissioning a pen test without scope or access</td><td>Time is wasted on setup and shallow findings</td><td>Define scope and goals, and provide accounts and docs</td></tr>
+    <tr><td>Not retesting after fixes</td><td>Fixes that don't work go unnoticed</td><td>Verify every serious finding is closed</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run a fuzzer on a small parsing function you've written and record what it finds in 10 minutes.</li>
+      <li>Draft a scope document for a penetration test of one feature, including access and rules of engagement.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>SAST, DAST, SCA, fuzzing, and pen tests each find different bugs.</li>
+      <li>Fuzz parsers in CI and keep crashing inputs as regression tests.</li>
+      <li>Scope pen tests clearly, triage by risk, and retest the fixes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Security Engineering &amp; Communication — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

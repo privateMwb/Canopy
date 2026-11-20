@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What Is a Process — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · processes</span> → lesson 01</p>
+  <h1>What Is a Process</h1>
+  <p class="lede">A process is a running program plus everything the OS tracks about it: its memory, its registers, and its open resources.</p>
+
+  <h2><span class="num">§1</span>Program vs. Process</h2>
+  <p>A <strong>program</strong> is a file on disk: instructions and data, doing nothing. A <strong>process</strong> is that program in execution. You can start the same program three times and get three separate processes, each with its own state.</p>
+  <pre><span class="comment"># One program, two processes with different PIDs</span>
+sleep 100 &amp;
+sleep 100 &amp;
+ps -o pid,ppid,comm -C sleep</pre>
+  <p>Every process has a <strong>PID</strong> (process ID) and a <strong>PPID</strong> (its parent's PID). The parent/child links form the process tree you saw rooted at PID 1.</p>
+
+  <h2><span class="num">§2</span>What a Process Owns</h2>
+  <ul>
+    <li><strong>Address space:</strong> code, data, heap, and stack, private to this process</li>
+    <li><strong>CPU state:</strong> program counter, stack pointer, and general registers</li>
+    <li><strong>Open resources:</strong> the file descriptor table, current directory, and environment</li>
+    <li><strong>Identity and permissions:</strong> PID, user ID, group ID</li>
+    <li><strong>Scheduling info:</strong> priority and accumulated CPU time</li>
+  </ul>
+  <p>The program counter holds the address of the next instruction. The stack pointer marks the top of the stack. When the OS pauses a process, it must save these so the process can later resume as if nothing happened.</p>
+
+  <h2><span class="num">§3</span>The Process Control Block</h2>
+  <p>The kernel keeps a record for each process called the <strong>process control block</strong> (PCB). On Linux it's a structure called <code>task_struct</code>. It holds the state, PID, saved registers, pointers to the memory map and open-file table, and the parent and children.</p>
+  <pre><span class="comment"># Kernel-maintained view of one process</span>
+cat /proc/self/status | head -8
+ls -l /proc/self/fd
+cat /proc/self/maps | head -5</pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Isolation comes from ownership. Because each process has its own address space and descriptor table, one process's bug can't directly corrupt another's data.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using 'program' and 'process' interchangeably</td><td>Confusion about why two runs of one program don't share variables</td><td>Program = file on disk, process = running instance with its own state</td></tr>
+    <tr><td>Assuming a PID is permanent</td><td>PIDs get recycled after a process exits</td><td>Never store a PID long-term without checking the process still exists and is the one you meant</td></tr>
+    <tr><td>Thinking a child shares its parent's memory</td><td>Expecting writes in the child to appear in the parent</td><td>Each process has a private address space; sharing needs explicit IPC</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Open <code>/proc/self/status</code> and find the PID, PPID, and memory usage lines. What does each one mean?</li>
+      <li>Start two copies of the same program. List what is identical and what differs between them.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A process is a program in execution with its own memory, CPU state, and resources.</li>
+      <li>The PCB is the kernel's record of everything it needs to pause and resume a process.</li>
+      <li>Processes are isolated because each owns a private address space.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Processes — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

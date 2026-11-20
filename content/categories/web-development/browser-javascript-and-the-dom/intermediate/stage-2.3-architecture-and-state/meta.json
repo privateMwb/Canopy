@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Architecture & State",
+  "description": "Separation of concerns, state patterns, custom events, web components, and rendering strategies.",
+  "order": 3
+}

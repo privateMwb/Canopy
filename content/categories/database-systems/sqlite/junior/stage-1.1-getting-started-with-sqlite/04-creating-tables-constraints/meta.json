@@ -1,0 +1,5 @@
+{
+  "title": "Creating Tables & Constraints",
+  "description": "Primary keys, rowid, NOT NULL, UNIQUE, CHECK, and STRICT tables.",
+  "order": 4
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Consistency with the Source of Truth",
+  "description": "Stale reads, race conditions, and the guarantees a cache can honestly make.",
+  "order": 5
+}

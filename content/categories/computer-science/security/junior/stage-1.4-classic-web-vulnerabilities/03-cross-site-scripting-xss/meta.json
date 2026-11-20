@@ -1,0 +1,1 @@
+{"title": "Cross-Site Scripting (XSS)", "description": "Stored, reflected, and DOM-based XSS, and how injected script steals sessions and acts as the user.", "order": 3}

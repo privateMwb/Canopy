@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The .NET SDK, the CLR &amp; the dotnet CLI — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · .net &amp; c# basics</span> → lesson 01</p>
+  <h1>The .NET SDK, the CLR &amp; the dotnet CLI</h1>
+  <p class="lede">Create, build, and run a C# project from the command line, and understand what the SDK, the compiler, and the runtime each contribute.</p>
+
+  <h2><span class="num">§1</span>The Pieces: SDK, Runtime, and Language</h2>
+
+  <p><strong>C#</strong> is the language. <strong>.NET</strong> is the platform it runs on. The <strong>.NET SDK</strong> is what you install to develop: it contains the <code>dotnet</code> command, the C# compiler (Roslyn), MSBuild, and the NuGet client. The <strong>runtime</strong> (the CLR plus the base class library) is what executes your program, and it's the only part your users need.</p>
+  <table>
+    <tr><th>Piece</th><th>What it does</th><th>You meet it as</th></tr>
+    <tr><td>SDK</td><td>Builds, tests, and packages projects</td><td><code>dotnet build</code>, <code>dotnet test</code></td></tr>
+    <tr><td>Roslyn compiler</td><td>Turns C# into IL (intermediate language) in a <code>.dll</code></td><td>Compiler errors and warnings</td></tr>
+    <tr><td>CLR</td><td>Loads IL, JIT-compiles it to machine code, manages memory, enforces type safety</td><td>Garbage collection, exceptions, stack traces</td></tr>
+    <tr><td>Base class library</td><td><code>List&lt;T&gt;</code>, <code>File</code>, <code>HttpClient</code>, and thousands more types</td><td><code>using System.Collections.Generic;</code></td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Create, Build, Run</h2>
+
+  <p>Check your install, then create a console project:</p>
+  <pre>dotnet --version           <span class="comment">// prints the SDK version</span>
+dotnet new console -o Hello  <span class="comment">// scaffold a project in ./Hello</span>
+cd Hello
+dotnet run                   <span class="comment">// restore, build, then run</span></pre>
+  <p>You get two files. <code>Hello.csproj</code> describes the project, and <code>Program.cs</code> holds the code. Modern templates use <strong>top-level statements</strong>, so there's no <code>Main</code> method to write by hand:</p>
+  <pre><span class="comment">// Program.cs</span>
+Console.WriteLine("Hello, .NET");</pre>
+  <p><code>Console</code> resolves without a <code>using</code> because the template enables <strong>implicit usings</strong> for common namespaces. The project file shows that and the other settings that matter:</p>
+  <pre>&lt;Project Sdk="Microsoft.NET.Sdk"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;OutputType&gt;Exe&lt;/OutputType&gt;
+    &lt;TargetFramework&gt;net10.0&lt;/TargetFramework&gt;  &lt;!-- match the SDK you installed --&gt;
+    &lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+    &lt;Nullable&gt;enable&lt;/Nullable&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;</pre>
+
+  <h2><span class="num">§3</span>What Happens When You Run It</h2>
+
+  <p><code>dotnet run</code> chains several steps. <strong>Restore</strong> fetches NuGet packages. <strong>Build</strong> compiles your C# to IL and writes it to <code>bin/Debug/net10.0/Hello.dll</code>. Then the <code>dotnet</code> host starts the CLR, which loads that DLL and <strong>JIT-compiles</strong> methods to native code as they're first called.</p>
+  <p>Because the output is IL rather than machine code, the same <code>Hello.dll</code> runs on Windows, Linux, and macOS wherever a compatible runtime is installed. Use <code>dotnet build</code> to compile without running, and <code>dotnet build -c Release</code> for an optimized build.</p>
+  <pre>dotnet new list            <span class="comment">// available templates</span>
+dotnet new classlib -o MyLib <span class="comment">// other project types</span>
+dotnet build -c Release
+dotnet clean</pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The compiler does <strong>not</strong> produce native code. It produces IL, and the CLR finishes the job at run time. That's why one build runs on any operating system, and why later lessons on the JIT and Native AOT matter for performance.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Installing only the runtime and expecting <code>dotnet new</code> to work</td><td>The command isn't found, or only <code>dotnet MyApp.dll</code> works</td><td>Install the SDK for development; users of your app only need the runtime</td></tr>
+    <tr><td>Setting a <code>TargetFramework</code> newer than the installed SDK</td><td>Restore or build fails with an unsupported-framework error</td><td>Run <code>dotnet --version</code> and match the moniker, e.g. <code>net10.0</code></td></tr>
+    <tr><td>Editing files inside <code>bin/</code> or <code>obj/</code></td><td>Changes are overwritten on the next build</td><td>Edit only source files and the <code>.csproj</code>; treat <code>bin/</code> and <code>obj/</code> as disposable</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a console project, change the message to print your name, and run it with <code>dotnet run</code>. Then find the <code>.dll</code> it produced under <code>bin/</code>.</li>
+      <li>Build the same project with <code>-c Release</code> and compare the two output folders. Which files differ?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The SDK builds your code; the runtime (the CLR plus the base class library) runs it.</li>
+      <li>C# compiles to IL, and the JIT turns IL into machine code as methods are first called.</li>
+      <li><code>dotnet new</code>, <code>build</code>, and <code>run</code> are the core loop, and the <code>.csproj</code> file controls the settings.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · .NET &amp; C# Basics — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

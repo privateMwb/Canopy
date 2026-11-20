@@ -1,0 +1,5 @@
+{
+  "title": "Eviction & Expiry Internals",
+  "description": "How keys expire, how eviction samples, and the cost of big keys.",
+  "order": 4
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Data Types That Matter",
+  "description": "Integers, numeric, text, boolean, timestamptz, uuid — and the types that cause quiet bugs.",
+  "order": 3
+}

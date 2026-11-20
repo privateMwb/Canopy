@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 \u2014 Concurrency & Performance",
+  "description": "Threads and the GIL, processes, asyncio, profiling, and making code faster.",
+  "order": 3
+}

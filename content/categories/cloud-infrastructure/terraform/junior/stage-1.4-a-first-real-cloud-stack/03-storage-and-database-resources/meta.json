@@ -1,0 +1,5 @@
+{
+  "title": "Storage & Database Resources",
+  "description": "Buckets, volumes, and a managed database with sensible defaults.",
+  "order": 3
+}

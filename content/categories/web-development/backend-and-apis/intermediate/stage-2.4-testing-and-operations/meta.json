@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Testing & Operations",
+  "description": "Unit and integration tests, contract tests, observability, Docker, and CI/CD.",
+  "order": 4
+}

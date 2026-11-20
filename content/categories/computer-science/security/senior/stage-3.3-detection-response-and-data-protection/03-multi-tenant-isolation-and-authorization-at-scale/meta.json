@@ -1,0 +1,1 @@
+{"title": "Multi-Tenant Isolation & Authorization at Scale", "description": "Policy engines, tenant boundaries, confused-deputy bugs, and enforcing who may touch what across many services, extending row-level security in the SQL track.", "order": 3}

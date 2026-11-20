@@ -1,0 +1,5 @@
+{
+  "title": "Source Positions & Lexical Errors",
+  "description": "Tracking line and column, handling comments and string escapes, and reporting bad characters usefully.",
+  "order": 2
+}

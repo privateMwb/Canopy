@@ -1,0 +1,5 @@
+{
+  "title": "Closures & Decorators",
+  "description": "Functions as objects, capturing state, and writing decorators that preserve metadata.",
+  "order": 3
+}

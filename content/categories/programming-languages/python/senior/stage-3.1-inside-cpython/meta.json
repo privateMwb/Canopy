@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 \u2014 Inside CPython",
+  "description": "Bytecode, memory management, descriptors, metaclasses, and the GIL/free-threading/JIT story.",
+  "order": 1
+}

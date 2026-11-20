@@ -1,0 +1,5 @@
+{
+  "title": "Offline Persistence & Sync",
+  "description": "Local caching, offline writes, and how conflicts resolve.",
+  "order": 5
+}

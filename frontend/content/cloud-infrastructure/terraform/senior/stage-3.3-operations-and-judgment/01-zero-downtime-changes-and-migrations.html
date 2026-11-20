@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zero-Downtime Changes &amp; Migrations — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · operations &amp; judgment</span> → lesson 01</p>
+  <h1>Zero-Downtime Changes &amp; Migrations</h1>
+  <p class="lede">A <code>-/+</code> in the plan is an outage unless you design around it. Zero-downtime changes mean building the new before removing the old.</p>
+
+  <h2><span class="num">§1</span>Create Before Destroy</h2>
+  <p>By default Terraform destroys the old resource, then creates the new one. For things that serve traffic, reverse that.</p>
+  <pre>resource "aws_launch_template" "app" {
+  name_prefix   = "app-"          <span class="comment"># unique names allow two to exist at once</span>
+  image_id      = var.ami_id
+  instance_type = "t3.medium"
+
+  lifecycle { create_before_destroy = true }
+}</pre>
+  <p>This only works when the resource's identifying name does not collide. Fixed names (<code>name = "app"</code>) block it, so use <code>name_prefix</code> or include a random suffix. The setting also propagates to dependencies, which can surprise you.</p>
+  <h2><span class="num">§2</span>Rolling Out Instances</h2>
+  <p>Replacing an auto-scaling group's template should roll gradually, not all at once.</p>
+  <pre>resource "aws_autoscaling_group" "app" {
+  <span class="comment"># ...</span>
+  launch_template {
+    id      = aws_launch_template.app.id
+    version = aws_launch_template.app.latest_version
+  }
+  instance_refresh {
+    strategy = "Rolling"
+    preferences { min_healthy_percentage = 90 }
+  }
+}</pre>
+  <h2><span class="num">§3</span>Blue/Green and Traffic Shifting</h2>
+  <p>For bigger changes, stand up the new version alongside the old and move traffic with weighted DNS or load balancer target groups, then remove the old after it proves healthy.</p>
+  <pre>resource "aws_lb_listener_rule" "app" {
+  <span class="comment"># ...</span>
+  action {
+    type = "forward"
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.blue.arn
+        weight = 90
+      }
+      target_group {
+        arn    = aws_lb_target_group.green.arn
+        weight = 10
+      }
+    }
+  }
+}</pre>
+  <h2><span class="num">§4</span>Data and Migrations</h2>
+  <p>Replacing stateful resources needs a data plan: snapshots and restores, replication, or provider-supported blue/green for managed databases. Use the <strong>expand and contract</strong> pattern for schema changes, which adds new structure, migrates, then removes the old, with each step compatible with the version before and after it.</p>
+  <h2><span class="num">§5</span>Moving Resources Without Recreating</h2>
+  <p>Use <code>moved</code> blocks to rename or restructure, and <code>removed</code> plus <code>import</code> to move something between states without touching the real object.</p>
+  <div class="callout">
+    <span class="label">Rehearse the plan, not just the code</span>
+    For risky changes, apply to a staging copy first and read the plan on the real stack closely. The question is never "will the code work" but "what happens to live traffic between the first and last step".
+  </div>
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using fixed names on resources that must be replaced</td><td><code>create_before_destroy</code> fails on a name conflict</td><td>Use <code>name_prefix</code> or generated suffixes</td></tr>
+    <tr><td>Replacing a database in place</td><td>Data loss and downtime</td><td>Use snapshots, replication, or provider blue/green features</td></tr>
+    <tr><td>Changing everything in one apply</td><td>A failure leaves a half-migrated system</td><td>Break migrations into small, individually safe steps</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Convert a launch template to use <code>name_prefix</code> and <code>create_before_destroy</code>, and confirm in the plan that the new one is created first.</li>
+      <li>Write the sequence of steps to rename a database column using expand and contract, with each step independently safe.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Build new before removing old, and make names unique enough to allow both to exist.</li>
+      <li>Roll instances gradually and shift traffic in measured steps.</li>
+      <li>Treat stateful replacement as a data migration, not a resource swap.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Operations &amp; Judgment — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

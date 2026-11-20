@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C++ Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / c++</p>
+    <h1>From pointers and RAII to fast, safe, modern C++</h1>
+    <p class="lede">Three levels, twelve stages — memory, templates, and the standard library, built toward the judgment to write C++ that is fast, correct, and maintainable across a large codebase.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've heard of pointers" to "I can write small C++ programs that manage their own resources safely, using the standard library instead of raw memory."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — First Programs</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Toolchain: Compile, Link &amp; Run</p><p class="lesson-desc">Preprocessor, compiler, linker, headers, and reading a compiler error.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Types, Variables, const &amp; auto</p><p class="lesson-desc">Fundamental types, initialization forms, and constness as a design tool.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Functions, References &amp; Overloading</p><p class="lesson-desc">Pass by value, reference, and const reference, and how overloads are resolved.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Strings &amp; std::string_view</p><p class="lesson-desc">Owning vs. non-owning text, and the dangling-view trap.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Streams &amp; Input/Output</p><p class="lesson-desc">iostream, formatted output, and reading input robustly.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a small console program (a text parser or calculator) built with a multi-file project and compiled with warnings enabled and clean.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Memory &amp; Pointers</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Pointers &amp; References</p><p class="lesson-desc">Addresses, dereferencing, nullptr, and what a reference really is.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Stack vs. Heap &amp; new/delete</p><p class="lesson-desc">Automatic and dynamic storage, and why manual delete is a last resort.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Arrays &amp; std::array</p><p class="lesson-desc">C-style array decay and bounds problems, and the safer replacements.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">RAII</p><p class="lesson-desc">Tying resource lifetime to scope, and the idea that defines C++.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Undefined Behavior &amp; Sanitizers</p><p class="lesson-desc">What UB is, why it's dangerous, and catching it with ASan and UBSan.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a C++ program with five planted memory bugs, find and fix every one using sanitizers, and convert it to RAII.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Containers &amp; Algorithms</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">std::vector</p><p class="lesson-desc">Contiguous storage, capacity vs. size, and invalidated iterators.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Maps, Sets &amp; Unordered Containers</p><p class="lesson-desc">Ordered vs. hashed, key requirements, and the right container for the job.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Iterators &amp; &lt;algorithm&gt;</p><p class="lesson-desc">sort, find, transform, and expressing intent instead of writing loops.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Lambdas</p><p class="lesson-desc">Capture lists, by value vs. by reference, and lambdas as arguments.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">pair, tuple, optional &amp; variant</p><p class="lesson-desc">Returning and holding more than one kind of thing without raw pointers or sentinels.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a data-processing program (a log analyzer or inventory tool) using containers and algorithms with no hand-written loops over indices.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Classes &amp; Ownership</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Classes, Constructors &amp; Destructors</p><p class="lesson-desc">Member initialization, initializer lists, and object lifetime.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Copying &amp; the Rule of 0/3/5</p><p class="lesson-desc">When the compiler's defaults are right and when they're a bug.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Smart Pointers</p><p class="lesson-desc">unique_ptr, shared_ptr, weak_ptr, and expressing ownership in the type.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Inheritance &amp; Virtual Functions</p><p class="lesson-desc">Polymorphism, virtual destructors, and slicing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Operators &amp; const-Correctness</p><p class="lesson-desc">Overloading sensibly, and marking what must not change.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small class hierarchy (shapes or a plugin system) with clear ownership and no raw owning pointers, passing sanitizers cleanly.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I write safe C++" to "I write generic, move-aware, modern C++ using templates and the full standard library, and I build and test it properly."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Templates &amp; Generic Programming</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Function &amp; Class Templates</p><p class="lesson-desc">Writing code once for many types, and how instantiation works.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Deduction, Specialization &amp; Overloads</p><p class="lesson-desc">How the compiler picks a template, and customizing for special cases.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Concepts</p><p class="lesson-desc">Constraining templates, readable errors, and replacing SFINAE.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Variadic Templates &amp; Fold Expressions</p><p class="lesson-desc">Functions that take any number of arguments, and expanding parameter packs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Type Traits &amp; constexpr</p><p class="lesson-desc">Computing at compile time and querying types with &lt;type_traits&gt;.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a generic container or algorithm library constrained with concepts, with a test that fails to compile on a misuse, on purpose.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Move Semantics &amp; Value Categories</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">lvalues, rvalues &amp; Value Categories</p><p class="lesson-desc">What these terms mean and why the language distinguishes them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Move Constructors &amp; Move Assignment</p><p class="lesson-desc">Transferring resources instead of copying them, and leaving the source valid.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Perfect Forwarding</p><p class="lesson-desc">Universal references, std::forward, and writing wrappers that don't add copies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Copy Elision &amp; Return Value Optimization</p><p class="lesson-desc">When the compiler removes copies, and why std::move on a return is often wrong.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Designing Move-Aware Types</p><p class="lesson-desc">noexcept moves, strong guarantees, and making vector grow without copies.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a resource-owning class with correct copy and move operations, and prove with a counter how many copies and moves each scenario causes.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — The Modern Standard Library</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Ranges &amp; Views</p><p class="lesson-desc">Composable, lazy pipelines that replace nested loops and temporaries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">span, string_view &amp; Non-Owning Types</p><p class="lesson-desc">Cheap views into data, and the lifetime rules that keep them safe.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Error Handling</p><p class="lesson-desc">Exceptions vs. error codes, noexcept, and std::expected.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">chrono, filesystem &amp; format</p><p class="lesson-desc">The utilities that replace most hand-rolled platform code.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Custom Iterators &amp; Algorithms</p><p class="lesson-desc">Making your own types work with the standard library.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Refactor a legacy-style program to modern C++ (ranges, span, expected), and show the diff in clarity and in safety.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Threads &amp; Build Systems</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Threads, Mutexes &amp; Lock Guards</p><p class="lesson-desc">std::thread, scoped locking, and avoiding data races.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Condition Variables &amp; Atomics</p><p class="lesson-desc">Waiting for work correctly, and when an atomic is enough.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Futures, async &amp; jthread</p><p class="lesson-desc">Higher-level concurrency and cooperative cancellation with stop_token.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">CMake in Practice</p><p class="lesson-desc">Targets, dependencies, build types, and a project that builds anywhere.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing &amp; Sanitizers in CI</p><p class="lesson-desc">GoogleTest or Catch2, plus running ASan, UBSan, and TSan automatically.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a multi-threaded program with a CMake project, tests, and a CI configuration that fails on any sanitizer finding.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I write good modern C++" to "I understand what the machine does with my code, I can reason about undefined behavior and the memory model, and I can make design calls across a large codebase."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Performance &amp; the Machine</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Cache-Friendly Design &amp; Data Layout</p><p class="lesson-desc">Array of structs vs. struct of arrays, and why memory access dominates.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Allocators &amp; Memory Resources</p><p class="lesson-desc">Custom allocation, std::pmr, and avoiding the general-purpose heap on hot paths.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Compiler Optimization &amp; Reading Assembly</p><p class="lesson-desc">Inlining, vectorization, and using Compiler Explorer to see what you really got.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Profiling &amp; Benchmarking</p><p class="lesson-desc">perf, flame graphs, and Google Benchmark — measuring without fooling yourself.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a slow program, find the bottleneck with a profiler, fix it, and show a benchmark proving the speedup and the reason for it.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Concurrency &amp; the Memory Model</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The C++ Memory Model</p><p class="lesson-desc">Sequential consistency, acquire/release, and the orderings you can choose.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Lock-Free Structures &amp; Their Pitfalls</p><p class="lesson-desc">CAS loops, the ABA problem, and when lock-free isn't worth it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Thread Pools, Executors &amp; Coroutines</p><p class="lesson-desc">Task scheduling and C++20 coroutines in depth.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Finding Races with ThreadSanitizer</p><p class="lesson-desc">Reading TSan reports and fixing races you didn't know you had.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a small lock-free queue or thread pool, then stress-test it under ThreadSanitizer and explain each ordering you chose.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Advanced Language &amp; Safety</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Undefined Behavior in Depth</p><p class="lesson-desc">Strict aliasing, signed overflow, and why the optimizer treats UB as a promise.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Object Lifetime &amp; Provenance</p><p class="lesson-desc">When an object exists, when a pointer is valid, and the rules that follow.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Type Erasure, CRTP &amp; Policy-Based Design</p><p class="lesson-desc">Advanced patterns for abstraction, and what each costs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">ABI, Linking &amp; Symbol Visibility</p><p class="lesson-desc">Shared libraries, name mangling, and why ABI breaks are silent.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Hardening &amp; the Core Guidelines</p><p class="lesson-desc">Static analysis, safe subsets, and reducing whole classes of bugs.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit a short piece of code for lifetime and UB hazards, classify each finding, and fix it without changing its behavior.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Engineering &amp; Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Library &amp; API Design</p><p class="lesson-desc">Stable interfaces, ownership in signatures, and designing for users who can't see your source.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Large Codebases &amp; Build Times</p><p class="lesson-desc">Modules, forward declarations, precompiled headers, and caching builds.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Debugging Crashes</p><p class="lesson-desc">Core dumps, gdb and lldb, and reading a stack from a failure you can't reproduce.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Interoperating with C &amp; Other Languages</p><p class="lesson-desc">extern "C", FFI boundaries, and Python bindings.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">C++ vs. Rust &amp; Other Choices</p><p class="lesson-desc">Where C++ wins, where its costs aren't worth it, and arguing either way.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design document for a performance-critical component: ownership model, concurrency, error strategy, and the risks you accept.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Ownership appears at Junior as RAII and smart pointers, returns at Intermediate as move semantics, and comes back at Senior as lifetime, provenance, and the memory model. Templates follow the same arc: writing them, then constraining them with concepts, then designing with them. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Senior is about what the machine and the optimizer do with your code. Knowing the rules of undefined behavior and being able to find the one violation in a crash you can't reproduce are different skills, and the last stages are built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

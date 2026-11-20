@@ -1,0 +1,1 @@
+{"title": "JWT Pitfalls: Algorithm & Key Confusion", "description": "How trusting the alg header, confusing keys, and skipping claim checks break token validation, now that you know what signatures guarantee.", "order": 3}

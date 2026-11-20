@@ -1,0 +1,5 @@
+{
+  "title": "Bubbling, Capturing & Delegation",
+  "description": "How events travel, and why one listener can serve many elements.",
+  "order": 3
+}

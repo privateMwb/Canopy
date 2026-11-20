@@ -1,0 +1,5 @@
+{
+  "title": "Resilience: Polly & HttpClientFactory",
+  "description": "Timeouts, retries, and circuit breakers without socket exhaustion.",
+  "order": 1
+}

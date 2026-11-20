@@ -1,0 +1,5 @@
+{
+  "title": "Condition Variables & Atomics",
+  "description": "Waiting for work correctly, and when an atomic is enough.",
+  "order": 2
+}

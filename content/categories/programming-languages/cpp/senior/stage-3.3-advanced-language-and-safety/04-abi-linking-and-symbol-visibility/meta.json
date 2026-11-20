@@ -1,0 +1,5 @@
+{
+  "title": "ABI, Linking & Symbol Visibility",
+  "description": "Shared libraries, name mangling, and why ABI breaks are silent.",
+  "order": 4
+}

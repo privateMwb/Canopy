@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Functions, Calls &amp; Return — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · evaluating programs</span> → lesson 04</p>
+  <h1>Functions, Calls &amp; Return</h1>
+  <p class="lede">A function call evaluates its arguments, binds them to parameters in a fresh environment, runs the body, and hands back whatever <code>return</code> produced.</p>
+
+  <h2><span class="num">§1</span>Function values</h2>
+  <p>In Twig, functions are values. Declaring one creates a function object and stores it in a variable.</p>
+  <pre>struct Function { name, params, body, closure: Env }
+
+        FnDecl(name, params, body):
+            f = Function(name, params, body, closure = env)
+            define(env, name, f)</pre>
+  <p>The <code>closure</code> field records the environment where the function was defined. We will need it in the next lesson. For now it is just the scope the body should start from.</p>
+
+  <h2><span class="num">§2</span>Calling</h2>
+  <p>A call has four steps: evaluate the callee, evaluate each argument left to right, check the count, and run the body in a new environment.</p>
+  <pre>        Call(callee, args):
+            f = eval(callee)
+            if not is_function(f): runtime_error("can only call functions")
+            values = [eval(a) for a in args]               <span class="comment"># left to right</span>
+            if len(values) != len(f.params):
+                runtime_error("expected " + len(f.params) + " arguments")
+            call_env = Env(parent = f.closure)
+            for (p, v) in zip(f.params, values): define(call_env, p, v)
+            try:
+                exec_block(f.body, call_env)
+            catch ReturnSignal as r:
+                return r.value
+            return nil                                     <span class="comment"># fell off the end</span></pre>
+  <p>A function that reaches the end without <code>return</code> produces <code>nil</code>, one of the language rules we fixed up front.</p>
+
+  <h2><span class="num">§3</span>Return and the call stack</h2>
+  <p><code>return</code> is a non-local exit, like <code>break</code>, but it can leave several nested blocks and loops at once.</p>
+  <pre>        Return(expr):
+            v = eval(expr) if expr != nil else nil
+            raise ReturnSignal(v)</pre>
+  <p>Each Twig call becomes one host-language call to <code>eval</code>, so Twig's call stack lives on the host's stack. This makes recursion work with no extra effort, and also means that very deep Twig recursion overflows the host stack.</p>
+  <pre>fn fact(n) { if (n &lt;= 1) { return 1; } return n * fact(n - 1); }
+print fact(5);       <span class="comment">// 120</span></pre>
+  <p>A real implementation tracks a <strong>call depth</strong> and raises a clean 'stack overflow' error at a fixed limit instead of letting the host crash.</p>
+
+  <div class="callout">
+    <span class="label">Connection to later stages</span>
+    The call environment here becomes the stack frame of a bytecode VM in Stage 2.3, and the frame layout you choose there is exactly what a calling convention fixes in Stage 3.1.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Starting the call environment from the caller's scope</td><td>The body sees the caller's local variables (dynamic scoping)</td><td>Parent the new environment on the function's <code>closure</code>, not the current <code>env</code></td></tr>
+    <tr><td>Not checking argument count</td><td>Missing parameters are undefined or extra arguments silently ignored</td><td>Check <code>len(args)</code> against <code>len(params)</code> and raise an error</td></tr>
+    <tr><td>Using a plain <code>return</code> in the host without a signal</td><td><code>return</code> inside a nested loop or block only exits that inner part</td><td>Throw <code>ReturnSignal</code> and catch it in the call</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a recursive Twig function that sums an array's first <code>n</code> elements (use <code>a[i]</code> once Stage 1.4 is done, or pass numbers for now), and trace the environments created for <code>sum(3)</code>.</li>
+      <li>Add a call-depth counter to the call code and raise a Twig error at depth 200.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A function value pairs parameters and a body with the environment it was defined in.</li>
+      <li>A call evaluates arguments, creates a fresh environment, runs the body, and catches <code>return</code>.</li>
+      <li>Limit call depth so deep recursion is a clean error, not a host crash.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Evaluating Programs — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

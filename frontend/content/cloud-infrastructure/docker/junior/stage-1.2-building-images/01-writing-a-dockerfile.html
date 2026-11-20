@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Writing a Dockerfile — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · building images</span> → lesson 01</p>
+  <h1>Writing a Dockerfile</h1>
+  <p class="lede">A Dockerfile is a short script of instructions that <code>docker build</code> turns into an image, one layer per step.</p>
+
+  <h2><span class="num">§1</span>The Four Core Instructions</h2>
+  <p>Here is a complete Dockerfile for a small Node.js app:</p>
+  <pre>FROM node:22-slim
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]</pre>
+  <ul>
+    <li><code>FROM</code> picks the <strong>base image</strong> that everything else builds on.</li>
+    <li><code>WORKDIR</code> sets (and creates) the directory for the instructions that follow, and for the running container.</li>
+    <li><code>COPY</code> brings files from your build context into the image.</li>
+    <li><code>RUN</code> executes a command <strong>at build time</strong> and saves the result as a layer.</li>
+    <li><code>CMD</code> sets the default command <strong>at run time</strong>.</li>
+  </ul>
+  <p><code>EXPOSE</code> only documents the port the app listens on; it does not publish anything. You still need <code>-p</code> at run time.</p>
+  <h2><span class="num">§2</span>Building and Running</h2>
+  <pre>docker build -t myapp:1.0 .      <span class="comment"># the dot is the build context</span>
+docker run -d -p 3000:3000 myapp:1.0
+docker history myapp:1.0         <span class="comment"># see each layer and its size</span></pre>
+  <p><code>-t</code> names and tags the result. Without it you get an anonymous image identified only by a hash.</p>
+  <h2><span class="num">§3</span>Build Time vs. Run Time</h2>
+  <p>The most common beginner confusion is when things happen. <code>RUN npm ci</code> executes once, during <code>docker build</code>, and its output is baked into the image. <code>CMD</code> does not run during the build at all; it runs every time a container starts. If you want something to happen at every start, it belongs in <code>CMD</code> or <code>ENTRYPOINT</code>, not <code>RUN</code>.</p>
+  <div class="callout">
+    <span class="label">Every instruction is a snapshot</span>
+    Each <code>RUN</code>, <code>COPY</code>, and <code>ADD</code> adds a layer that is stored permanently. Deleting a file in a later <code>RUN</code> hides it but does not shrink the image, because the earlier layer still contains it. The next lessons build on this idea.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>RUN</code> to start the app</td><td>The build hangs or the app is not running in the container</td><td>Start the app with <code>CMD</code></td></tr>
+    <tr><td>Expecting <code>EXPOSE</code> to publish a port</td><td>The app is unreachable from the host</td><td>Add <code>-p HOST:CONTAINER</code> to <code>docker run</code></td></tr>
+    <tr><td>Forgetting the build context dot</td><td>"docker build requires exactly 1 argument"</td><td>End with <code>.</code> or a path to the context</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a Dockerfile for a tiny script in any language you know, build it, and run it.</li>
+      <li>Run <code>docker history</code> on your image and match each layer to the instruction that created it.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A Dockerfile is a list of instructions; each filesystem-changing one creates a layer.</li>
+      <li><code>RUN</code> happens at build time, <code>CMD</code> at container start.</li>
+      <li><code>EXPOSE</code> documents a port; <code>-p</code> is what publishes it.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Building Images — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

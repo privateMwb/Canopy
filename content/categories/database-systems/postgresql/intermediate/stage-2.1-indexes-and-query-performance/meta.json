@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Indexes & Query Performance",
+  "description": "Reading plans, B-tree and specialized indexes, index-only scans, and planner statistics.",
+  "order": 1
+}

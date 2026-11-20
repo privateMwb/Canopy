@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Logic Gates &amp; Building an Adder — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · data representation & logic</span> → lesson 04</p>
+  <h1>Logic Gates &amp; Building an Adder</h1>
+  <p class="lede">A handful of simple gates, wired together, can add two binary numbers, and the same idea scales up to the arithmetic unit of a CPU.</p>
+
+  <h2><span class="num">§1</span>The Basic Gates</h2>
+  <p>A <strong>logic gate</strong> is a circuit that computes a Boolean function of one or more input bits. Every digital component, including CPUs, is built from them.</p>
+  <table>
+    <tr><th>Gate</th><th>Output is 1 when...</th><th>Symbol-free form</th></tr>
+    <tr><td>AND</td><td>Both inputs are 1</td><td>A·B</td></tr>
+    <tr><td>OR</td><td>At least one input is 1</td><td>A+B</td></tr>
+    <tr><td>NOT</td><td>The input is 0</td><td>¬A</td></tr>
+    <tr><td>XOR</td><td>The inputs differ</td><td>A⊕B</td></tr>
+    <tr><td>NAND</td><td>Not both inputs are 1</td><td>¬(A·B)</td></tr>
+  </table>
+  <p>NAND is <strong>universal</strong>: any Boolean function can be built from NAND gates alone, which is one reason chips can be made from a few repeated cell types. Gates are implemented with transistors, typically a few per gate in CMOS technology.</p>
+
+  <h2><span class="num">§2</span>Adding Bits: Half and Full Adders</h2>
+  <p>Adding two single bits gives a sum bit and a carry bit. A <strong>half adder</strong> does exactly that.</p>
+  <pre>Half adder:   sum   = A XOR B
+              carry = A AND B
+
+A B | sum carry
+0 0 |  0    0
+0 1 |  1    0
+1 0 |  1    0
+1 1 |  0    1       <span class="comment"># 1 + 1 = 10 in binary</span></pre>
+  <p>To add multi-bit numbers, each position also has to include the carry from the position below. A <strong>full adder</strong> takes three inputs: A, B, and carry-in.</p>
+  <pre>Full adder:   sum   = A XOR B XOR Cin
+              Cout  = (A AND B) OR (Cin AND (A XOR B))</pre>
+  <p>Chaining n full adders, with each carry-out feeding the next carry-in, gives an n-bit <strong>ripple-carry adder</strong>.</p>
+
+  <h2><span class="num">§3</span>An Adder in Code, and Beyond</h2>
+  <pre>def full_adder(a, b, cin):
+    s    = a ^ b ^ cin
+    cout = (a &amp; b) | (cin &amp; (a ^ b))
+    return s, cout
+
+def add4(x, y):                        <span class="comment"># add two 4-bit numbers bit by bit</span>
+    carry, result = 0, 0
+    for i in range(4):
+        a, b = (x &gt;&gt; i) &amp; 1, (y &gt;&gt; i) &amp; 1
+        s, carry = full_adder(a, b, carry)
+        result |= s &lt;&lt; i
+    return result &amp; 0xF                <span class="comment"># the final carry is dropped: wraparound</span>
+
+add4(0b0101, 0b0011)   <span class="comment"># 8 = 0b1000</span></pre>
+  <p>In a ripple-carry adder, the top bit must wait for the carry to travel through every lower bit, so delay grows with width. Real CPUs use <strong>carry-lookahead</strong> and similar designs to compute carries in parallel, trading more gates for less delay.</p>
+  <p>An <strong>ALU</strong> (arithmetic logic unit) combines an adder with AND, OR, XOR, and shift circuits, plus a multiplexer that selects which result to output. Subtraction reuses the adder: A − B is A + (NOT B) + 1, which is the two's complement negation from the last lesson.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Arithmetic is just logic. Nothing in a CPU 'knows' about numbers; carefully wired gates produce output bits that happen to follow the rules of addition.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting the carry-in on higher bits</td><td>Sums are wrong whenever a carry should propagate</td><td>Use full adders for all but the lowest bit</td></tr>
+    <tr><td>Ignoring the carry out of the top bit</td><td>Overflow goes undetected</td><td>Check carry (unsigned) or the sign rule (signed)</td></tr>
+    <tr><td>Assuming a larger adder costs the same time</td><td>Ripple-carry delay grows with width</td><td>Use carry-lookahead when width or speed matters</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Fill in the truth table for a full adder, and verify that it adds 1 + 1 + 1 correctly.</li>
+      <li>Extend <code>add4</code> to also return an overflow flag for signed addition.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>AND, OR, NOT, and XOR (or NAND alone) are enough to build any logic.</li>
+      <li>Half and full adders add bits, and chained full adders form a ripple-carry adder.</li>
+      <li>An ALU adds selection logic around the adder, and subtraction reuses it via two's complement.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Data Representation & Logic — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

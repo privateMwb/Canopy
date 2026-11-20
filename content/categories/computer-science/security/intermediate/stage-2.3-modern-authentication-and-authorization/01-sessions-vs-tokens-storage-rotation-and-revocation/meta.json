@@ -1,0 +1,1 @@
+{"title": "Sessions vs. Tokens: Storage, Rotation & Revocation", "description": "Where to keep credentials in browsers and mobile apps, session fixation, refresh-token rotation, and logging out for real.", "order": 1}

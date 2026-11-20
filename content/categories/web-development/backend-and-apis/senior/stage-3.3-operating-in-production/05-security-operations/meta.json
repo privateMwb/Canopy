@@ -1,0 +1,5 @@
+{
+  "title": "Security Operations",
+  "description": "Dependency scanning, secrets rotation, and incident readiness.",
+  "order": 5
+}

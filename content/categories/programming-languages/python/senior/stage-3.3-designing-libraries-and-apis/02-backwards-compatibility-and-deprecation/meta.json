@@ -1,0 +1,5 @@
+{
+  "title": "Backwards Compatibility & Deprecation",
+  "description": "Semantic versioning, deprecation warnings, and changing an API without breaking users.",
+  "order": 2
+}

@@ -1,0 +1,1 @@
+{"title": "Sessions & Login State on the Server", "description": "Generating, storing, rotating, and ending session IDs, picking up where Networking's cookies lesson left off.", "order": 2}

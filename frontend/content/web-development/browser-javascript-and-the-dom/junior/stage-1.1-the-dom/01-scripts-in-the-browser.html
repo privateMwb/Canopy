@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scripts in the Browser — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · the dom</span> → lesson 01</p>
+  <h1>Scripts in the Browser</h1>
+  <p class="lede">A script tag is how your JavaScript gets into a page. Where you put it, and which attributes you give it, decides whether it runs before or after the HTML it needs.</p>
+
+  <h2><span class="num">§1</span>Running Code in a Page</h2>
+
+  <p>The browser reads HTML top to bottom and builds the page as it goes. When it meets a classic <code>&lt;script&gt;</code> tag it <strong>stops parsing</strong>, downloads the file if there is one, runs it, and only then continues. That is why a script in the <code>&lt;head&gt;</code> that looks for an element further down finds nothing: the element does not exist yet.</p>
+
+  <pre><span class="comment">&lt;!-- inline --&gt;</span>
+&lt;script&gt;
+  console.log("hello from the page");
+&lt;/script&gt;
+
+<span class="comment">&lt;!-- external file --&gt;</span>
+&lt;script src="app.js"&gt;&lt;/script&gt;</pre>
+
+  <p>Scripts run in a single shared global scope, in the order they appear. A variable declared with <code>var</code> or a function declaration at the top level of a classic script becomes visible to every script after it.</p>
+
+  <h2><span class="num">§2</span>defer, async, and Modules</h2>
+
+  <p>Three attributes change the timing. All three let the HTML keep parsing while the file downloads.</p>
+
+  <table>
+    <tr><th>Form</th><th>Runs when</th><th>Order kept?</th></tr>
+    <tr><td><code>&lt;script src&gt;</code></td><td>Immediately, blocking the parser</td><td>Yes</td></tr>
+    <tr><td><code>&lt;script defer src&gt;</code></td><td>After parsing finishes, before <code>DOMContentLoaded</code></td><td>Yes</td></tr>
+    <tr><td><code>&lt;script async src&gt;</code></td><td>As soon as it downloads, whenever that is</td><td>No</td></tr>
+    <tr><td><code>&lt;script type="module" src&gt;</code></td><td>Deferred by default</td><td>Yes (dependencies first)</td></tr>
+  </table>
+
+  <p>For your own application code, <code>defer</code> or <code>type="module"</code> is almost always the right choice. Use <code>async</code> only for independent scripts such as analytics, where order does not matter.</p>
+
+  <pre>&lt;script type="module" src="main.js"&gt;&lt;/script&gt;
+
+<span class="comment">// main.js</span>
+import { render } from "./render.js";   <span class="comment">// modules can import other modules</span>
+render(document.body);                   <span class="comment">// the DOM is ready here</span></pre>
+
+  <p>Module scripts also run in <strong>strict mode</strong>, have their own scope (top-level variables do not leak onto <code>window</code>), and are fetched only once even if several files import them.</p>
+
+  <h2><span class="num">§3</span>The Console</h2>
+
+  <p>Every browser has a console (open DevTools with <code>F12</code> or <code>Cmd/Ctrl+Shift+I</code>). It shows errors and <code>console.log</code> output, and it is also a live prompt: type an expression and it runs against the current page.</p>
+
+  <pre>console.log("plain message");
+console.warn("something looks off");
+console.error("something broke");
+console.table([{ id: 1, name: "Ada" }, { id: 2, name: "Lin" }]);
+
+document.title            <span class="comment">// try this in the console prompt</span>
+document.body.children    <span class="comment">// an HTMLCollection of the body's child elements</span></pre>
+
+  <p>Read the red error text carefully. It names the file and line, and the most common first errors are <code>Uncaught ReferenceError</code> (a name that is not defined, often a typo or script order) and <code>Cannot read properties of null</code> (you used an element that was not found).</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    If your script needs the DOM, make sure it runs after the DOM exists. <code>defer</code> or <code>type="module"</code> does this with no extra code. Wrapping everything in a <code>DOMContentLoaded</code> listener is the older way to get the same result.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Classic script in <code>&lt;head&gt;</code> that queries the page</td><td><code>querySelector</code> returns <code>null</code>; later code throws</td><td>Add <code>defer</code> or use <code>type="module"</code></td></tr>
+    <tr><td>Using <code>async</code> for scripts that depend on each other</td><td>They run in a random order and sometimes fail</td><td>Use <code>defer</code>, which preserves order</td></tr>
+    <tr><td>Putting code in a <code>&lt;script src&gt;</code> tag that also has inline code</td><td>The inline code is ignored</td><td>Use two separate script tags</td></tr>
+    <tr><td>Opening a module page via <code>file://</code></td><td>Browser blocks the import with a CORS error</td><td>Serve the folder over <code>http://localhost</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create an HTML page with a heading and a script in the <code>&lt;head&gt;</code> that logs <code>document.querySelector("h1")</code>. Observe <code>null</code>, then fix it with <code>defer</code>.</li>
+      <li>Move the code into <code>main.js</code> loaded with <code>type="module"</code>, and export a function from a second file that you import and call.</li>
+      <li>In the console, run <code>document.title = "Changed"</code> and watch the tab title update.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A classic script blocks parsing; <code>defer</code> and modules wait for the DOM, <code>async</code> runs in no guaranteed order.</li>
+      <li>Prefer <code>type="module"</code> for application code: deferred, strict, and scoped.</li>
+      <li>The console is both a log and a live prompt: use it to explore the page.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · The DOM — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

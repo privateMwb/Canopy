@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Package Management — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · administering a linux machine</span> → lesson 02</p>
+  <h1>Package Management</h1>
+  <p class="lede">A package manager installs software, tracks every file it put on disk, and handles dependencies and upgrades, so you almost never build things by hand.</p>
+
+  <h2><span class="num">§1</span>What a Package Manager Does</h2>
+  <p>A <strong>package</strong> is an archive of files plus metadata: name, version, dependencies, and install scripts. A <strong>repository</strong> is a signed collection of packages that the manager downloads from. Debian and Ubuntu use <code>apt</code> with <code>.deb</code> packages. Fedora, RHEL, and Rocky use <code>dnf</code> with <code>.rpm</code> packages.</p>
+  <pre><span class="comment"># Debian / Ubuntu</span>
+sudo apt update                  <span class="comment"># refresh the package index</span>
+sudo apt install nginx           <span class="comment"># install with dependencies</span>
+apt search redis                 <span class="comment"># find packages</span>
+sudo apt remove nginx            <span class="comment"># remove, keep config</span>
+sudo apt purge nginx             <span class="comment"># remove including config</span>
+
+<span class="comment"># Fedora / RHEL</span>
+sudo dnf install nginx
+sudo dnf upgrade</pre>
+  <p><code>apt update</code> only refreshes the list of available versions. It does not upgrade anything. <code>apt upgrade</code> is the step that installs newer versions.</p>
+
+  <h2><span class="num">§2</span>Inspecting What Is Installed</h2>
+  <p>Because the manager records every file, you can ask which package owns a file, and list what a package installed. This is invaluable when debugging.</p>
+  <pre>dpkg -L nginx                    <span class="comment"># files installed by nginx (Debian)</span>
+dpkg -S /usr/sbin/nginx          <span class="comment"># which package owns this file?</span>
+apt show nginx                   <span class="comment"># version, dependencies, description</span>
+apt list --installed | grep ssl
+rpm -ql nginx                    <span class="comment"># same idea on RPM systems</span></pre>
+
+  <h2><span class="num">§3</span>Repositories, Trust, and Pinning</h2>
+  <p>Repositories are configured under <code>/etc/apt/sources.list.d/</code> (or <code>/etc/yum.repos.d/</code>). Third-party repos need their <strong>signing key</strong>, which proves packages were not tampered with. Add only sources you trust, because package install scripts run as root.</p>
+  <pre>apt policy nginx                 <span class="comment"># candidate version and its source</span>
+sudo apt install nginx=1.24.0-2ubuntu7   <span class="comment"># pin an exact version</span>
+sudo apt-mark hold nginx         <span class="comment"># stop automatic upgrades of it</span>
+sudo apt autoremove              <span class="comment"># remove orphaned dependencies</span></pre>
+
+  <div class="callout">
+    <span class="label">Packages vs. curl | bash</span>
+    Installing through a package manager gives you signed artifacts, a record of every file, clean removal, and security updates. Piping a script from the internet into a shell gives you none of that, so use it only for sources you have actually vetted.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Running <code>apt install</code> without <code>apt update</code> first</td><td>Installs an outdated version or fails with "not found"</td><td>Update the index first</td></tr>
+    <tr><td>Adding a third-party repo without checking it</td><td>Its packages run install scripts as root</td><td>Verify the vendor and use its signed key</td></tr>
+    <tr><td>Deleting files by hand instead of removing the package</td><td>Leaves orphaned config and breaks the package database</td><td>Use <code>apt remove</code> or <code>apt purge</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Install a package, list the files it added, and find which package owns <code>/bin/ls</code>.</li>
+      <li>Pin a package to its current version and verify it is held back during an upgrade.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Package managers track every installed file and resolve dependencies for you.</li>
+      <li><code>update</code> refreshes the index, and <code>upgrade</code> actually installs newer versions.</li>
+      <li>Only add repositories you trust, because package scripts run with root privileges.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Administering a Linux Machine — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

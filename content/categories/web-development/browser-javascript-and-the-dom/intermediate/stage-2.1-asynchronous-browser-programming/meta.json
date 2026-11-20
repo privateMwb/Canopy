@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Asynchronous Browser Programming",
+  "description": "The event loop, promises in depth, cancellation, scheduling, and workers.",
+  "order": 1
+}

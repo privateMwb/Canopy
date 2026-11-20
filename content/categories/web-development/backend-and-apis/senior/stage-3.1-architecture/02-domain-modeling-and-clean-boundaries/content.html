@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Domain Modeling &amp; Clean Boundaries — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · architecture</span> → lesson 02</p>
+  <h1>Domain Modeling &amp; Clean Boundaries</h1>
+  <p class="lede">Keeping business logic independent.</p>
+
+  <h2><span class="num">§1</span>Business Rules Should Outlive Frameworks</h2>
+
+  <p>Frameworks, databases, and delivery mechanisms change; the business rules ("an order cannot ship before it is paid", "a refund cannot exceed the charge") are the valuable, durable part. When those rules are scattered across route handlers and SQL queries, they are hard to find, test, and change. <strong>Domain modeling</strong> means giving those rules a clear home that does not depend on HTTP or the database.</p>
+
+  <h2><span class="num">§2</span>Building Blocks of a Domain Model</h2>
+
+  <table>
+    <tr><th>Concept</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><strong>Entity</strong></td><td>Has an identity that persists as its attributes change</td><td>An <code>Order</code> with id 918</td></tr>
+    <tr><td><strong>Value object</strong></td><td>Defined by its values, immutable, compared by value</td><td><code>Money(5000, "USD")</code>, an email address, a date range</td></tr>
+    <tr><td><strong>Aggregate</strong></td><td>A cluster of objects treated as one unit for consistency, accessed through a single root</td><td><code>Order</code> plus its <code>OrderLine</code>s; rules like "total matches lines" are enforced inside</td></tr>
+    <tr><td><strong>Domain service</strong></td><td>Business logic that does not belong to one entity</td><td>Pricing a basket across discounts</td></tr>
+    <tr><td><strong>Bounded context</strong></td><td>A boundary inside which a model and its language are consistent</td><td>"Customer" means an account holder in Billing but a ticket requester in Support</td></tr>
+  </table>
+
+  <p>The <strong>bounded context</strong> is the strategic idea: one universal model of the whole business is impossible, because the same word means different things to different parts of it. Draw explicit boundaries, let each context have its own model, and translate at the edges. These contexts are good candidates for your module (and, eventually, service) boundaries.</p>
+
+  <pre><span class="comment">// A rich domain object: the rules live WITH the data, and invalid states are unrepresentable</span>
+export class Order {
+  #lines = [];
+  constructor(id, customerId) { this.id = id; this.customerId = customerId; this.status = "draft"; }
+
+  addLine(sku, qty, unitPrice) {
+    if (this.status !== "draft") throw new DomainError("Cannot modify a submitted order");
+    if (!Number.isInteger(qty) || qty &lt; 1) throw new DomainError("Quantity must be a positive integer");
+    this.#lines.push({ sku, qty, unitPrice });
+  }
+
+  submit() {
+    if (this.#lines.length === 0) throw new DomainError("Cannot submit an empty order");
+    this.status = "submitted";
+  }
+
+  get total() { return this.#lines.reduce((sum, l) =&gt; sum + l.qty * l.unitPrice, 0); }
+}</pre>
+
+  <h2><span class="num">§3</span>Ports and Adapters (Hexagonal Architecture)</h2>
+
+  <p>Arrange code in layers where <strong>dependencies point inward</strong>. The domain knows nothing of Express or Postgres. It declares what it needs as an interface (a <strong>port</strong>), and the outer layers supply implementations (<strong>adapters</strong>). This is dependency inversion: high-level policy does not depend on low-level detail.</p>
+
+  <pre><span class="comment">// application/submit-order.js: a use case. It depends on a PORT, not on pg or Express.</span>
+export async function submitOrder({ orderRepo, payments, clock }, { orderId, userId }) {
+  const order = await orderRepo.get(orderId);
+  if (!order || order.customerId !== userId) throw new NotFoundError();
+  order.submit();                                    <span class="comment">// domain rule</span>
+  await payments.authorize(order.id, order.total);   <span class="comment">// port: any payment provider fits</span>
+  await orderRepo.save(order);
+  return order;
+}
+
+<span class="comment">// adapters/pg-order-repo.js: an ADAPTER implementing the port with Postgres</span>
+<span class="comment">// adapters/stripe-payments.js: another adapter; tests use an in-memory fake instead</span>
+
+<span class="comment">// http/routes.js: the delivery layer is thin: parse, call the use case, map errors to status codes</span>
+router.post("/orders/:id/submit", async (req, res) =&gt; {
+  const order = await submitOrder(deps, { orderId: req.params.id, userId: req.user.id });
+  res.json(toDto(order));
+});</pre>
+
+  <ul>
+    <li><strong>Testing becomes fast and easy:</strong> use cases run against in-memory fakes with no database or HTTP.</li>
+    <li><strong>Replacing infrastructure is local:</strong> swapping a payment provider or database touches an adapter, not the business rules.</li>
+    <li><strong>Controllers stay thin:</strong> they translate between the outside world and use cases.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Aggregates and Transactions</h2>
+
+  <p>Design aggregates around <strong>consistency boundaries</strong>: what must be true together at the moment of commit. A single transaction should modify a single aggregate; consistency <em>between</em> aggregates is achieved eventually, via events. If you find a transaction needing five aggregates, the boundaries are probably wrong. This also tells you where service boundaries could one day safely fall.</p>
+
+  <div class="callout">
+    <span class="label">Do not over-engineer simple CRUD</span>
+    These patterns pay off when business rules are rich and long-lived. A basic admin screen that stores and lists records does not need aggregates and ports; forcing them adds ceremony without benefit. Apply the structure where complexity actually lives, and keep the rest plain.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Anemic models: entities that are bags of fields with all logic in services and handlers</td><td>Rules duplicated across endpoints and easy to bypass</td><td>Put invariants inside the domain objects that own the data</td></tr>
+    <tr><td>Domain code importing the ORM, HTTP types, or framework</td><td>Business logic cannot be tested or reused without infrastructure</td><td>Depend on ports (interfaces); implement them in adapters</td></tr>
+    <tr><td>One giant model shared across the whole company</td><td>Meanings collide and every change ripples everywhere</td><td>Define bounded contexts and translate between them</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Identify two bounded contexts in a product you know, and list how a shared word (such as "customer" or "product") differs between them.</li>
+      <li>Refactor one handler so its business rules move into a domain object and a use case that takes its dependencies as parameters, then test it with an in-memory fake.</li>
+      <li>Choose an aggregate root for an e-commerce order and list the invariants it protects in a single transaction.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Keep business rules in a domain model that does not depend on HTTP, SQL, or frameworks.</li>
+      <li>Ports and adapters point dependencies inward, making core logic fast to test and infrastructure swappable.</li>
+      <li>Use bounded contexts and aggregates to find consistent boundaries, and apply the heavier patterns only where complexity warrants.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Architecture — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Global Traffic: Anycast, GeoDNS &amp; CDNs — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · scale & reliability</span> → lesson 02</p>
+  <h1>Global Traffic: Anycast, GeoDNS &amp; CDNs</h1>
+  <p class="lede">Sending users to a nearby healthy location cuts latency and survives regional failures, and DNS, routing, and caching each provide a different tool for it.</p>
+
+  <h2><span class="num">§1</span>DNS-Based Steering</h2>
+  <p>The simplest way to direct users is DNS: the authoritative server returns different answers depending on who asks.</p>
+  <ul>
+    <li><strong>GeoDNS:</strong> answer with the region nearest the resolver's location</li>
+    <li><strong>Latency-based:</strong> answer with the region measured to be fastest</li>
+    <li><strong>Weighted:</strong> split traffic by percentage, useful for gradual migrations</li>
+    <li><strong>Health-based failover:</strong> stop returning the address of a failed region</li>
+  </ul>
+  <p>The limits matter. DNS sees the <strong>resolver's</strong> address, not the user's, so steering is only as good as the resolver's proximity (some resolvers pass a truncated client subnet to help). And answers are <strong>cached for the TTL</strong>, so failover is never instant: clients keep using the old address until their cached record expires, and some ignore TTLs.</p>
+
+  <h2><span class="num">§2</span>Anycast</h2>
+  <p>With <strong>anycast</strong>, the same IP address is announced from many locations through BGP routing. Each user's packets follow the routing system to the topologically nearest announcing site, with no DNS trickery. If a site fails and withdraws its announcement, traffic shifts to the next nearest within seconds.</p>
+  <pre>203.0.113.10 announced from  Frankfurt, Singapore, Virginia
+User in Berlin     → routed to Frankfurt
+User in Jakarta    → routed to Singapore
+<span class="comment"># Frankfurt withdraws the route → Berlin users now reach Virginia or Singapore.</span></pre>
+  <p>Anycast suits short, stateless exchanges, which is why DNS resolvers and CDNs use it. Long-lived TCP connections are riskier, since a routing change mid-connection can send packets to a different site that has no state for it. Anycast also absorbs DDoS traffic across many sites rather than concentrating it.</p>
+
+  <h2><span class="num">§3</span>CDNs and Origins</h2>
+  <p>A <strong>content delivery network</strong> places caching servers near users. A request hits the nearest <strong>edge</strong>; on a cache hit, it's answered locally, and on a miss, the edge fetches from the <strong>origin</strong> and stores it according to the caching headers you set (Stage 2.2). Many CDNs add an <strong>origin shield</strong>, a middle tier that collapses misses so the origin sees each object once rather than once per edge.</p>
+  <pre>curl -sI https://cdn.example.com/app.js | grep -i -E 'x-cache|age|cf-ray|via'
+<span class="comment"># HIT vs MISS, and Age in seconds, show how the edge handled the request</span></pre>
+  <p>CDNs also terminate TLS close to the user, which shortens handshakes, absorb traffic spikes and attacks, and can serve stale content when the origin is down.</p>
+
+  <h2><span class="num">§4</span>Failover in Practice</h2>
+  <table>
+    <tr><th>Mechanism</th><th>Failover speed</th><th>Caveat</th></tr>
+    <tr><td>DNS with short TTL</td><td>Seconds to minutes (when clients honor TTL)</td><td>Cached answers and resolver behavior vary</td></tr>
+    <tr><td>Anycast withdrawal</td><td>Seconds</td><td>Mid-connection flows may break</td></tr>
+    <tr><td>Load balancer health checks</td><td>Seconds, within one region</td><td>Doesn't help if the whole region fails</td></tr>
+  </table>
+  <p>Real multi-region designs combine them: anycast or GeoDNS to pick a region, a regional load balancer to pick an instance, and a CDN in front for cacheable content. Test failover regularly, because untested failover paths tend not to work.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Every traffic-steering method has a delay or an accuracy limit. DNS is cached, anycast follows BGP, and CDNs follow cache headers. Know each one's failure behavior before you rely on it.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Expecting DNS failover to be instant</td><td>Clients keep using the old address until the TTL expires</td><td>Use short TTLs for failover records, and combine with other mechanisms</td></tr>
+    <tr><td>Using anycast for long-lived stateful connections without planning</td><td>Routing changes can break connections</td><td>Keep state shared across sites, or use it for short exchanges</td></tr>
+    <tr><td>Caching personalized pages at the CDN</td><td>One user's page is shown to another</td><td>Mark private responses <code>private</code> or <code>no-store</code>, and vary correctly</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use <code>dig</code> from two different resolvers on a CDN-hosted site and compare the addresses returned. Explain the difference.</li>
+      <li>Design failover for a service in two regions, stating how each failure (instance, region, DNS) is detected and how long recovery takes.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>GeoDNS and latency routing steer by resolver location, with failover limited by TTL caching.</li>
+      <li>Anycast routes users to the nearest site by BGP and shifts quickly when a site withdraws.</li>
+      <li>CDNs cache near users and shield the origin; combine all three and test failover.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Scale & Reliability — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Senior",
+  "description": "Operating and upgrading clusters, securing them, extending the API, understanding the internals, and deciding whether Kubernetes is worth it.",
+  "order": 3
+}

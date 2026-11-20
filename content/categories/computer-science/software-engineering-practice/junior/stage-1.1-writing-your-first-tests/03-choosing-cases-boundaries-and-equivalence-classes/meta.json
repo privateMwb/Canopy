@@ -1,0 +1,5 @@
+{
+  "title": "Choosing Cases: Boundaries & Equivalence Classes",
+  "description": "Picking the few inputs that catch most bugs: empty, one, many, off-by-one, and the edge of every range.",
+  "order": 3
+}

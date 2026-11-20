@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Logging &amp; Debugging Containers — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · running containers well</span> → lesson 03</p>
+  <h1>Logging &amp; Debugging Containers</h1>
+  <p class="lede">Containers should write logs to stdout and stderr, and Docker's logging drivers and debugging tools take it from there.</p>
+
+  <h2><span class="num">§1</span>Logs Go to stdout</h2>
+  <p>Docker captures what the main process writes to <strong>stdout and stderr</strong>. Do not write log files inside the container; log to the console and let the platform collect it:</p>
+  <pre>docker logs api                       <span class="comment"># everything so far</span>
+docker logs -f --since 10m --tail 200 api
+docker logs -t api                    <span class="comment"># with timestamps</span>
+docker compose logs -f api db</pre>
+  <p>Many official images achieve this by symlinking their log files to <code>/dev/stdout</code>. Structured JSON logs make later searching far easier than free text.</p>
+  <h2><span class="num">§2</span>Logging Drivers and Rotation</h2>
+  <p>The default <code>json-file</code> driver stores logs on the host and, <strong>without rotation, grows forever</strong>:</p>
+  <pre>docker run -d --log-opt max-size=10m --log-opt max-file=3 myapi</pre>
+  <pre>{
+  "log-driver": "local",
+  "log-opts": { "max-size": "10m", "max-file": "3" }
+}</pre>
+  <p>The second block goes in <code>/etc/docker/daemon.json</code> to set a default for the whole host. Other drivers ship logs to journald, syslog, Fluentd, or cloud services. Note that with some non-default drivers <code>docker logs</code> may not work, so check how your driver behaves.</p>
+  <h2><span class="num">§3</span>Debugging a Misbehaving or Minimal Container</h2>
+  <pre>docker inspect api                    <span class="comment"># config, mounts, state, health log</span>
+docker events --since 10m             <span class="comment"># what Docker did recently</span>
+docker exec -it api sh                <span class="comment"># if the image has a shell</span>
+docker cp api:/app/error.log ./       <span class="comment"># pull a file out</span>
+docker run --rm -it --entrypoint sh myapi   <span class="comment"># override entrypoint to explore the image</span></pre>
+  <p>For images with no shell, attach a <strong>debug sidecar</strong> that shares the target's namespaces:</p>
+  <pre>docker run --rm -it --pid=container:api --net=container:api \
+  --cap-add=SYS_PTRACE nicolaka/netshoot</pre>
+  <p>You can then run <code>ss</code>, <code>curl</code>, <code>tcpdump</code>, and <code>ps</code> against the target container's network and processes without changing its image. Docker also offers <code>docker debug</code> in some editions for the same purpose.</p>
+  <div class="callout">
+    <span class="label">A container that exits immediately has no shell to enter</span>
+    When a container crashes at start, <code>exec</code> is impossible. Read <code>docker logs</code>, then run the image with <code>--entrypoint sh</code> to explore its filesystem and test the command by hand.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Writing logs to files inside the container</td><td><code>docker logs</code> is empty and the writable layer grows</td><td>Log to stdout and stderr</td></tr>
+    <tr><td>No log rotation</td><td>Host disk fills with JSON logs</td><td>Set <code>max-size</code> and <code>max-file</code>, or use the <code>local</code> driver</td></tr>
+    <tr><td>Debugging with <code>exec</code> on a distroless image</td><td>"executable file not found"</td><td>Use a debug sidecar sharing the target's namespaces</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run a container that logs a line every second and configure rotation so it keeps only three small files.</li>
+      <li>Debug a running container using a netshoot sidecar to test connectivity to its dependencies.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Log to stdout and stderr, and rotate logs on the host.</li>
+      <li><code>inspect</code>, <code>events</code>, <code>cp</code>, and <code>--entrypoint sh</code> cover most investigations.</li>
+      <li>Debug minimal images with a sidecar that shares namespaces rather than changing the image.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Running Containers Well — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

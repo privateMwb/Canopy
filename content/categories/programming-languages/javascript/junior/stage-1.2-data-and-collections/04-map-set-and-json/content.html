@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Map, Set &amp; JSON — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · data &amp; collections</span> → lesson 04</p>
+  <h1>Map, Set &amp; JSON</h1>
+  <p class="lede">Map and Set are purpose-built collections that fix the sharp edges of using plain objects for lookup, and JSON is how data leaves your program.</p>
+
+  <h2><span class="num">§1</span>Map</h2>
+
+  <p>A <code>Map</code> holds key-value pairs where keys can be <strong>any</strong> value, insertion order is preserved, and <code>.size</code> is built in. Plain objects only allow string and symbol keys and inherit extra properties like <code>toString</code>.</p>
+
+  <pre>const scores = new Map();
+scores.set("ana", 10).set("bo", 7);
+scores.get("ana");          <span class="comment">// 10</span>
+scores.has("cy");           <span class="comment">// false</span>
+scores.size;                <span class="comment">// 2</span>
+scores.delete("bo");
+
+const byObject = new Map();
+const key = { id: 1 };
+byObject.set(key, "meta");  <span class="comment">// an object as a key — impossible with {}</span>
+
+for (const [name, score] of scores) console.log(name, score);
+const obj = Object.fromEntries(scores);   <span class="comment">// Map -&gt; object</span>
+const m = new Map(Object.entries(obj));   <span class="comment">// object -&gt; Map</span></pre>
+
+  <h2><span class="num">§2</span>Set</h2>
+
+  <p>A <code>Set</code> stores unique values and tests membership in constant time on average. It is the right tool for de-duplication and "have I seen this before?".</p>
+
+  <pre>const seen = new Set([1, 2, 2, 3]);
+seen.size;                  <span class="comment">// 3</span>
+seen.add(4);
+seen.has(2);                <span class="comment">// true</span>
+
+const unique = [...new Set(["a", "b", "a"])];   <span class="comment">// ["a", "b"]</span>
+
+const a = new Set([1, 2, 3]), b = new Set([2, 3, 4]);
+const both = [...a].filter((x) =&gt; b.has(x));    <span class="comment">// [2, 3] intersection</span></pre>
+
+  <h2><span class="num">§3</span>JSON</h2>
+
+  <p>JSON is a text format with a strict syntax: double-quoted keys and strings, no comments, no trailing commas. <code>JSON.stringify</code> and <code>JSON.parse</code> convert between values and text. Data that JSON can't represent is dropped or changed.</p>
+
+  <pre>const text = JSON.stringify({ name: "Ana", tags: ["a", "b"] });
+<span class="comment">// '{"name":"Ana","tags":["a","b"]}'</span>
+JSON.stringify(data, null, 2);       <span class="comment">// pretty-printed, 2-space indent</span>
+
+JSON.parse('{"ok":true}');           <span class="comment">// { ok: true }</span>
+try { JSON.parse("{bad json}"); }
+catch (e) { console.log(e.name); }   <span class="comment">// SyntaxError</span>
+
+JSON.stringify({ a: undefined, b: () =&gt; 1, c: new Date(0), d: NaN });
+<span class="comment">// '{"c":"1970-01-01T00:00:00.000Z","d":null}'  — undefined and functions vanish</span></pre>
+
+  <p>Maps and Sets stringify as <code>{}</code>. Convert them first: <code>JSON.stringify([...map])</code> or <code>[...set]</code>.</p>
+
+  <div class="callout">
+    <span class="label">Choosing</span>
+    Use an object for fixed, known fields (a record). Use a <code>Map</code> when keys are dynamic, user-supplied, or not strings. Use a <code>Set</code> for uniqueness and membership.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using a plain object as a dictionary of user-supplied keys</td><td>Keys like <code>__proto__</code> or <code>constructor</code> cause odd behavior</td><td>Use a <code>Map</code>, or <code>Object.create(null)</code></td></tr>
+    <tr><td><code>JSON.parse</code> on untrusted input without <code>try/catch</code></td><td>A <code>SyntaxError</code> crashes the flow</td><td>Wrap in <code>try/catch</code> and handle failure</td></tr>
+    <tr><td>Expecting <code>JSON.stringify</code> to keep Dates, Maps, or <code>undefined</code></td><td>Dates become strings; Maps become <code>{}</code>; <code>undefined</code> is dropped</td><td>Convert explicitly before and after</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use a <code>Map</code> to count word frequencies in a sentence, then print the top three.</li>
+      <li>Round-trip an object through <code>JSON.stringify</code> and <code>JSON.parse</code> and list every property type that does not survive.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>Map</code> allows any key type, keeps order, and has <code>.size</code>; <code>Set</code> stores unique values.</li>
+      <li>JSON is strict text: double quotes only, and it drops functions and <code>undefined</code>.</li>
+      <li>Always guard <code>JSON.parse</code> with <code>try/catch</code> when the input isn't trusted.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Data &amp; Collections — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

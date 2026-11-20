@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Scaling & Cost",
+  "description": "How pricing works, hotspots and write limits, index design, caching at scale, and quotas and locations.",
+  "order": 1
+}

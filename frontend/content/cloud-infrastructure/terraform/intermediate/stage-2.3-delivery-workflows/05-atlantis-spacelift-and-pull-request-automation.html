@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlantis, Spacelift &amp; Pull-Request Automation — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · delivery workflows</span> → lesson 05</p>
+  <h1>Atlantis, Spacelift &amp; Pull-Request Automation</h1>
+  <p class="lede">Pull-request automation tools run Terraform in response to comments and merges, giving teams a ready-made workflow instead of hand-built pipelines.</p>
+
+  <h2><span class="num">§1</span>What They Do</h2>
+  <p>These tools watch your repository, run <code>plan</code> when a pull request changes Terraform, post the result as a comment, and run <code>apply</code> when you ask or when the PR merges. They add what raw CI lacks: per-directory locking so two pull requests do not plan the same stack at once, a clear audit trail, and a team-friendly interface.</p>
+  <pre><span class="comment"># Atlantis: commands as pull-request comments</span>
+atlantis plan -d envs/prod
+atlantis apply -d envs/prod</pre>
+  <h2><span class="num">§2</span>The Main Options</h2>
+  <table>
+    <tr><th>Tool</th><th>Style</th><th>Notes</th></tr>
+    <tr><td>Atlantis</td><td>Self-hosted, open source</td><td>You run the server and give it credentials; configured with <code>atlantis.yaml</code></td></tr>
+    <tr><td>HCP Terraform</td><td>Hosted by HashiCorp</td><td>VCS-driven runs, with policy and access control</td></tr>
+    <tr><td>Spacelift, env0, Scalr</td><td>Hosted or self-hosted platforms</td><td>Policies, drift detection, and support for several IaC tools</td></tr>
+    <tr><td>Plain CI</td><td>Your own pipelines</td><td>Maximum flexibility, and you build every feature yourself</td></tr>
+  </table>
+  <pre><span class="comment"># atlantis.yaml</span>
+version: 3
+projects:
+  - name: prod-network
+    dir: envs/prod/network
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "../../modules/**/*.tf"]</pre>
+  <h2><span class="num">§3</span>Choosing</h2>
+  <p>Pick based on the work you do not want to own. Atlantis is cheap and flexible but you operate it and secure its credentials, since it can apply anything it can read. Hosted platforms trade cost for governance, policy, and less maintenance. For a small team, a well-built CI workflow is often enough.</p>
+  <div class="callout">
+    <span class="label">The tool holds the keys</span>
+    Whatever runs your applies has write access to your infrastructure. Restrict who can trigger an apply (for example, require approval before <code>apply</code>), isolate the runner, and review its configuration as carefully as production code.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Letting anyone comment <code>apply</code></td><td>Unreviewed changes reach production</td><td>Require approvals and restrict who can apply</td></tr>
+    <tr><td>Running the automation server with admin credentials</td><td>A compromise grants full control</td><td>Scope credentials and isolate per environment</td></tr>
+    <tr><td>Skipping locking in a custom setup</td><td>Two pull requests change the same state</td><td>Use a tool with per-project locks, or add your own</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write an <code>atlantis.yaml</code> that defines two projects with separate directories and autoplan triggers.</li>
+      <li>Compare Atlantis and HCP Terraform for your team on cost, control, and operations.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>PR-automation tools plan on pull requests, apply on approval, and lock per project.</li>
+      <li>Choose between self-hosted control and hosted convenience based on the work you want to own.</li>
+      <li>The automation's credentials are as sensitive as production access.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Delivery Workflows — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

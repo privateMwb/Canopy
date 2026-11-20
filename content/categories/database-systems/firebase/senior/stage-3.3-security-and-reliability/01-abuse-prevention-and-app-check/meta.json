@@ -1,0 +1,5 @@
+{
+  "title": "Abuse Prevention & App Check",
+  "description": "Stopping scripted clients and quota exhaustion.",
+  "order": 1
+}

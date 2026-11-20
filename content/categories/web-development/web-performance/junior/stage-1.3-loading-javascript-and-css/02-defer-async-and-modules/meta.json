@@ -1,0 +1,5 @@
+{
+  "title": "defer, async & Modules",
+  "description": "Loading scripts without blocking.",
+  "order": 2
+}

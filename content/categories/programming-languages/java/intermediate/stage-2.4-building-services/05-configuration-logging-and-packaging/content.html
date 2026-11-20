@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Configuration, Logging &amp; Packaging — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · building services</span> → lesson 05</p>
+  <h1>Configuration, Logging &amp; Packaging</h1>
+  <p class="lede">A service has to run unchanged in development, staging, and production, which means externalized configuration, useful structured logs, and a build that produces one runnable artifact.</p>
+
+  <h2><span class="num">§1</span>Externalized Configuration and Profiles</h2>
+  <p>Code should not change between environments; configuration should. Spring Boot reads settings from several places in a defined order, with later, more specific sources overriding earlier ones: defaults packaged in <code>application.yml</code>, then profile-specific files, then <strong>environment variables</strong>, then command-line arguments.</p>
+  <pre><span class="comment"># application.yml (defaults)</span>
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/app
+    username: app
+app:
+  feature-x: false
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+app:
+  feature-x: true</pre>
+  <pre>SPRING_PROFILES_ACTIVE=prod \
+SPRING_DATASOURCE_PASSWORD=$(cat /run/secrets/db) \
+java -jar app.jar --server.port=9000</pre>
+  <p>Environment variables map automatically (<code>SPRING_DATASOURCE_URL</code> overrides <code>spring.datasource.url</code>). Use <strong>profiles</strong> sparingly, for genuinely different wiring such as a test stub vs. a real client, and prefer plain configuration values for ordinary differences. <strong>Never commit secrets</strong>; inject them at runtime from environment variables or a secrets manager.</p>
+
+  <h2><span class="num">§2</span>Logging</h2>
+  <p>Log through an abstraction (SLF4J, with Logback as Boot's default), not <code>System.out</code>. Use levels deliberately: <code>ERROR</code> for failures needing attention, <code>WARN</code> for recoverable oddities, <code>INFO</code> for significant business events, <code>DEBUG</code> for diagnosis, <code>TRACE</code> rarely.</p>
+  <pre>private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
+log.info("order placed id={} customer={} total={}", order.id(), order.customer(), order.total());
+log.debug("pricing details: {}", details);              <span class="comment">// placeholders avoid building the string if disabled</span>
+log.error("payment failed for order {}", orderId, ex);   <span class="comment">// pass the exception LAST to get the stack trace</span></pre>
+  <p>Use <code>{}</code> placeholders rather than string concatenation, and pass the exception as the final argument so the stack trace is logged. Never log passwords, tokens, or full personal data. In production, emit <strong>structured logs</strong> (JSON, with fields like <code>orderId</code> and a request or trace id) so a log platform can filter and aggregate them; recent Spring Boot versions can do this with a simple property. Use <strong>MDC</strong> (a per-thread context map) to attach a correlation id to every log line within a request.</p>
+  <pre>MDC.put("requestId", requestId);
+try { chain.doFilter(req, res); } finally { MDC.clear(); }</pre>
+  <p>Also set log levels per package in configuration (<code>logging.level.com.example=DEBUG</code>), so you can turn on detail without redeploying.</p>
+
+  <h2><span class="num">§3</span>Packaging</h2>
+  <p><code>mvn package</code> or <code>./gradlew bootJar</code> produces an <strong>executable jar</strong> (a "fat jar") containing your classes and all dependencies, runnable with one command.</p>
+  <pre>./mvnw -DskipTests package
+java -jar target/app-1.0.0.jar</pre>
+  <p>Production deployments commonly use a container image. Boot can build one without a Dockerfile using Cloud Native Buildpacks (<code>./mvnw spring-boot:build-image</code>), or you can write a Dockerfile; a <strong>layered</strong> jar and a multi-stage build keep rebuilds fast, because dependencies change less often than your code.</p>
+  <pre>FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY target/app-1.0.0.jar app.jar
+USER 1000
+ENTRYPOINT ["java", "-jar", "app.jar"]</pre>
+  <p>Run as a non-root user, use a slim JRE base image, and expose health endpoints (Actuator's <code>/actuator/health</code>) so the platform can check readiness and liveness. Handle shutdown gracefully (<code>server.shutdown=graceful</code>) so in-flight requests finish when the container receives a stop signal.</p>
+
+  <div class="callout">
+    <span class="label">Build once, configure everywhere</span>
+    The same artifact should run in every environment, with only environment variables and mounted secrets differing. If you rebuild per environment, you are no longer testing what you ship.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Committing passwords or API keys in config files</td><td>Secrets leak through version control</td><td>Supply secrets through env vars or a secrets manager</td></tr>
+    <tr><td>Building a different artifact per environment</td><td>What you test isn't what you deploy</td><td>Build once and externalize configuration</td></tr>
+    <tr><td>Using <code>System.out.println</code> for logging</td><td>No levels, no routing, no structure</td><td>Use SLF4J with placeholders</td></tr>
+    <tr><td>Logging <code>"failed: " + e.getMessage()</code></td><td>The stack trace is lost</td><td>Pass the exception as the last argument</td></tr>
+    <tr><td>Logging sensitive data</td><td>Compliance and security incidents</td><td>Redact or omit secrets and personal data</td></tr>
+    <tr><td>Running the container as root with no health check</td><td>A larger attack surface and no readiness signal</td><td>Use a non-root user and health endpoints</td></tr>
+    <tr><td>Many overlapping profiles</td><td>Confusing, untested combinations</td><td>Use few profiles, and plain config for simple differences</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a <code>prod</code> profile that changes one setting, then run the jar with the profile selected through an environment variable.</li>
+      <li>Add a log statement with placeholders and an exception, and confirm the stack trace appears. Then add a request-id via MDC.</li>
+      <li>Build a container image (with Buildpacks or a Dockerfile) and run it, overriding the database URL with an environment variable.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Externalize configuration through profiles and environment variables, and never commit secrets.</li>
+      <li>Log with SLF4J placeholders and include the exception, prefer structured logs, and attach correlation ids.</li>
+      <li>Package as one executable jar or container image, run as non-root, and expose health checks.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Building Services — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

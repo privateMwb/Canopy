@@ -1,0 +1,5 @@
+{
+  "title": "Automating the Nitpicks: Hooks, Linters & Formatters",
+  "description": "Pre-commit hooks, formatters, and static checks that take style out of review so people can discuss design.",
+  "order": 5
+}

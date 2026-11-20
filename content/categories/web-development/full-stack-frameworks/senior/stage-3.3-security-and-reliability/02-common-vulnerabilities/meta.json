@@ -1,0 +1,5 @@
+{
+  "title": "Common Vulnerabilities",
+  "description": "XSS, CSRF, SSRF, and injection in framework apps.",
+  "order": 2
+}

@@ -1,0 +1,1 @@
+{"title": "Authorization Models: RBAC, ABAC & Policy Placement", "description": "Roles, attributes, and relationships, and where in the code authorization checks should live, setting up BOLA in the OWASP API lesson.", "order": 5}

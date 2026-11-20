@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Custom Properties — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · modern css features</span> → lesson 01</p>
+  <h1>Custom Properties</h1>
+  <p class="lede">Custom properties are live, inheritable variables, which makes them the foundation for theming, spacing scales, and component APIs.</p>
+
+  <h2><span class="num">§1</span>Declaring and Using</h2>
+
+  <p>A custom property starts with <code>--</code>. Declare it on a selector, usually <code>:root</code>, and read it with <code>var()</code>, which accepts a fallback.</p>
+  <pre>:root {
+  --accent: #15803d;
+  --space: 1rem;
+  --radius: 8px;
+}
+.btn {
+  background: var(--accent);
+  padding: calc(var(--space) / 2) var(--space);
+  border-radius: var(--radius);
+  color: var(--btn-ink, white);    <span class="comment">/* fallback if --btn-ink is not set */</span>
+}</pre>
+  <p>Unlike Sass variables, custom properties exist at runtime: they follow the cascade and inheritance, and JavaScript can change them.</p>
+
+  <h2><span class="num">§2</span>Scoping and Theming</h2>
+
+  <p>Because they inherit, redefining a variable on an element changes it for everything inside. This is how themes and variants work.</p>
+  <pre>:root { --bg: #fff; --ink: #1c1f26; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #15171c; --ink: #edebe4; }
+}
+[data-theme="dark"] { --bg: #15171c; --ink: #edebe4; }
+
+body { background: var(--bg); color: var(--ink); }
+
+.card.warning { --accent: #a16207; }   <span class="comment">/* a local override */</span></pre>
+  <p>A component can expose a few custom properties as its public API, such as <code>--card-pad</code> or <code>--card-bg</code>, and keep everything else private.</p>
+
+  <h2><span class="num">§3</span>Gotchas</h2>
+
+  <ul>
+    <li>Custom properties hold <strong>tokens</strong>, so the value is substituted before use. <code>--x: 10</code> and <code>width: var(--x)</code> is invalid; include the unit.</li>
+    <li>Invalid values at *use* time make the property <strong>guaranteed-invalid</strong>, so it falls back to its inherited or initial value, not to your fallback.</li>
+    <li>Animating a custom property needs <code>@property</code> to give it a type; otherwise it flips instantly.</li>
+    <li>You can't use <code>var()</code> in media query conditions.</li>
+  </ul>
+  <pre>@property --angle {
+  syntax: "&lt;angle&gt;";
+  initial-value: 0deg;
+  inherits: false;
+}
+.dial { transform: rotate(var(--angle)); transition: --angle .4s; }
+.dial:hover { --angle: 90deg; }</pre>
+  <p>Set them from JavaScript with <code>el.style.setProperty("--progress", "40%")</code>, which is a clean way to pass data into CSS.</p>
+
+  <div class="callout">
+    <span class="label">Tokens, not magic numbers</span>
+    Define colors, spacing, radii, and type sizes once as custom properties and refer to them everywhere. A redesign becomes a handful of edits.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting units in the value</td><td><code>calc(var(--x) * 1)</code> or <code>width</code> fails or is ignored</td><td>Store the value with its unit, or multiply by <code>1px</code></td></tr>
+    <tr><td>Defining everything on <code>*</code></td><td>Wasteful and unclear scoping</td><td>Define globals on <code>:root</code> and component values on the component</td></tr>
+    <tr><td>Expecting a fallback for an invalid value</td><td>The fallback only applies for an *undefined* variable</td><td>Validate token values and use <code>@property</code> for typed ones</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Convert a stylesheet's colors and spacing into custom properties on <code>:root</code>, then add a dark theme by redefining only the properties.</li>
+      <li>Update a custom property from JavaScript to drive a progress bar's width.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Define with <code>--name</code>, read with <code>var(--name, fallback)</code>.</li>
+      <li>They inherit and follow the cascade, so they work for themes and variants.</li>
+      <li>Use <code>@property</code> to give them types and make them animatable.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Modern CSS Features — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

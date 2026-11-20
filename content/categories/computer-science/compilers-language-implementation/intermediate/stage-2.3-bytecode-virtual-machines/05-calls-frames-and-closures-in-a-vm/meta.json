@@ -1,0 +1,5 @@
+{
+  "title": "Calls, Frames & Closures in a VM",
+  "description": "Call frames, locals on the stack, and upvalues for captured variables.",
+  "order": 5
+}

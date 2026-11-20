@@ -1,0 +1,5 @@
+{
+  "title": "Callbacks & Promises",
+  "description": "Why async exists, callback pitfalls, and chaining with .then and .catch.",
+  "order": 3
+}

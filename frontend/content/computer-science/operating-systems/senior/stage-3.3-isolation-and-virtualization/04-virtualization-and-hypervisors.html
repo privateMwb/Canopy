@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtualization &amp; Hypervisors — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · isolation & virtualization</span> → lesson 04</p>
+  <h1>Virtualization &amp; Hypervisors</h1>
+  <p class="lede">A hypervisor lets several full operating systems share one machine, using hardware help to keep each guest isolated and nearly full speed.</p>
+
+  <h2><span class="num">§1</span>Trap and Emulate</h2>
+  <p>A <strong>hypervisor</strong> (virtual machine monitor) runs guest operating systems as if each had the machine to itself. A guest kernel expects to run in privileged mode and to control the MMU and devices, so the hypervisor must intercept those operations. The classic technique is <strong>trap-and-emulate</strong>: guest code runs directly on the CPU, but when it tries a privileged operation, the CPU traps to the hypervisor, which emulates the effect on a virtual copy of the hardware and resumes the guest.</p>
+  <table>
+    <tr><th>Type</th><th>Runs on</th><th>Examples</th></tr>
+    <tr><td>Type 1 (bare metal)</td><td>Directly on hardware</td><td>Xen, VMware ESXi, Hyper-V</td></tr>
+    <tr><td>Type 2 (hosted)</td><td>On top of a host OS</td><td>VirtualBox, VMware Workstation</td></tr>
+    <tr><td>KVM</td><td>Linux kernel module that turns Linux into a Type 1 hypervisor</td><td>KVM with QEMU</td></tr>
+  </table>
+  <p>Early x86 had instructions that behaved differently in user mode without trapping, which broke this approach. Software techniques like binary translation worked around it, until hardware support arrived.</p>
+
+  <h2><span class="num">§2</span>Hardware Virtualization</h2>
+  <p>Intel VT-x and AMD-V add a mode just for guests. Guest code, including the guest kernel, runs in a <strong>non-root</strong> mode where it believes it's in privileged mode, and a defined set of events cause a <strong>VM exit</strong> back to the hypervisor in <strong>root</strong> mode. Most instructions never exit, so computation runs at close to native speed.</p>
+  <pre>grep -E -c '(vmx|svm)' /proc/cpuinfo     <span class="comment"># &gt; 0 means the CPU supports hardware virtualization</span>
+ls -l /dev/kvm                            <span class="comment"># KVM available to user space (via QEMU)</span></pre>
+  <p>Each VM exit costs on the order of microseconds, so the performance of a VM depends on how often it exits: for I/O, for example.</p>
+
+  <h2><span class="num">§3</span>Virtualizing Memory and Devices</h2>
+  <p>The guest kernel manages its own page tables, mapping guest-virtual to guest-physical addresses, but guest-physical isn't real RAM. The hypervisor maps guest-physical to host-physical. Hardware <strong>nested paging</strong> (Intel EPT, AMD NPT) performs both translations in a single walk.</p>
+  <pre><span class="comment"># Two-dimensional page walk, worst case, with 4 levels each:</span>
+<span class="comment">#   each of the 4 guest levels needs its address translated by 4 host levels,</span>
+<span class="comment">#   plus the final access: (4+1) * (4+1) - 1 = 24 memory references</span></pre>
+  <p>TLB misses are therefore more expensive in a VM, which is why huge pages matter even more there. Devices are usually presented as <strong>paravirtualized</strong> virtio devices, where the guest knows it's virtual and uses an efficient shared-memory queue instead of emulating a real network card instruction by instruction.</p>
+
+  <div class="callout">
+    <span class="label">Connection to earlier lessons</span>
+    Nested paging is Stage 2.3's page table walk done twice, and huge pages from Stage 3.2 reduce its cost. VMs and containers solve different problems: a VM virtualizes hardware, a container virtualizes the OS view.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Assuming VMs always have noticeable CPU overhead</td><td>Computation runs natively; overhead appears on exits and I/O</td><td>Measure I/O-heavy workloads; use virtio and passthrough where needed</td></tr>
+    <tr><td>Overcommitting guest memory without monitoring</td><td>Host swapping makes every guest slow</td><td>Track host memory pressure, and use ballooning or limits carefully</td></tr>
+    <tr><td>Treating containers and VMs as interchangeable</td><td>Different isolation guarantees</td><td>Choose based on the trust boundary: untrusted tenants favor VMs or microVMs</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Check whether your CPU supports VT-x/AMD-V, and whether <code>/dev/kvm</code> exists.</li>
+      <li>Explain why a 2D page walk can need 24 memory references, and how a TLB hit avoids all of them.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Hypervisors use trap-and-emulate, made efficient by hardware modes that cause VM exits only for sensitive operations.</li>
+      <li>Nested paging translates guest-virtual to guest-physical to host-physical, making TLB misses costlier.</li>
+      <li>Virtio devices and passthrough reduce I/O overhead; VMs isolate more strongly than containers.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Isolation & Virtualization — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

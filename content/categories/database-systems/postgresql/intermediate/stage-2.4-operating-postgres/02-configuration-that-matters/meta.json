@@ -1,0 +1,5 @@
+{
+  "title": "Configuration That Matters",
+  "description": "shared_buffers, work_mem, maintenance settings, and tuning from evidence rather than folklore.",
+  "order": 2
+}

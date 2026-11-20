@@ -1,0 +1,5 @@
+{
+  "title": ".gitignore, Tags & Semantic Versioning",
+  "description": "What never belongs in a repo, marking releases with tags, and what MAJOR.MINOR.PATCH actually promises.",
+  "order": 2
+}

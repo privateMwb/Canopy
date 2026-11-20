@@ -1,0 +1,5 @@
+{
+  "title": "Type Inference & Unification",
+  "description": "Inferring types from use, type variables, and the idea behind Hindley–Milner.",
+  "order": 4
+}

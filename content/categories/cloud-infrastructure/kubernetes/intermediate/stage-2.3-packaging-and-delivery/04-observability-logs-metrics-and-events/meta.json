@@ -1,0 +1,5 @@
+{
+  "title": "Observability: Logs, Metrics & Events",
+  "description": "What to collect and how to read a cluster's health.",
+  "order": 4
+}

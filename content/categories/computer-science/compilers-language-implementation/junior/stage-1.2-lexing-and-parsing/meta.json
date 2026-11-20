@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Lexing & Parsing",
+  "description": "Scanning, source positions, recursive descent, Pratt parsing, and error recovery.",
+  "order": 2
+}

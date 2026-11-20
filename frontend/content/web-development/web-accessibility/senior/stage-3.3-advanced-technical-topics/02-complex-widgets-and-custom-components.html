@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Complex Widgets &amp; Custom Components — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced technical topics</span> → lesson 02</p>
+  <h1>Complex Widgets &amp; Custom Components</h1>
+  <p class="lede">Grids, trees, comboboxes, and rich text editors are the hardest things to make accessible. Doing it well takes a careful keyboard model, a deliberate focus strategy, and a lot of testing.</p>
+
+  <h2><span class="num">§1</span>Composite Widgets and Focus Strategy</h2>
+  <p>A composite widget is one Tab stop that contains many items you move between with arrow keys. There are two techniques for tracking the current item, and you must pick one deliberately.</p>
+  <table>
+    <tr><th>Technique</th><th>How it works</th><th>Trade-offs</th></tr>
+    <tr><td><strong>Roving tabindex</strong></td><td>Real DOM focus moves. The active item has <code>tabindex="0"</code>, and the rest have <code>-1</code></td><td>Robust and simple. Items must be focusable, and scrolling follows focus</td></tr>
+    <tr><td><strong>aria-activedescendant</strong></td><td>Focus stays on the container, and an attribute points at the "current" item</td><td>Good for comboboxes, where focus must stay in the text field. Requires careful support testing</td></tr>
+  </table>
+  <p>Use roving tabindex by default. Use <code>aria-activedescendant</code> when focus has to remain on an input, as in a combobox.</p>
+
+  <h2><span class="num">§2</span>Example: A Data Grid</h2>
+  <p>A <strong>grid</strong> is an interactive table, where users move between cells and may edit them. It needs the right roles and a clear keyboard model.</p>
+  <pre>&lt;div role="grid" aria-label="Team members" aria-rowcount="200" aria-colcount="3"&gt;
+  &lt;div role="row" aria-rowindex="1"&gt;
+    &lt;div role="columnheader" aria-colindex="1"&gt;Name&lt;/div&gt;
+    &lt;div role="columnheader" aria-colindex="2"&gt;Role&lt;/div&gt;
+    &lt;div role="columnheader" aria-colindex="3"&gt;Start date&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div role="row" aria-rowindex="2"&gt;
+    &lt;div role="gridcell" aria-colindex="1" tabindex="0"&gt;Maria Lopez&lt;/div&gt;
+    &lt;div role="gridcell" aria-colindex="2" tabindex="-1"&gt;Engineer&lt;/div&gt;
+    &lt;div role="gridcell" aria-colindex="3" tabindex="-1"&gt;2024-03-04&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+  <ul>
+    <li><strong>Arrow keys</strong> move between cells. <strong>Home</strong> and <strong>End</strong> go to the row's start or end. <strong>Ctrl+Home</strong> and <strong>Ctrl+End</strong> go to the first or last cell of the grid.</li>
+    <li><strong>Page Up and Page Down</strong> move by a screen of rows.</li>
+    <li><strong>Enter</strong> or <strong>F2</strong> may start editing a cell, and <strong>Escape</strong> cancels the edit.</li>
+    <li>For virtualized grids, where only some rows exist in the DOM, set <code>aria-rowcount</code> and <code>aria-rowindex</code> so users know where they are in the full set.</li>
+    <li>If the grid is not truly interactive, a plain <code>table</code> is better, and simpler for everyone.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Trees, Comboboxes, and Rich Text</h2>
+  <p>Other complex widgets share the same needs: a documented keyboard model, a focus strategy, and correct state.</p>
+  <table>
+    <tr><th>Widget</th><th>Key points</th></tr>
+    <tr><td><strong>Tree view</strong></td><td><code>role="tree"</code> and <code>treeitem</code>, with <code>aria-expanded</code> and <code>aria-level</code>. Right arrow expands, left collapses, up and down move</td></tr>
+    <tr><td><strong>Combobox</strong></td><td>Text input with a popup list. Focus stays in the input, <code>aria-activedescendant</code> marks the highlighted option, and <code>aria-expanded</code> and <code>aria-controls</code> track the popup</td></tr>
+    <tr><td><strong>Toolbar</strong></td><td><code>role="toolbar"</code> with a roving tabindex, so the whole toolbar is one Tab stop</td></tr>
+    <tr><td><strong>Rich text editor</strong></td><td>Needs a labeled editing area, a keyboard-operable toolbar, announcements for formatting changes, and reliable undo</td></tr>
+  </table>
+  <p>Rich text editors are the hardest of all. A <code>contenteditable</code> region behaves differently across browsers, and the editor must expose formatting, selection, and structure to assistive technology. For this reason, prefer a mature, well-tested editor framework that documents its accessibility, and test it with several screen readers rather than building your own.</p>
+  <p>Whatever you build, write the keyboard model <strong>before</strong> you code it, as a table, and review it with someone who uses a screen reader daily. That document becomes the specification, the test plan, and the user documentation.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The hard part of a complex widget is not the ARIA attributes. It is the focus strategy and keyboard model. Decide those first, write them down, and implement ARIA to match.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Making every cell or item a Tab stop</td><td>Users must press Tab dozens of times to cross the widget</td><td>Use a roving tabindex so the whole widget is one Tab stop</td></tr>
+    <tr><td>Using <code>role="grid"</code> for a read-only table</td><td>Promises interaction that does not exist, and changes screen reader navigation</td><td>Use a plain <code>table</code> unless cells are interactive</td></tr>
+    <tr><td>Building a rich text editor from scratch</td><td>Browser and assistive technology differences cause endless bugs</td><td>Adopt a tested editor framework, and verify its accessibility</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write the complete keyboard model, as a table, for a tree view or a data grid, before any code.</li>
+      <li>Take a combobox or autocomplete you use, and check whether focus stays in the input and the highlighted option is exposed.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Choose a focus strategy deliberately: roving tabindex by default, <code>aria-activedescendant</code> when focus must stay on an input.</li>
+      <li>Grids, trees, and comboboxes each need specific roles, states, and keyboard models. Document them first.</li>
+      <li>Prefer simpler native structures when the interaction is not truly needed, and adopt tested libraries for rich editing.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Technical Topics — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

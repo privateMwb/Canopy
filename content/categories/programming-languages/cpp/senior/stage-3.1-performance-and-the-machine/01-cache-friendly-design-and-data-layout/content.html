@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cache-Friendly Design &amp; Data Layout — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · performance &amp; the machine</span> → lesson 01</p>
+  <h1>Cache-Friendly Design &amp; Data Layout</h1>
+  <p class="lede">On modern CPUs the cost of a program is often set by how many cache lines it touches, so data layout can matter more than the algorithm's instruction count.</p>
+
+  <h2><span class="num">§1</span>The Memory Hierarchy</h2>
+
+  <p>A load from L1 cache costs about a nanosecond or less, while a load from main memory costs on the order of 100 ns, a gap of roughly 100x. The CPU fetches memory in <strong>cache lines</strong> (64 bytes on x86-64 and most ARM chips), so touching one byte pulls in its neighbors, and sequential access is nearly free while random access stalls.</p>
+
+  <pre>std::vector&lt;int&gt; v(1 &lt;&lt; 24);
+long long sum = 0;
+for (int x : v) sum += x;                       <span class="comment">// sequential: prefetcher streams it in</span>
+<span class="comment">// Walking a std::list&lt;int&gt; of the same size is often 10x or more slower: each node is separate</span></pre>
+
+  <p>This is why <code>std::vector</code> beats node-based structures at small and medium sizes despite worse big-O on paper: contiguous elements are cache-friendly.</p>
+
+  <h2><span class="num">§2</span>Array of Structs vs. Struct of Arrays</h2>
+
+  <p>How you group fields decides which bytes share a cache line.</p>
+
+  <pre>struct Particle { float x, y, z; float vx, vy, vz; int id; int flags; };   <span class="comment">// 32 bytes</span>
+std::vector&lt;Particle&gt; aos;                      <span class="comment">// AoS: whole particles together</span>
+
+struct Particles {                              <span class="comment">// SoA: each field in its own array</span>
+    std::vector&lt;float&gt; x, y, z, vx, vy, vz;
+    std::vector&lt;int&gt; id, flags;
+};</pre>
+
+  <p>If a hot loop updates only positions, AoS loads the unused <code>id</code> and <code>flags</code> into cache with every particle, wasting bandwidth. SoA reads only the arrays the loop uses and also vectorizes well. If code usually needs whole objects, AoS is simpler and just as fast. Choose by <strong>access pattern</strong>.</p>
+
+  <h2><span class="num">§3</span>Struct Size, Padding, and False Sharing</h2>
+
+  <p>Compilers insert padding to align members, so field order changes <code>sizeof</code>.</p>
+
+  <pre>struct A { char c; double d; char e; };     <span class="comment">// 24 bytes with padding</span>
+struct B { double d; char c; char e; };     <span class="comment">// 16 bytes: sort members by size, largest first</span>
+static_assert(sizeof(B) == 16);</pre>
+
+  <p>Two threads writing to different variables that share a cache line cause <strong>false sharing</strong>: the line ping-pongs between cores. Separate hot per-thread data with <code>alignas(64)</code> (or <code>std::hardware_destructive_interference_size</code>).</p>
+
+  <pre>struct alignas(64) PerThreadCounter { std::atomic&lt;long&gt; n{0}; };</pre>
+
+  <h2><span class="num">§4</span>Practical Rules</h2>
+
+  <ul>
+    <li>Prefer contiguous containers (<code>vector</code>, <code>array</code>, flat sorted vectors) over pointer-chasing ones.</li>
+    <li>Keep hot fields together and cold fields apart; split a struct if a loop uses a third of it.</li>
+    <li>Avoid <code>std::vector&lt;std::unique_ptr&lt;T&gt;&gt;</code> for hot loops; store values inline when possible.</li>
+    <li>Process data in the order it sits in memory.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Think in cache lines, not objects. The question for a hot loop is "how many bytes did I pull in per byte I used?" Layout changes that ratio without changing the algorithm.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Choosing a linked list for "fast insertion"</td><td>Cache misses on every node make it slower than a vector in nearly all workloads</td><td>Use <code>vector</code> and measure</td></tr>
+    <tr><td>Optimizing layout without measuring</td><td>Effort goes to code that isn't hot</td><td>Profile first (a later lesson)</td></tr>
+    <tr><td>Per-thread counters packed in one array</td><td>False sharing slows every thread</td><td>Pad each to a cache line</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a loop summing one field of a 10-million-element AoS and the same field in SoA form, and time both.</li>
+      <li>Reorder the members of a struct to minimize <code>sizeof</code>, and confirm with <code>static_assert</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Memory access, not arithmetic, usually dominates, and contiguous sequential access is fastest.</li>
+      <li>Choose AoS or SoA by what the hot loop actually touches.</li>
+      <li>Member order, padding, and false sharing are all measurable layout effects.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Performance &amp; the Machine — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

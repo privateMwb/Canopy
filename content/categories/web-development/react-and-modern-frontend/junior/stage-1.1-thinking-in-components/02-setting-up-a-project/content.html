@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Setting Up a Project — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · thinking in components</span> → lesson 02</p>
+  <h1>Setting Up a Project</h1>
+  <p class="lede">Vite gives you a working React project in under a minute: a dev server with instant updates, and a build that produces files you can deploy. Knowing what each file does makes the rest of the course less mysterious.</p>
+
+  <h2><span class="num">§1</span>Creating a Project</h2>
+
+  <p>You need <strong>Node.js</strong> (a current LTS version) and a terminal. Vite scaffolds a project from a template; pick <code>react</code> (JavaScript) for now, and <code>react-ts</code> once you meet TypeScript later in the path.</p>
+
+  <pre>npm create vite@latest my-app -- --template react
+cd my-app
+npm install
+npm run dev          # http://localhost:5173</pre>
+
+  <p><code>npm run dev</code> starts a development server. When you save a file, the browser updates in milliseconds, usually without losing your component's state. This is called <strong>hot module replacement (HMR)</strong>. Leave the server running while you work.</p>
+
+  <table>
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td><code>npm run dev</code></td><td>Dev server with hot reload</td></tr>
+    <tr><td><code>npm run build</code></td><td>Optimized production files in <code>dist/</code></td></tr>
+    <tr><td><code>npm run preview</code></td><td>Serve the built files locally to check them</td></tr>
+    <tr><td><code>npm run lint</code></td><td>Run ESLint (if the template includes it)</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>The File Layout</h2>
+
+  <pre>my-app/
+  index.html        <span class="comment">// the single HTML page; has &lt;div id="root"&gt;&lt;/div&gt;</span>
+  package.json      <span class="comment">// dependencies and scripts</span>
+  vite.config.js    <span class="comment">// build tool settings</span>
+  public/           <span class="comment">// files served as-is (favicon, robots.txt)</span>
+  src/
+    main.jsx        <span class="comment">// entry point: mounts React into #root</span>
+    App.jsx         <span class="comment">// your first component</span>
+    App.css
+    assets/</pre>
+
+  <p><code>index.html</code> is nearly empty. It has a <code>&lt;div id="root"&gt;</code> and a script tag pointing at <code>src/main.jsx</code>. React fills that div with your app, which is why this style is called a <strong>single-page application</strong>.</p>
+
+  <pre><span class="comment">// src/main.jsx</span>
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+
+createRoot(document.getElementById("root")).render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;
+);</pre>
+
+  <p><code>createRoot</code> attaches React to the <code>#root</code> element and <code>render</code> draws your top-level <code>&lt;App /&gt;</code> component into it. <code>StrictMode</code> is a development helper that runs some checks twice to expose bugs early. It does nothing in production, so do not be alarmed when you see double logs in development.</p>
+
+  <h2><span class="num">§3</span>Your First Edit</h2>
+
+  <p>Open <code>src/App.jsx</code>, delete the template content, and write the smallest possible component. Components are functions whose names start with a capital letter, and <code>export default</code> makes them importable.</p>
+
+  <pre><span class="comment">// src/App.jsx</span>
+export default function App() {
+  return &lt;h1&gt;Hello, React&lt;/h1&gt;;
+}</pre>
+
+  <p>Save the file and watch the browser update. Then change the text again. This tight feedback loop is the main reason to use a modern dev server.</p>
+
+  <ul>
+    <li>File extensions: use <code>.jsx</code> (or <code>.tsx</code>) for files containing JSX, since Vite needs to know to transform them.</li>
+    <li>Import with the extension for your own files (<code>./App.jsx</code>) and without it for packages (<code>react</code>).</li>
+    <li>Images and CSS can be imported directly: <code>import "./App.css"</code> and <code>import logo from "./logo.svg"</code>.</li>
+    <li>Commit <code>package.json</code> and the lockfile, never the <code>node_modules/</code> folder.</li>
+  </ul>
+
+  <p>Other starters exist: Create React App is deprecated, and frameworks like Next.js and React Router's framework mode provide a full application setup. Vite is the simplest way to learn React itself, with no framework decisions in the way.</p>
+
+  <div class="callout">
+    <span class="label">If something breaks</span>
+    Read the error in the terminal <strong>and</strong> the browser console. Vite shows the file and line of syntax errors in an overlay. Most first-day problems are a typo in an import path or a lowercase component name.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Naming a component in lowercase (<code>function app()</code>)</td><td>React treats <code>&lt;app /&gt;</code> as an HTML tag and renders nothing useful</td><td>Start component names with a capital letter</td></tr>
+    <tr><td>Putting JSX in a <code>.js</code> file</td><td>Syntax error on the first <code>&lt;</code></td><td>Rename the file to <code>.jsx</code></td></tr>
+    <tr><td>Running <code>npm run dev</code> in the wrong folder</td><td><code>Missing script: dev</code></td><td><code>cd</code> into the project that contains <code>package.json</code></td></tr>
+    <tr><td>Editing files in <code>dist/</code></td><td>Changes vanish on the next build</td><td>Edit only <code>src/</code> and <code>public/</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a new Vite React project, start the dev server, and change the heading in <code>App.jsx</code>.</li>
+      <li>Run <code>npm run build</code> and look inside <code>dist/</code>. Note the file names and sizes.</li>
+      <li>Add a second component in its own file, import it into <code>App.jsx</code>, and render it twice.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>npm create vite@latest</code> gives you a React project with a fast dev server and HMR.</li>
+      <li><code>main.jsx</code> mounts the app into <code>#root</code>; <code>App.jsx</code> is your top-level component.</li>
+      <li>Components are capitalized functions that return JSX; use <code>.jsx</code> files.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Thinking in Components — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

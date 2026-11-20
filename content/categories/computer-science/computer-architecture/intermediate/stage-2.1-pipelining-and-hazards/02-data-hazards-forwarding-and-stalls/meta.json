@@ -1,0 +1,1 @@
+{"title": "Data Hazards, Forwarding & Stalls", "description": "When one instruction needs another's result, and how hardware hides the wait.", "order": 2}

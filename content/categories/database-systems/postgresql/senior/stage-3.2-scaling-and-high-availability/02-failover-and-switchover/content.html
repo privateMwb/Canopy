@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Failover &amp; Switchover — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · scaling &amp; high availability</span> → lesson 02</p>
+  <h1>Failover &amp; Switchover</h1>
+  <p class="lede">Failover promotes a standby when the primary fails, and the hard part is making sure the old primary can never accept writes again.</p>
+
+  <h2><span class="num">§1</span>Switchover and Failover</h2>
+
+  <p>A <strong>switchover</strong> is a planned role swap, for maintenance or upgrades: stop writes, let a standby catch up fully, promote it, and demote the old primary to a standby. No data is lost. A <strong>failover</strong> is unplanned: the primary is gone, you promote the best remaining standby, and any commits not yet replicated are lost (with asynchronous replication).</p>
+  <pre>SELECT pg_promote();                  <span class="comment">-- on the standby: becomes a writable primary</span>
+<span class="comment">-- or from the shell:  pg_ctl promote -D $PGDATA</span>
+
+SELECT pg_is_in_recovery();           <span class="comment">-- true on a standby, false on a primary</span></pre>
+  <p>Promotion creates a new <strong>timeline</strong>: a new branch of WAL history. Other standbys must switch to follow the new primary's timeline, and the old primary cannot simply rejoin because its history has diverged.</p>
+
+  <h2><span class="num">§2</span>Split-Brain</h2>
+
+  <p><strong>Split-brain</strong> is two servers both believing they are the primary and accepting writes. The data diverges and cannot be merged automatically. It happens when a failover is triggered by a network partition, but the old primary is alive and still reachable by some clients.</p>
+  <p>Preventing it requires <strong>fencing</strong>: before promoting a standby, make certain the old primary is down, by powering it off (STONITH, "shoot the other node in the head"), revoking its network or storage access, or relying on a consensus system so only a node holding a <strong>leader lease</strong> may accept writes. Never run a failover script that promotes a standby merely because a ping failed.</p>
+  <p>To bring a former primary back as a standby, use <code>pg_rewind</code>, which rewinds its data directory to the point where the timelines diverged and then applies the new primary's changes, instead of a full re-clone.</p>
+
+  <h2><span class="num">§3</span>Automation and Routing</h2>
+
+  <p>Because correctness depends on agreement among nodes, use a proven tool rather than a home-made script. <strong>Patroni</strong> (with etcd, Consul, or ZooKeeper as a distributed store holding the leader key), <strong>repmgr</strong>, and <strong>pg_auto_failover</strong> each detect failure, elect a standby, fence the old primary, and reconfigure the others. Managed cloud services provide this behind a single endpoint.</p>
+  <p>Applications must find the new primary. Common approaches: a virtual IP, a load balancer such as HAProxy that health-checks each node's role, DNS updates (beware of TTLs), or client-side multi-host connection strings.</p>
+  <pre>postgresql://db1,db2,db3/shop?target_session_attrs=read-write</pre>
+  <p><code>libpq</code> tries each host in turn and connects to the one that accepts writes. Applications must also <strong>handle reconnects</strong>: connections break during failover, in-flight transactions are lost, and writes need retries with idempotency. Practice failovers regularly; the first real one should not be the first one.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Promotion is easy; safety is not. A failover system is only correct if it can guarantee that at most one node is a writable primary at any moment.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Promoting a standby on a failed health check alone</td><td>The old primary may still be alive, leading to split-brain</td><td>Fence the old primary or use a consensus-based tool like Patroni</td></tr>
+    <tr><td>Re-attaching the old primary without checking timelines</td><td>Diverged data and replication errors</td><td>Use <code>pg_rewind</code> or re-clone it as a standby</td></tr>
+    <tr><td>Never rehearsing failover</td><td>Unknown recovery time, broken application reconnects, surprises under pressure</td><td>Run planned switchovers and game days regularly</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Promote a standby with <code>pg_promote()</code>, then use <code>pg_rewind</code> to turn the old primary into a standby of the new one.</li>
+      <li>Describe the sequence of events that could cause split-brain in a network partition and what fencing would prevent it.</li>
+      <li>Use a multi-host connection string with <code>target_session_attrs=read-write</code> and observe which host is chosen before and after a switchover.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Switchover is planned and lossless; failover is unplanned and may lose unreplicated commits.</li>
+      <li>Split-brain is the main danger; fencing and consensus-based leadership prevent it.</li>
+      <li>Use proven tooling for automation, make clients reconnect and retry safely, and rehearse failovers.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Scaling &amp; High Availability — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

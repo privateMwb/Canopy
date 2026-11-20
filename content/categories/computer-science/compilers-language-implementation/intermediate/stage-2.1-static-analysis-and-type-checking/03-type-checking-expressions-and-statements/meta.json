@@ -1,0 +1,5 @@
+{
+  "title": "Type Checking Expressions & Statements",
+  "description": "Typing rules written as inference rules, then turned into a checker.",
+  "order": 3
+}

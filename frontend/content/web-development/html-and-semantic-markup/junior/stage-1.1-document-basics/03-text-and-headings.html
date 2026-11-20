@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Text &amp; Headings — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · document basics</span> → lesson 03</p>
+  <h1>Text &amp; Headings</h1>
+  <p class="lede">Headings, paragraphs, lists, emphasis, and quotes carry the meaning of your text, and a clean heading outline is what lets people skim and navigate.</p>
+
+  <h2><span class="num">§1</span>Headings Make an Outline</h2>
+
+  <p><code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code> mark levels of importance, not sizes. Use one <code>&lt;h1&gt;</code> that names the page, then <code>&lt;h2&gt;</code> for main sections and <code>&lt;h3&gt;</code> for subsections inside them. Never skip a level just to get a smaller font; that is CSS's job.</p>
+  <pre>&lt;h1&gt;Baking Sourdough&lt;/h1&gt;
+  &lt;h2&gt;Ingredients&lt;/h2&gt;
+  &lt;h2&gt;Method&lt;/h2&gt;
+    &lt;h3&gt;Mixing&lt;/h3&gt;
+    &lt;h3&gt;Proofing&lt;/h3&gt;
+  &lt;h2&gt;Troubleshooting&lt;/h2&gt;</pre>
+  <p>Screen reader users often jump from heading to heading to scan a page, so the outline works like a table of contents.</p>
+
+  <h2><span class="num">§2</span>Paragraphs and Lists</h2>
+
+  <p>Wrap each paragraph in <code>&lt;p&gt;</code>. Extra whitespace and line breaks in your source are collapsed into single spaces, so spacing comes from CSS, not from blank lines or repeated <code>&lt;br&gt;</code>.</p>
+  <pre>&lt;ul&gt;                      <span class="comment">&lt;!-- unordered: order doesn't matter --&gt;</span>
+  &lt;li&gt;Flour&lt;/li&gt;
+  &lt;li&gt;Water&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ol&gt;                      <span class="comment">&lt;!-- ordered: sequence matters --&gt;</span>
+  &lt;li&gt;Mix&lt;/li&gt;
+  &lt;li&gt;Rest&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;dl&gt;                      <span class="comment">&lt;!-- term and description pairs --&gt;</span>
+  &lt;dt&gt;Autolyse&lt;/dt&gt;
+  &lt;dd&gt;Resting flour and water before adding salt.&lt;/dd&gt;
+&lt;/dl&gt;</pre>
+
+  <h2><span class="num">§3</span>Emphasis, Importance, and Quotes</h2>
+
+  <p>Choose inline tags for meaning, not for looks. <code>&lt;em&gt;</code> means stress emphasis (changes how a sentence is read), <code>&lt;strong&gt;</code> means strong importance, and <code>&lt;blockquote&gt;</code> and <code>&lt;q&gt;</code> mark quoted text.</p>
+  <pre>&lt;p&gt;You &lt;em&gt;must&lt;/em&gt; preheat the oven. &lt;strong&gt;Warning:&lt;/strong&gt; the tray is hot.&lt;/p&gt;
+
+&lt;blockquote cite="https://example.com/source"&gt;
+  &lt;p&gt;Bread is the simplest of foods and the hardest to master.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;She called it &lt;q&gt;a lifelong practice&lt;/q&gt;.&lt;/p&gt;</pre>
+  <p><code>&lt;b&gt;</code> and <code>&lt;i&gt;</code> still exist for text that is styled without added importance, such as a product name or a foreign phrase, but reach for <code>&lt;em&gt;</code> and <code>&lt;strong&gt;</code> first.</p>
+
+  <div class="callout">
+    <span class="label">Outline test</span>
+    Delete everything except the headings. If what remains does not read like a sensible table of contents, your heading structure needs work.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Choosing <code>&lt;h3&gt;</code> because it "looks right"</td><td>The outline skips a level and confuses assistive technology</td><td>Use the correct level and adjust size with CSS</td></tr>
+    <tr><td>Using <code>&lt;br&gt;&lt;br&gt;</code> to separate paragraphs</td><td>Meaningless markup; paragraphs are not exposed as paragraphs</td><td>Use separate <code>&lt;p&gt;</code> elements and style the gap with CSS</td></tr>
+    <tr><td>Using <code>&lt;blockquote&gt;</code> just to indent text</td><td>Everything indented is announced as a quotation</td><td>Use CSS <code>margin</code> or <code>padding</code> for indentation</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a recipe page with one <code>h1</code>, three <code>h2</code> sections, an ordered method, and an unordered ingredient list.</li>
+      <li>Take a paragraph from any article and mark one phrase with <code>em</code> and one with <code>strong</code>, explaining why each fits.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Heading levels describe structure; choose them for the outline, not for size.</li>
+      <li>Use lists for lists and <code>p</code> for paragraphs; whitespace in source is collapsed.</li>
+      <li>Pick inline tags for what the text means: <code>em</code> for stress, <code>strong</code> for importance.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Document Basics — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

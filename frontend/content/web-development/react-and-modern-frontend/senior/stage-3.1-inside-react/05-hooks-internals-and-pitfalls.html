@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hooks Internals &amp; Pitfalls — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · inside react</span> → lesson 05</p>
+  <h1>Hooks Internals &amp; Pitfalls</h1>
+  <p class="lede">Hooks look like ordinary function calls, yet they keep state between renders without any names. That works because of one strict rule about call order, and understanding the mechanism makes the rules of hooks obvious instead of arbitrary.</p>
+
+  <h2><span class="num">§1</span>How Hooks Are Stored</h2>
+
+  <p>Each component instance has a <strong>fiber</strong>, React's internal record for it. The fiber holds a <strong>linked list of hook records</strong>, one per hook call, in the order the component called them. There are no names or keys: React identifies <code>useState</code> number 1, <code>useState</code> number 2, and <code>useEffect</code> number 3 <strong>purely by position</strong> in that list.</p>
+
+  <pre>function Form() {
+  const [name, setName] = useState("");      <span class="comment">// hook #1: first node in the list</span>
+  const [age, setAge] = useState(0);         <span class="comment">// hook #2</span>
+  const ref = useRef(null);                  <span class="comment">// hook #3</span>
+  useEffect(() =&gt; { /* ... */ }, [name]);    <span class="comment">// hook #4: stores deps for comparison</span>
+  <span class="comment">// ...</span>
+}
+
+<span class="comment">// a simplified model of what React keeps for this fiber</span>
+<span class="comment">// fiber.memoizedState -&gt; { value: "", queue }</span>
+<span class="comment">//                         -&gt; { value: 0, queue }</span>
+<span class="comment">//                              -&gt; { current: null }</span>
+<span class="comment">//                                   -&gt; { effect, deps: ["..."] }</span></pre>
+
+  <p>On each render React walks the list in step with your calls: the first <code>useState</code> call gets the first node, the second gets the second, and so on. That is why <code>useState</code> can return the right value without knowing anything about your variable names.</p>
+
+  <h2><span class="num">§2</span>Why the Rules Exist</h2>
+
+  <p>The two <strong>Rules of Hooks</strong> follow directly from the position-based list:</p>
+
+  <ol>
+    <li><strong>Call hooks at the top level</strong>, never inside conditions, loops, or nested functions.</li>
+    <li><strong>Call hooks only from React functions</strong>: components and custom hooks.</li>
+  </ol>
+
+  <pre>function Broken({ loggedIn }) {
+  if (loggedIn) {
+    const [user, setUser] = useState(null);   <span class="comment">// hook #1 only on some renders</span>
+  }
+  const [theme, setTheme] = useState("light");   <span class="comment">// hook #1 or #2 depending on the render</span>
+  <span class="comment">// On a render where loggedIn flips, call positions shift: `theme` receives the user's state,</span>
+  <span class="comment">// or React throws "Rendered more hooks than during the previous render"</span>
+}
+
+<span class="comment">// fix: always call the hook; put the condition inside</span>
+function Fixed({ loggedIn }) {
+  const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState("light");
+  if (!loggedIn) return &lt;Login /&gt;;               <span class="comment">// early return AFTER all hooks</span>
+  return &lt;Dashboard user={user} theme={theme} /&gt;;
+}</pre>
+
+  <p>Early returns <strong>before</strong> a hook are the same violation. Custom hooks follow the same rules, since they are just a grouping of calls that end up in the host component's list. The ESLint rule <code>react-hooks/rules-of-hooks</code> enforces these statically.</p>
+
+  <h2><span class="num">§3</span>Closures, Dependencies, and Other Pitfalls</h2>
+
+  <p>Every render creates <strong>new</strong> functions that close over <strong>that render's</strong> props and state. Effects and handlers see the values from the render in which they were created, a *snapshot*. Most hook bugs are really stale closures, where a callback uses an old value because it was not re-created, or the dependency list did not include what it reads.</p>
+
+  <pre>function Ticker() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() =&gt; {
+    const id = setInterval(() =&gt; {
+      setCount(count + 1);                 <span class="comment">// closes over count = 0 forever: stuck at 1</span>
+    }, 1000);
+    return () =&gt; clearInterval(id);
+  }, []);                                    <span class="comment">// lint warns: count is missing</span>
+
+  <span class="comment">// fix 1: updater form needs no dependency on count</span>
+  useEffect(() =&gt; {
+    const id = setInterval(() =&gt; setCount((c) =&gt; c + 1), 1000);
+    return () =&gt; clearInterval(id);
+  }, []);
+}
+
+<span class="comment">// latest-value pattern: a ref always holds the newest callback without re-subscribing</span>
+function useEvent(fn) {
+  const ref = useRef(fn);
+  useLayoutEffect(() =&gt; { ref.current = fn; });
+  return useCallback((...args) =&gt; ref.current(...args), []);
+}</pre>
+
+  <table>
+    <tr><th>Pitfall</th><th>Cause</th><th>Fix</th></tr>
+    <tr><td>Effect uses stale value</td><td>Missing dependency, so closure never refreshed</td><td>Add the dependency, or use an updater function</td></tr>
+    <tr><td>Effect re-runs every render</td><td>Object, array, or function dependency recreated each render</td><td>Move it out of the component, memoize, or depend on primitives</td></tr>
+    <tr><td>Infinite loop</td><td>Effect sets state it also depends on</td><td>Rethink: derive, or use an updater, or fix the dependency</td></tr>
+    <tr><td><code>useCallback</code>/<code>useMemo</code> "does nothing"</td><td>Dependencies change every render, or the child is not memoized</td><td>Stabilize inputs; verify with the profiler</td></tr>
+    <tr><td>State resets unexpectedly</td><td>Component remounted (changed type or key)</td><td>Keep identity stable (see reconciliation)</td></tr>
+    <tr><td>Reading <code>ref.current</code> in render</td><td>Refs are mutable and set at commit</td><td>Read in effects and handlers</td></tr>
+  </table>
+
+  <ul>
+    <li><code>useState</code>'s initializer runs <strong>every render</strong> unless you pass a function: <code>useState(() =&gt; expensive())</code>.</li>
+    <li>State updates are <strong>replaced</strong>, not merged: <code>setObj({ a: 1 })</code> drops other fields.</li>
+    <li>In React 19, <code>use(promise)</code> and <code>use(context)</code> are the exceptions that <strong>can</strong> be called conditionally, since they do not rely on the hook list.</li>
+    <li>The <strong>React Compiler</strong> relies on these rules: code that follows them can be memoized automatically.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Hooks are a list indexed by call order</span>
+    Everything strange about hooks, no conditionals, no loops, stale closures, resets on remount, follows from that one fact. If you can picture the linked list, you can predict the behavior.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Calling a hook inside an <code>if</code> or after an early <code>return</code></td><td>Hook order changes between renders; crashes or mixed-up state</td><td>Call all hooks first, and branch after</td></tr>
+    <tr><td>Omitting dependencies to "fix" an effect firing too much</td><td>Stale closures and subtle bugs</td><td>Fix the cause: stabilize the value or restructure</td></tr>
+    <tr><td>Using an object literal as a dependency</td><td>Effect runs every render</td><td>Depend on its primitive fields, or define it outside</td></tr>
+    <tr><td>Assuming <code>setState</code> merges objects</td><td>Other fields silently disappear</td><td>Spread the old object: <code>{ ...prev, a: 1 }</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Draw the hook list for a component with two <code>useState</code>, one <code>useRef</code>, and one <code>useEffect</code>, and show what changes if you move one hook into an <code>if</code>.</li>
+      <li>Reproduce the stale-interval bug, then fix it with an updater function and again with a <code>useEvent</code>-style ref.</li>
+      <li>Find three effects in a codebase with workarounds for dependency warnings and restructure each so the warning is satisfied properly.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Hooks live in a per-fiber linked list identified only by call order.</li>
+      <li>The Rules of Hooks (top level only) keep that order identical every render.</li>
+      <li>Most hook bugs are stale closures: refresh dependencies, use updaters, or the latest-value ref pattern.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Inside React — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

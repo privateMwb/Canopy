@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Data & Performance",
+  "description": "Indexes, transactions, caching, background jobs, and integrations.",
+  "order": 2
+}

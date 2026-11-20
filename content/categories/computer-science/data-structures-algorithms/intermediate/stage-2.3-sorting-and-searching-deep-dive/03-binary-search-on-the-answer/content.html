@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Binary Search on the Answer — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · sorting and searching deep dive</span> → lesson 03</p>
+  <h1>Binary Search on the Answer</h1>
+  <p class="lede">Using binary search on a range of possible answers, not just a sorted array of data.</p>
+
+  <h2><span class="num">§1</span>A Different Way to Use Binary Search</h2>
+  <p>Binary search doesn't have to search a literal array. If a problem's answer lies somewhere in a range of numbers, and you can check "is this candidate answer good enough?" efficiently, binary search can narrow in on the exact right answer — even without any array to search.</p>
+
+  <h2><span class="num">§2</span>The Pattern</h2>
+  <pre>def binary_search_on_answer(lo, hi, is_feasible):
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if is_feasible(mid):
+            hi = mid        <span class="comment"># mid works — try for something even better</span>
+        else:
+            lo = mid + 1     <span class="comment"># mid doesn't work — need something bigger</span>
+    return lo</pre>
+  <p>This requires one key property: the feasibility check must be <strong>monotonic</strong> — if a value works, every "better" value in the same direction also works. Without that, binary search's "discard half" logic doesn't hold.</p>
+
+  <h2><span class="num">§3</span>A Worked Example: Minimum Capacity to Ship Packages</h2>
+  <pre><span class="comment"># can all packages ship within `days` days, given a ship capacity?</span>
+def can_ship(weights, days, capacity):
+    needed_days = 1
+    current_load = 0
+    for w in weights:
+        if current_load + w > capacity:
+            needed_days += 1
+            current_load = 0
+        current_load += w
+    return needed_days <= days
+
+def min_capacity(weights, days):
+    lo, hi = max(weights), sum(weights)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if can_ship(weights, days, mid):
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo</pre>
+  <p>There's no array of "candidate capacities" to search — just a range of possible values. If capacity X works, any larger capacity also works (monotonic), so binary search narrows in on the smallest capacity that still works.</p>
+
+  <h2><span class="num">§4</span>Recognizing This Pattern</h2>
+  <div class="callout">
+    <span class="label">The signal to look for</span>
+    "Minimum/maximum X such that condition Y holds" is the classic phrasing for this pattern — especially when brute-force checking every possible X would be too slow, but checking whether one specific X works is fast and the feasibility is monotonic.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Applying this pattern when feasibility isn't actually monotonic</td><td>Binary search gives wrong results</td><td>Verify the "if X works, does every larger/smaller X also work" property first</td></tr>
+    <tr><td>Setting the search range (lo, hi) incorrectly</td><td>Misses the true answer entirely</td><td>Carefully derive valid bounds for the answer from the problem constraints</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>In your own words, explain what "monotonic feasibility" means and why it's required for this pattern.</li>
+      <li>Describe one other problem (besides shipping capacity) where "minimum X such that Y holds" would apply.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Binary search can search a range of possible answers, not just a literal sorted array.</li>
+      <li>This requires the feasibility check to be monotonic — if one value works, every value further in the same direction also works.</li>
+      <li>"Minimum/maximum X such that condition Y holds" is the typical phrasing that signals this pattern.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Sorting & Searching Deep Dive — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

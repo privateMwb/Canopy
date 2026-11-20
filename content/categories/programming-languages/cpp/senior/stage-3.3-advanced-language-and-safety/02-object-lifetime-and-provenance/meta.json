@@ -1,0 +1,5 @@
+{
+  "title": "Object Lifetime & Provenance",
+  "description": "When an object exists, when a pointer is valid, and the rules that follow.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Using SQLite in Applications",
+  "description": "Language bindings, parameterized queries, transactions, schema migrations, and embedding SQLite in apps.",
+  "order": 3
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recovering From a Bad Merge or Rebase — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · advanced everyday tools</span> → lesson 02</p>
+  <h1>Recovering From a Bad Merge or Rebase</h1>
+  <p class="lede">Whether the merge is still local or already pushed, there is a safe path back; which one depends on whether other people have the commits.</p>
+
+  <h2><span class="num">§1</span>A Bad Merge That Is Still Local</h2>
+  <p>If you have not pushed, you can discard the merge as if it never happened. <code>ORIG_HEAD</code> is set by Git before dangerous operations and points at where the branch was.</p>
+  <pre>git merge --abort                <span class="comment"># during an unfinished, conflicted merge</span>
+git reset --hard ORIG_HEAD       <span class="comment"># after a completed merge: back to before it</span>
+git reflog                       <span class="comment"># if ORIG_HEAD was overwritten, find the commit here</span>
+git reset --hard HEAD@{1}</pre>
+
+  <h2><span class="num">§2</span>A Bad Rebase</h2>
+  <pre>git rebase --abort               <span class="comment"># mid-rebase: restore everything</span>
+git reflog                       <span class="comment"># after finishing: find the line before 'rebase (start)'</span>
+<span class="comment"># abc1234 HEAD@{9}: commit: Add search tests   &lt;- the state before the rebase</span>
+git reset --hard abc1234         <span class="comment"># or: git reset --hard ORIG_HEAD</span></pre>
+
+  <h2><span class="num">§3</span>A Bad Merge That Was Already Pushed</h2>
+  <p>Never reset a shared branch. Add a commit that undoes the merge:</p>
+  <pre>git revert -m 1 &lt;merge-commit&gt;     <span class="comment"># undo the merge, keeping the first parent (main) as mainline</span>
+git push</pre>
+  <p>There is one catch. Reverting a merge tells Git that <strong>those changes are intentionally gone</strong>. If you later merge the same branch again, Git skips the already-merged commits, and the changes do not come back. To bring the feature back, first <strong>revert the revert</strong>:</p>
+  <pre>git revert &lt;the-revert-commit&gt;     <span class="comment"># restores the feature's changes</span>
+<span class="comment"># or merge the branch again after rebuilding it as new commits</span></pre>
+
+  <h2><span class="num">§4</span>Cleaning Up After Recovery</h2>
+  <ol>
+    <li>Tell the team what happened and what the branch looks like now.</li>
+    <li>Find out why it went wrong (wrong target, a bad conflict resolution, an overzealous <code>-X theirs</code>) and add a test or protection to prevent a repeat.</li>
+    <li>If a conflict resolution dropped code, use <code>git diff &lt;good-commit&gt; HEAD</code> to see exactly what is missing and restore it in a new commit.</li>
+  </ol>
+  <div class="callout">
+    <span class="label">Shared history moves forward only</span>
+    On a pushed branch, undo with <code>revert</code> and a new commit, and let everyone pull normally. Resetting and force-pushing a shared branch makes everyone else's clone wrong.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Resetting and force-pushing a shared branch</td><td>Teammates' clones diverge and work is lost</td><td>Use <code>git revert -m 1</code> and push normally</td></tr>
+    <tr><td>Re-merging a reverted branch and getting nothing</td><td>Git considers those commits already merged</td><td>Revert the revert first, or rebuild the branch with new commits</td></tr>
+    <tr><td>Running <code>reset --hard</code> with uncommitted edits present</td><td>Edits are lost permanently</td><td>Stash or commit first</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a merge, then undo it three ways: <code>reset --hard ORIG_HEAD</code> (local), <code>revert -m 1</code> (pushed), and recover it via the reflog.</li>
+      <li>Revert a merge, merge the same branch again, notice what is missing, and fix it by reverting the revert.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Local mistakes: <code>--abort</code>, <code>reset --hard ORIG_HEAD</code>, or the reflog.</li>
+      <li>Pushed mistakes: <code>git revert -m 1 &lt;merge&gt;</code> and a normal push.</li>
+      <li>Reverting a merge means re-merging later needs a revert of the revert.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Advanced Everyday Tools — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Detached HEAD &amp; Moving Around History — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · branching &amp; merging</span> → lesson 05</p>
+  <h1>Detached HEAD &amp; Moving Around History</h1>
+  <p class="lede">You can check out any commit or tag to look at the past, and understanding detached HEAD lets you explore without fear and return safely.</p>
+
+  <h2><span class="num">§1</span>Checking Out the Past</h2>
+  <p>Normally HEAD points at a branch. If you check out a commit or tag directly, HEAD points at that commit instead. This is a <strong>detached HEAD</strong>: you are viewing an old snapshot, not standing on any branch.</p>
+  <pre>git switch --detach a1b2c3d   <span class="comment"># look at an old commit</span>
+git switch --detach v1.0.0     <span class="comment"># or a tag</span>
+git checkout a1b2c3d           <span class="comment"># older command, same effect</span>
+<span class="comment"># You are in 'detached HEAD' state...</span></pre>
+  <p>This is safe for looking around, running an old build, or comparing behavior. The danger comes from committing here: a new commit has no branch pointing at it, so once you switch away it becomes hard to find.</p>
+
+  <h2><span class="num">§2</span>Keeping Work Done in a Detached State</h2>
+  <p>If you did commit while detached and want to keep it, give it a branch before leaving:</p>
+  <pre>git switch -c rescue-experiment   <span class="comment"># new branch at the current commit</span>
+git switch main                   <span class="comment"># now safe to leave</span></pre>
+  <p>To get back without keeping anything, just switch to a branch: <code>git switch main</code>, or <code>git switch -</code> to return to the previous location.</p>
+
+  <h2><span class="num">§3</span>Relative References</h2>
+  <p>You do not have to type commit IDs. Names can be written relative to another reference.</p>
+  <table>
+    <tr><th>Reference</th><th>Meaning</th></tr>
+    <tr><td><code>HEAD</code></td><td>The commit you are on now</td></tr>
+    <tr><td><code>HEAD~1</code> or <code>HEAD~</code></td><td>The first parent of HEAD, one commit back</td></tr>
+    <tr><td><code>HEAD~3</code></td><td>Three commits back along first parents</td></tr>
+    <tr><td><code>main^2</code></td><td>The second parent of a merge commit on <code>main</code></td></tr>
+    <tr><td><code>v1.0.0</code></td><td>The commit a tag points to</td></tr>
+  </table>
+  <pre>git show HEAD~2
+git diff HEAD~3 HEAD          <span class="comment"># everything changed in the last three commits</span>
+git restore --source=HEAD~2 app.py   <span class="comment"># get one old file back, without moving HEAD</span></pre>
+  <div class="callout">
+    <span class="label">Detached HEAD is not an error</span>
+    Git's long warning message makes it sound alarming, but it only means HEAD is not on a branch. Look around freely. If you make commits you want to keep, put a branch on them before you leave.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Committing while detached, then switching away</td><td>The new commits are no longer reachable by any branch name</td><td>Create a branch with <code>git switch -c</code> before leaving</td></tr>
+    <tr><td>Confusing <code>~</code> and <code>^</code></td><td>You land on the wrong parent of a merge commit</td><td><code>~n</code> goes back n generations; <code>^n</code> picks the nth parent</td></tr>
+    <tr><td>Fearing the warning and avoiding history</td><td>You never inspect old versions</td><td>Use <code>git switch --detach</code> to explore, <code>git switch main</code> to return</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Detach to a commit three steps back using <code>HEAD~3</code>, look at a file, and return to <code>main</code> with <code>git switch -</code>.</li>
+      <li>Detach, make a commit, then rescue it by creating a branch, and verify it with <code>git log --oneline --all</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Detached HEAD means HEAD points at a commit, not a branch.</li>
+      <li>Commits made while detached need a branch to stay easy to find.</li>
+      <li><code>HEAD~n</code> walks back along first parents; tags and IDs name specific commits.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Branching &amp; Merging — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

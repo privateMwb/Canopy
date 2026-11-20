@@ -1,0 +1,5 @@
+{
+  "title": "itertools, functools & collections",
+  "description": "The standard-library tools that replace hand-written loops: chain, groupby, lru_cache, Counter, deque.",
+  "order": 5
+}

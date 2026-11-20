@@ -1,0 +1,5 @@
+{
+  "title": "Window Functions & Generated Columns",
+  "description": "Analytics and computed columns inside SQLite.",
+  "order": 3
+}

@@ -1,0 +1,1 @@
+{"title": "Atomics & Memory Ordering", "description": "Compare-and-swap, acquire/release semantics, and why the compiler and CPU reorder your code.", "order": 1}

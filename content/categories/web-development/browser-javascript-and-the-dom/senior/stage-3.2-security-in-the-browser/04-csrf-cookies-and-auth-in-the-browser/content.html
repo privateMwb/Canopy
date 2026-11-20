@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CSRF, Cookies &amp; Auth in the Browser — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · security in the browser</span> → lesson 04</p>
+  <h1>CSRF, Cookies &amp; Auth in the Browser</h1>
+  <p class="lede">Cookies are sent automatically, and that convenience is the root of cross-site request forgery. Choosing how the browser stores and sends credentials is one of the most consequential decisions in a web app.</p>
+
+  <h2><span class="num">§1</span>CSRF and SameSite</h2>
+
+  <p><strong>Cross-site request forgery (CSRF)</strong> abuses automatic cookie sending. If you are logged in to <code>bank.com</code>, a malicious page can make your browser send a request to <code>bank.com</code> and the cookies go along, so the bank sees an authenticated request you never intended. SOP does not prevent this, because the attacker only needs to <strong>send</strong>, not read.</p>
+
+  <pre><span class="comment">&lt;!-- on evil.test: the browser attaches bank.com cookies to this request --&gt;</span>
+&lt;form action="https://bank.com/transfer" method="POST" id="f"&gt;
+  &lt;input name="to" value="attacker"&gt;&lt;input name="amount" value="5000"&gt;
+&lt;/form&gt;
+&lt;script&gt;document.getElementById("f").submit()&lt;/script&gt;</pre>
+
+  <p>The most effective modern defense is the <strong><code>SameSite</code></strong> cookie attribute, which tells the browser when to include a cookie on cross-site requests.</p>
+
+  <table>
+    <tr><th>SameSite</th><th>Sent on cross-site requests?</th><th>Notes</th></tr>
+    <tr><td><code>Strict</code></td><td>Never</td><td>Strongest; can break links arriving from other sites (first load is logged out)</td></tr>
+    <tr><td><code>Lax</code></td><td>Only top-level navigations using safe methods (GET)</td><td>Browser default now; blocks cross-site POST forgery</td></tr>
+    <tr><td><code>None; Secure</code></td><td>Always (requires HTTPS)</td><td>Needed for embedded/third-party use; offers no CSRF protection</td></tr>
+  </table>
+
+  <p>Do not rely on SameSite alone for sensitive actions. Add an <strong>anti-CSRF token</strong> (a random value the server puts in the page and requires on each state-changing request, in a header or hidden field), or verify the <code>Origin</code>/<code>Sec-Fetch-Site</code> headers. Make sure <code>GET</code> requests <strong>never</strong> change state.</p>
+
+  <h2><span class="num">§2</span>Cookies vs. Tokens in Storage</h2>
+
+  <p>Where you keep a session credential decides which attacks you are exposed to. There is no perfect answer, but the trade-offs are clear:</p>
+
+  <table>
+    <tr><th>Approach</th><th>XSS exposure</th><th>CSRF exposure</th></tr>
+    <tr><td>Session cookie: <code>HttpOnly; Secure; SameSite=Lax</code></td><td>Script <strong>cannot read</strong> it (requests can still be made)</td><td>Mitigated by SameSite + tokens</td></tr>
+    <tr><td>Token in <code>localStorage</code>, sent in an <code>Authorization</code> header</td><td><strong>Any XSS can steal it</strong></td><td>None (not sent automatically)</td></tr>
+    <tr><td>Token in memory only (JS variable)</td><td>Reachable by XSS while the page lives</td><td>None; lost on reload (needs a refresh mechanism)</td></tr>
+  </table>
+
+  <pre>Set-Cookie: __Host-session=9f8a...; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=3600
+
+<span class="comment">// prefer the __Host- prefix: forces Secure, Path=/, and no Domain attribute</span>
+<span class="comment">// the browser attaches it; script cannot read it</span>
+fetch("/api/me", { credentials: "include" });
+
+<span class="comment">// state-changing request with an anti-CSRF token</span>
+fetch("/api/transfer", {
+  method: "POST",
+  credentials: "include",
+  headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+  body: JSON.stringify({ to, amount }),
+});</pre>
+
+  <p>For most browser apps talking to their own backend, an <code>HttpOnly</code> session cookie plus SameSite and CSRF protection is the safer default than a long-lived token in <code>localStorage</code>. HttpOnly does not make XSS harmless (an attacker can still act as the user while the page is open), but it prevents the credential from being <strong>exfiltrated</strong> and reused elsewhere.</p>
+
+  <h2><span class="num">§3</span>Sessions, Logout, and Sensitive Actions</h2>
+
+  <p>Good session handling goes beyond where the credential is stored.</p>
+
+  <ul>
+    <li><strong>Rotate</strong> the session identifier at login to prevent session fixation, and expire it on the <strong>server</strong> at logout (clearing the cookie client-side is not enough).</li>
+    <li>Use <strong>short lifetimes</strong> for access, with a refresh mechanism, and an <strong>idle timeout</strong> for sensitive apps.</li>
+    <li>Require <strong>re-authentication</strong> (password or passkey) for dangerous actions such as changing email or paying.</li>
+    <li>Prefer <strong>passkeys / WebAuthn</strong> and standard flows (OAuth/OIDC with PKCE) over hand-rolled login; never put tokens in URLs, where they leak through history, logs, and <code>Referer</code>.</li>
+    <li>Defend against <strong>clickjacking</strong> with <code>frame-ancestors 'none'</code> (or <code>X-Frame-Options: DENY</code>) on pages with sensitive buttons.</li>
+    <li>Set <code>Cache-Control: no-store</code> on authenticated responses so a shared computer's Back button does not show the account.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Assume a request can be forged and a script can run</span>
+    Design for both: make state-changing requests prove they came from your own page (SameSite + token), and keep credentials where an injected script cannot copy them (<code>HttpOnly</code>).
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Changing state on <code>GET</code> requests</td><td>Any <code>&lt;img&gt;</code> or link can trigger the action; SameSite Lax allows top-level GETs</td><td>Use <code>POST</code>/<code>PUT</code>/<code>DELETE</code> and require a CSRF token</td></tr>
+    <tr><td>Storing long-lived tokens in <code>localStorage</code></td><td>One XSS bug lets an attacker steal the credential</td><td>Use an <code>HttpOnly</code> cookie or keep tokens short-lived in memory</td></tr>
+    <tr><td>Setting <code>SameSite=None</code> out of habit</td><td>Cookie is sent on all cross-site requests; CSRF returns</td><td>Use <code>Lax</code> or <code>Strict</code> unless cross-site use is required</td></tr>
+    <tr><td>"Logging out" by only deleting the cookie</td><td>The session stays valid if the cookie was copied</td><td>Invalidate the session on the server</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a vulnerable state-changing endpoint with a cookie session, attack it from a second origin, then stop the attack with SameSite and an anti-CSRF token.</li>
+      <li>Compare, in a table, how an XSS bug and a CSRF bug would each affect an app using <code>localStorage</code> tokens versus <code>HttpOnly</code> cookies.</li>
+      <li>Audit the cookies of a real site in DevTools and list which have <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code>, and the <code>__Host-</code> prefix.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>CSRF exploits automatic cookie sending; <code>SameSite</code> plus anti-CSRF tokens (and safe <code>GET</code>s) defend against it.</li>
+      <li><code>HttpOnly</code> cookies keep credentials out of reach of injected script; <code>localStorage</code> tokens expose them to XSS.</li>
+      <li>Rotate and invalidate sessions server-side, protect sensitive actions, and prefer standard auth flows.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Security in the Browser — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

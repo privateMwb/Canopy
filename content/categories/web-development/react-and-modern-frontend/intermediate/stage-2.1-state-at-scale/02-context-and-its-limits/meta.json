@@ -1,0 +1,5 @@
+{
+  "title": "Context & Its Limits",
+  "description": "Sharing data without prop drilling, and the re-render costs.",
+  "order": 2
+}

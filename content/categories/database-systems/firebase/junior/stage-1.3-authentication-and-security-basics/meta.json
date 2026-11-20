@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Authentication & Security Basics",
+  "description": "Sign-in with Firebase Authentication, auth state, and writing and testing your first security rules.",
+  "order": 3
+}

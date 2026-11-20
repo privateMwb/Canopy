@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Concurrency & Durability",
+  "description": "Locking, rollback journal versus WAL, transaction types and busy handling, durability, and multi-process access.",
+  "order": 2
+}

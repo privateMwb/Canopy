@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Data & Persistence",
+  "description": "Relational basics, connecting from code, ORMs, schema design, and migrations.",
+  "order": 2
+}

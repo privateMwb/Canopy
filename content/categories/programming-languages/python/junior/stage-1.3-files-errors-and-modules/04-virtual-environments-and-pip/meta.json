@@ -1,0 +1,5 @@
+{
+  "title": "Virtual Environments & pip",
+  "description": "Isolating dependencies with venv and recording them so the project is reproducible.",
+  "order": 4
+}

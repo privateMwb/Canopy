@@ -1,0 +1,5 @@
+{
+  "title": "What a Language Implementation Does",
+  "description": "The pipeline from source text to running program, and how interpreters, compilers, and VMs differ.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Thread Pools, Executors & Coroutines",
+  "description": "Task scheduling and C++20 coroutines in depth.",
+  "order": 3
+}

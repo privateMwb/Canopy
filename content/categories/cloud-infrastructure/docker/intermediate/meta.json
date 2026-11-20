@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Smaller and faster images, running containers well, CI and security basics, and Compose for single-host production.",
+  "order": 2
+}

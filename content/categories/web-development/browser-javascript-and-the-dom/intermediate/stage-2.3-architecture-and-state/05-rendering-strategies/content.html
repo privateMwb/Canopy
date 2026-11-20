@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rendering Strategies — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · architecture &amp; state</span> → lesson 05</p>
+  <h1>Rendering Strategies</h1>
+  <p class="lede">Every UI has to keep the DOM in sync with its data. There is a spectrum of ways to do it, from hand-written updates to templates to batching, and each has a place.</p>
+
+  <h2><span class="num">§1</span>Direct DOM Updates</h2>
+
+  <p>The simplest approach is to update exactly the node that changed. It is the fastest at runtime and uses no libraries, but you must track which node corresponds to which data, and the code grows as the UI does.</p>
+
+  <pre>const counter = document.querySelector("#count");
+let count = 0;
+button.addEventListener("click", () =&gt; {
+  count++;
+  counter.textContent = count;      <span class="comment">// touch only the one node</span>
+});</pre>
+
+  <p>This is a great fit for small, local updates such as a counter, a toggled class, or a progress bar. It becomes error-prone for lists whose items are added, removed, and reordered, because you must hand-maintain the correspondence between data and nodes.</p>
+
+  <h2><span class="num">§2</span>Templates and Re-rendering</h2>
+
+  <p>A more declarative approach is to write a function from data to DOM and re-render when data changes. The simplest form rebuilds the container's contents every time. It is easy to reason about because the DOM is always a pure function of state.</p>
+
+  <pre>function render(todos) {
+  list.replaceChildren(
+    ...todos.map((t) =&gt; {
+      const li = document.createElement("li");
+      li.dataset.id = t.id;
+      li.classList.toggle("done", t.done);
+      li.textContent = t.text;
+      return li;
+    })
+  );
+}
+
+<span class="comment">// tagged template with escaping, for HTML strings</span>
+const esc = (s) =&gt; String(s).replace(/[&amp;&lt;&gt;"']/g, (c) =&gt; `&amp;#${c.charCodeAt(0)};`);
+const html = (strings, ...vals) =&gt;
+  strings.reduce((out, s, i) =&gt; out + s + (i &lt; vals.length ? esc(vals[i]) : ""), "");
+
+list.innerHTML = todos.map((t) =&gt; html`&lt;li data-id="${t.id}"&gt;${t.text}&lt;/li&gt;`).join("");</pre>
+
+  <p>Rebuilding everything is wasteful when only one item changed, and it destroys state held in the DOM: input focus, cursor position, scroll position, and a playing video are all lost when their element is replaced. Libraries like lit-html or frameworks use <strong>diffing</strong> to update only what changed.</p>
+
+  <h2><span class="num">§3</span>Batching and Avoiding Layout Thrash</h2>
+
+  <p>Touching the DOM is cheap; <strong>layout</strong> is expensive. Reading a layout property (<code>offsetHeight</code>, <code>getBoundingClientRect</code>) right after a write forces the browser to recalculate layout immediately. Doing that in a loop is called <strong>layout thrashing</strong>.</p>
+
+  <pre><span class="comment">// thrashing: write, read, write, read ...</span>
+for (const el of items) {
+  el.style.width = box.offsetWidth / 2 + "px";   <span class="comment">// read forces layout each time</span>
+}
+
+<span class="comment">// batched: all reads first, then all writes</span>
+const w = box.offsetWidth / 2;
+for (const el of items) el.style.width = w + "px";
+
+<span class="comment">// schedule visual writes once per frame</span>
+let queued = false;
+function scheduleRender() {
+  if (queued) return;
+  queued = true;
+  requestAnimationFrame(() =&gt; { queued = false; render(store.getState()); });
+}</pre>
+
+  <table>
+    <tr><th>Strategy</th><th>Best for</th><th>Watch out for</th></tr>
+    <tr><td>Direct updates</td><td>Small, local changes</td><td>Bookkeeping as the UI grows</td></tr>
+    <tr><td>Re-render a container</td><td>Moderate UIs, simple code</td><td>Lost focus/scroll; wasted work</td></tr>
+    <tr><td>Diffing (lit-html, frameworks)</td><td>Large, dynamic UIs</td><td>A dependency and a mental model</td></tr>
+    <tr><td>Batched via rAF</td><td>Many state changes per frame</td><td>Rendering one frame late</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">Preserve what users are touching</span>
+    Re-rendering a form field the user is typing into resets the cursor. Update around active elements, give list items stable keys or ids, or use a diffing renderer.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Re-rendering an input while the user types</td><td>Lost cursor position and focus</td><td>Update only the parts that changed</td></tr>
+    <tr><td>Interleaving DOM reads and writes in a loop</td><td>Layout thrashing and jank</td><td>Batch reads first, then writes</td></tr>
+    <tr><td>Building HTML strings from data without escaping</td><td>XSS</td><td>Escape values or use DOM APIs and templates</td></tr>
+    <tr><td>Rendering after every tiny state change</td><td>Wasted work in a single frame</td><td>Coalesce renders with <code>requestAnimationFrame</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Render a to-do list with <code>replaceChildren</code>, then show what happens to focus in an input inside an item when you re-render.</li>
+      <li>Reproduce layout thrashing on 2,000 elements, then fix it by separating reads from writes, and compare timings.</li>
+      <li>Coalesce multiple <code>dispatch</code> calls in one tick into a single render with <code>requestAnimationFrame</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Direct updates are fastest; re-rendering is simplest; diffing scales best.</li>
+      <li>Escape or avoid string HTML, and preserve focus and scroll when re-rendering.</li>
+      <li>Batch DOM reads and writes and coalesce renders to avoid layout thrashing.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Architecture &amp; State — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

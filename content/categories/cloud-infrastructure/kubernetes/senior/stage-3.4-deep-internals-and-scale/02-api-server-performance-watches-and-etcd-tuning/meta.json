@@ -1,0 +1,5 @@
+{
+  "title": "API Server Performance, Watches & etcd Tuning",
+  "description": "What slows a large cluster and how to measure it.",
+  "order": 2
+}

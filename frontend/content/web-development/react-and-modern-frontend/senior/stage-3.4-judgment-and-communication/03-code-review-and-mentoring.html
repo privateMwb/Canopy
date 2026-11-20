@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code Review &amp; Mentoring — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 03</p>
+  <h1>Code Review &amp; Mentoring</h1>
+  <p class="lede">Code review is where a team's standards are taught and where trust is built or lost. Good reviews catch problems that matter and help the author grow; poor ones nitpick style and slow everyone down.</p>
+
+  <h2><span class="num">§1</span>What to Look For in React Code</h2>
+
+  <p>Automate the mechanical checks (formatting, lint, types, tests) so that review time goes to what only people can judge. Review in this order, from most to least costly to change later.</p>
+
+  <table>
+    <tr><th>Level</th><th>Questions to ask</th></tr>
+    <tr><td><strong>Design and behavior</strong></td><td>Does this solve the right problem? Is it the simplest approach? Are loading, empty, error, and edge states handled?</td></tr>
+    <tr><td><strong>Component design</strong></td><td>Does each component have one job? Are props minimal and well named? Is state owned at the right level? Composition over flags?</td></tr>
+    <tr><td><strong>State and data</strong></td><td>Is derived data computed rather than stored? Is server data in a query layer? Anything duplicated or mutated?</td></tr>
+    <tr><td><strong>Effects and hooks</strong></td><td>Does every effect sync with something external? Are dependencies complete? Is there cleanup? Could it be an event handler or derived value?</td></tr>
+    <tr><td><strong>Accessibility</strong></td><td>Semantic elements, labels, keyboard use, focus, contrast, announced changes?</td></tr>
+    <tr><td><strong>Performance</strong></td><td>Obvious waste (rendering huge lists, heavy work in render, large imports)? Evidence for any optimization?</td></tr>
+    <tr><td><strong>Security</strong></td><td>Untrusted HTML or URLs, secrets, authorization, input validation?</td></tr>
+    <tr><td><strong>Tests</strong></td><td>Do they check behavior a user would notice? Do they fail if the feature breaks?</td></tr>
+    <tr><td><strong>Readability</strong></td><td>Clear names, small functions, comments only where intent is not obvious?</td></tr>
+  </table>
+
+  <pre><span class="comment">// a review comment that teaches, not just corrects</span>
+<span class="comment">// "This effect copies `items` into `filtered` state. Since `filtered` can be computed</span>
+<span class="comment">//  from `items` and `query`, storing it risks the two drifting apart and adds an extra render.</span>
+<span class="comment">//  Could we derive it during render (and memoize if it is expensive)?</span>
+<span class="comment">//  See: react.dev/learn/you-might-not-need-an-effect"</span>
+const filtered = items.filter((i) =&gt; i.name.includes(query));</pre>
+
+  <h2><span class="num">§2</span>How to Give Feedback</h2>
+
+  <ul>
+    <li><strong>Review the code, not the person.</strong> "This function does two things" lands better than "you wrote this badly".</li>
+    <li><strong>Ask questions</strong> when you are not sure ("What happens if the request fails here?"). You may be missing context, and questions invite explanation rather than defense.</li>
+    <li><strong>Explain why</strong>, and link to docs or examples. A reason lets the author apply the lesson next time; a bare instruction teaches only compliance.</li>
+    <li><strong>Label the weight</strong>: <code>blocking:</code> for must-fix, <code>suggestion:</code> or <code>nit:</code> for optional, <code>question:</code> for curiosity, and <code>praise:</code> for what is good. Authors should never have to guess what is required.</li>
+    <li><strong>Offer an alternative</strong> with a snippet when it saves time, and distinguish preference from principle; where reasonable people differ, defer to the author.</li>
+    <li><strong>Be timely and proportionate.</strong> Review within a working day; keep pull requests small (a few hundred lines) by encouraging the author to split large changes; do not hold up merging for trivia.</li>
+    <li><strong>Say what is good.</strong> Specific praise reinforces practices you want repeated.</li>
+    <li><strong>Move to a call</strong> when a thread goes past two rounds, and write down the outcome.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>As an Author, and as a Mentor</h2>
+
+  <p>Good reviews start before the reviewer opens the diff. Authors can make review easier and mentors can use review to grow people.</p>
+
+  <ul>
+    <li><strong>Authors</strong>: keep the change focused, write a description that explains <strong>why</strong> and how to test, add screenshots for UI changes, self-review first, and respond to every comment (done, or a reasoned disagreement).</li>
+    <li><strong>Receive feedback well</strong>: treat comments as information about how the code reads to someone else, assume good intent, and separate the code from your identity.</li>
+    <li><strong>Mentoring through review</strong>: tailor the depth to the person. For newer engineers, explain the principle and link a resource; for senior peers, raise the question and trust their judgment.</li>
+    <li><strong>Teach the underlying mental model</strong>, not just the fix: "state should live in one place" applies to the next hundred cases.</li>
+    <li><strong>Pair on hard problems</strong> and <strong>show your own process</strong>, including mistakes and how you debug, so people see how decisions are really made.</li>
+    <li><strong>Delegate real ownership</strong> with support: let people lead a small feature or a migration step, and make it safe to ask questions and to fail.</li>
+    <li><strong>Build shared standards</strong> in writing: a short style guide, a PR template and checklist, and examples of good components. Standards that exist only in your head do not scale.</li>
+    <li><strong>Watch for patterns</strong>: if the same comment appears repeatedly, fix it with a lint rule, a template, a doc, or a team conversation rather than repeating it in every review.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Review for what machines cannot check</span>
+    Let tools handle style and rules. Spend human attention on design, behavior, and teaching, and phrase feedback so that the author leaves knowing both what to change and why.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Commenting mostly on style and formatting</td><td>Wastes time that automation could save; hides real issues</td><td>Automate with Prettier and ESLint; review design and behavior</td></tr>
+    <tr><td>Unlabeled comments of mixed importance</td><td>Authors cannot tell what blocks merging</td><td>Mark blocking, suggestion, nit, and question</td></tr>
+    <tr><td>Giving instructions without reasons</td><td>Author complies but does not learn</td><td>Explain the principle and link a resource</td></tr>
+    <tr><td>Reviewing huge pull requests</td><td>Superficial review; bugs slip through</td><td>Ask for smaller, focused changes</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Review a real pull request using the checklist in section 1 and write five comments, each with a reason and a weight label.</li>
+      <li>Turn a comment you often repeat into a lint rule, template item, or short team doc.</li>
+      <li>Rewrite three blunt review comments into questions or suggestions that explain why.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Automate mechanical checks; review design, state, effects, accessibility, security, and tests.</li>
+      <li>Give feedback about the code with reasons, labeled weight, and questions, and say what is good.</li>
+      <li>Mentor through review by teaching principles, building written standards, and turning repeated comments into tooling.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

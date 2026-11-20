@@ -1,0 +1,5 @@
+{
+  "title": "Configuration Patterns & Secret Rotation",
+  "description": "Immutable config, reloaders, and changing secrets without restarts.",
+  "order": 2
+}

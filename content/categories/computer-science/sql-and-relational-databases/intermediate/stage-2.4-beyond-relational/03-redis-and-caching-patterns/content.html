@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Redis &amp; Caching Patterns — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · beyond relational</span> → lesson 03</p>
+  <h1>Redis &amp; Caching Patterns</h1>
+  <p class="lede">Redis is an in-memory data store used chiefly as a cache, and good caching comes down to choosing a pattern, setting expiry, and being honest about invalidation.</p>
+
+  <h2><span class="num">§1</span>What Redis Is</h2>
+  <p><strong>Redis</strong> is an in-memory key-value store with rich data structures: strings, hashes, lists, sets, sorted sets, and more. Everything lives in RAM, so operations take microseconds. It can persist to disk (snapshots or an append-only log) but is mostly used for data you can afford to lose or rebuild.</p>
+  <pre>SET  session:abc123 '{"user_id": 42}' EX 3600      <span class="comment"># string, expires in 1 hour</span>
+GET  session:abc123
+INCR page:home:views                                 <span class="comment"># atomic counter</span>
+HSET user:42 name "Ada" plan "pro"                   <span class="comment"># hash: fields of an object</span>
+ZADD leaderboard 1500 "ada" 1320 "alan"              <span class="comment"># sorted set</span>
+ZREVRANGE leaderboard 0 9 WITHSCORES                 <span class="comment"># top 10</span>
+EXPIRE key 60                                        <span class="comment"># set a time-to-live</span></pre>
+
+  <h2><span class="num">§2</span>Cache-Aside (Lazy Loading)</h2>
+  <p>The most common caching pattern: the application checks the cache first, and on a miss reads from the database and fills the cache.</p>
+  <pre>def get_product(pid):
+    key = f"product:{pid}"
+    cached = redis.get(key)
+    if cached:                                 <span class="comment"># cache hit</span>
+        return json.loads(cached)
+    row = db.query("SELECT * FROM products WHERE id = %s", (pid,))   <span class="comment"># cache miss</span>
+    redis.set(key, json.dumps(row), ex=300)    <span class="comment"># store with a 5-minute TTL</span>
+    return row</pre>
+  <p>The cache holds only data that has actually been requested, and a Redis outage degrades performance rather than correctness, because the database is still the source of truth.</p>
+
+  <h2><span class="num">§3</span>Other Patterns and Uses</h2>
+  <ul>
+    <li><strong>Write-through</strong>: write to the cache and database together, so reads are always warm, but every write pays double.</li>
+    <li><strong>Write-behind</strong>: write to the cache and flush to the database later; fast but risks data loss.</li>
+    <li><strong>Rate limiting</strong>: <code>INCR</code> a per-user key with a short expiry.</li>
+    <li><strong>Sessions, leaderboards, queues, pub/sub, distributed locks</strong>: all common Redis jobs, each with caveats of its own.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Invalidation: The Hard Part</h2>
+  <p>"There are only two hard things in computer science: cache invalidation and naming things." When the database changes, cached copies become wrong. Your options:</p>
+  <ol>
+    <li><strong>TTL (time-to-live)</strong>: let entries expire. Simple; data can be stale up to the TTL.</li>
+    <li><strong>Delete on write</strong>: after updating the database, delete the cache key so the next read refills it.</li>
+    <li><strong>Versioned keys</strong>: include a version in the key (<code>product:7:v12</code>); bumping the version orphans old entries.</li>
+  </ol>
+  <pre>db.execute("UPDATE products SET price = %s WHERE id = %s", (new_price, pid))
+redis.delete(f"product:{pid}")      <span class="comment"># delete AFTER the DB commit, not before</span></pre>
+  <p>Watch for a <strong>cache stampede</strong>: a popular key expires and hundreds of requests hit the database at once. Mitigate with jittered TTLs, request coalescing (only one request refills), or refreshing early.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A cache is a copy, and copies go stale. Decide up front how stale is acceptable for each piece of data, and choose expiry and invalidation to match. A cache you can't explain the freshness of is a bug waiting to happen.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Caching with no expiry</td><td>Entries live forever and drift from the database</td><td>Always set a TTL, even a long one</td></tr>
+    <tr><td>Treating Redis as the only copy of important data</td><td>A restart or eviction loses it</td><td>Keep the database as the system of record</td></tr>
+    <tr><td>Deleting the cache key before the database commit</td><td>A concurrent read refills the cache with old data</td><td>Invalidate after the commit</td></tr>
+    <tr><td>Identical TTLs on many keys</td><td>They all expire together and stampede the database</td><td>Add random jitter to TTLs</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a cache-aside layer to one slow query in a small app, with a 60-second TTL. Measure database hits with and without it under a simple load test.</li>
+      <li>Implement a per-user rate limiter of 10 requests per minute using <code>INCR</code> and <code>EXPIRE</code>. What happens at the boundary between two windows?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Redis is an in-memory store with rich data structures, most often used for caching.</li>
+      <li>Cache-aside: check the cache, on a miss read the database and fill the cache.</li>
+      <li>Plan expiry and invalidation deliberately; guard against stampedes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Beyond Relational — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

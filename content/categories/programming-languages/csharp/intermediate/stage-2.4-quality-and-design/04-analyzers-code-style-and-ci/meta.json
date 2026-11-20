@@ -1,0 +1,5 @@
+{
+  "title": "Analyzers, Code Style & CI",
+  "description": "Roslyn analyzers, .editorconfig, and failing the build on real problems.",
+  "order": 4
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WebSockets, SSE &amp; Real-Time — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced platform capabilities</span> → lesson 03</p>
+  <h1>WebSockets, SSE &amp; Real-Time</h1>
+  <p class="lede">Some data cannot wait for the user to refresh. Polling, Server-Sent Events, and WebSockets each solve real-time delivery differently, and choosing the simplest one that fits saves you a lot of operational pain.</p>
+
+  <h2><span class="num">§1</span>Three Transports</h2>
+
+  <p>All three move data from server to browser without a page reload, but they differ in direction, complexity, and how well they survive proxies and phones going to sleep.</p>
+
+  <table>
+    <tr><th>Transport</th><th>Direction</th><th>Protocol</th><th>Reconnect</th><th>Best for</th></tr>
+    <tr><td><strong>Polling</strong> (<code>fetch</code> on a timer)</td><td>Client asks</td><td>Plain HTTP</td><td>Built in (it is just requests)</td><td>Slow-changing data; simplest option</td></tr>
+    <tr><td><strong>Server-Sent Events</strong> (<code>EventSource</code>)</td><td>Server to client only</td><td>HTTP stream</td><td><strong>Automatic</strong>, with <code>Last-Event-ID</code></td><td>Feeds, notifications, progress, live dashboards</td></tr>
+    <tr><td><strong>WebSocket</strong></td><td>Both ways, low latency</td><td>Own protocol after upgrade</td><td><strong>Manual</strong> (you write it)</td><td>Chat, collaboration, games, trading UIs</td></tr>
+  </table>
+
+  <p>A useful rule: start with the <strong>simplest</strong> transport that meets the need. If data flows one way, SSE is nearly always simpler and sturdier than a WebSocket. Only reach for WebSockets when the client needs to send frequent, low-latency messages too.</p>
+
+  <h2><span class="num">§2</span>Using SSE and WebSockets</h2>
+
+  <pre><span class="comment">// Server-Sent Events: one-way, auto-reconnecting, plain HTTP</span>
+const es = new EventSource("/api/events");
+es.addEventListener("price", (e) =&gt; update(JSON.parse(e.data)));
+es.onerror = () =&gt; console.warn("connection lost; the browser will retry");
+<span class="comment">// server sends:  event: price\ndata: {"sym":"ABC","px":12.3}\n\n   (Content-Type: text/event-stream)</span>
+
+<span class="comment">// WebSocket: bidirectional</span>
+const ws = new WebSocket("wss://example.com/chat");     <span class="comment">// always wss:// (TLS) in production</span>
+ws.addEventListener("open", () =&gt; ws.send(JSON.stringify({ type: "join", room: "general" })));
+ws.addEventListener("message", (e) =&gt; handle(JSON.parse(e.data)));
+ws.addEventListener("close", (e) =&gt; console.log("closed", e.code, e.reason));</pre>
+
+  <p><code>EventSource</code> reconnects on its own and resumes using the <code>Last-Event-ID</code> header, so a server that assigns event ids gives you missed-message recovery almost for free. A <code>WebSocket</code> does none of this. You must handle <strong>reconnection, backoff, and resynchronization</strong> yourself.</p>
+
+  <h2><span class="num">§3</span>Making Real-Time Robust</h2>
+
+  <p>The hard part of real-time is not the connection, it is the failure modes: networks drop silently, phones sleep, servers restart, and messages arrive late or twice. A robust client treats the connection as unreliable.</p>
+
+  <pre>function connect(url, onMessage) {
+  let attempt = 0, ws, heartbeat, closedByUs = false;
+
+  function open() {
+    ws = new WebSocket(url);
+    ws.onopen = () =&gt; {
+      attempt = 0;
+      resync();                                           <span class="comment">// fetch what we missed (e.g. since lastId)</span>
+      heartbeat = setInterval(() =&gt; ws.send('{"type":"ping"}'), 25000);
+    };
+    ws.onmessage = (e) =&gt; onMessage(JSON.parse(e.data));
+    ws.onclose = () =&gt; {
+      clearInterval(heartbeat);
+      if (closedByUs) return;
+      const delay = Math.min(30000, 500 * 2 ** attempt++) * (0.5 + Math.random() / 2);  <span class="comment">// backoff + jitter</span>
+      setTimeout(open, delay);
+    };
+  }
+  open();
+  return { close() { closedByUs = true; ws.close(); } };
+}
+
+window.addEventListener("online", () =&gt; reconnectNow());
+document.addEventListener("visibilitychange", () =&gt; { if (!document.hidden) checkConnection(); });</pre>
+
+  <ul>
+    <li><strong>Reconnect with exponential backoff and jitter</strong> so a restarting server is not hit by every client at once.</li>
+    <li><strong>Resynchronize</strong> after reconnecting: ask the server for what you missed, using a sequence number or timestamp. Do not assume the stream was gapless.</li>
+    <li><strong>Make messages idempotent</strong> (include an id) so a duplicate is harmless.</li>
+    <li><strong>Authenticate on connect</strong> (a short-lived token, since browsers cannot set arbitrary headers on WebSocket), and <strong>validate every incoming message</strong> as untrusted input.</li>
+    <li><strong>Plan for scale</strong>: each open connection costs server memory, and load balancers need sticky routing or a pub/sub layer (Redis, NATS) between servers.</li>
+    <li><strong>Show connection state</strong> to users ("Reconnecting...") and keep the UI usable offline where possible.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Prefer the boring option</span>
+    Polling is trivially reliable, SSE is simple and self-healing, and WebSockets are powerful but make you own every failure mode. Move up the ladder only when a requirement forces you.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Choosing WebSockets for one-way updates</td><td>Needless complexity and manual reconnection</td><td>Use SSE (or polling) for server-to-client feeds</td></tr>
+    <tr><td>Reconnecting immediately in a tight loop</td><td>A server restart gets a stampede of clients</td><td>Use exponential backoff with jitter</td></tr>
+    <tr><td>Assuming no messages are lost while disconnected</td><td>The UI silently shows stale or incomplete data</td><td>Resync on reconnect using ids or timestamps</td></tr>
+    <tr><td>Trusting incoming messages</td><td>Malformed or malicious data can crash or exploit the client</td><td>Validate shape and sanitize before rendering</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a live counter with SSE, kill the server mid-stream, and watch <code>EventSource</code> reconnect on its own.</li>
+      <li>Implement a WebSocket client with backoff, jitter, and a resync step, and test it by dropping the network in DevTools.</li>
+      <li>Write a short decision note choosing a transport for three scenarios: a stock ticker, a chat, and a build-progress bar.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Polling, SSE, and WebSockets trade simplicity for capability; choose the simplest that satisfies the need.</li>
+      <li>SSE reconnects automatically; WebSockets need your own backoff, heartbeat, and resync logic.</li>
+      <li>Design for unreliable connections: duplicates, gaps, and reconnection storms are normal.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Platform Capabilities — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

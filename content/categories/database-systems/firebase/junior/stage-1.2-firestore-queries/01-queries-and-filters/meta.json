@@ -1,0 +1,5 @@
+{
+  "title": "Queries & Filters",
+  "description": "where clauses, comparison operators, and what Firestore can and cannot filter.",
+  "order": 1
+}

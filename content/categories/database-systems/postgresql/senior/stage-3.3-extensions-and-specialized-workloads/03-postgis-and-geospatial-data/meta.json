@@ -1,0 +1,5 @@
+{
+  "title": "PostGIS & Geospatial Data",
+  "description": "Geometry types, spatial indexes, and distance queries.",
+  "order": 3
+}

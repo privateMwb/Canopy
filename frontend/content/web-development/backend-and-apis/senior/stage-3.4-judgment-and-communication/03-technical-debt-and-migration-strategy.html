@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Technical Debt &amp; Migration Strategy — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 03</p>
+  <h1>Technical Debt &amp; Migration Strategy</h1>
+  <p class="lede">Paying down risk deliberately.</p>
+
+  <h2><span class="num">§1</span>Debt Is a Loan, Not a Sin</h2>
+
+  <p><strong>Technical debt</strong> is the future cost you accept by choosing a quicker or simpler solution now. Like financial debt, it can be a smart tool: shipping a prototype fast to learn something is often right. What matters is whether the debt was taken <em>deliberately</em>, whether it is tracked, and whether the <strong>interest</strong> (the ongoing slowdown it causes) is being paid or growing.</p>
+
+  <table>
+    <tr><th>Type</th><th>Example</th><th>Response</th></tr>
+    <tr><td><strong>Deliberate, prudent</strong></td><td>"Ship without caching now; add it if traffic warrants."</td><td>Record it and a trigger to revisit</td></tr>
+    <tr><td><strong>Deliberate, reckless</strong></td><td>"We have no time for tests."</td><td>Rarely worth it; push back</td></tr>
+    <tr><td><strong>Inadvertent</strong></td><td>"Now we know a better way to model this."</td><td>Normal learning; refactor as understanding grows</td></tr>
+    <tr><td><strong>Bit rot</strong></td><td>Outdated dependencies, unsupported runtime versions, forgotten services</td><td>Schedule routine maintenance</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Make Debt Visible and Prioritize It</h2>
+
+  <p>"The code is messy" is not a compelling case to a product manager. Describe debt in terms of its <strong>cost and risk</strong>: how it slows delivery, causes incidents, blocks a strategic goal, or creates security exposure.</p>
+
+  <ul>
+    <li><strong>Keep a debt register</strong> with a short description, the pain it causes, a rough cost to fix, and who is affected.</li>
+    <li><strong>Prioritize by interest, not ugliness.</strong> Debt in code that changes weekly and causes incidents costs far more than a hideous module nobody has touched in three years. Leave stable ugly code alone.</li>
+    <li><strong>Evidence beats opinion:</strong> use incident history, change-failure rates, how long features in that area take, and survey data on where engineers lose time.</li>
+    <li><strong>Tie it to goals.</strong> "This blocks the multi-region launch" or "this accounts for 40% of our incidents" earns time; "this offends me" does not.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Paying It Down Deliberately</h2>
+
+  <ul>
+    <li><strong>Boy-scout rule:</strong> leave code a little better than you found it, in small increments attached to feature work.</li>
+    <li><strong>Reserve capacity:</strong> for example 15 to 20 percent of each cycle for maintenance and improvement, so debt work does not depend on winning a debate every sprint.</li>
+    <li><strong>Make refactoring safe first:</strong> add characterization tests that pin current behavior before changing it. Changing untested code is how debt payments cause outages.</li>
+    <li><strong>Prefer small, continuous steps over the rewrite.</strong> Total rewrites usually take longer than expected, freeze feature work, and reintroduce old bugs the old code had already fixed.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Migration Strategy: Changing the Engine While Flying</h2>
+
+  <p>Large changes (a new database, a new framework, splitting a service) fail when treated as a big bang. The reliable pattern is <strong>incremental migration</strong>: keep the system working at every step, move traffic gradually, and make each step reversible. The <strong>strangler fig</strong> pattern wraps the old system with a routing layer and replaces pieces one at a time until the old one withers away.</p>
+
+  <pre><span class="comment"># A migration plan skeleton</span>
+1. Goal &amp; success criteria   What does "done" mean? What problem does this fix? Metrics to prove it.
+2. Inventory                 What exists? Consumers, data volumes, hidden dependencies, owners.
+3. Seam &amp; routing            Introduce a facade/proxy so traffic can be steered per tenant / endpoint / percentage.
+4. Build new path            Behind the seam, with feature flags; no user impact yet.
+5. Shadow / dual-run         Send copies of real traffic to the new path; compare results; fix differences.
+6. Migrate data              Backfill; dual-write; verify with checksums and row counts; reconcile continuously.
+7. Shift traffic gradually   Internal -&gt; 1% -&gt; 10% -&gt; 50% -&gt; 100%, with automatic rollback on SLO regressions.
+8. Hold, then decommission   Keep the old path (read-only) for a safety period; then delete it AND its infrastructure.
+9. Communicate               Dated milestones, owners, and customer-facing notices throughout.</pre>
+
+  <ul>
+    <li><strong>Define the rollback for every step</strong> before taking it, and rehearse it.</li>
+    <li><strong>Verify with data,</strong> not hope: comparison jobs, shadow traffic diffs, and reconciliation reports tell you whether the new system is equivalent.</li>
+    <li><strong>Beware the long tail.</strong> The last 10 percent (odd consumers, edge cases, forgotten cron jobs) takes disproportionate time, and migrations that stall at 90 percent leave you running <em>both</em> systems, the worst outcome. Plan, staff, and set a date for decommissioning.</li>
+    <li><strong>Do not mix goals.</strong> Changing the platform and redesigning the behavior in one move makes failures impossible to attribute. Migrate behavior-for-behavior first, then improve.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Finish what you start</span>
+    A migration is not complete until the old system is gone and its costs stop. Half-finished migrations create the most expensive kind of debt: two systems to maintain, two sets of knowledge, and confusion about which is the source of truth. Make decommissioning an explicit, scheduled deliverable.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Rewriting everything from scratch</td><td>Years of delay, lost fixes, frozen features, and risk of never shipping</td><td>Migrate incrementally with a strangler pattern, keeping the system live</td></tr>
+    <tr><td>Prioritizing debt by how ugly it looks</td><td>Effort goes to stable code while high-interest areas keep hurting</td><td>Rank by incident rate, change frequency, and business goals</td></tr>
+    <tr><td>Stopping at 90% migrated</td><td>Two systems to run indefinitely</td><td>Schedule the tail work and the decommissioning date up front</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a debt register for a system you know with five items, each with the pain it causes, a cost estimate, and a priority argument aimed at a product manager.</li>
+      <li>Draft a migration plan, using the skeleton above, for moving one service's data from a single database into its own database. Include rollback for each step.</li>
+      <li>Choose a module you want to refactor and write down which characterization tests you would add first.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Technical debt is a tradeoff; make it visible, describe it as cost and risk, and prioritize by interest paid.</li>
+      <li>Pay it down continuously with reserved capacity and safe, test-backed refactoring rather than big rewrites.</li>
+      <li>Migrate incrementally with a seam, shadow traffic, verification, gradual cutover, rollback, and a firm decommissioning date.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

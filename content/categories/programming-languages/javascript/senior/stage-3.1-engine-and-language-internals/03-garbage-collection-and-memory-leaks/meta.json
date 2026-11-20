@@ -1,0 +1,5 @@
+{
+  "title": "Garbage Collection & Memory Leaks",
+  "description": "Generational GC, what keeps objects alive, and the common leak patterns.",
+  "order": 3
+}

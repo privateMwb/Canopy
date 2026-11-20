@@ -1,0 +1,5 @@
+{
+  "title": "Upgrading .NET & Migrating from .NET Framework",
+  "description": "Moving versions, porting legacy code, and managing risk incrementally.",
+  "order": 3
+}

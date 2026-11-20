@@ -1,0 +1,5 @@
+{
+  "title": "TTL Design & Jitter",
+  "description": "Choosing lifetimes and spreading expirations so they don't all land at once.",
+  "order": 3
+}

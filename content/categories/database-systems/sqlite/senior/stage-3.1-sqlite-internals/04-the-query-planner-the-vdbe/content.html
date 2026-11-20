@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Query Planner &amp; the VDBE — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · sqlite internals</span> → lesson 04</p>
+  <h1>The Query Planner &amp; the VDBE</h1>
+  <p class="lede">SQLite compiles every SQL statement into bytecode for a small virtual machine, and reading that bytecode explains why queries perform as they do.</p>
+
+  <h2><span class="num">§1</span>From SQL to Bytecode</h2>
+  <p>The tokenizer and parser produce a parse tree, the planner chooses how to access each table, and the code generator emits a program for the <strong>VDBE</strong> (virtual database engine).</p>
+  <pre>EXPLAIN SELECT name FROM product WHERE id = 7;</pre>
+  <pre>addr  opcode       p1  p2  p3
+0     Init         0   9   0
+1     OpenRead     0   2   0      -- open a cursor on the table's B-tree
+2     Integer      7   1   0
+3     SeekRowid    0   8   1      -- jump to the row with that id
+4     Column       0   1   2      -- read column 1
+5     ResultRow    2   1   0
+...</pre>
+  <p>Opcodes such as <code>OpenRead</code>, <code>Rewind</code>, <code>Next</code>, <code>SeekGE</code>, <code>Column</code>, and <code>ResultRow</code> open cursors on B-trees, move them, and read data. Loops are <code>Rewind</code>/<code>Next</code> pairs, so more nested loops means more of them.</p>
+  <h2><span class="num">§2</span>Reading It</h2>
+  <p>You rarely need the details, but a few patterns are informative:</p>
+  <ul>
+    <li>A <code>Rewind</code> followed by <code>Next</code> over a table with no <code>Seek*</code> is a full scan.</li>
+    <li><code>SeekGE</code> or <code>SeekRowid</code> is an index or rowid lookup.</li>
+    <li><code>SorterOpen</code> and <code>SorterInsert</code> mean an explicit sort.</li>
+    <li><code>OpenEphemeral</code> creates a temporary B-tree, for example for <code>DISTINCT</code> or <code>IN</code>.</li>
+  </ul>
+  <h2><span class="num">§3</span>The Query Planner</h2>
+  <p>For each table in a join, the planner estimates the cost of each access path from statistics and index information, and picks the cheapest ordering of loops. SQLite always uses <strong>nested loops</strong>: for each row of the outer table, it searches the inner table, ideally by index. It can also build an <strong>automatic index</strong> on the fly when it expects that to be cheaper than repeated scans.</p>
+  <pre>SEARCH a USING INDEX ...
+SEARCH b USING AUTOMATIC COVERING INDEX (a_id=?)    -- the planner built a temporary index</pre>
+  <p>An automatic index in your plan is a hint that you should create a real one.</p>
+  <h2><span class="num">§4</span>Statement Reuse</h2>
+  <p>Compilation costs time. A <strong>prepared statement</strong> compiled once and run many times avoids repeating it, which is why drivers expose prepared statements and caches.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    <code>EXPLAIN QUERY PLAN</code> answers "how", and <code>EXPLAIN</code> bytecode answers "exactly what". Reach for bytecode only after the plan does not explain the behavior.
+  </div>
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Ignoring <code>AUTOMATIC INDEX</code> in a plan</td><td>Every execution rebuilds a temporary index</td><td>Create the permanent index</td></tr>
+    <tr><td>Re-parsing the same SQL on every call</td><td>Wasted CPU</td><td>Reuse prepared statements</td></tr>
+    <tr><td>Reading bytecode before reading the plan</td><td>Too much detail</td><td>Start with <code>EXPLAIN QUERY PLAN</code></td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run <code>EXPLAIN</code> on a join and identify each loop's <code>Rewind</code> and <code>Next</code>.</li>
+      <li>Find a query whose plan includes an automatic index and create the real one.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>SQL is compiled into VDBE bytecode that drives B-tree cursors.</li>
+      <li>Joins use nested loops, and the planner picks the order from cost estimates.</li>
+      <li>Automatic indexes and sorters in the plan point to missing indexes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · SQLite Internals — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

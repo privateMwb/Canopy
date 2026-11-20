@@ -1,0 +1,5 @@
+{
+  "title": "Hooks Internals & Pitfalls",
+  "description": "How hooks are stored, and why the rules exist.",
+  "order": 5
+}

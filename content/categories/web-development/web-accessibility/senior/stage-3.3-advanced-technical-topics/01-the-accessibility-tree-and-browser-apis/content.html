@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Accessibility Tree &amp; Browser APIs — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced technical topics</span> → lesson 01</p>
+  <h1>The Accessibility Tree &amp; Browser APIs</h1>
+  <p class="lede">Assistive technology never sees your DOM or your pixels. It sees a separate structure the browser builds from them. Knowing how that tree is made explains almost every strange screen reader behavior you will meet.</p>
+
+  <h2><span class="num">§1</span>From DOM to Accessibility Tree</h2>
+  <p>The browser builds the <strong>accessibility tree</strong> from the DOM and the computed CSS. Each node carries a <strong>role</strong>, an accessible <strong>name</strong>, a <strong>description</strong>, <strong>states</strong>, and <strong>properties</strong>, plus relationships such as what labels or controls what. It then exposes that tree to the operating system through a platform accessibility API, and the screen reader reads from there.</p>
+  <table>
+    <tr><th>Platform</th><th>Accessibility API the browser talks to</th></tr>
+    <tr><td>Windows</td><td>UI Automation (UIA), plus IAccessible2 in some browsers</td></tr>
+    <tr><td>macOS and iOS</td><td>NSAccessibility and UIAccessibility</td></tr>
+    <tr><td>Linux</td><td>AT-SPI</td></tr>
+    <tr><td>Android</td><td>AccessibilityNodeInfo and the Android accessibility framework</td></tr>
+  </table>
+  <p>This is why the same page can sound slightly different in different browser and screen reader pairs: each browser maps the tree to each platform API in its own way, and each screen reader interprets what it receives.</p>
+
+  <h2><span class="num">§2</span>What Is In, and What Is Out</h2>
+  <p>Not every DOM node becomes an accessibility node. The browser prunes the tree, and the rules explain a lot of "why can't the screen reader see this?" bugs.</p>
+  <table>
+    <tr><th>Markup or style</th><th>Effect on the tree</th></tr>
+    <tr><td><code>display: none</code>, <code>visibility: hidden</code>, <code>hidden</code></td><td>Removed from the tree for everyone</td></tr>
+    <tr><td><code>aria-hidden="true"</code></td><td>Removed with all its descendants, but still visible and focusable on screen</td></tr>
+    <tr><td><code>inert</code></td><td>Removed and made non-interactive</td></tr>
+    <tr><td><code>role="presentation"</code> or <code>role="none"</code></td><td>Drops the element's own role, but keeps its children</td></tr>
+    <tr><td>Generic wrappers (<code>div</code>, <code>span</code>) with no role or name</td><td>Usually ignored or flattened</td></tr>
+    <tr><td>Text from CSS <code>content</code></td><td>Often included in the name, with varying support</td></tr>
+  </table>
+  <p>The accessible name itself comes from the <strong>accessible name computation</strong>, a defined algorithm that checks sources in order: <code>aria-labelledby</code>, then <code>aria-label</code>, then native sources such as <code>label</code> or <code>alt</code>, then content, and finally <code>title</code>. Knowing the order tells you why an <code>aria-label</code> on a button silently overrides its visible text.</p>
+
+  <h2><span class="num">§3</span>Inspecting and Testing the Tree</h2>
+  <p>You can look at the tree directly instead of guessing. Chrome and Edge DevTools have an <strong>Accessibility</strong> pane, and Firefox has an <strong>Accessibility Inspector</strong> that shows the full tree, with name, role, and states for each node.</p>
+  <p>Testing tools also use the tree. Role-based queries in Testing Library and Playwright find elements the same way assistive technology does, so a test that cannot find a button by role and name has found a real bug. Playwright can also capture the tree as an ARIA snapshot and compare it over time.</p>
+  <pre><span class="comment">Playwright: assert the accessibility structure of a region</span>
+await expect(page.getByRole('navigation', { name: 'Primary' })).toMatchAriaSnapshot(`
+  - list:
+    - listitem:
+      - link "Home"
+    - listitem:
+      - link "Guides"
+`);
+
+<span class="comment">A snapshot of part of a page might look like this</span>
+- banner:
+  - link "Trailhead"
+  - navigation "Primary"
+- main:
+  - heading "Trail Running Guide" [level=1]
+  - button "Save" </pre>
+  <p>Snapshot tests catch structural regressions such as a heading that turned into a <code>div</code>, which pixel-based tests never would.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    When a screen reader behaves strangely, look at the accessibility tree before blaming the screen reader. The tree is the real interface, and DevTools shows it to you.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Debugging screen reader output by reading the DOM</td><td>The DOM and the tree differ in names, roles, and pruning</td><td>Inspect the accessibility tree in browser DevTools</td></tr>
+    <tr><td>Hiding content with <code>aria-hidden</code> and expecting it to disappear visually</td><td>Still visible and focusable, but missing from the tree</td><td>Use <code>hidden</code> or <code>inert</code> for content that should be gone for everyone</td></tr>
+    <tr><td>Adding <code>aria-label</code> to a labeled button</td><td>The label silently overrides the visible text and breaks voice control</td><td>Keep the accessible name matched to the visible label</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Open the Accessibility pane in DevTools on a page you built. Find one element whose name, role, or state surprised you.</li>
+      <li>Write a role-based test that finds a button by role and name, then break the markup (turn it into a <code>div</code>) and watch the test fail.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Assistive technology reads the accessibility tree the browser builds from DOM and CSS, through platform APIs.</li>
+      <li>Hiding, <code>aria-hidden</code>, <code>inert</code>, and roles decide what is in the tree. The name computation follows a defined order.</li>
+      <li>Inspect the tree in DevTools, and use role-based and ARIA snapshot tests to catch structural regressions.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Technical Topics — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

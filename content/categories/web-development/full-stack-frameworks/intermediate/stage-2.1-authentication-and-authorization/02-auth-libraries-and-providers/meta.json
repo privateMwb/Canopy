@@ -1,0 +1,5 @@
+{
+  "title": "Auth Libraries & Providers",
+  "description": "Auth.js, Clerk, and OAuth flows.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Hooks, Linting & Branch Protection",
+  "description": "Automating checks locally and enforcing rules on the server.",
+  "order": 4
+}

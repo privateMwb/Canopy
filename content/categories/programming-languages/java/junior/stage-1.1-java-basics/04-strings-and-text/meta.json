@@ -1,0 +1,5 @@
+{
+  "title": "Strings & Text",
+  "description": "Immutability, StringBuilder, comparing with equals, and text blocks.",
+  "order": 4
+}

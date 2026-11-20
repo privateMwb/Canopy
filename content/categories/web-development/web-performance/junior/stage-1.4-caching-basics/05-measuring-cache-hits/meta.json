@@ -1,0 +1,5 @@
+{
+  "title": "Measuring Cache Hits",
+  "description": "Verifying that caching actually works.",
+  "order": 5
+}

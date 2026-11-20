@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Networking Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / networking</p>
+    <h1>From typing a URL to designing the systems behind it</h1>
+    <p class="lede">Three levels, twelve stages — how data moves from one machine to another over TCP/IP, HTTP, and APIs, built toward the judgment to design resilient services, diagnose live incidents, and explain the tradeoffs.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I use the internet" to "I can explain what happens between typing a URL and seeing a page, and write a small client and server that talk over TCP and HTTP."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — How Networks Work</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Layers &amp; the Network Stack</p><p class="lesson-desc">The TCP/IP and OSI models, and what each layer is responsible for.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Addressing: MAC, IP &amp; Ports</p><p class="lesson-desc">Three kinds of address, and which one answers which question.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Packets, Frames &amp; Encapsulation</p><p class="lesson-desc">How data is wrapped in headers on the way down the stack and unwrapped on the way up.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Latency, Bandwidth &amp; Throughput</p><p class="lesson-desc">Why a fast link can still feel slow, and how to measure it with ping and traceroute.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Capture a page load in Wireshark and label which header belongs to which layer, from Ethernet up to HTTP.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — IP &amp; Name Resolution</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">IPv4 Addressing &amp; Subnets</p><p class="lesson-desc">CIDR notation, subnet masks, and working out which addresses share a network.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Routing Basics &amp; NAT</p><p class="lesson-desc">How routers forward packets hop by hop, and how one public address serves many devices.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">DNS: Turning Names into Addresses</p><p class="lesson-desc">Resolvers, record types, caching, and the path of a lookup.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">DHCP &amp; ARP: Joining a Network</p><p class="lesson-desc">How a new device gets an address and finds its neighbors.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a small network diagram, assign subnets and explain how a packet gets from one host to a website, including NAT and DNS.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — TCP &amp; UDP Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">UDP: Fast and Unreliable</p><p class="lesson-desc">Datagrams with no connection, and when losing a packet is acceptable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">TCP Connections: Handshake &amp; Teardown</p><p class="lesson-desc">The three-way handshake, the four-step close, and connection state.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">TCP Reliability: Sequence Numbers, ACKs &amp; Retransmission</p><p class="lesson-desc">How TCP turns an unreliable network into a reliable byte stream.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Sockets: Writing a Client and Server</p><p class="lesson-desc">The Berkeley sockets API — socket, bind, listen, accept, connect, send, recv.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Ports, Listening &amp; Connection States</p><p class="lesson-desc">Reading ss and netstat output, and what LISTEN, ESTABLISHED, and TIME_WAIT mean.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a TCP echo server and client that handles partial reads and multiple clients correctly.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — HTTP Fundamentals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The HTTP Request-Response Cycle</p><p class="lesson-desc">What a request and response look like on the wire, as plain text.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Methods &amp; Status Codes</p><p class="lesson-desc">GET, POST, PUT, DELETE, and the meaning of 2xx, 3xx, 4xx, and 5xx.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Headers, Cookies &amp; Content Negotiation</p><p class="lesson-desc">Metadata that controls caching, formats, and state in a stateless protocol.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">URLs, Query Strings &amp; Encoding</p><p class="lesson-desc">The anatomy of a URL, percent-encoding, and why encoding bugs happen.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Inspecting HTTP with curl &amp; DevTools</p><p class="lesson-desc">Reading real traffic from the command line and the browser's network panel.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Fetch a web page by typing the HTTP request by hand over a raw TCP connection, and parse the response.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I know how the protocols work" to "I can explain why a transfer is slow, secure a connection, and design an API other people can build on."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — TCP in Depth</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Flow Control &amp; the Sliding Window</p><p class="lesson-desc">How a receiver stops a fast sender from overwhelming it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Congestion Control</p><p class="lesson-desc">Slow start, congestion avoidance, and how Reno, CUBIC, and BBR differ.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">RTT, Timeouts &amp; Retransmission</p><p class="lesson-desc">Estimating round-trip time, fast retransmit, and why timeouts hurt.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Connection Management in Practice</p><p class="lesson-desc">TIME_WAIT, keepalives, Nagle's algorithm, delayed ACKs, and the listen backlog.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a packet capture of a slow download, explain what limits throughput: window, loss, or latency.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — HTTP Evolution &amp; Performance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">HTTP/1.1: Persistent Connections &amp; Head-of-Line Blocking</p><p class="lesson-desc">Keep-alive, why pipelining failed, and why browsers open six connections.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">HTTP/2: Multiplexing &amp; Header Compression</p><p class="lesson-desc">Streams over a single connection, and what problem it left unsolved.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">HTTP/3 &amp; QUIC</p><p class="lesson-desc">HTTP over UDP, faster handshakes, and independence between streams.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">HTTP Caching</p><p class="lesson-desc">Cache-Control, ETag, conditional requests, and how CDNs use them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Proxies, Reverse Proxies &amp; Load Balancers</p><p class="lesson-desc">What sits between client and server, and what each intermediary can see and change.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a slow web page, measure it with a waterfall, apply caching and protocol improvements, and show before and after numbers.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — TLS &amp; Network Security</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The TLS Handshake</p><p class="lesson-desc">Key exchange, authentication, and how TLS 1.3 gets to encrypted data in one round trip.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Certificates &amp; Chains of Trust</p><p class="lesson-desc">What a certificate proves, how clients verify it, and how it fails.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">HTTPS in Practice</p><p class="lesson-desc">HSTS, ALPN, redirects, mixed content, and a sensible server configuration.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Common Network Attacks &amp; Defenses</p><p class="lesson-desc">Spoofing, SYN floods, DNS poisoning, and man-in-the-middle attacks.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Serve a local service over HTTPS with a certificate you created, and verify the chain and protocol with openssl.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Designing APIs</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">REST Principles &amp; Resource Modeling</p><p class="lesson-desc">Resources, URLs, and using HTTP semantics rather than fighting them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Errors, Pagination &amp; Filtering</p><p class="lesson-desc">Consistent error shapes, cursor vs. offset pagination, and query design.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Authentication &amp; Authorization</p><p class="lesson-desc">API keys, sessions, OAuth 2.0, and JWTs — what each does and where each goes wrong.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Idempotency &amp; Versioning</p><p class="lesson-desc">Making retries safe, and changing an API without breaking its users.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">CORS &amp; Browser Constraints</p><p class="lesson-desc">The same-origin policy, preflight requests, and why a browser blocks calls curl allows.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design and build a small REST API with authentication, pagination, and consistent errors, and document it with OpenAPI.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I can build and secure an API" to "I can choose protocols for a given problem, design for failure at scale, diagnose a live network incident, and explain the tradeoffs."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Advanced APIs &amp; Protocol Choice</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">gRPC &amp; Protocol Buffers</p><p class="lesson-desc">Binary schemas, streaming, and when RPC beats REST.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">GraphQL Tradeoffs</p><p class="lesson-desc">What client-driven queries gain, and what they cost in caching and security.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">WebSockets, SSE &amp; Real-Time Updates</p><p class="lesson-desc">Pushing data to clients — long polling, server-sent events, and full-duplex sockets.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Webhooks &amp; Asynchronous APIs</p><p class="lesson-desc">Event delivery, signatures, retries, and designing for the receiver being down.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Rate Limiting &amp; Backpressure</p><p class="lesson-desc">Token buckets, quotas, and protecting a service from its own clients.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Choose a protocol for three different scenarios, justify each in writing, and prototype one.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Scale &amp; Reliability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Load Balancing: L4 vs. L7</p><p class="lesson-desc">Algorithms, health checks, and what each layer of balancing can and can't see.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Global Traffic: Anycast, GeoDNS &amp; CDNs</p><p class="lesson-desc">Routing users to nearby capacity, and the limits of DNS-based steering.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Timeouts, Retries &amp; Circuit Breakers</p><p class="lesson-desc">Budgeting time, backoff with jitter, and avoiding retry storms.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Service Discovery &amp; Service Meshes</p><p class="lesson-desc">How services find each other, and what a sidecar proxy takes over.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design multi-region failover for an API, including timeout and retry budgets, and walk through a regional outage.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Network Internals &amp; Debugging</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Kernel Network Path &amp; Socket Buffers</p><p class="lesson-desc">From NIC to application: interrupts, queues, buffers, and where packets get dropped.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Packet Capture &amp; Analysis</p><p class="lesson-desc">tcpdump and Wireshark filters, and reading a capture to find the real problem.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">MTU, Fragmentation &amp; Path MTU Discovery</p><p class="lesson-desc">Why a connection works for small requests and hangs on large ones.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Diagnosing Network Incidents</p><p class="lesson-desc">A layered method: DNS, connectivity, transport, TLS, application.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given symptoms and a capture from a failing service, find the root cause and write up the evidence.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Security Architecture &amp; Design Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Zero Trust &amp; Mutual TLS</p><p class="lesson-desc">Service identity, mTLS, and moving beyond 'inside the firewall is safe'.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">API Security: The OWASP API Top 10</p><p class="lesson-desc">Broken object-level authorization and the other failures that actually happen.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Firewalls, Segmentation &amp; VPNs</p><p class="lesson-desc">Controlling which traffic may flow where, and what each control does and doesn't protect.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Designing and Defending a Network Architecture</p><p class="lesson-desc">Making tradeoffs explicit and explaining them to engineers and non-engineers.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Threat-model an API and write a short design document that justifies its network and security choices.</p></div></div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> TCP appears at Junior as handshakes and sockets, returns at Intermediate as congestion control and timers, and comes back at Senior as kernel buffers and packet-level debugging. HTTP follows the same arc. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about diagnosis and judgment as much as mechanism.</strong> Knowing how a protocol works and being able to find the problem in a misbehaving production system, then explain it, are different skills, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

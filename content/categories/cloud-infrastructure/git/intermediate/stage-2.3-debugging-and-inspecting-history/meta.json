@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Debugging & Inspecting History",
+  "description": "Blame, bisect, submodules, signing, and patch-based workflows.",
+  "order": 3
+}

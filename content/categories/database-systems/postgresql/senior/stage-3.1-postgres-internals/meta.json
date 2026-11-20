@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Postgres Internals",
+  "description": "Heap pages and TOAST, WAL and recovery, join algorithms, index internals, and memory.",
+  "order": 1
+}

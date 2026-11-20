@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Foreign Data Wrappers &amp; Analytics Patterns — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · extensions &amp; specialized workloads</span> → lesson 05</p>
+  <h1>Foreign Data Wrappers &amp; Analytics Patterns</h1>
+  <p class="lede">Foreign data wrappers let Postgres query other systems as if they were tables, and a few patterns shape data for reporting without a separate warehouse.</p>
+
+  <h2><span class="num">§1</span>Foreign Data Wrappers</h2>
+
+  <p>A <strong>foreign data wrapper (FDW)</strong> teaches Postgres to read, and sometimes write, an external data source through ordinary SQL. <code>postgres_fdw</code> connects to another Postgres server, <code>file_fdw</code> reads CSV files, and third-party wrappers reach MySQL, Oracle, MongoDB, S3-hosted files, REST APIs, and more.</p>
+  <pre>CREATE EXTENSION postgres_fdw;
+
+CREATE SERVER reporting_srv FOREIGN DATA WRAPPER postgres_fdw
+    OPTIONS (host 'reports.internal', dbname 'warehouse', port '5432');
+
+CREATE USER MAPPING FOR app_user SERVER reporting_srv
+    OPTIONS (user 'reader', password '...');
+
+IMPORT FOREIGN SCHEMA public LIMIT TO (sales_summary)
+    FROM SERVER reporting_srv INTO staging;
+
+SELECT * FROM staging.sales_summary WHERE day &gt;= current_date - 7;</pre>
+  <p>This lets you join local and remote data in one query, migrate data between systems with <code>INSERT ... SELECT</code>, or expose a legacy database during a transition.</p>
+
+  <h2><span class="num">§2</span>Pushdown and Its Limits</h2>
+
+  <p>A foreign scan is only fast when the work happens <strong>remotely</strong>. <code>postgres_fdw</code> can push <code>WHERE</code> conditions, some joins between tables on the same server, sorts, and aggregates down to the remote side, so only the needed rows travel. The plan shows what was sent.</p>
+  <pre>EXPLAIN (VERBOSE) SELECT * FROM staging.sales_summary WHERE day &gt;= '2026-10-01';
+ Foreign Scan on staging.sales_summary
+   Remote SQL: SELECT day, total FROM public.sales_summary WHERE ((day &gt;= '2026-10-01'::date))</pre>
+  <p>Conditions that call local-only functions, or joins between tables on different servers, cannot be pushed, so Postgres fetches all the rows and processes them locally, which can be very slow. Foreign tables also have no local indexes or statistics unless you run <code>ANALYZE</code> on them, and each query pays network latency. Use FDWs for convenience, occasional queries, and migrations, not as a high-throughput data path.</p>
+
+  <h2><span class="num">§3</span>Analytics Patterns Inside Postgres</h2>
+
+  <p>Many teams run reporting on their operational Postgres, and a few patterns keep that sustainable:</p>
+  <ul>
+    <li><strong>Run it on a replica</strong> (Lesson 3.2.5) so heavy queries do not compete with transactions.</li>
+    <li><strong>Pre-aggregate</strong>: materialized views or rollup tables (<code>daily_sales</code>) refreshed on a schedule or incrementally with <code>INSERT ... ON CONFLICT DO UPDATE</code>.</li>
+    <li><strong>Partition fact tables by time</strong> and use <strong>BRIN</strong> indexes on append-only timestamps for cheap range scans.</li>
+    <li><strong>Shape data for questions</strong>: a star schema (a central fact table with dimension tables) makes reporting queries simple and fast.</li>
+    <li><strong>Parallel query</strong> (<code>max_parallel_workers_per_gather</code>) accelerates large scans and aggregates.</li>
+  </ul>
+  <pre>INSERT INTO daily_sales (day, orders, revenue)
+SELECT date_trunc('day', placed_at)::date, count(*), sum(total)
+FROM orders WHERE placed_at &gt;= current_date - 1 AND placed_at &lt; current_date
+GROUP BY 1
+ON CONFLICT (day) DO UPDATE SET orders = EXCLUDED.orders, revenue = EXCLUDED.revenue;</pre>
+  <p>When data volume, query complexity, or the number of analysts outgrows this, a columnar warehouse or lakehouse is the better tool. Extensions for columnar storage and time series exist, and some cloud services bundle them; evaluate them with Lesson 3.3.1's checklist.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    An FDW makes remote data look local, but it does not make it fast. Always check <code>EXPLAIN VERBOSE</code> to see what was pushed down and what was dragged across the network.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Joining two large foreign tables from different servers</td><td>All rows are pulled over the network and joined locally</td><td>Copy the data locally, or run the join on one server</td></tr>
+    <tr><td>Running heavy reports on the primary</td><td>Analytic scans compete with transactions and slow the application</td><td>Use a replica and pre-aggregated tables</td></tr>
+    <tr><td>Using an FDW as a permanent high-volume pipeline</td><td>Latency and fragility on every query</td><td>Replicate or load the data (logical replication, ETL) instead</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Set up <code>postgres_fdw</code> between two databases and use <code>EXPLAIN (VERBOSE)</code> to see the remote SQL for a filtered query.</li>
+      <li>Build a <code>daily_sales</code> rollup table and a job that refreshes yesterday's row idempotently.</li>
+      <li>Compare the time of an aggregate over a raw fact table with the same query against its rollup.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>FDWs expose external data as tables; <code>postgres_fdw</code> can push filters, joins, and aggregates to the remote server.</li>
+      <li>Check <code>Remote SQL</code> in <code>EXPLAIN VERBOSE</code>; cross-server joins and local-only functions are not pushed down.</li>
+      <li>For reporting, use replicas, rollups, time partitioning, and a star-schema shape, and move to a warehouse when you outgrow them.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Extensions &amp; Specialized Workloads — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

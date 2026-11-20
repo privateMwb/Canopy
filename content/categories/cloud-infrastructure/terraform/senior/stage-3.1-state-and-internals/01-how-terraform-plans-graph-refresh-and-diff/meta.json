@@ -1,0 +1,5 @@
+{
+  "title": "How Terraform Plans: Graph, Refresh & Diff",
+  "description": "Building the graph and computing what must change.",
+  "order": 1
+}

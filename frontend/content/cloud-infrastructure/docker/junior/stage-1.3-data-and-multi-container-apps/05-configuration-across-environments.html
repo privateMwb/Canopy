@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Configuration Across Environments — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · data & multi-container apps</span> → lesson 05</p>
+  <h1>Configuration Across Environments</h1>
+  <p class="lede">Compose can read variables from the shell and from <code>.env</code> files so the same file serves several environments without committing credentials.</p>
+
+  <h2><span class="num">§1</span>Variable Substitution and .env</h2>
+  <p>Compose substitutes <code>${VARIABLE}</code> in the file from your shell environment or from a <code>.env</code> file in the project directory:</p>
+  <pre><span class="comment"># .env  (not committed)</span>
+POSTGRES_PASSWORD=devpass
+APP_PORT=8080</pre>
+  <pre>services:
+  web:
+    ports:
+      - "${APP_PORT:-3000}:3000"
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}</pre>
+  <p><code>${VAR:-default}</code> supplies a fallback, and <code>${VAR:?message}</code> stops with an error if the variable is missing, which is better than silently starting with an empty password. Check what Compose resolved with <code>docker compose config</code>.</p>
+  <h2><span class="num">§2</span>env_file and Overrides</h2>
+  <p><code>env_file</code> passes a whole file of variables <strong>into</strong> a container, which is separate from substitution in the Compose file itself:</p>
+  <pre>services:
+  web:
+    env_file:
+      - ./config/app.env</pre>
+  <p>For environment differences, Compose automatically merges <code>compose.yaml</code> with <code>compose.override.yaml</code> when present, which is perfect for local development tweaks. You can also name files explicitly:</p>
+  <pre>docker compose -f compose.yaml -f compose.prod.yaml up -d</pre>
+  <p>Later files override earlier ones, so keep the base file valid on its own.</p>
+  <h2><span class="num">§3</span>Keeping Secrets Out of Git</h2>
+  <ul>
+    <li>Commit a <code>.env.example</code> listing every variable with fake values; ignore the real <code>.env</code> in <code>.gitignore</code>.</li>
+    <li>Never bake credentials into images (<code>ENV</code>, <code>ARG</code>, or <code>COPY .env</code>); they end up in layers.</li>
+    <li>For anything beyond local development, use a secret manager or Compose <code>secrets</code>, which later stages cover.</li>
+  </ul>
+  <div class="callout">
+    <span class="label">Two meanings of "environment file"</span>
+    <code>.env</code> feeds Compose's own <code>${...}</code> substitution. <code>env_file:</code> and <code>environment:</code> feed variables into the container. A variable in <code>.env</code> is <strong>not</strong> automatically available inside the container unless you pass it through.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Committing <code>.env</code></td><td>Credentials leak into history and clones</td><td>Add it to <code>.gitignore</code> and commit <code>.env.example</code></td></tr>
+    <tr><td>Expecting <code>.env</code> values inside the container</td><td>The variable is empty in the app</td><td>Reference it in <code>environment:</code> or use <code>env_file:</code></td></tr>
+    <tr><td>Never checking resolved config</td><td>Typos create silent defaults</td><td>Run <code>docker compose config</code> to see the final file</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Parameterize the published port and database password with <code>.env</code>, then use <code>docker compose config</code> to confirm the values.</li>
+      <li>Add a <code>compose.override.yaml</code> that publishes the database port for local tools, and confirm it merges automatically.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>${VAR}</code>, <code>${VAR:-default}</code>, and <code>${VAR:?error}</code> make one Compose file flexible and safe.</li>
+      <li><code>.env</code> configures Compose; <code>env_file</code> and <code>environment</code> configure containers.</li>
+      <li>Commit <code>.env.example</code>, never <code>.env</code>, and keep secrets out of images.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Data & Multi-Container Apps — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

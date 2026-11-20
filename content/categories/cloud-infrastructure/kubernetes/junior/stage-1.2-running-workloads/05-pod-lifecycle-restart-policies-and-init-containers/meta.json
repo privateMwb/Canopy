@@ -1,0 +1,5 @@
+{
+  "title": "Pod Lifecycle, Restart Policies & Init Containers",
+  "description": "What happens from scheduling to termination, and running setup steps first.",
+  "order": 5
+}

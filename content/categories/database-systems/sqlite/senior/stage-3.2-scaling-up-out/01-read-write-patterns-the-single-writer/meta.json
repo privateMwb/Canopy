@@ -1,0 +1,5 @@
+{
+  "title": "Read/Write Patterns & the Single Writer",
+  "description": "Designing around one writer at a time.",
+  "order": 1
+}

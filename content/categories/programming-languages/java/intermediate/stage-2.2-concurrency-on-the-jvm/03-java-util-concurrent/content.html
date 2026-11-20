@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>java.util.concurrent — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · concurrency on the jvm</span> → lesson 03</p>
+  <h1>java.util.concurrent</h1>
+  <p class="lede">The <code>java.util.concurrent</code> package provides ready-made, well-tested building blocks, so you rarely need to write your own locking for common patterns.</p>
+
+  <h2><span class="num">§1</span>Concurrent Collections</h2>
+  <p>Ordinary collections like <code>HashMap</code> and <code>ArrayList</code> are not thread-safe. Wrapping them with <code>Collections.synchronizedMap</code> locks every call but doesn't make compound operations (check-then-act) safe. The concurrent collections are designed for multi-threaded access.</p>
+  <pre>ConcurrentHashMap&lt;String, Integer&gt; counts = new ConcurrentHashMap&lt;&gt;();
+counts.merge("apple", 1, Integer::sum);              <span class="comment">// atomic increment</span>
+counts.computeIfAbsent("pear", k -&gt; expensive(k));   <span class="comment">// atomic: computed once per key</span>
+counts.putIfAbsent("fig", 0);
+
+if (!counts.containsKey("x")) counts.put("x", 1);    <span class="comment">// BUG: another thread can insert between the two calls</span>
+counts.putIfAbsent("x", 1);                          <span class="comment">// correct: one atomic step</span>
+
+CopyOnWriteArrayList&lt;Listener&gt; listeners = new CopyOnWriteArrayList&lt;&gt;();
+<span class="comment">// safe to iterate while others add; each write copies the array, so use for read-heavy, rare-write lists</span></pre>
+  <p>Individual operations on a <code>ConcurrentHashMap</code> are atomic, but a sequence of separate calls isn't, so use the atomic compound methods (<code>merge</code>, <code>compute</code>, <code>putIfAbsent</code>). Also note that <code>ConcurrentHashMap</code> forbids <code>null</code> keys and values.</p>
+
+  <h2><span class="num">§2</span>Atomics</h2>
+  <p><code>AtomicInteger</code>, <code>AtomicLong</code>, <code>AtomicReference</code>, and friends provide lock-free atomic updates using CPU compare-and-swap instructions. For counters under heavy contention, <code>LongAdder</code> scales better than <code>AtomicLong</code>.</p>
+  <pre>AtomicInteger hits = new AtomicInteger();
+hits.incrementAndGet();
+hits.addAndGet(5);
+hits.compareAndSet(6, 100);                          <span class="comment">// set only if the current value is 6</span>
+hits.updateAndGet(x -&gt; Math.min(x, 50));
+
+LongAdder total = new LongAdder();                   <span class="comment">// better for many writers, occasional reads</span>
+total.add(3);
+long sum = total.sum();</pre>
+
+  <h2><span class="num">§3</span>Producer-Consumer with Blocking Queues</h2>
+  <p>A <code>BlockingQueue</code> lets threads hand work to each other. <code>put</code> blocks when full and <code>take</code> blocks when empty, which gives you natural <strong>backpressure</strong>: a fast producer is slowed down to the consumer's pace.</p>
+  <pre>BlockingQueue&lt;String&gt; queue = new ArrayBlockingQueue&lt;&gt;(100);     <span class="comment">// bounded: always prefer this</span>
+
+Thread producer = new Thread(() -&gt; {
+    try { for (int i = 0; i &lt; 1000; i++) queue.put("job-" + i);   <span class="comment">// blocks when full</span>
+          queue.put("DONE"); }                                    <span class="comment">// poison pill to signal the end</span>
+    catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+});
+Thread consumer = new Thread(() -&gt; {
+    try {
+        for (String job; !(job = queue.take()).equals("DONE"); ) process(job);
+    } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+});</pre>
+  <p><code>offer</code> and <code>poll</code> with a timeout let you give up instead of blocking forever. An unbounded <code>LinkedBlockingQueue</code> can eat all your memory if consumers fall behind.</p>
+
+  <h2><span class="num">§4</span>Coordination Tools</h2>
+  <pre>CountDownLatch ready = new CountDownLatch(3);       <span class="comment">// one-shot: wait until 3 events occur</span>
+<span class="comment">// workers call ready.countDown(); the coordinator calls ready.await();</span>
+
+Semaphore permits = new Semaphore(5);               <span class="comment">// allow at most 5 concurrent users</span>
+permits.acquire(); try { callRateLimitedApi(); } finally { permits.release(); }
+
+CyclicBarrier barrier = new CyclicBarrier(4);       <span class="comment">// N threads wait for each other, reusable</span></pre>
+  <p>Prefer these higher-level tools to <code>wait</code>/<code>notify</code>, which are easy to get wrong.</p>
+
+  <div class="callout">
+    <span class="label">Atomic methods, not atomic calls</span>
+    Every method on a concurrent map is thread-safe by itself, but two calls in a row are not. If your logic is "check, then act", find the single atomic method that does both.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>HashMap</code> from multiple threads</td><td>Lost entries, corrupted state, or even infinite loops in old JDKs</td><td>Use <code>ConcurrentHashMap</code></td></tr>
+    <tr><td><code>containsKey</code> then <code>put</code> on a concurrent map</td><td>Race: two threads both insert</td><td>Use <code>putIfAbsent</code>, <code>computeIfAbsent</code>, or <code>merge</code></td></tr>
+    <tr><td>An unbounded queue between fast producers and slow consumers</td><td>Memory grows until the process dies</td><td>Use a bounded <code>ArrayBlockingQueue</code></td></tr>
+    <tr><td>Using <code>CopyOnWriteArrayList</code> for write-heavy data</td><td>Each write copies the whole array</td><td>Use it only for read-mostly lists</td></tr>
+    <tr><td>Forgetting a stop signal for consumer threads</td><td>Consumers block forever on <code>take()</code></td><td>Use a poison pill, or interrupt the threads</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Count word frequencies across several files in parallel, using a thread pool and a shared <code>ConcurrentHashMap</code> with <code>merge</code>.</li>
+      <li>Build a producer and two consumers connected by a bounded <code>ArrayBlockingQueue</code>. Make the consumers slower and watch the producer block.</li>
+      <li>Use a <code>Semaphore(3)</code> to limit how many of ten tasks run at the same time, and log the concurrency.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Use <code>ConcurrentHashMap</code> and its atomic compound methods; plain collections are not thread-safe.</li>
+      <li>Atomics provide lock-free single-variable updates, and <code>LongAdder</code> suits heavy contention.</li>
+      <li>Bounded blocking queues give backpressure, and latches, semaphores, and barriers coordinate threads without <code>wait</code>/<code>notify</code>.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Concurrency on the JVM — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

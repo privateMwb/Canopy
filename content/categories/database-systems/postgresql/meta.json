@@ -1,0 +1,7 @@
+{
+  "title": "PostgreSQL",
+  "description": "From first schema to a production database you can scale, tune, and trust.",
+  "order": 1,
+  "compileRoot": true,
+  "icon": "lang_postgresql"
+}

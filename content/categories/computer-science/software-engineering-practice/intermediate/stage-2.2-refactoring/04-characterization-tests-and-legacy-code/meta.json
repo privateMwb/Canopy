@@ -1,0 +1,5 @@
+{
+  "title": "Characterization Tests & Legacy Code",
+  "description": "Pinning down what untested code actually does, finding seams, and making the first safe change.",
+  "order": 4
+}

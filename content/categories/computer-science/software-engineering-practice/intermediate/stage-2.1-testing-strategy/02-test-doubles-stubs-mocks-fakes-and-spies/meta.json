@@ -1,0 +1,5 @@
+{
+  "title": "Test Doubles: Stubs, Mocks, Fakes & Spies",
+  "description": "What each one replaces, how over-mocking couples tests to implementation, and when a fake beats a mock.",
+  "order": 2
+}

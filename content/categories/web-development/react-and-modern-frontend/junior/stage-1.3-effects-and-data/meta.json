@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Effects & Data",
+  "description": "useEffect, fetching, cleanup and race conditions, refs, and avoiding unnecessary effects.",
+  "order": 3
+}

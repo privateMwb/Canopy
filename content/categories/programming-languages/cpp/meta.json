@@ -1,0 +1,7 @@
+{
+  "title": "C++",
+  "description": "Memory, templates, and the standard library, from RAII to modern C++.",
+  "order": 4,
+  "compileRoot": true,
+  "icon": "lang_cpp"
+}

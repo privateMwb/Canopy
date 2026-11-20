@@ -1,0 +1,5 @@
+{
+  "title": "Flexbox Pitfalls",
+  "description": "min-width: auto, overflow, and why items sometimes won't shrink.",
+  "order": 5
+}

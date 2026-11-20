@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Middleware &amp; the Edge Runtime — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · apis &amp; backend logic</span> → lesson 02</p>
+  <h1>Middleware &amp; the Edge Runtime</h1>
+  <p class="lede">Running code before a request and near the user.</p>
+
+  <h2><span class="num">§1</span>Code That Runs Before the Request</h2>
+
+  <p><strong>Middleware</strong> runs before a request reaches a route. It can redirect, rewrite, set headers, or respond directly. It is ideal for work that applies broadly and cheaply: redirects, locale detection, simple auth gating, and A/B bucketing.</p>
+
+  <pre><span class="comment">// middleware.ts (named proxy.ts in the newest Next.js versions)</span>
+import { NextResponse, type NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
+  const hasSession = request.cookies.has("session");
+  if (!hasSession &amp;&amp; request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  return NextResponse.next();
+}
+
+export const config = { matcher: ["/dashboard/:path*"] };   <span class="comment">// limit where it runs</span></pre>
+
+  <p>Use <code>matcher</code> to avoid running middleware on static assets and unrelated routes. Because it sits in front of every matching request, slow middleware slows everything.</p>
+
+  <h2><span class="num">§2</span>The Edge Runtime</h2>
+
+  <p>Middleware traditionally runs on the <strong>edge runtime</strong>: a lightweight environment deployed in many locations, so code executes physically near the user with very low startup time. The cost is a restricted API surface.</p>
+
+  <table>
+    <tr><th></th><th>Edge runtime</th><th>Node.js runtime</th></tr>
+    <tr><td>Startup</td><td>Very fast, minimal cold start</td><td>Slower cold start</td></tr>
+    <tr><td>Location</td><td>Many regions, near users</td><td>Usually a chosen region</td></tr>
+    <tr><td>APIs</td><td>Web-standard APIs only (<code>fetch</code>, <code>Request</code>, Web Crypto)</td><td>Full Node API (<code>fs</code>, native modules, most npm packages)</td></tr>
+    <tr><td>Database drivers</td><td>Needs HTTP-based or edge-compatible drivers</td><td>Any driver</td></tr>
+    <tr><td>Best for</td><td>Redirects, header logic, light auth checks</td><td>Heavy logic, database access, large dependencies</td></tr>
+  </table>
+
+  <p>Newer Next.js versions let middleware run on the Node.js runtime as well, which relaxes some limits. Check the current docs for your version, and pick the runtime that matches the work.</p>
+
+  <h2><span class="num">§3</span>Keep It Thin</h2>
+
+  <p>Middleware executes on a hot path and can't easily share work with your pages. Do fast checks there, such as reading a cookie or a header, and leave real authorization and data work to server code, where it can be tested and where runtime limits don't apply.</p>
+
+  <div class="callout">
+    <span class="label">Edge isn't automatically faster</span>
+    Running near the user helps only if the code doesn't then call a distant database. An edge function that makes a cross-ocean query to a single-region database can be slower than a function placed beside the data.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Importing a Node-only library into edge code</td><td>Build or runtime errors about unsupported APIs</td><td>Use web-standard alternatives, or switch the runtime</td></tr>
+    <tr><td>Matching every route including static files</td><td>Needless latency and cost on each asset request</td><td>Narrow the <code>matcher</code></td></tr>
+    <tr><td>Doing database queries or heavy logic in middleware</td><td>Slow requests and fragile limits</td><td>Keep it to quick checks; do the rest in server code</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write middleware that redirects unauthenticated visitors and add a <code>matcher</code> that excludes static assets.</li>
+      <li>List three tasks you would place in middleware and three you would keep out, with reasons.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Middleware runs before routes and suits broad, cheap tasks such as redirects and header logic.</li>
+      <li>The edge runtime offers low latency and fast starts, but a limited API surface.</li>
+      <li>Keep middleware thin and place data-heavy work close to your data.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · APIs &amp; Backend Logic — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

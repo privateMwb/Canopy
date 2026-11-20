@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.4 — Using Postgres from Code",
+  "description": "Connections and roles, parameterized queries, pooling, migrations, and backups.",
+  "order": 4
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Adding Search",
+  "description": "Why Firestore has no full-text search and how to bolt it on.",
+  "order": 5
+}

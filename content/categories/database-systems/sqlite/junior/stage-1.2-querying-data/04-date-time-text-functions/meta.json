@@ -1,0 +1,5 @@
+{
+  "title": "Date, Time & Text Functions",
+  "description": "SQLite's date functions and string handling, and storing time sensibly.",
+  "order": 4
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Resilience: Timeouts, Retries & Circuit Breakers",
+  "description": "Containing failure instead of propagating it, and backpressure under load.",
+  "order": 1
+}

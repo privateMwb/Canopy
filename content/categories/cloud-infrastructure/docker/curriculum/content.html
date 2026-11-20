@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Docker &amp; Containers Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / docker</p>
+    <h1>From your first container to a container platform you can defend</h1>
+    <p class="lede">Three levels, twelve stages — containers, images, Compose, and everyday fluency first, then smaller and safer images, running containers well, and local orchestration, built toward the kernel mechanisms, supply-chain security, and platform judgment to run container workloads on purpose.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "it works on my machine" to "I can package an app in a container and run several together."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Containers From Zero</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What Containers Are (and Aren't)</p><p class="lesson-desc">How containers differ from virtual machines and what problem they solve.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Installing Docker &amp; Running Your First Container</p><p class="lesson-desc">run, ps, stop, rm, and logs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Images, Tags &amp; Registries</p><p class="lesson-desc">Pulling images, tags versus digests, and where images live.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Working Inside Containers</p><p class="lesson-desc">Exec, published ports, environment variables, and cleaning up.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">The Container Lifecycle &amp; Cleanup</p><p class="lesson-desc">Created, running, stopped, and removed, plus naming, restart behavior, and pruning.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run a web server and a database from public images, reach them from your host, change a setting with an environment variable, and remove everything cleanly.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Building Images</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Writing a Dockerfile</p><p class="lesson-desc">FROM, COPY, RUN, and CMD for a small application.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Build Context &amp; .dockerignore</p><p class="lesson-desc">What gets sent to the builder and how to keep it small.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">CMD vs. ENTRYPOINT &amp; Configuration</p><p class="lesson-desc">Exec form, environment variables, and build arguments.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Layers &amp; the Build Cache</p><p class="lesson-desc">Ordering instructions so rebuilds take seconds.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Language Recipes: Node, Python, Java &amp; Go</p><p class="lesson-desc">Idiomatic Dockerfiles for four common stacks.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Containerize a small web app, then reorder the Dockerfile so changing one source file does not reinstall dependencies.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Data &amp; Multi-Container Apps</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Volumes &amp; Bind Mounts</p><p class="lesson-desc">Keeping data when a container is replaced.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Container Networking Basics</p><p class="lesson-desc">Bridge networks, container DNS, and published ports.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Docker Compose</p><p class="lesson-desc">Describing a multi-container app in one file.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">A Full Stack in Compose</p><p class="lesson-desc">An app, database, and cache with health checks and a development workflow.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Configuration Across Environments</p><p class="lesson-desc">.env files, overrides, and keeping secrets out of the repository.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Bring up an app, a database, and a cache with one command, prove the data survives a restart, and tear it all down.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — CLI Fluency &amp; Troubleshooting</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">CLI Power Use</p><p class="lesson-desc">Formatting, filtering, inspecting, and the commands worth memorizing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Docker Desktop, Contexts &amp; Alternatives</p><p class="lesson-desc">Desktop, Colima, Podman, and switching between engines.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Docker on Windows, macOS &amp; Linux</p><p class="lesson-desc">File-sharing performance, WSL2, and the Linux VM underneath.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Reading Errors: Common Failures &amp; Fixes</p><p class="lesson-desc">The ten failures everyone meets and how to diagnose each.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Diagnose and fix five broken container setups using only logs, inspect, and the documentation.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Better Images</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Multi-Stage Builds</p><p class="lesson-desc">Compiling in one stage and shipping only the result.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Choosing Base Images</p><p class="lesson-desc">Full, slim, Alpine, and distroless, and what each costs you.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">BuildKit, Cache Mounts &amp; Build Secrets</p><p class="lesson-desc">Faster builds and passing secrets without leaking them into layers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Reproducible &amp; Multi-Platform Builds</p><p class="lesson-desc">Pinning versions and building for amd64 and arm64.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Image Size Forensics</p><p class="lesson-desc">Inspecting layers, finding bloat, and slimming an image methodically.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Cut a 1 GB image to under 100 MB without breaking it, and show the before and after layer sizes.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Running Containers Well</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Resource Limits &amp; Restart Policies</p><p class="lesson-desc">Memory and CPU limits, and what happens when they are hit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Health Checks &amp; Graceful Shutdown</p><p class="lesson-desc">Signals, PID 1, and stopping without dropping requests.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Logging &amp; Debugging Containers</p><p class="lesson-desc">Reading logs, inspecting state, and debugging minimal images.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Networking in Depth</p><p class="lesson-desc">User-defined networks, DNS, aliases, and the host and none modes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Runtime Configuration &amp; Secrets</p><p class="lesson-desc">Delivering configuration and credentials to a running container safely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Make a service that survives a crash, shuts down cleanly on SIGTERM, and reports its own health, and prove each with a test.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Registries, CI &amp; Security Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Registries &amp; Image Promotion</p><p class="lesson-desc">Tagging strategy, private registries, and moving images between environments.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Docker in CI/CD Pipelines</p><p class="lesson-desc">Building, testing, pushing, and caching in automation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Non-Root Users &amp; Least Privilege</p><p class="lesson-desc">Running as a normal user, read-only filesystems, and dropping capabilities.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Scanning Images &amp; Managing Vulnerabilities</p><p class="lesson-desc">Scanners, software bills of materials, and keeping images current.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Dev Containers &amp; Reproducible Dev Environments</p><p class="lesson-desc">Using containers as the development machine for a team.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a pipeline that builds, scans, and publishes an image, failing the build on serious vulnerabilities.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Compose in Depth &amp; Single-Host Production</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Compose Profiles, Overrides &amp; Multiple Files</p><p class="lesson-desc">One project description that serves development, testing, and production.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Hot Reload, Watch Mode &amp; Debuggers</p><p class="lesson-desc">Fast edit loops and attaching a debugger to a container.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Testing With Containers</p><p class="lesson-desc">Integration tests against real databases using disposable containers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Single-Host Production: Reverse Proxy &amp; TLS</p><p class="lesson-desc">Running Compose behind Traefik or Caddy with automatic certificates.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Deploy a Compose stack to a single server with HTTPS, automatic restarts, and a documented update and rollback procedure.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Under the Hood</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Namespaces &amp; cgroups</p><p class="lesson-desc">The two kernel features that create isolation and limits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Union Filesystems &amp; Image Layers</p><p class="lesson-desc">How layers are stored, shared, and described by the OCI image format.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">The Runtime Stack: containerd, runc &amp; OCI</p><p class="lesson-desc">What actually runs when you type docker run.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Container Networking Internals</p><p class="lesson-desc">Virtual interfaces, bridges, and the firewall rules that make ports work.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Storage Drivers, Volumes &amp; I/O Performance</p><p class="lesson-desc">How data reaches disk and why container filesystems can be slow.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a minimal container by hand using only unshare, chroot, and cgroup files, and explain each isolation it provides.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Hardening &amp; Supply Chain</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Container Security Model &amp; Isolation Limits</p><p class="lesson-desc">A shared kernel, seccomp, and what a container escape looks like.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Image Provenance, Signing &amp; SBOMs</p><p class="lesson-desc">Proving where an image came from and what is inside it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Secrets, Configuration &amp; Runtime Policy</p><p class="lesson-desc">Delivering secrets safely and enforcing what containers may do.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Threat Modeling a Container Platform</p><p class="lesson-desc">Where attackers go and which controls actually matter.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Rootless Mode, User Namespaces &amp; Sandboxed Runtimes</p><p class="lesson-desc">gVisor, Kata, and when a container is not enough isolation.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Threat-model a small container platform and rank the five controls you would add first, with reasons.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Platform Practice &amp; Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Image Standards &amp; Golden Base Images</p><p class="lesson-desc">Maintaining approved bases, update cadence, and policies teams will follow.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Observability &amp; Performance of Containers</p><p class="lesson-desc">Metrics, CPU throttling, out-of-memory kills, and noisy neighbors.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Single Host, Compose, or an Orchestrator?</p><p class="lesson-desc">How far one machine goes before you need more.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Migration &amp; When Containers Aren't the Answer</p><p class="lesson-desc">Moving legacy workloads and recognizing poor fits.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a container platform standard for a 20-engineer company: base images, builds, security, runtime limits, and exceptions.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Tooling, Automation &amp; Alternatives</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Podman, containerd &amp; nerdctl in Practice</p><p class="lesson-desc">Running the same workloads without the Docker daemon.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">BuildKit Frontends &amp; buildx bake</p><p class="lesson-desc">Declarative, repeatable builds for many images and platforms.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">The Engine API &amp; Automation</p><p class="lesson-desc">Driving Docker from code with SDKs and the HTTP API.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">WebAssembly, microVMs &amp; Other Alternatives</p><p class="lesson-desc">Where containers sit among newer isolation and packaging models.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small tool that uses the Engine API to find and report containers that break your platform standard.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Images appear at Junior as a Dockerfile, return at Intermediate as multi-stage builds and base-image choices, and come back at Senior as layers, provenance, and golden base images. Security follows the same arc: non-root users, then scanning, then the limits of a shared kernel. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how namespaces and cgroups create isolation is one skill; deciding what a company's base images, runtime limits, and exceptions should be, and whether a single host is enough, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clipboard, Files &amp; Drag-and-Drop — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · powerful web apis</span> → lesson 02</p>
+  <h1>Clipboard, Files &amp; Drag-and-Drop</h1>
+  <p class="lede">Browsers can read files the user chooses, receive them from a drag-and-drop, and move text and images through the clipboard. Each of these requires a user gesture and some care with permissions and memory.</p>
+
+  <h2><span class="num">§1</span>Reading Files</h2>
+
+  <p>A file input (or a drop) gives you <code>File</code> objects, which are special <code>Blob</code>s with a name, size, type, and modified date. The <code>File</code> is only a reference; read its contents with the <code>Blob</code> methods or <code>FileReader</code>.</p>
+
+  <pre>&lt;input type="file" id="picker" accept="image/*,.csv" multiple&gt;
+
+picker.addEventListener("change", async () =&gt; {
+  for (const file of picker.files) {
+    console.log(file.name, file.size, file.type);
+
+    if (file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file);      <span class="comment">// cheap preview URL</span>
+      preview.src = url;
+      preview.onload = () =&gt; URL.revokeObjectURL(url);   <span class="comment">// free the memory</span>
+    } else {
+      const text = await file.text();             <span class="comment">// also arrayBuffer(), stream()</span>
+      console.log(text.split("\n").length, "lines");
+    }
+  }
+});</pre>
+
+  <p>Prefer <code>URL.createObjectURL</code> for previews over reading the whole file into a base64 string, and always check <code>file.size</code> and <code>file.type</code> before processing. Remember the <code>accept</code> attribute is only a hint: validate again in script and, ultimately, on the server.</p>
+
+  <h2><span class="num">§2</span>Drag and Drop</h2>
+
+  <p>To accept dropped files, listen for <code>dragover</code> and <code>drop</code> on your drop zone. You <strong>must</strong> call <code>preventDefault()</code> in <code>dragover</code>, or the browser will not treat the element as a valid target, and also in <code>drop</code>, or the browser will navigate to the dropped file.</p>
+
+  <pre>const zone = document.querySelector("#drop");
+
+zone.addEventListener("dragenter", () =&gt; zone.classList.add("over"));
+zone.addEventListener("dragleave", () =&gt; zone.classList.remove("over"));
+zone.addEventListener("dragover", (e) =&gt; e.preventDefault());   <span class="comment">// required</span>
+zone.addEventListener("drop", (e) =&gt; {
+  e.preventDefault();                                           <span class="comment">// do not open the file</span>
+  zone.classList.remove("over");
+  handleFiles([...e.dataTransfer.files]);
+});
+
+<span class="comment">// dragging elements within a page</span>
+card.draggable = true;
+card.addEventListener("dragstart", (e) =&gt; e.dataTransfer.setData("text/plain", card.id));</pre>
+
+  <p>The native drag-and-drop API is awkward for reordering lists and has poor touch support. For complex in-page dragging, pointer events (from the earlier lesson) or a library give you more control. Always provide a keyboard alternative, such as a normal file button next to the drop zone.</p>
+
+  <h2><span class="num">§3</span>The Clipboard</h2>
+
+  <p>The asynchronous Clipboard API (<code>navigator.clipboard</code>) reads and writes text and images. It needs a <strong>secure context (HTTPS)</strong>, and reading requires a user gesture and often a permission prompt, while writing from a click is generally allowed.</p>
+
+  <pre>copyBtn.addEventListener("click", async () =&gt; {
+  try {
+    await navigator.clipboard.writeText(codeBlock.textContent);
+    copyBtn.textContent = "Copied!";
+  } catch (err) {
+    copyBtn.textContent = "Copy failed";      <span class="comment">// permission denied or insecure context</span>
+  }
+});
+
+<span class="comment">// reading (user gesture + permission)</span>
+const text = await navigator.clipboard.readText();
+
+<span class="comment">// react to the user's own copy/paste</span>
+document.addEventListener("paste", (e) =&gt; {
+  const file = [...e.clipboardData.files].find((f) =&gt; f.type.startsWith("image/"));
+  if (file) attachImage(file);
+});</pre>
+
+  <p>The <code>paste</code> event is the friendliest way to accept pasted images or text, because the user's paste action is the gesture and permission. Never silently read the clipboard: users do not expect it, and browsers will block it.</p>
+
+  <div class="callout">
+    <span class="label">User gestures are the permission model</span>
+    File pickers, drops, and pastes hand you data because the user just did something deliberate. Design around those events rather than trying to read files or the clipboard on your own.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Not calling <code>preventDefault()</code> in <code>dragover</code></td><td>The drop event never fires</td><td>Cancel <code>dragover</code> and <code>drop</code></td></tr>
+    <tr><td>Reading images into base64 for previews</td><td>Large memory use and slow UI</td><td>Use <code>URL.createObjectURL</code>, then <code>revokeObjectURL</code></td></tr>
+    <tr><td>Trusting <code>accept</code> or <code>file.type</code></td><td>Users can pick or rename anything</td><td>Validate size and type, and re-check on the server</td></tr>
+    <tr><td>Calling <code>clipboard.readText()</code> outside a gesture</td><td>Rejected promise or permission error</td><td>Use the <code>paste</code> event or a click handler</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a drop zone that previews dropped images and shows each file's name and size.</li>
+      <li>Add a copy-to-clipboard button to code blocks with success and failure feedback.</li>
+      <li>Accept pasted screenshots with the <code>paste</code> event and display them.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>File</code> objects come from inputs, drops, or paste; read them with <code>text()</code>, <code>arrayBuffer()</code>, or object URLs.</li>
+      <li>Drop zones must cancel <code>dragover</code> and <code>drop</code>; always offer a keyboard-accessible alternative.</li>
+      <li>The Clipboard API needs HTTPS and user gestures; the <code>paste</code> event is the easy path for input.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Powerful Web APIs — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Making Python Faster",
+  "description": "Better algorithms, built-ins, caching, and vectorization before reaching for anything exotic.",
+  "order": 5
+}

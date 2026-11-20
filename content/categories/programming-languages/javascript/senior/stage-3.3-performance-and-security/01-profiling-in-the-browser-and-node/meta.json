@@ -1,0 +1,5 @@
+{
+  "title": "Profiling in the Browser & Node",
+  "description": "DevTools performance panels, CPU profiles, and flame graphs.",
+  "order": 1
+}

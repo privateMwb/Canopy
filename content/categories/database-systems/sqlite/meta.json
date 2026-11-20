@@ -1,0 +1,7 @@
+{
+  "title": "SQLite",
+  "description": "The embedded database inside phones, browsers, and apps, from first query to production use.",
+  "order": 5,
+  "compileRoot": true,
+  "icon": "lang_sqlite"
+}

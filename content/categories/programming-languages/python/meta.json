@@ -1,0 +1,7 @@
+{
+  "title": "Python",
+  "description": "From first script to code others can maintain.",
+  "order": 1,
+  "compileRoot": true,
+  "icon": "lang_python"
+}

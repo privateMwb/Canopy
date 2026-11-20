@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web Fonts Done Right — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · images, fonts & media</span> → lesson 04</p>
+  <h1>Web Fonts Done Right</h1>
+  <p class="lede">Custom fonts add personality and cost. Done carelessly they delay text or make it jump, and done well they are almost free.</p>
+
+  <h2><span class="num">§1</span>What Fonts Cost</h2>
+  <p>A web font is another file the browser must download, and it is often discovered late, only after the CSS that references it has loaded and been matched to text on the page. While it loads, the browser has to decide what to show.</p>
+  <table>
+    <tr><th>Behavior</th><th>What the user sees</th></tr>
+    <tr><td><strong>FOIT</strong> (flash of invisible text)</td><td>Blank space where text should be</td></tr>
+    <tr><td><strong>FOUT</strong> (flash of unstyled text)</td><td>Fallback font first, then a swap</td></tr>
+    <tr><td>Swap with a different size</td><td>Text reflows, causing layout shift</td></tr>
+  </table>
+  <p>Invisible text is the worst outcome, since content the user came for isn't readable. A brief swap is usually acceptable, especially if you minimize the size difference.</p>
+
+  <h2><span class="num">§2</span>font-display and Preloading</h2>
+  <p><code>font-display</code> controls what happens while the font loads.</p>
+  <pre>@font-face {
+  font-family: 'Brand';
+  src: url('/fonts/brand-latin.woff2') format('woff2');
+  font-display: swap;       <span class="comment">/* show fallback text immediately, swap when ready */</span>
+  font-weight: 400;
+}</pre>
+  <ul>
+    <li><code>swap</code> shows fallback text at once and swaps when the font arrives. A safe default.</li>
+    <li><code>optional</code> uses the font only if it is already available or loads very quickly; otherwise the fallback stays. It avoids shift entirely.</li>
+    <li><code>block</code> hides text for a short period, which risks invisible text. Avoid it for body copy.</li>
+  </ul>
+  <p>To start the download early, <strong>preload</strong> the one or two fonts used above the fold. Fonts need <code>crossorigin</code> even when same-origin.</p>
+  <pre>&lt;link rel="preload" href="/fonts/brand-latin.woff2" as="font" type="font/woff2" crossorigin&gt;</pre>
+
+  <h2><span class="num">§3</span>Making Fonts Small</h2>
+  <ul>
+    <li><strong>Use WOFF2.</strong> It is the compressed format supported by all modern browsers.</li>
+    <li><strong>Subset</strong> the font to the characters you need, such as Latin only. A full multilingual font can be many times larger than a Latin subset.</li>
+    <li><strong>Limit weights and styles.</strong> Each is a separate file unless you use a <strong>variable font</strong>, which packs a range of weights into one.</li>
+    <li><strong>Tune the fallback.</strong> <code>size-adjust</code> and related descriptors make the fallback match the web font's metrics, shrinking the visible jump.</li>
+    <li><strong>Consider system fonts</strong> for body text. They cost nothing.</li>
+  </ul>
+  <pre>@font-face {
+  font-family: 'Brand Fallback';
+  src: local('Arial');
+  size-adjust: 105%;          <span class="comment">/* tune until text barely moves on swap */</span>
+  ascent-override: 92%;
+}
+body { font-family: 'Brand', 'Brand Fallback', sans-serif; }</pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Fonts are on the critical path of text. Preload the few that matter, subset aggressively, and pick a <code>font-display</code> value that never leaves the page blank.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Loading eight weights of a family</td><td>Many requests and a heavy page</td><td>Use two or three weights, or a variable font</td></tr>
+    <tr><td>Omitting <code>crossorigin</code> on a font preload</td><td>The preload is wasted and the font downloads twice</td><td>Always add <code>crossorigin</code> for fonts</td></tr>
+    <tr><td>Using <code>font-display: block</code> for body text</td><td>Text is invisible while the font loads</td><td>Use <code>swap</code> or <code>optional</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Throttle the network and reload a page with custom fonts. Note whether you see invisible text or a swap.</li>
+      <li>Subset a font to Latin characters with a tool such as <code>pyftsubset</code> and compare the file size to the original.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Fonts are discovered late, so preload the critical ones with <code>crossorigin</code>.</li>
+      <li>Use WOFF2, subset the glyphs, and limit weights, or use a variable font.</li>
+      <li>Set <code>font-display</code> so text is never invisible, and tune the fallback to reduce the swap jump.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Images, Fonts &amp; Media — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

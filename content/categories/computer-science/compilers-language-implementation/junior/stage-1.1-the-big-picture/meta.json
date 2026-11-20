@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — The Big Picture",
+  "description": "The compilation pipeline, the Twig language, grammars, and abstract syntax trees.",
+  "order": 1
+}

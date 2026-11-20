@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>B-tree Indexes — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · indexes &amp; query performance</span> → lesson 02</p>
+  <h1>B-tree Indexes</h1>
+  <p class="lede">A B-tree index keeps keys in sorted order so Postgres can find a value, a range, or an ordering without reading the whole table.</p>
+
+  <h2><span class="num">§1</span>What a B-tree Does</h2>
+
+  <p><code>CREATE INDEX</code> builds a <strong>B-tree</strong> by default: a balanced tree of sorted keys, each pointing to the row's location in the table. Finding one key takes a handful of page reads even in a table of hundreds of millions of rows, because each level of the tree fans out wide.</p>
+  <pre>CREATE INDEX orders_customer_id_idx ON orders (customer_id);
+
+SELECT * FROM orders WHERE customer_id = 42;          <span class="comment">-- equality</span>
+SELECT * FROM orders WHERE placed_at &gt;= '2026-01-01'; <span class="comment">-- range (with an index on placed_at)</span>
+SELECT * FROM orders ORDER BY placed_at DESC LIMIT 20; <span class="comment">-- ordering, no sort needed</span></pre>
+  <p>A B-tree serves <code>=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>BETWEEN</code>, <code>IN</code>, anchored <code>LIKE 'abc%'</code> (with the right operator class or the C collation), <code>IS NULL</code>, and <code>ORDER BY</code> on the indexed column. Primary key and <code>UNIQUE</code> constraints create B-tree indexes for you.</p>
+
+  <h2><span class="num">§2</span>What an Index Cannot Do</h2>
+
+  <p>An index helps only when the query's condition matches how the index is sorted.</p>
+  <pre>SELECT * FROM books WHERE lower(title) = 'dune';     <span class="comment">-- no use: index is on title, not lower(title)</span>
+SELECT * FROM orders WHERE total + 0 &gt; 100;          <span class="comment">-- expression hides the column</span>
+SELECT * FROM books WHERE title LIKE '%dune%';       <span class="comment">-- leading wildcard: no sorted prefix</span>
+SELECT * FROM orders WHERE customer_id::text = '42'; <span class="comment">-- cast on the column defeats the index</span></pre>
+  <p>Also, if a query reads a large fraction of the table, the planner correctly prefers a sequential scan, because jumping around by index for millions of rows costs more than reading pages in order. Each index also has a <strong>cost</strong>: it takes disk space and every <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code> must maintain it. Index what you query, not every column.</p>
+
+  <h2><span class="num">§3</span>Building and Checking Indexes</h2>
+
+  <p>On a live table, <code>CREATE INDEX</code> blocks writes for its duration. Use <code>CONCURRENTLY</code> to build without blocking writes; it takes longer and cannot run inside a transaction block. If it fails it leaves an <code>INVALID</code> index that you must drop.</p>
+  <pre>CREATE INDEX CONCURRENTLY orders_placed_at_idx ON orders (placed_at);
+DROP INDEX CONCURRENTLY orders_placed_at_idx;
+
+<span class="comment">-- Is an index ever used? Unused indexes only cost you writes.</span>
+SELECT relname, indexrelname, idx_scan
+FROM pg_stat_user_indexes
+ORDER BY idx_scan;</pre>
+  <p>Verify an index helps by comparing <code>EXPLAIN ANALYZE</code> before and after. If the planner ignores your index, the cause is usually a mismatch (an expression or cast), a query that returns too many rows, or stale statistics, not a planner bug.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    An index is a second copy of some columns, sorted for fast lookup. It speeds reads that match its order and slows every write, so each index must earn its keep.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Applying a function to an indexed column in <code>WHERE</code></td><td>The planner cannot use the plain index</td><td>Index the expression, or rewrite the condition so the column stands alone</td></tr>
+    <tr><td>Indexing every column "just in case"</td><td>Writes slow down and disk use balloons</td><td>Index columns that real queries filter, join, or sort on; check <code>idx_scan</code></td></tr>
+    <tr><td>Creating a big index without <code>CONCURRENTLY</code> on a live table</td><td>Writes are blocked while it builds</td><td>Use <code>CREATE INDEX CONCURRENTLY</code> and check for <code>INVALID</code> leftovers</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a table with a million rows, time a lookup by an unindexed column, add an index, and compare <code>EXPLAIN ANALYZE</code> output.</li>
+      <li>Show that <code>WHERE lower(title) = 'dune'</code> does not use an index on <code>title</code>.</li>
+      <li>Query <code>pg_stat_user_indexes</code> and identify any index with zero scans.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>B-tree indexes serve equality, ranges, and ordering on the indexed columns.</li>
+      <li>Functions, casts, and leading wildcards on the column prevent index use.</li>
+      <li>Every index costs write performance and space; build with <code>CONCURRENTLY</code> on live tables and drop the unused.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Indexes &amp; Query Performance — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

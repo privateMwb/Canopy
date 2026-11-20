@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OLTP vs. OLAP &amp; Columnar Warehouses — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · data architecture &amp; design judgment</span> → lesson 01</p>
+  <h1>OLTP vs. OLAP &amp; Columnar Warehouses</h1>
+  <p class="lede">Transactional databases and analytical databases answer different kinds of questions, and storing data by column instead of by row is the main reason analytics systems can scan billions of rows quickly.</p>
+
+  <h2><span class="num">§1</span>Two Workloads, Two Designs</h2>
+  <table>
+    <tr><th></th><th>OLTP (online transaction processing)</th><th>OLAP (online analytical processing)</th></tr>
+    <tr><td>Typical query</td><td>"Fetch order 123"; "update this user's address"</td><td>"Revenue by region by month for 3 years"</td></tr>
+    <tr><td>Rows touched</td><td>A few</td><td>Millions to billions</td></tr>
+    <tr><td>Columns touched</td><td>Most of the row</td><td>A few columns of a wide table</td></tr>
+    <tr><td>Concurrency</td><td>Thousands of small transactions</td><td>Few, large, long-running queries</td></tr>
+    <tr><td>Freshness</td><td>Current data</td><td>Often minutes to hours old</td></tr>
+    <tr><td>Storage layout</td><td><strong>Row-oriented</strong></td><td><strong>Column-oriented</strong></td></tr>
+    <tr><td>Examples</td><td>PostgreSQL, MySQL</td><td>BigQuery, Snowflake, Redshift, ClickHouse, DuckDB</td></tr>
+  </table>
+  <p>Running heavy analytics on your production OLTP database slows the application and still isn't optimal for the analytics, which is why the workloads are usually separated.</p>
+
+  <h2><span class="num">§2</span>Row vs. Column Storage</h2>
+  <pre>Row store: each row's values are stored together
+  [id=1, Ada, NZ, 45.00] [id=2, Alan, UK, 12.50] [id=3, Grace, US, 99.99] ...
+  great for: read or write one whole row
+
+Column store: each column's values are stored together
+  id:      [1, 2, 3, ...]
+  name:    [Ada, Alan, Grace, ...]
+  country: [NZ, UK, US, ...]
+  total:   [45.00, 12.50, 99.99, ...]
+  great for: SUM(total) GROUP BY country  →  read only two columns, skip the rest</pre>
+  <p>Column stores win for analytics because:</p>
+  <ul>
+    <li><strong>Less I/O</strong>: a query over 3 of 50 columns reads about 6% of the data.</li>
+    <li><strong>Compression</strong>: values in one column are similar, so encodings like dictionary, run-length, and delta compress 5–10× or more.</li>
+    <li><strong>Vectorized execution</strong>: process thousands of values per CPU instruction batch, using SIMD.</li>
+    <li><strong>Skipping</strong>: per-block min/max metadata lets the engine skip whole blocks that can't match a filter.</li>
+  </ul>
+  <p>Their weakness is single-row writes and point lookups, which have to touch every column file.</p>
+
+  <h2><span class="num">§3</span>From OLTP to the Warehouse: ETL and ELT</h2>
+  <p>Data moves from operational systems to the warehouse through a pipeline.</p>
+  <ul>
+    <li><strong>ETL</strong>: <strong>E</strong>xtract from sources, <strong>T</strong>ransform (clean, reshape) in a separate engine, <strong>L</strong>oad the result.</li>
+    <li><strong>ELT</strong>: <strong>E</strong>xtract and <strong>L</strong>oad raw data first, then <strong>T</strong>ransform inside the warehouse with SQL (tools like dbt). Cheap storage and powerful warehouses made this the modern default.</li>
+  </ul>
+  <p>Typical layers: <strong>raw</strong> (as received) → <strong>staging</strong> (cleaned, typed) → <strong>marts</strong> (business-ready tables). Analytical tables are often modeled as a <strong>star schema</strong>: a central <strong>fact table</strong> of events (orders, clicks) with foreign keys to <strong>dimension tables</strong> (customer, product, date), which means deliberately denormalized and optimized for aggregation.</p>
+  <pre>            dim_date
+               │
+dim_customer ─ fact_orders ─ dim_product       ← star schema
+               │
+            dim_store</pre>
+
+  <h2><span class="num">§4</span>Lakes, Lakehouses, and Choosing</h2>
+  <ul>
+    <li>A <strong>data lake</strong> stores raw files (Parquet, ORC, JSON) in cheap object storage, flexible and cheap, but with weak guarantees.</li>
+    <li>A <strong>lakehouse</strong> adds table formats (Apache Iceberg, Delta Lake, Hudi) giving the lake transactions, schema evolution, and time travel, queried by engines such as Spark, Trino, or Snowflake.</li>
+    <li><strong>HTAP</strong> systems aim to serve both workloads in one engine; useful in some cases but a compromise in each.</li>
+  </ul>
+  <p>For modest data sizes, you may not need any of this: a read replica or a PostgreSQL extension can handle early analytics, and <strong>DuckDB</strong> can query Parquet files locally at impressive speed. Introduce a warehouse when analytics load, data volume, or the need to combine many sources justifies it.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Row stores are built to find and change one record fast; column stores are built to scan a few columns across enormous numbers of rows. Use the right engine for each workload, and move data between them deliberately.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Running heavy reports on the production primary</td><td>Application latency spikes during large queries</td><td>Use a replica, or better, a separate analytical store</td></tr>
+    <tr><td>Expecting a columnar warehouse to handle high-rate single-row updates</td><td>Poor performance and cost</td><td>Batch loads and append-oriented writes; keep OLTP in an OLTP database</td></tr>
+    <tr><td>Building a warehouse before there's an analytics need</td><td>Cost and maintenance with no payoff</td><td>Start with replicas or DuckDB; grow into a warehouse</td></tr>
+    <tr><td>Analytical tables with no modeling (dumping raw tables)</td><td>Slow, confusing queries and inconsistent metrics</td><td>Build clean fact and dimension tables with agreed definitions</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Export an <code>orders</code> table to Parquet and run the same aggregate query in DuckDB and in PostgreSQL. Compare time and the files' sizes. Explain the differences in terms of row vs. column storage.</li>
+      <li>Design a star schema for an online store: name the fact table, its grain (what one row means), and at least four dimensions.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>OLTP and OLAP have opposite needs, so they usually run on different systems.</li>
+      <li>Column stores read only the needed columns, compress well, and scan in vectorized batches.</li>
+      <li>Data flows to analytics through ETL/ELT into modeled fact and dimension tables.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Data Architecture &amp; Design Judgment — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

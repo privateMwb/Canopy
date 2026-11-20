@@ -1,0 +1,5 @@
+{
+  "title": "Records, Structs & Enums",
+  "description": "Immutable data with records, value semantics, and modeling fixed choices.",
+  "order": 4
+}

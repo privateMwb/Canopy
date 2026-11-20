@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Common Network Attacks &amp; Defenses — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · tls & network security</span> → lesson 04</p>
+  <h1>Common Network Attacks &amp; Defenses</h1>
+  <p class="lede">Most network attacks exploit protocols that trust too easily, and each has a matching defense built from things you've already learned.</p>
+
+  <h2><span class="num">§1</span>Attacks Against the Local Network</h2>
+  <table>
+    <tr><th>Attack</th><th>How it works</th><th>Defense</th></tr>
+    <tr><td>ARP spoofing</td><td>A device on the LAN falsely claims another's IP address, so traffic flows through it</td><td>Switch-level protections such as dynamic ARP inspection; encrypting traffic so interception reveals nothing</td></tr>
+    <tr><td>Rogue DHCP</td><td>A fake DHCP server hands out a malicious gateway or DNS</td><td>DHCP snooping on switches</td></tr>
+    <tr><td>Eavesdropping</td><td>Reading unencrypted traffic on shared Wi-Fi</td><td>TLS everywhere; VPNs on untrusted networks</td></tr>
+  </table>
+  <p>These work because ARP and DHCP have no authentication; anyone on the local link can answer. The strongest general defense isn't trusting the local network, and assuming it could be hostile.</p>
+
+  <h2><span class="num">§2</span>Attacks on Transport and Name Resolution</h2>
+  <table>
+    <tr><th>Attack</th><th>How it works</th><th>Defense</th></tr>
+    <tr><td>SYN flood</td><td>Overwhelm a server with SYNs to exhaust its half-open connection table</td><td>SYN cookies, rate limiting, upstream filtering</td></tr>
+    <tr><td>TCP reset injection</td><td>Forge RST packets to kill connections</td><td>Randomized sequence numbers, TLS can't prevent a reset but limits impact</td></tr>
+    <tr><td>DNS cache poisoning</td><td>Trick a resolver into caching a false answer</td><td>Random source ports and query IDs, DNSSEC validation, encrypted DNS (DoT/DoH)</td></tr>
+    <tr><td>Man-in-the-middle</td><td>Sit between client and server and relay or alter traffic</td><td>TLS with proper certificate validation, HSTS</td></tr>
+  </table>
+  <p>Sequence numbers and source ports are chosen unpredictably precisely so that an attacker who can't see the traffic can't forge it.</p>
+
+  <h2><span class="num">§3</span>Denial of Service and Amplification</h2>
+  <p>A <strong>DDoS</strong> attack overwhelms a service with traffic. <strong>Reflection and amplification</strong> attacks abuse UDP services: the attacker sends a small request with a <strong>forged source address</strong>, the victim's, to a public server such as an open DNS or NTP resolver, which sends a much larger reply to the victim.</p>
+  <ul>
+    <li><strong>Amplification factor:</strong> a small query yields a response many times larger, so a modest attacker bandwidth yields a flood</li>
+    <li><strong>Defenses:</strong> networks should block spoofed source addresses at the edge (BCP 38), servers should not answer open queries from anyone, and responses should be rate-limited</li>
+    <li><strong>Absorption:</strong> CDNs and scrubbing services with huge capacity absorb floods, and anycast spreads the load across sites</li>
+    <li><strong>Application-layer limits:</strong> rate limiting, caching, and bot detection for HTTP floods</li>
+  </ul>
+  <pre><span class="comment"># Check your own exposure, on infrastructure you own:</span>
+ss -lunp                      <span class="comment"># which UDP services are open?</span>
+<span class="comment"># Public resolvers and time servers should not answer arbitrary external queries.</span></pre>
+  <p>No single control is enough. Layer encryption, validation, rate limiting, and capacity, and design on the assumption that some layers will be attacked or bypassed.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Each attack maps onto a protocol weakness: no authentication on the LAN, predictable numbers, or replies bigger than requests. Understanding the weakness tells you the defense.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Trusting the internal network</td><td>One compromised device can intercept or spoof traffic</td><td>Encrypt and authenticate internal traffic, too</td></tr>
+    <tr><td>Running open DNS or NTP resolvers</td><td>Your servers are used to attack others</td><td>Restrict recursion and monitoring commands to trusted clients</td></tr>
+    <tr><td>Ignoring certificate validation errors in code</td><td>Silently enables man-in-the-middle attacks</td><td>Keep verification on; fix trust-store problems instead</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>For each attack in the tables, name the protocol weakness it exploits.</li>
+      <li>Explain how a SYN cookie lets a server avoid storing state for half-open connections.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>LAN attacks such as ARP spoofing and rogue DHCP exploit protocols with no authentication.</li>
+      <li>Unpredictable sequence numbers, ports, and query IDs prevent blind forgery; TLS and DNSSEC add authentication.</li>
+      <li>Amplification attacks need spoofed sources and open services, so filtering and closing resolvers matter.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · TLS & Network Security — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

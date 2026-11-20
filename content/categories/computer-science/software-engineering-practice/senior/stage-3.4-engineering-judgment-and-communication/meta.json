@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.4 — Engineering Judgment & Communication",
+  "description": "Strangler migrations, refactor-or-rewrite decisions, leading code review, design docs and RFCs, and explaining trade-offs.",
+  "order": 4
+}

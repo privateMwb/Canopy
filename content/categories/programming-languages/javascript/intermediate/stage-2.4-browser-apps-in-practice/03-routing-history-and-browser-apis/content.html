@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Routing, History &amp; Browser APIs — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · browser apps in practice</span> → lesson 03</p>
+  <h1>Routing, History &amp; Browser APIs</h1>
+  <p class="lede">The URL is part of your app's state, and the browser already has APIs for navigation, visibility, and observation that you can use without adding a library.</p>
+
+  <h2><span class="num">§1</span>Client-Side Routing and the History API</h2>
+
+  <p>A single-page app changes the visible "page" without a full reload by updating the URL with <code>history.pushState</code> and re-rendering. Intercept link clicks, listen to <code>popstate</code> for Back/Forward, and make sure every route also works on a direct load (the server must serve your app for those paths).</p>
+
+  <pre>function navigate(path) {
+  history.pushState({}, "", path);          <span class="comment">// change URL, no reload</span>
+  render(location.pathname);
+}
+document.addEventListener("click", (e) =&gt; {
+  const a = e.target.closest("a[data-link]");
+  if (a) { e.preventDefault(); navigate(a.getAttribute("href")); }
+});
+window.addEventListener("popstate", () =&gt; render(location.pathname));   <span class="comment">// back / forward</span>
+
+const routes = { "/": Home, "/about": About };
+function render(path) { app.replaceChildren((routes[path] ?? NotFound)()); }
+render(location.pathname);</pre>
+
+  <h2><span class="num">§2</span>URL as State</h2>
+
+  <p>Anything a user might want to bookmark, share, or return to belongs in the URL: filters, search terms, page numbers, the selected item. <code>URL</code> and <code>URLSearchParams</code> make this safe.</p>
+
+  <pre>const params = new URLSearchParams(location.search);
+const q = params.get("q") ?? "";
+const page = Number(params.get("page") ?? 1);
+
+function setQuery(q) {
+  const url = new URL(location.href);
+  url.searchParams.set("q", q);
+  url.searchParams.delete("page");
+  history.replaceState({}, "", url);        <span class="comment">// replace: don't spam the Back button</span>
+}
+<span class="comment">// Never concatenate user text into a URL by hand: encodeURIComponent or URLSearchParams</span></pre>
+
+  <h2><span class="num">§3</span>Platform APIs You Don't Need a Library For</h2>
+
+  <p><code>IntersectionObserver</code> reports when elements enter the viewport — lazy loading and infinite scroll without scroll listeners. <code>ResizeObserver</code> reports size changes. The Page Visibility API tells you when the tab is hidden, and <code>BroadcastChannel</code> syncs tabs.</p>
+
+  <pre>const io = new IntersectionObserver((entries) =&gt; {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    e.target.src = e.target.dataset.src;     <span class="comment">// lazy-load the image</span>
+    io.unobserve(e.target);
+  }
+}, { rootMargin: "200px" });
+document.querySelectorAll("img[data-src]").forEach((img) =&gt; io.observe(img));
+
+document.addEventListener("visibilitychange", () =&gt; {
+  if (document.hidden) pausePolling(); else resumePolling();
+});
+navigator.clipboard.writeText("copied");     <span class="comment">// needs a secure context + user gesture</span></pre>
+
+  <p>Check support on MDN before depending on a newer API, and feature-detect (<code>if ("IntersectionObserver" in window)</code>) when you must support older browsers.</p>
+
+  <div class="callout">
+    <span class="label">Test the direct load</span>
+    A route that works when you click to it but 404s on refresh means the server isn't configured to fall back to <code>index.html</code> for client-side paths.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Router works on click but 404s on reload</td><td>Server doesn't know client routes</td><td>Configure a fallback to <code>index.html</code></td></tr>
+    <tr><td>Using <code>pushState</code> for every keystroke in a search box</td><td>Back button becomes unusable</td><td>Use <code>replaceState</code>, or push only on committed searches</td></tr>
+    <tr><td>Attaching <code>scroll</code> listeners for lazy loading</td><td>Runs constantly; janky</td><td>Use <code>IntersectionObserver</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a three-route page with <code>pushState</code> navigation, working Back/Forward, and a not-found view.</li>
+      <li>Lazy-load a grid of images with <code>IntersectionObserver</code> and verify in the Network panel that off-screen images aren't requested.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Client routing = <code>pushState</code> + <code>popstate</code> + rendering by path; the server must fall back to your app.</li>
+      <li>Put shareable state in the URL using <code>URL</code> and <code>URLSearchParams</code>.</li>
+      <li>Observers and other built-in APIs replace many scroll and resize hacks.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Browser Apps in Practice — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

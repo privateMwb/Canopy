@@ -1,0 +1,5 @@
+{
+  "title": "Caching Internals",
+  "description": "How each cache layer decides what is fresh.",
+  "order": 3
+}

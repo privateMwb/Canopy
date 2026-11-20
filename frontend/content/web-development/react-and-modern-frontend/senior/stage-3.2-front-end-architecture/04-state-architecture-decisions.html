@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>State Architecture Decisions — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · front-end architecture</span> → lesson 04</p>
+  <h1>State Architecture Decisions</h1>
+  <p class="lede">Most state-management debates dissolve once you recognize that there are different kinds of state, each with a natural home. The architecture question is not which library, but where each piece of state belongs.</p>
+
+  <h2><span class="num">§1</span>A Taxonomy of State</h2>
+
+  <p>Before choosing a tool, classify the state. Mixing categories in one store is the main reason state becomes hard to reason about.</p>
+
+  <table>
+    <tr><th>Kind</th><th>Description</th><th>Natural home</th></tr>
+    <tr><td><strong>Server state</strong></td><td>Data owned by a backend; cached, can go stale</td><td>A query cache (TanStack Query, RTK Query, framework loaders)</td></tr>
+    <tr><td><strong>URL state</strong></td><td>What the user is looking at: route, filters, sort, page, selected tab</td><td>The URL (path and search params)</td></tr>
+    <tr><td><strong>Form state</strong></td><td>Values, errors, and touched fields while editing</td><td>A form library or local state; submit to the server</td></tr>
+    <tr><td><strong>Local UI state</strong></td><td>Open/closed, hover, current input, ephemeral view state</td><td><code>useState</code> / <code>useReducer</code> in the component</td></tr>
+    <tr><td><strong>Shared client state</strong></td><td>Client-only data needed by distant components (cart draft, editor selection)</td><td>Lifted state, context, or a small store (Zustand/RTK)</td></tr>
+    <tr><td><strong>Persistent client state</strong></td><td>Preferences that survive reloads</td><td><code>localStorage</code>/IndexedDB behind a hook or store middleware</td></tr>
+  </table>
+
+  <p>Server state is the largest category in most apps, and it is <strong>not</strong> client state: when you move it into a query cache, much of the rest simplifies, and the amount of true global client state that remains is usually small.</p>
+
+  <h2><span class="num">§2</span>Rules for Deciding Where State Lives</h2>
+
+  <ol>
+    <li><strong>Can it live in the URL?</strong> If a user would want to bookmark, share, or reload and see the same view, put it in the URL. It gives you Back/Forward and deep links for free.</li>
+    <li><strong>Is it server data?</strong> Use a query/caching layer. Do not copy it into <code>useState</code> or a global store.</li>
+    <li><strong>Is it derived?</strong> Compute it from existing state during render; never store it.</li>
+    <li><strong>Does only one component care?</strong> Keep it local, as low in the tree as possible.</li>
+    <li><strong>Do a few nearby components care?</strong> Lift it to the closest common parent.</li>
+    <li><strong>Do distant components care, or does it change often?</strong> Use a store with <strong>selectors</strong>; use context only for rarely changing values.</li>
+    <li><strong>Does it need to survive a reload or sync across tabs?</strong> Persist it deliberately, with a versioned schema.</li>
+  </ol>
+
+  <pre><span class="comment">// state, each in its natural home</span>
+const [params, setParams] = useSearchParams();                <span class="comment">// URL: filters, page, sort</span>
+const { data: products } = useProducts({ ...filters });       <span class="comment">// server: cached query keyed by filters</span>
+const [isFilterOpen, setFilterOpen] = useState(false);        <span class="comment">// local UI</span>
+const cartCount = useCart((s) =&gt; s.items.length);             <span class="comment">// shared client: selector on a small store</span>
+const visible = useMemo(() =&gt; products?.filter(inStock), [products]);   <span class="comment">// derived: not stored</span></pre>
+
+  <h2><span class="num">§3</span>Boundaries, Costs, and Evolving the Design</h2>
+
+  <ul>
+    <li><strong>One source of truth per fact.</strong> If two places hold the same data, decide which owns it and delete the other; synchronize through ids, not copies.</li>
+    <li><strong>Keep stores small and domain-scoped</strong> (a cart store, a UI preferences store) rather than a single global tree that every feature reads and writes.</li>
+    <li><strong>Hide the implementation behind hooks</strong> (<code>useCart()</code>, <code>useUser()</code>), so you can change the underlying tool without touching components.</li>
+    <li><strong>Make impossible states unrepresentable</strong>: model modes with discriminated unions or state machines (<code>idle | loading | success | error</code>), not several independent booleans.</li>
+    <li><strong>Plan for failure and staleness</strong> of server state: loading, empty, error, and retry states are part of the design, not afterthoughts.</li>
+    <li><strong>Optimistic updates, offline support, and real-time data</strong> raise the stakes: decide ahead of time who wins on conflict and how the UI recovers.</li>
+    <li><strong>Watch for re-render fan-out</strong>: a store or context read by hundreds of components needs selectors, splitting, or restructuring.</li>
+    <li><strong>Write the decision down</strong> in an ADR: where each class of state lives and why. New engineers will otherwise add a fifth way to do it.</li>
+  </ul>
+
+  <table>
+    <tr><th>Smell</th><th>What it usually means</th></tr>
+    <tr><td>Prop drilling through five layers</td><td>State lives too low, or composition (<code>children</code>) would help</td></tr>
+    <tr><td>Global store full of API responses</td><td>Server state is being treated as client state</td></tr>
+    <tr><td>Effects that copy props or state into other state</td><td>Derived data stored instead of computed</td></tr>
+    <tr><td>Everything re-renders on any change</td><td>One big context or store with no selectors</td></tr>
+    <tr><td>Filters lost on refresh or Back</td><td>UI state that belongs in the URL is in memory</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">Choose the home before the tool</span>
+    Ask what kind of state it is first: server, URL, form, local, shared, or persistent. The right place usually follows from the answer, and the library debate becomes much smaller.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Storing API responses in a global client store</td><td>Hand-built caching with staleness and sync bugs</td><td>Use a query cache for server state</td></tr>
+    <tr><td>Keeping filters and pagination in <code>useState</code></td><td>Lost on refresh, not shareable, Back breaks</td><td>Store them in the URL</td></tr>
+    <tr><td>One giant global store or context for everything</td><td>Wide re-renders and tangled dependencies</td><td>Split by domain and use selectors</td></tr>
+    <tr><td>No written convention for where state lives</td><td>Each developer picks a different approach</td><td>Record the decision in an ADR and review against it</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a feature in a real app and label each piece of state by kind, then identify any that live in the wrong place.</li>
+      <li>Move a filter and pagination state from <code>useState</code> to the URL, and confirm Back, refresh, and sharing work.</li>
+      <li>Write a one-page state-architecture ADR for a project: each category, its home, and the rules for adding new state.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Classify state as server, URL, form, local, shared client, or persistent, and give each its natural home.</li>
+      <li>Prefer the URL for view state, a query cache for server data, and the smallest scope for everything else.</li>
+      <li>Keep one source of truth, hide tools behind hooks, and write the conventions down.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Front-End Architecture — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

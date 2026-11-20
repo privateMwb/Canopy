@@ -1,0 +1,5 @@
+{
+  "title": "npm Supply Chain & Dependency Hygiene",
+  "description": "Lockfiles, install scripts, auditing, and deciding what to depend on.",
+  "order": 4
+}

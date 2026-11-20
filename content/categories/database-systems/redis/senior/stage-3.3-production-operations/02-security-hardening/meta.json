@@ -1,0 +1,5 @@
+{
+  "title": "Security Hardening",
+  "description": "ACL design, TLS, network isolation, and dangerous commands.",
+  "order": 2
+}

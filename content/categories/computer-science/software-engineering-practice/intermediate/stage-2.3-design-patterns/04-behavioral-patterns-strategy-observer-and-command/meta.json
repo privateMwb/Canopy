@@ -1,0 +1,5 @@
+{
+  "title": "Behavioral Patterns: Strategy, Observer & Command",
+  "description": "Swapping algorithms at runtime, notifying dependents of change, and turning actions into objects.",
+  "order": 4
+}

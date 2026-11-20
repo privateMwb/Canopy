@@ -1,0 +1,5 @@
+{
+  "title": "Lazy Loading & Priority Hints",
+  "description": "loading=\"lazy\", fetchpriority, and decoding hints.",
+  "order": 3
+}

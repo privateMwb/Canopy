@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Headers, Cookies &amp; Content Negotiation — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · http fundamentals</span> → lesson 03</p>
+  <h1>Headers, Cookies &amp; Content Negotiation</h1>
+  <p class="lede">Headers carry the metadata that lets clients and servers agree on formats, control caching, and, with cookies, remember who you are in a stateless protocol.</p>
+
+  <h2><span class="num">§1</span>Common Headers</h2>
+  <table>
+    <tr><th>Header</th><th>Direction</th><th>Purpose</th></tr>
+    <tr><td><code>Host</code></td><td>Request</td><td>Which site is being requested</td></tr>
+    <tr><td><code>User-Agent</code></td><td>Request</td><td>What software is making the request</td></tr>
+    <tr><td><code>Accept</code></td><td>Request</td><td>Formats the client can handle</td></tr>
+    <tr><td><code>Authorization</code></td><td>Request</td><td>Credentials, such as a bearer token</td></tr>
+    <tr><td><code>Content-Type</code></td><td>Both</td><td>Format of the body (<code>application/json</code>)</td></tr>
+    <tr><td><code>Content-Length</code></td><td>Both</td><td>Size of the body in bytes</td></tr>
+    <tr><td><code>Location</code></td><td>Response</td><td>Where to go for redirects, or the new resource</td></tr>
+    <tr><td><code>Cache-Control</code></td><td>Both</td><td>Caching instructions</td></tr>
+  </table>
+  <p>Header names are case-insensitive. Custom headers conventionally describe what they do, and responses often include <code>X-</code>-style or vendor headers for tracing, such as a request ID.</p>
+
+  <h2><span class="num">§2</span>Content Negotiation</h2>
+  <p>A client states its preferences and the server chooses what to send.</p>
+  <pre>GET /report HTTP/1.1
+Host: api.example.com
+Accept: application/json, text/csv;q=0.5        <span class="comment"># prefers JSON; CSV acceptable at lower weight</span>
+Accept-Encoding: gzip, br                       <span class="comment"># can decompress these</span>
+Accept-Language: en-US,en;q=0.8
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Encoding: gzip                          <span class="comment"># body is compressed</span></pre>
+  <p>If a server can't supply any acceptable format, it can answer 406 Not Acceptable. Compression through <code>Content-Encoding</code> usually shrinks text responses by 70% or more at little cost.</p>
+
+  <h2><span class="num">§3</span>Cookies: State on a Stateless Protocol</h2>
+  <p>A server sets a cookie with <code>Set-Cookie</code>, and the browser returns it in a <code>Cookie</code> header on later requests to that site. This is how a login session persists.</p>
+  <pre>HTTP/1.1 200 OK
+Set-Cookie: session=a1b2c3; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=3600
+
+GET /account HTTP/1.1
+Host: example.com
+Cookie: session=a1b2c3</pre>
+  <table>
+    <tr><th>Attribute</th><th>Effect</th></tr>
+    <tr><td><code>Secure</code></td><td>Sent only over HTTPS</td></tr>
+    <tr><td><code>HttpOnly</code></td><td>Hidden from JavaScript, limiting theft through XSS</td></tr>
+    <tr><td><code>SameSite</code></td><td>Controls sending on cross-site requests, limiting CSRF</td></tr>
+    <tr><td><code>Max-Age</code> / <code>Expires</code></td><td>How long the cookie lives</td></tr>
+    <tr><td><code>Domain</code> / <code>Path</code></td><td>Which requests include it</td></tr>
+  </table>
+  <p>The cookie holds only an identifier. The real session data lives on the server, so the value should be random and unguessable.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    <code>Set-Cookie</code> without <code>Secure</code>, <code>HttpOnly</code>, and <code>SameSite</code> is a common cause of session theft. Treat those three attributes as the default for any login cookie.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Sending a body with no <code>Content-Type</code></td><td>The receiver guesses the format and misparses it</td><td>Always set <code>Content-Type</code> to match the body</td></tr>
+    <tr><td>Storing sensitive data directly in a cookie</td><td>The user can read and edit it</td><td>Store a random session ID and keep the data server-side</td></tr>
+    <tr><td>Omitting <code>Secure</code> on cookies</td><td>The cookie travels in clear text over HTTP</td><td>Mark session cookies <code>Secure</code> and redirect to HTTPS</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use <code>curl -v -H 'Accept: application/json'</code> against a site that supports several formats, and compare the responses.</li>
+      <li>Inspect the cookies set by a login page in your browser's DevTools, and note each attribute.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Headers carry metadata for formats, caching, credentials, and more.</li>
+      <li>Content negotiation uses <code>Accept</code> headers so that the server can pick a representation.</li>
+      <li>Cookies add state to HTTP and need <code>Secure</code>, <code>HttpOnly</code>, and <code>SameSite</code> for safety.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · HTTP Fundamentals — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

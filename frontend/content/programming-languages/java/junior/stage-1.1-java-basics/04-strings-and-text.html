@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strings &amp; Text — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · java basics</span> → lesson 04</p>
+  <h1>Strings &amp; Text</h1>
+  <p class="lede">A <code>String</code> is an immutable sequence of characters, which makes it safe to share but means that building text in a loop needs <code>StringBuilder</code>.</p>
+
+  <h2><span class="num">§1</span>Immutability</h2>
+  <p>Once created, a <code>String</code> never changes. Methods like <code>toUpperCase</code> or <code>replace</code> return a <strong>new</strong> string and leave the original alone. Forgetting to use the returned value is a classic bug.</p>
+  <pre>String s = "hello";
+s.toUpperCase();                   <span class="comment">// result discarded: s is still "hello"</span>
+s = s.toUpperCase();               <span class="comment">// now s refers to "HELLO"</span>
+
+String t = "  Ada Lovelace ";
+t.trim().toLowerCase().split(" ");     <span class="comment">// chaining works because each call returns a String</span>
+"a,b,,c".split(",");                   <span class="comment">// ["a", "b", "", "c"]</span>
+"Ada".charAt(0);                       <span class="comment">// 'A'</span>
+"Ada".substring(1);                    <span class="comment">// "da"</span>
+"banana".indexOf("na");                <span class="comment">// 2</span>
+"Ada".isBlank();                       <span class="comment">// false</span></pre>
+
+  <h2><span class="num">§2</span>Comparing Strings</h2>
+  <p><code>==</code> compares whether two variables point at the same object, not whether the text matches. Use <code>equals</code>. String literals are interned (shared), which is why <code>==</code> sometimes appears to work and then fails on a string built at runtime.</p>
+  <pre>String a = "java";
+String b = "ja" + "va";                 <span class="comment">// compile-time constant: same interned object</span>
+String c = new String("java");          <span class="comment">// a new object</span>
+
+System.out.println(a == b);             <span class="comment">// true (by accident of interning)</span>
+System.out.println(a == c);             <span class="comment">// false</span>
+System.out.println(a.equals(c));        <span class="comment">// true</span>
+System.out.println("Java".equalsIgnoreCase(a));   <span class="comment">// true</span>
+System.out.println("yes".equals(input));          <span class="comment">// safe even if input is null</span></pre>
+
+  <h2><span class="num">§3</span>Building Text</h2>
+  <p>Each <code>+</code> in a loop creates a new string and copies everything, so repeated concatenation is quadratic. A <code>StringBuilder</code> is mutable and appends in place.</p>
+  <pre>StringBuilder sb = new StringBuilder();
+for (int i = 0; i &lt; 5; i++) {
+    sb.append(i).append(',');
+}
+sb.setLength(sb.length() - 1);          <span class="comment">// drop trailing comma</span>
+String csv = sb.toString();             <span class="comment">// "0,1,2,3,4"</span>
+
+String msg = String.format("%s scored %.1f (%d%%)", "Ada", 91.456, 91);
+String joined = String.join("|", "a", "b", "c");
+String repeated = "ab".repeat(3);        <span class="comment">// "ababab"</span></pre>
+  <p>For multi-line text such as JSON or SQL, <strong>text blocks</strong> (<code>"""</code>) keep the layout readable and strip common indentation:</p>
+  <pre>String json = """
+    {
+      "name": "Ada",
+      "role": "engineer"
+    }
+    """;</pre>
+
+  <div class="callout">
+    <span class="label">Strings and Unicode</span>
+    A <code>char</code> is a 16-bit UTF-16 unit, so characters outside the basic range (many emoji) take two <code>char</code>s. <code>length()</code> counts UTF-16 units, not visible characters. Use <code>codePoints()</code> if you need real characters.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Comparing strings with <code>==</code></td><td>Works for literals, fails for runtime-built strings</td><td>Always use <code>equals</code> (or <code>equalsIgnoreCase</code>)</td></tr>
+    <tr><td>Ignoring the return value of <code>toUpperCase</code>, <code>trim</code>, etc.</td><td>The original string is unchanged</td><td>Assign the result: <code>s = s.trim()</code></td></tr>
+    <tr><td>Concatenating in a large loop with <code>+</code></td><td>Slow, with lots of garbage</td><td>Use a <code>StringBuilder</code></td></tr>
+    <tr><td>Calling <code>input.equals("yes")</code> on a possibly null value</td><td><code>NullPointerException</code></td><td>Put the literal first: <code>"yes".equals(input)</code></td></tr>
+    <tr><td>Assuming <code>length()</code> equals visible characters</td><td>Wrong counts for emoji and some scripts</td><td>Count with <code>codePoints()</code> when it matters</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write <code>isPalindrome(String s)</code> that ignores case and spaces, using <code>StringBuilder.reverse()</code> or a two-pointer loop.</li>
+      <li>Write a method that counts the words in a sentence, handling multiple spaces. Try <code>split</code> with a regex, then explain why <code>split(" ")</code> gets it wrong.</li>
+      <li>Print a three-line receipt using a text block and <code>String.format</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Strings are immutable; string methods return new strings.</li>
+      <li>Compare text with <code>equals</code>, never <code>==</code>.</li>
+      <li>Use <code>StringBuilder</code> for building text in loops and text blocks for multi-line literals.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Java Basics — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

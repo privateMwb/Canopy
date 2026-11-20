@@ -1,0 +1,5 @@
+{
+  "title": "Encryption & Security",
+  "description": "SQLCipher, file permissions, and injection risks.",
+  "order": 3
+}

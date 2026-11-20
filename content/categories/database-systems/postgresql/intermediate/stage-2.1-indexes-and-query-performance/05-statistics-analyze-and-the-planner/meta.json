@@ -1,0 +1,5 @@
+{
+  "title": "Statistics, ANALYZE & the Planner",
+  "description": "How the planner estimates, why stale statistics cause bad plans, and extended statistics.",
+  "order": 5
+}

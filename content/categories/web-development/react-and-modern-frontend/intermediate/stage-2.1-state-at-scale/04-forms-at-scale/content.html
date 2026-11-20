@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forms at Scale — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · state at scale</span> → lesson 04</p>
+  <h1>Forms at Scale</h1>
+  <p class="lede">Controlled inputs are fine for small forms, but large forms re-render on every keystroke and need consistent validation. React Hook Form and a schema library solve both, and keep the form accessible.</p>
+
+  <h2><span class="num">§1</span>React Hook Form</h2>
+
+  <p><strong>React Hook Form (RHF)</strong> registers inputs with the DOM and reads their values on submit or on demand, rather than storing each keystroke in React state. The result: far fewer re-renders and less code per field.</p>
+
+  <pre>import { useForm } from "react-hook-form";
+
+function Signup({ onSubmit }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({ defaultValues: { email: "", age: "" } });
+
+  return (
+    &lt;form onSubmit={handleSubmit(onSubmit)} noValidate&gt;
+      &lt;label htmlFor="email"&gt;Email&lt;/label&gt;
+      &lt;input
+        id="email"
+        type="email"
+        aria-invalid={errors.email ? "true" : "false"}
+        aria-describedby={errors.email ? "email-error" : undefined}
+        {...register("email", { required: "Email is required" })}
+      /&gt;
+      {errors.email &amp;&amp; &lt;p id="email-error" role="alert"&gt;{errors.email.message}&lt;/p&gt;}
+
+      &lt;button disabled={isSubmitting}&gt;{isSubmitting ? "Saving..." : "Sign up"}&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre>
+
+  <p><code>register("email", rules)</code> returns the props (<code>name</code>, <code>onChange</code>, <code>onBlur</code>, <code>ref</code>) to spread onto the input. <code>handleSubmit</code> runs validation first and only calls your function with valid data. For controlled third-party components (a date picker, a select library), use the <code>Controller</code> component or <code>useController</code>.</p>
+
+  <h2><span class="num">§2</span>Schema Validation with Zod</h2>
+
+  <p>Hand-writing rules per field gets repetitive. A <strong>schema library</strong> such as <strong>Zod</strong> declares the shape and constraints of the data once. You can reuse the same schema on the <strong>server</strong>, and derive the TypeScript type from it.</p>
+
+  <pre>import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z
+  .object({
+    email: z.string().min(1, "Email is required").email("Enter a valid email"),
+    age: z.coerce.number().int().min(18, "Must be 18 or older"),
+    password: z.string().min(8, "At least 8 characters"),
+    confirm: z.string(),
+  })
+  .refine((d) =&gt; d.password === d.confirm, {
+    path: ["confirm"],
+    message: "Passwords do not match",
+  });
+
+<span class="comment">// type Signup = z.infer&lt;typeof schema&gt;;      // the TypeScript type comes free</span>
+
+const form = useForm({ resolver: zodResolver(schema), mode: "onTouched" });</pre>
+
+  <ul>
+    <li><code>mode</code> controls <strong>when</strong> validation runs: <code>onSubmit</code> (default), <code>onBlur</code>, <code>onTouched</code> (after first blur, then on change), or <code>onChange</code>.</li>
+    <li><code>z.coerce.number()</code> converts the string from the input to a number before validating.</li>
+    <li>Server errors can be placed on fields with <code>setError("email", { message: "Already registered" })</code>.</li>
+    <li><strong>Always validate again on the server.</strong> Client validation is for usability.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Accessible, Usable Forms</h2>
+
+  <p>A library does not make a form accessible. You still have to do the work, and it matters most in large forms.</p>
+
+  <ul>
+    <li><strong>Every input has a visible <code>&lt;label&gt;</code></strong> connected with <code>htmlFor</code>/<code>id</code> (placeholders are not labels).</li>
+    <li><strong>Connect errors to inputs</strong> with <code>aria-describedby</code>, and mark the field with <code>aria-invalid</code>. Announce errors with <code>role="alert"</code> or move focus to the first invalid field on a failed submit (RHF's <code>shouldFocusError</code> does this by default).</li>
+    <li><strong>Do not rely on color alone</strong> to show errors; include text.</li>
+    <li>Use the right <code>type</code> and <code>autocomplete</code> attributes (<code>email</code>, <code>tel</code>, <code>current-password</code>, <code>one-time-code</code>) so browsers and password managers help.</li>
+    <li><strong>Disable the submit button only while submitting</strong>, never to hide why the form is invalid. Prefer showing clear messages.</li>
+    <li>Long forms: group related fields with <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code>, and preserve entered data if the submit fails.</li>
+  </ul>
+
+  <pre><span class="comment">// move focus to the first error and keep user data on failure</span>
+const onInvalid = (errs) =&gt; {
+  const first = Object.keys(errs)[0];
+  document.getElementById(first)?.focus();
+};
+&lt;form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate&gt;</pre>
+
+  <div class="callout">
+    <span class="label">Validate on the way in and on the way through</span>
+    Show friendly, specific errors in the browser, using a shared schema, and enforce the same rules on the server. Client checks are convenience; server checks are the actual guarantee.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Storing every keystroke of a 40-field form in state</td><td>The whole form re-renders on each key</td><td>Use uncontrolled registration (React Hook Form)</td></tr>
+    <tr><td>Using placeholder text instead of labels</td><td>Fails accessibility; label disappears while typing</td><td>Add real <code>&lt;label&gt;</code> elements</td></tr>
+    <tr><td>Validating only on the client</td><td>Anyone can send bad data directly to the API</td><td>Re-validate on the server, ideally with the same schema</td></tr>
+    <tr><td>Showing errors only in red</td><td>Not perceivable for some users</td><td>Include error text and associate it with the input</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a signup form with React Hook Form and a Zod schema, including a password-confirmation <code>refine</code>.</li>
+      <li>Make the form accessible: labels, <code>aria-invalid</code>, <code>aria-describedby</code>, and focus on the first error after a failed submit.</li>
+      <li>Simulate a server-side "email already taken" error and show it on the field with <code>setError</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>React Hook Form registers inputs instead of storing each keystroke, cutting re-renders and boilerplate.</li>
+      <li>Schema validation (Zod) declares rules once and can be shared with the server and with types.</li>
+      <li>Accessibility is your job: labels, error association, focus management, and the right input attributes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · State at Scale — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

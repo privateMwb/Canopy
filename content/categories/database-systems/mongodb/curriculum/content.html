@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MongoDB Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / mongodb</p>
+    <h1>From your first document to a MongoDB deployment that scales</h1>
+    <p class="lede">Three levels, twelve stages — the document model and queries first, then aggregation, indexing, and consistency, built toward the internals and judgment to model, shard, and operate MongoDB at scale.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've seen JSON in a database" to "I can model documents, write real queries, and connect an application safely."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Documents &amp; the Shell</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Document Model &amp; BSON</p><p class="lesson-desc">Documents, fields, arrays, and the BSON types behind the JSON you see.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Installing MongoDB, mongosh &amp; Atlas</p><p class="lesson-desc">Running a local server, the shell, and a free hosted cluster.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Databases, Collections &amp; _id</p><p class="lesson-desc">How data is organized, ObjectId, and why every document has a key.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">CRUD Basics</p><p class="lesson-desc">insertOne, find, updateOne, deleteOne, and their many-document forms.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Query Operators &amp; Projection</p><p class="lesson-desc">$gt, $in, $and, and returning only the fields you need.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Model a small product catalog as documents, load sample data, and answer ten questions with find queries alone.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Working with Data</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Update Operators &amp; Arrays</p><p class="lesson-desc">$set, $inc, $push, $pull, and changing documents without rewriting them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Querying Nested Documents &amp; Arrays</p><p class="lesson-desc">Dot notation, $elemMatch, and the array query traps.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Sorting, Pagination &amp; Cursors</p><p class="lesson-desc">sort, limit, skip, and range-based paging that stays fast.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Validation &amp; JSON Schema</p><p class="lesson-desc">Adding structure to a flexible database without giving up flexibility.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Import, Export &amp; Backup Tools</p><p class="lesson-desc">mongoimport, mongoexport, mongodump, and mongorestore.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Import a messy dataset, add schema validation that rejects bad documents, and write the updates that clean up the rest.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Modeling Documents</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Embedding vs. Referencing</p><p class="lesson-desc">The central modeling decision, and how to make it from the access pattern.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">One-to-Many &amp; Many-to-Many</p><p class="lesson-desc">Arrays of subdocuments, references, and the pitfalls of each.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Modeling from Access Patterns</p><p class="lesson-desc">Start from the queries, not the entities.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Document Growth &amp; Size Limits</p><p class="lesson-desc">The 16 MB limit, unbounded arrays, and why they hurt long before the limit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">A First Look at Common Patterns</p><p class="lesson-desc">Subset, bucket, and computed values, introduced through small examples.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a document model for a blog or ordering system from a list of required queries, and defend every embed and reference.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Using MongoDB from Code</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Drivers &amp; Connection Strings</p><p class="lesson-desc">Connecting from application code, pooling, and handling secrets.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Native Driver vs. ODMs</p><p class="lesson-desc">What Mongoose-style layers add, and what they hide.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Indexes Basics</p><p class="lesson-desc">Single-field, unique, and TTL indexes, and what happens without them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Errors, Duplicates &amp; Retries</p><p class="lesson-desc">Handling duplicate keys, timeouts, and retryable operations.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Atlas, Users &amp; Network Access</p><p class="lesson-desc">Creating least-privilege users and locking down who can connect.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small API over MongoDB with indexes, validation, and error handling, then deploy it against a hosted cluster.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "my queries return data" to "I can aggregate, index for performance, and reason about consistency and transactions."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — The Aggregation Framework</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Pipelines, $match, $group &amp; $project</p><p class="lesson-desc">Thinking in stages, and replacing application loops with a pipeline.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">$lookup &amp; Joining Collections</p><p class="lesson-desc">Left outer joins in MongoDB and when a join is a sign of a model problem.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">$unwind, $facet &amp; $bucket</p><p class="lesson-desc">Reshaping arrays and computing several results in one pass.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Pipeline Optimization</p><p class="lesson-desc">Stage ordering, using indexes early, and reading pipeline explain output.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Views, $merge &amp; $out</p><p class="lesson-desc">Materializing results and building reusable read models.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a reporting pipeline with grouping, joins, and facets, then optimize it with evidence from explain.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Indexes &amp; Query Performance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How Indexes Work</p><p class="lesson-desc">B-trees over documents, multikey indexes, and what an index costs on writes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Compound Indexes &amp; the ESR Rule</p><p class="lesson-desc">Ordering fields by equality, sort, and range.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Reading explain()</p><p class="lesson-desc">Query plans, stages, keys examined, and spotting a collection scan.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Partial, Sparse, Text &amp; Wildcard Indexes</p><p class="lesson-desc">Indexing only what you need, and the specialized types.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Covered Queries &amp; the Profiler</p><p class="lesson-desc">Answering from the index and finding slow operations in production.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a slow workload, find its worst queries with the profiler, and fix each with a justified index.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Consistency &amp; Transactions</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Write Concern &amp; Durability</p><p class="lesson-desc">w, j, and what acknowledged actually means.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Read Concern &amp; Read Preference</p><p class="lesson-desc">Reading from secondaries and the staleness you accept.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Multi-Document Transactions</p><p class="lesson-desc">When you need them, what they cost, and how to keep them short.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Atomic Single-Document Operations</p><p class="lesson-desc">Designing so most updates need no transaction at all.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Change Streams</p><p class="lesson-desc">Reacting to changes in real time, and resuming after a failure.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a money-transfer or inventory flow two ways, with and without transactions, and compare their guarantees and costs.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Advanced Modeling</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Pattern Catalog</p><p class="lesson-desc">Bucket, outlier, extended reference, computed, and polymorphic patterns.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Schema Versioning &amp; Migrations</p><p class="lesson-desc">Evolving documents in place without downtime.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Time Series Collections</p><p class="lesson-desc">Storing and querying measurements efficiently.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Anti-Patterns to Avoid</p><p class="lesson-desc">Unbounded arrays, massive documents, and over-normalizing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Search &amp; Vector Search</p><p class="lesson-desc">Atlas Search, vector indexes, and when you need a search engine alongside the database.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Refactor a poorly modeled collection using at least three patterns, with before-and-after query and storage measurements.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I use MongoDB" to "I understand how it stores and replicates data, and I can shard, secure, and defend a design."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — MongoDB Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The WiredTiger Storage Engine</p><p class="lesson-desc">B-trees, document-level concurrency, and compression.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Journaling, Checkpoints &amp; Durability</p><p class="lesson-desc">What survives a crash and how recovery works.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">The Cache &amp; Memory Behavior</p><p class="lesson-desc">WiredTiger cache sizing, eviction, and working-set thinking.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">The Oplog &amp; Replication Mechanics</p><p class="lesson-desc">How changes flow to secondaries and what the oplog window means.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">The Query Planner &amp; Plan Cache</p><p class="lesson-desc">How plans are chosen, cached, and invalidated.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Trace one write from the client through the journal and oplog to a secondary, and explain each durability setting involved.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Replication &amp; Sharding</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Replica Sets &amp; Elections</p><p class="lesson-desc">Roles, voting, and what happens when a primary disappears.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Failover, Rollback &amp; Trade-offs</p><p class="lesson-desc">Write concern against data loss, and how rollbacks happen.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Sharding Fundamentals</p><p class="lesson-desc">Shards, mongos, config servers, and routing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Choosing a Shard Key</p><p class="lesson-desc">Cardinality, frequency, monotonicity, and the cost of a wrong choice.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Balancing, Hotspots &amp; Resharding</p><p class="lesson-desc">Chunk migration, uneven load, and changing a key later.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a sharded topology and shard key for a high-volume workload, and show how it behaves under hotspots and node failure.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Operations &amp; Security</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Backups &amp; Restores</p><p class="lesson-desc">Dumps, snapshots, and point-in-time recovery, and proving they work.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Monitoring &amp; Capacity Planning</p><p class="lesson-desc">The metrics that matter and sizing for growth.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Authentication, RBAC &amp; Encryption</p><p class="lesson-desc">Users and roles, TLS, and encryption at rest and in use.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Upgrades &amp; Compatibility</p><p class="lesson-desc">Version upgrades, feature compatibility, and rollback plans.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Incident Response</p><p class="lesson-desc">Slow clusters, replication lag, and disk pressure under pressure.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a runbook for a production cluster covering backup, restore, upgrade, and the three incidents you most expect.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Design</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Modeling Trade-offs at Scale</p><p class="lesson-desc">Where flexibility turns into cost, and where it pays off.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">MongoDB or a Relational Database?</p><p class="lesson-desc">A decision framework that avoids both fashion and prejudice.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Migrating To and From MongoDB</p><p class="lesson-desc">Moving data and application code without a big bang.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Vector &amp; AI Workloads</p><p class="lesson-desc">Embeddings, retrieval, and where a document store fits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">When MongoDB Is the Wrong Tool</p><p class="lesson-desc">Honest limits and the cases where another store wins.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design document for a real service: data model, indexes, sharding plan, consistency choices, and the risks you accept, argued for a skeptical reviewer.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Modeling appears at Junior as embedding versus referencing, returns at Intermediate as a catalog of patterns, and comes back at Senior as shard keys and trade-offs at scale. Consistency follows the same arc: single-document atomicity, then write and read concerns, then replication and failure behavior. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how WiredTiger journals or how a shard key distributes load is one skill; deciding whether MongoDB should hold a workload at all, and writing that down for a skeptical reviewer, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

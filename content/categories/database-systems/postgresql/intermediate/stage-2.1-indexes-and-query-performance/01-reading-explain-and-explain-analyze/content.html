@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading EXPLAIN &amp; EXPLAIN ANALYZE — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · indexes &amp; query performance</span> → lesson 01</p>
+  <h1>Reading EXPLAIN &amp; EXPLAIN ANALYZE</h1>
+  <p class="lede"><code>EXPLAIN</code> shows the plan Postgres chose, and <code>EXPLAIN ANALYZE</code> runs the query so you can compare the plan's estimates with what actually happened.</p>
+
+  <h2><span class="num">§1</span>Reading a Plan</h2>
+
+  <p>A plan is a tree of <strong>nodes</strong>. Data flows from the leaves (scans) up to the root (the final result). Each node shows an estimated <code>cost</code> as <code>startup..total</code> in arbitrary planner units, the estimated <code>rows</code>, and the average row <code>width</code> in bytes.</p>
+  <pre>EXPLAIN SELECT * FROM orders WHERE customer_id = 42;
+
+ Index Scan using orders_customer_id_idx on orders  (cost=0.43..8.45 rows=1 width=40)
+   Index Cond: (customer_id = 42)</pre>
+  <p>Indentation shows nesting; the most indented nodes run first. Common nodes: <strong>Seq Scan</strong> (read the whole table), <strong>Index Scan</strong> and <strong>Index Only Scan</strong>, <strong>Bitmap Heap Scan</strong> (collect matching row locations, then read pages in order), <strong>Nested Loop / Hash Join / Merge Join</strong>, <strong>Sort</strong>, <strong>Aggregate</strong>. Plain <code>EXPLAIN</code> does not run the query, so it is safe on anything.</p>
+
+  <h2><span class="num">§2</span>EXPLAIN ANALYZE</h2>
+
+  <p><code>EXPLAIN ANALYZE</code> executes the query and adds real measurements next to the estimates: <code>actual time</code> (milliseconds, startup..total, per loop), actual <code>rows</code>, and <code>loops</code>.</p>
+  <pre>EXPLAIN (ANALYZE, BUFFERS)
+SELECT c.email, count(*)
+FROM orders o JOIN customers c ON c.id = o.customer_id
+WHERE o.placed_at &gt;= now() - interval '7 days'
+GROUP BY c.email;
+
+ HashAggregate  (cost=...) (actual time=41.2..41.9 rows=830 loops=1)
+   -&gt;  Hash Join  (actual time=3.1..35.6 rows=9120 loops=1)
+         -&gt;  Seq Scan on orders o  (actual time=0.02..28.4 rows=9120 loops=1)
+               Filter: (placed_at &gt;= ...)
+               Rows Removed by Filter: 990880
+               Buffers: shared hit=6120 read=1210</pre>
+  <p><strong>It really runs the statement.</strong> For <code>INSERT</code>, <code>UPDATE</code>, or <code>DELETE</code>, wrap it: <code>BEGIN; EXPLAIN ANALYZE ...; ROLLBACK;</code>. <code>BUFFERS</code> reports how many 8 kB pages came from cache (<code>hit</code>) versus disk or the OS (<code>read</code>); on PostgreSQL 18 it is included automatically with <code>ANALYZE</code>. Multiply a node's <code>actual time</code> by its <code>loops</code> to get its total time.</p>
+
+  <h2><span class="num">§3</span>Finding Where the Time Goes</h2>
+
+  <p>Read the plan with three questions:</p>
+  <ol>
+    <li><strong>Which node has the largest actual time</strong> (after accounting for loops, and subtracting its children's time)?</li>
+    <li><strong>Do estimates match reality?</strong> A node with <code>rows=1</code> estimated but <code>rows=250000</code> actual means the planner chose its strategy on bad information, which is the usual root cause of a slow plan (see the statistics lesson).</li>
+    <li><strong>Is a scan reading far more than it returns?</strong> <code>Rows Removed by Filter: 990880</code> on a node that returns 9,120 rows suggests an index on the filter column.</li>
+  </ol>
+  <p>A Seq Scan is not automatically bad: reading most of a table sequentially is the fastest plan. It becomes a problem when it throws away almost everything it reads. Always check <code>Execution Time</code> at the bottom and compare runs; the first run may be slow because the cache was cold.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The biggest estimate-versus-actual gap in a plan is usually where the problem began. Fix the statistics or the query shape there, rather than tuning the slow node downstream.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Running <code>EXPLAIN ANALYZE</code> on a <code>DELETE</code> or <code>UPDATE</code> without a transaction</td><td>The change is really applied</td><td>Wrap it in <code>BEGIN; ... ROLLBACK;</code></td></tr>
+    <tr><td>Judging by cost numbers alone</td><td>Costs are planner estimates in arbitrary units, not milliseconds</td><td>Compare <code>actual time</code> and buffers</td></tr>
+    <tr><td>Timing a query once</td><td>Cache state skews the first run</td><td>Run it several times and compare, noting cold versus warm</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run <code>EXPLAIN (ANALYZE, BUFFERS)</code> on a join query and mark the node with the largest self time.</li>
+      <li>Find a node where estimated rows and actual rows differ by 10x or more.</li>
+      <li>Run <code>EXPLAIN ANALYZE</code> on an <code>UPDATE</code> safely inside a rolled-back transaction.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A plan is a tree: data flows from the most indented scans upward, and plain <code>EXPLAIN</code> does not execute the query.</li>
+      <li><code>EXPLAIN (ANALYZE, BUFFERS)</code> runs the statement and shows actual time, rows, loops, and cache hits.</li>
+      <li>Look for large estimate-versus-actual gaps and scans that discard most of what they read.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Indexes &amp; Query Performance — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

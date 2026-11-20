@@ -1,0 +1,5 @@
+{
+  "title": "Rebase vs. Merge",
+  "description": "Replaying commits, linear history, and the rule about shared branches.",
+  "order": 1
+}

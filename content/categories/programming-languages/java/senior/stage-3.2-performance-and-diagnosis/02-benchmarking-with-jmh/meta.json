@@ -1,0 +1,5 @@
+{
+  "title": "Benchmarking with JMH",
+  "description": "Why naive timing lies, and how to write a trustworthy microbenchmark.",
+  "order": 2
+}

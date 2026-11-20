@@ -1,0 +1,5 @@
+{
+  "title": "Full-Text Search",
+  "description": "tsvector, tsquery, ranking, and when built-in search is enough.",
+  "order": 4
+}

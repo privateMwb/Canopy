@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Statistics for Performance Data — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · measuring properly</span> → lesson 05</p>
+  <h1>Statistics for Performance Data</h1>
+  <p class="lede">Performance numbers are noisy and skewed. A few statistical habits stop you shipping a 'fix' that was just luck, and from missing a real regression.</p>
+
+  <h2><span class="num">§1</span>Averages Lie, Percentiles Don't</h2>
+  <p>Load times are not a bell curve. Most visits are fast, with a <strong>long tail</strong> of very slow ones. The mean gets dragged around by the tail and describes almost nobody's actual experience.</p>
+  <table>
+    <tr><th>Statistic</th><th>What it tells you</th></tr>
+    <tr><td>Median (p50)</td><td>The typical visit: half are faster, half slower</td></tr>
+    <tr><td>p75</td><td>The bar Core Web Vitals use</td></tr>
+    <tr><td>p95 / p99</td><td>How bad the slow tail is</td></tr>
+    <tr><td>Mean</td><td>Easily distorted. Rarely the right summary.</td></tr>
+  </table>
+  <pre>const sorted = [...samples].sort((a, b) =&gt; a - b);
+const pct = p =&gt; sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))];
+console.log({ p50: pct(0.5), p75: pct(0.75), p95: pct(0.95) });</pre>
+  <p>Always keep the full <strong>distribution</strong> in view. A histogram shows things a single number hides, such as two clusters of users, one on fast devices and one on slow.</p>
+
+  <h2><span class="num">§2</span>Noise and Repeatability</h2>
+  <p>Run the same lab test ten times and you'll get ten different answers. Network jitter, CPU load, background processes, and caching all move the numbers. A single before-and-after pair says almost nothing.</p>
+  <ul>
+    <li>Run <strong>many iterations</strong> and compare <strong>medians</strong>, not single runs.</li>
+    <li>Control what you can: same machine, same throttling, same time of day, cold or warm cache consistently.</li>
+    <li>Look at the <strong>spread</strong>. If before and after ranges overlap heavily, you can't tell them apart.</li>
+    <li>Beware of <strong>warm-up</strong> effects. The first run is often an outlier.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Not Fooling Yourself</h2>
+  <p>Field data adds its own traps. Visits change as traffic changes, so a metric can move without any code change.</p>
+  <table>
+    <tr><th>Trap</th><th>Example</th><th>Defense</th></tr>
+    <tr><td>Mix shift</td><td>A marketing push brings more slow-phone users, and p75 worsens</td><td>Segment by device and country before blaming code</td></tr>
+    <tr><td>Small samples</td><td>p95 from 40 visits</td><td>Require a minimum sample size</td></tr>
+    <tr><td>Cherry-picking</td><td>Reporting the one run that looks good</td><td>Decide the metric and method before testing</td></tr>
+    <tr><td>Regression to the mean</td><td>An unusually bad day looks better the next</td><td>Compare over longer windows</td></tr>
+    <tr><td>Simpson-style effects</td><td>Every segment improves but the total worsens</td><td>Check both the aggregate and the segments</td></tr>
+  </table>
+  <p>The gold standard is an <strong>A/B test</strong>: randomly split users, change one thing, and compare the same metric across the groups over the same period. It controls for most of these effects.</p>
+
+  <div class="callout">
+    <span class="label">Rule of thumb</span>
+    If you can't say how much the number varies when nothing changes, you can't tell whether a change did anything.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Reporting the mean load time</td><td>The long tail distorts it</td><td>Report p50, p75, and p95</td></tr>
+    <tr><td>Concluding from one before-and-after test</td><td>Noise may account for the difference</td><td>Repeat, and compare distributions</td></tr>
+    <tr><td>Blaming code for a field regression without segmenting</td><td>The audience mix may have changed</td><td>Slice by device, country, and release</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run a lab test ten times on the same page. Record the median and the range, and say how big a change you could detect.</li>
+      <li>Take a field metric and compare its p75 against its mean. Explain why they differ.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Performance data is skewed, so use percentiles and look at the distribution, not the mean.</li>
+      <li>Repeat lab tests, control conditions, and look at spread before claiming an improvement.</li>
+      <li>Watch for mix shift, small samples, and cherry-picking, and use A/B tests when you need proof.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Measuring Properly — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

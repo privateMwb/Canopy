@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arrays &amp; Strings — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · core data structures</span> → lesson 02</p>
+  <h1>Arrays &amp; Strings</h1>
+  <p class="lede">Contiguous memory, indexing, and which operations are cheap versus expensive.</p>
+
+  <h2><span class="num">§1</span>Why Arrays Are Fast to Index</h2>
+  <p>An array stores its elements in one contiguous block of memory. Because every element is the same size, the computer can jump directly to index <code>i</code> with simple arithmetic — no searching required. This is why <code>array[i]</code> is O(1), regardless of array size.</p>
+
+  <h2><span class="num">§2</span>What's Cheap, What's Expensive</h2>
+  <table>
+    <tr><th>Operation</th><th>Complexity</th><th>Why</th></tr>
+    <tr><td>Read by index</td><td>O(1)</td><td>Direct memory address calculation</td></tr>
+    <tr><td>Append to the end</td><td>O(1) amortized</td><td>Usually just writes to the next free slot</td></tr>
+    <tr><td>Insert at the start/middle</td><td>O(n)</td><td>Every later element must shift over by one</td></tr>
+    <tr><td>Search for a value</td><td>O(n)</td><td>No shortcuts without extra structure (sorting, hashing)</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>Strings Are Arrays of Characters</h2>
+  <pre>s = "hello"
+s[0]          <span class="comment"># 'h' — O(1), same as array indexing</span>
+s + "!"       <span class="comment"># creates a NEW string — most languages treat strings as immutable</span></pre>
+  <p>Many languages treat strings as immutable — every "modification" actually builds a new string. Repeatedly concatenating in a loop can silently turn an O(n) operation into O(n²), since each concatenation copies everything built so far.</p>
+  <pre><span class="comment"># O(n²) — each += copies the growing string so far</span>
+result = ""
+for char in long_list:
+    result += char
+
+<span class="comment"># O(n) — build a list, join once at the end</span>
+result = "".join(long_list)</pre>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Repeated string concatenation in a loop</td><td>Silent O(n²) blowup on large inputs</td><td>Build a list and join once, instead of concatenating repeatedly</td></tr>
+    <tr><td>Assuming insert-at-start is O(1) like append</td><td>Unexpectedly slow code on large arrays</td><td>Remember inserting anywhere but the end requires shifting elements</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Explain why <code>array.append(x)</code> is typically O(1) while <code>array.insert(0, x)</code> is O(n).</li>
+      <li>Rewrite a loop that builds a string with repeated <code>+=</code> to instead use a list and a single <code>join</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Arrays support O(1) indexed access because elements sit in contiguous, equally-sized memory slots.</li>
+      <li>Appending is cheap; inserting or deleting anywhere else requires shifting elements, costing O(n).</li>
+      <li>Strings are often immutable — repeated concatenation in a loop can silently become O(n²).</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Core Data Structures — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

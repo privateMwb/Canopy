@@ -1,0 +1,5 @@
+{
+  "title": "Tree Shaking & Dependency Choices",
+  "description": "Smaller libraries and import discipline.",
+  "order": 3
+}

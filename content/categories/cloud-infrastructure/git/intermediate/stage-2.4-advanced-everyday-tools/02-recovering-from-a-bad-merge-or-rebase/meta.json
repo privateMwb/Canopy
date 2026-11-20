@@ -1,0 +1,5 @@
+{
+  "title": "Recovering From a Bad Merge or Rebase",
+  "description": "Undoing merges that went wrong, including after they were pushed.",
+  "order": 2
+}

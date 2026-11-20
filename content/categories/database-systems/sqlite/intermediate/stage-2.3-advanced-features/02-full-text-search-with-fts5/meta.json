@@ -1,0 +1,5 @@
+{
+  "title": "Full-Text Search with FTS5",
+  "description": "Building a search index, ranking, and keeping it in sync.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Evolutionary Architecture: Fitness Functions & Decision Records",
+  "description": "Automated checks that guard architectural intent, and ADRs that record why a choice was made.",
+  "order": 5
+}

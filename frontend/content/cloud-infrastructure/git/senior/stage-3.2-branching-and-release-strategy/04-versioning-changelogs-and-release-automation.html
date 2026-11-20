@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Versioning, Changelogs &amp; Release Automation — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · branching &amp; release strategy</span> → lesson 04</p>
+  <h1>Versioning, Changelogs &amp; Release Automation</h1>
+  <p class="lede">Semantic versions, annotated tags, and conventional commits let a pipeline compute the next version, write the changelog, and publish a release with no manual steps.</p>
+
+  <h2><span class="num">§1</span>Semantic Versioning</h2>
+  <p><strong>SemVer</strong> numbers a release <code>MAJOR.MINOR.PATCH</code> and communicates risk to users:</p>
+  <table>
+    <tr><th>Part</th><th>Bump when</th><th>Example</th></tr>
+    <tr><td>MAJOR</td><td>You make an incompatible, breaking change</td><td><code>2.4.1</code> to <code>3.0.0</code></td></tr>
+    <tr><td>MINOR</td><td>You add functionality in a backward-compatible way</td><td><code>2.4.1</code> to <code>2.5.0</code></td></tr>
+    <tr><td>PATCH</td><td>You make backward-compatible bug fixes</td><td><code>2.4.1</code> to <code>2.4.2</code></td></tr>
+  </table>
+  <p>Pre-release and build labels extend it: <code>2.5.0-rc.1</code>, <code>2.5.0+build.7</code>. SemVer works best for libraries and APIs; applications often use calendar versions such as <code>2026.11.1</code> instead.</p>
+
+  <h2><span class="num">§2</span>Tags Mark Releases</h2>
+  <pre>git tag -a v2.5.0 -m "Release 2.5.0"        <span class="comment"># annotated (or -s to sign)</span>
+git push origin v2.5.0
+git describe --tags                         <span class="comment"># v2.5.0-14-g9c8b7a6  (14 commits after the tag)</span>
+git log v2.4.0..v2.5.0 --oneline            <span class="comment"># everything in the release</span>
+git tag --sort=-v:refname | head            <span class="comment"># newest versions first</span></pre>
+
+  <h2><span class="num">§3</span>Changelogs From Commits</h2>
+  <p>A changelog is for <strong>humans</strong>: what changed, grouped by kind, with breaking changes visible. If commits follow Conventional Commits, tools can generate it and decide the version:</p>
+  <table>
+    <tr><th>Commit prefix</th><th>Version effect</th><th>Changelog section</th></tr>
+    <tr><td><code>fix:</code></td><td>Patch</td><td>Bug Fixes</td></tr>
+    <tr><td><code>feat:</code></td><td>Minor</td><td>Features</td></tr>
+    <tr><td><code>feat!:</code> or <code>BREAKING CHANGE:</code> footer</td><td>Major</td><td>Breaking Changes</td></tr>
+    <tr><td><code>docs:</code>, <code>chore:</code>, <code>refactor:</code></td><td>None</td><td>Usually omitted</td></tr>
+  </table>
+
+  <h2><span class="num">§4</span>Automating the Release</h2>
+  <p>Tools such as release-please, semantic-release, and changesets read the commits since the last tag, compute the next version, update the changelog, create the tag, and publish. A typical flow runs on every merge to <code>main</code>:</p>
+  <pre><span class="comment"># CI on merge to main</span>
+npx semantic-release
+<span class="comment">#  1. analyze commits since the last tag  -&gt;  next version 2.5.0</span>
+<span class="comment">#  2. generate release notes and update CHANGELOG.md</span>
+<span class="comment">#  3. create tag v2.5.0 and a GitHub Release</span>
+<span class="comment">#  4. publish the package</span></pre>
+  <p>Protect the release step: only CI may create release tags, tags should be immutable (never move or re-tag a published version), and credentials for publishing must be scoped and stored as CI secrets.</p>
+  <div class="callout">
+    <span class="label">Never move a published tag</span>
+    Once users or package registries have seen <code>v2.5.0</code>, it must forever mean the same commit. If it is wrong, ship <code>v2.5.1</code>. Re-tagging breaks caches, builds, and trust.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Bumping the wrong part of the version</td><td>Users upgrade blindly into a breaking change</td><td>Derive the bump from commit types, and review breaking changes</td></tr>
+    <tr><td>Dumping <code>git log</code> as the changelog</td><td>Noise that no user can read</td><td>Write or generate grouped, human-oriented notes</td></tr>
+    <tr><td>Re-tagging a released version to fix a mistake</td><td>Different consumers have different code under one version</td><td>Release a new patch version</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Given ten Conventional Commit messages you invent, decide the next version from <code>1.8.3</code> and write the changelog entries.</li>
+      <li>Sketch a CI job that, on each merge to <code>main</code>, computes the version, tags it, and publishes, listing the secrets it needs.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>SemVer encodes risk: major breaks, minor adds, patch fixes.</li>
+      <li>Conventional Commits let tools compute versions and changelogs.</li>
+      <li>Automate releases in CI, and never move a published tag.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Branching &amp; Release Strategy — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

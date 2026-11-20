@@ -1,0 +1,5 @@
+{
+  "title": "Stacking Contexts & Painting Order",
+  "description": "Why z-index fails and how to reason about layers.",
+  "order": 3
+}

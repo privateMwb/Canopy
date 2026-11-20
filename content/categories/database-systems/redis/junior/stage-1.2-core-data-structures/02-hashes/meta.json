@@ -1,0 +1,5 @@
+{
+  "title": "Hashes",
+  "description": "Storing objects as field-value maps and updating single fields.",
+  "order": 2
+}

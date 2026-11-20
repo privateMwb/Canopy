@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Special Methods — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · classes &amp; first tests</span> → lesson 02</p>
+  <h1>Special Methods</h1>
+  <p class="lede">Methods with double-underscore names let your objects work with <code>print</code>, <code>==</code>, <code>len</code>, <code>for</code>, and the other built-in syntax.</p>
+
+  <h2><span class="num">§1</span>Making Objects Printable</h2>
+
+  <p>Python calls <code>__repr__</code> to get an unambiguous developer view (shown in the REPL and in containers) and <code>__str__</code> for friendly output used by <code>print</code> and <code>str()</code>. If you define only one, define <code>__repr__</code>.</p>
+
+  <pre>class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __repr__(self):
+        return f"Point({self.x!r}, {self.y!r})"
+
+p = Point(1, 2)
+print(p)            <span class="comment"># Point(1, 2)  (falls back to __repr__)</span>
+print([p])          <span class="comment"># [Point(1, 2)]</span></pre>
+
+  <p>Without <code>__repr__</code>, you'd see something like <code>&lt;__main__.Point object at 0x...&gt;</code>, which tells you nothing.</p>
+
+  <h2><span class="num">§2</span>Equality and Hashing</h2>
+
+  <p>By default, <code>==</code> compares identity. Define <code>__eq__</code> to compare by value. If you define <code>__eq__</code> on a mutable class, Python makes instances unhashable unless you also define <code>__hash__</code>.</p>
+
+  <pre>class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __eq__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return (self.x, self.y) == (other.x, other.y)
+
+    def __hash__(self):
+        return hash((self.x, self.y))     <span class="comment"># only safe if x, y don't change</span>
+
+print(Point(1, 2) == Point(1, 2))         <span class="comment"># True</span>
+print(len({Point(1, 2), Point(1, 2)}))    <span class="comment"># 1</span></pre>
+
+  <p>Returning <code>NotImplemented</code> (not <code>False</code>) lets Python try the other operand's method, which is the correct protocol.</p>
+
+  <h2><span class="num">§3</span>Behaving Like a Container</h2>
+
+  <pre>class Playlist:
+    def __init__(self, songs):
+        self._songs = list(songs)
+
+    def __len__(self):
+        return len(self._songs)
+
+    def __getitem__(self, index):
+        return self._songs[index]
+
+    def __iter__(self):
+        return iter(self._songs)
+
+    def __contains__(self, song):
+        return song in self._songs
+
+pl = Playlist(["a", "b", "c"])
+print(len(pl), pl[0], "b" in pl)     <span class="comment"># 3 a True</span>
+for s in pl:
+    print(s)</pre>
+
+  <p>Operators have special methods too: <code>__add__</code> for <code>+</code>, <code>__lt__</code> for <code>&lt;</code>, <code>__bool__</code> for truthiness, and <code>__call__</code> to make an instance callable.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Special methods are Python's protocols. You don't inherit from a "Sequence" class to get <code>len()</code>; you define <code>__len__</code> and the built-in just works. These are called "dunder" (double underscore) methods.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No <code>__repr__</code></td><td>Debug output like <code>&lt;Point object at 0x7f...&gt;</code></td><td>Add a <code>__repr__</code> that shows the constructor call</td></tr>
+    <tr><td>Defining <code>__eq__</code> without thinking about <code>__hash__</code></td><td>Instances become unhashable, so they fail in sets and as dict keys</td><td>Define <code>__hash__</code> consistently, or keep the class immutable</td></tr>
+    <tr><td>Returning <code>False</code> for a wrong-type comparison in <code>__eq__</code></td><td>Blocks reflected comparison</td><td>Return <code>NotImplemented</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add <code>__repr__</code>, <code>__eq__</code>, and <code>__add__</code> to a <code>Vector2</code> class so <code>Vector2(1, 2) + Vector2(3, 4)</code> works.</li>
+      <li>Write a <code>Deck</code> class that supports <code>len()</code>, indexing, and iteration.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>__repr__</code> is for developers and <code>__str__</code> for end users; always define <code>__repr__</code>.</li>
+      <li>Define <code>__eq__</code> for value equality, and keep <code>__hash__</code> consistent with it.</li>
+      <li><code>__len__</code>, <code>__iter__</code>, and <code>__getitem__</code> make your class work with built-in syntax.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Classes &amp; First Tests — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

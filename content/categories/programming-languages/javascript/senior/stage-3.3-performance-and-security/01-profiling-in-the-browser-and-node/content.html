@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Profiling in the Browser &amp; Node — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · performance &amp; security</span> → lesson 01</p>
+  <h1>Profiling in the Browser &amp; Node</h1>
+  <p class="lede">Profiling replaces guessing with evidence: a CPU profile shows which functions actually consume the time, and a flame graph makes the answer visible at a glance.</p>
+
+  <h2><span class="num">§1</span>The Browser Performance Panel</h2>
+
+  <p>Open DevTools → <strong>Performance</strong>, click record, perform the slow interaction, and stop. You get a timeline of main-thread activity, network, frames, and layout. Long tasks are flagged with red corners. Throttle the CPU (4x or 6x) to approximate a mid-range phone — your developer machine hides problems.</p>
+
+  <pre><span class="comment">// Add your own marks so your code appears on the timeline</span>
+performance.mark("render-start");
+renderList(items);
+performance.mark("render-end");
+performance.measure("render list", "render-start", "render-end");
+console.log(performance.getEntriesByName("render list")[0].duration);
+
+console.time("sort"); data.sort(cmp); console.timeEnd("sort");
+<span class="comment">// Prefer performance.now() for timing: monotonic and sub-millisecond</span></pre>
+
+  <h2><span class="num">§2</span>Reading a Flame Graph</h2>
+
+  <p>A flame graph stacks the call stack over time: the x-axis is time (or sample count), the y-axis is call depth, and <strong>width</strong> is cost. Look for wide boxes. *Self time* is time spent in the function itself; *total time* includes everything it called. Work down from the widest top-level function to the widest child until you reach code you own and can change.</p>
+
+  <ul>
+    <li><strong>Wide and flat on top</strong> = a function doing a lot of work by itself — optimize or avoid it.</li>
+    <li><strong>Many narrow identical stacks</strong> = a small function called very many times — reduce calls.</li>
+    <li><strong>Tall and thin</strong> = deep recursion or framework layers — usually not the problem.</li>
+    <li><strong>Purple/green bars</strong> in the browser = layout and paint — likely forced reflows or large DOM.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Profiling Node</h2>
+
+  <p>Node can write a CPU profile, or you can attach Chrome DevTools to it. Use <code>--cpu-prof</code> for a file, or <code>--inspect</code> and open <code>chrome://inspect</code>. In production, use a sampling profiler with low overhead, and profile under realistic load.</p>
+
+  <pre><span class="comment"># node --cpu-prof app.js            # writes CPU.&lt;date&gt;.cpuprofile; open in DevTools</span>
+<span class="comment"># node --inspect app.js             # attach Chrome DevTools: Profiler / Memory tabs</span>
+<span class="comment"># node --prof app.js &amp;&amp; node --prof-process isolate-*.log    # V8's built-in tick profiler</span>
+<span class="comment"># npx autocannon -c 50 -d 20 http://localhost:3000/slow      # generate load while profiling</span>
+<span class="comment"># npx 0x app.js                     # one-command flame graph</span></pre>
+
+  <p>Change one thing, then profile again. Record the before and after numbers — an optimization with no measurement is a guess, and sometimes a regression.</p>
+
+  <div class="callout">
+    <span class="label">Optimize the right thing</span>
+    Amdahl's law applies: speeding up something that takes 2% of the time can't improve the total by more than 2%. The profile tells you where the other 98% is.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Profiling on a fast laptop with no throttling</td><td>Real-device bottlenecks are invisible</td><td>Throttle CPU and network; test on a real mid-range device</td></tr>
+    <tr><td>Profiling a development build</td><td>Includes dev-mode checks and unminified frameworks</td><td>Profile production builds</td></tr>
+    <tr><td>Optimizing before measuring</td><td>Time wasted on code that isn't slow</td><td>Profile, fix the widest bar, re-measure</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Record a Performance profile of a slow interaction with 4x CPU throttling, identify the widest function, and write down its self time.</li>
+      <li>Run a Node server under <code>autocannon</code> with <code>--cpu-prof</code>, find the hottest function, optimize it, and report requests per second before and after.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Profile first: the Performance panel, <code>--cpu-prof</code>, and <code>--inspect</code> show where time really goes.</li>
+      <li>In a flame graph, width is cost — follow the widest boxes down to code you own.</li>
+      <li>Profile production builds under realistic throttling and load, and re-measure after every change.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Performance &amp; Security — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

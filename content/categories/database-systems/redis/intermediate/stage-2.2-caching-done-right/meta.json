@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Caching Done Right",
+  "description": "Invalidation, stampedes, TTL design, write-through and write-behind, and consistency with the database.",
+  "order": 2
+}

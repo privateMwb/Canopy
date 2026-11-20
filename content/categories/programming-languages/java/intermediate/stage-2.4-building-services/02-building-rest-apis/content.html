@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Building REST APIs — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · building services</span> → lesson 02</p>
+  <h1>Building REST APIs</h1>
+  <p class="lede">A well-built REST controller maps HTTP to your code, validates input at the boundary, and reports failures with the right status codes and a consistent error shape.</p>
+
+  <h2><span class="num">§1</span>Controllers and Resources</h2>
+  <p>Model your API around <strong>resources</strong> (nouns) and use HTTP methods for the verbs: <code>GET</code> reads, <code>POST</code> creates, <code>PUT</code> replaces, <code>PATCH</code> partially updates, <code>DELETE</code> removes.</p>
+  <pre>@RestController
+@RequestMapping("/api/books")
+class BookController {
+    private final BookService service;
+    BookController(BookService service) { this.service = service; }
+
+    @GetMapping
+    List&lt;BookDto&gt; list(@RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "20") int size) {
+        return service.list(page, size);
+    }
+
+    @GetMapping("/{id}")
+    BookDto get(@PathVariable long id) { return service.get(id); }       <span class="comment">// 404 handled below</span>
+
+    @PostMapping
+    ResponseEntity&lt;BookDto&gt; create(@Valid @RequestBody CreateBook req) {
+        BookDto created = service.create(req);
+        return ResponseEntity.created(URI.create("/api/books/" + created.id())).body(created);   <span class="comment">// 201 + Location</span>
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void delete(@PathVariable long id) { service.delete(id); }
+}</pre>
+  <p>Use separate <strong>DTOs</strong> (data transfer objects) for the request and response rather than exposing your database entities directly. Otherwise a schema change breaks the API, and you risk leaking fields like password hashes. Records make excellent DTOs.</p>
+
+  <h2><span class="num">§2</span>Validation</h2>
+  <p>Declare constraints on the input type and add <code>@Valid</code>; Spring rejects bad input before your code runs. Add <code>spring-boot-starter-validation</code> to enable it.</p>
+  <pre>record CreateBook(
+    @NotBlank @Size(max = 200) String title,
+    @NotBlank String author,
+    @Min(1) @Max(5000) int pages,
+    @Email String contactEmail) { }</pre>
+  <p>Validation at the boundary guards against malformed input; business rules ("this ISBN already exists") belong in the service layer, because they depend on state.</p>
+
+  <h2><span class="num">§3</span>Error Handling</h2>
+  <p>Throw meaningful exceptions from the service layer and translate them into HTTP responses in <strong>one place</strong> with <code>@RestControllerAdvice</code>. Return a consistent body; Spring supports the standard <code>ProblemDetail</code> (RFC 9457) format.</p>
+  <pre>class BookNotFoundException extends RuntimeException {
+    BookNotFoundException(long id) { super("book " + id + " not found"); }
+}
+
+@RestControllerAdvice
+class ApiErrors {
+    @ExceptionHandler(BookNotFoundException.class)
+    ProblemDetail notFound(BookNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    ProblemDetail invalid(MethodArgumentNotValidException e) {
+        var pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "validation failed");
+        pd.setProperty("fields", e.getBindingResult().getFieldErrors().stream()
+            .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (a, b) -&gt; a)));
+        return pd;
+    }
+}</pre>
+  <p>Never return a stack trace or internal details to clients; log them on the server and send a generic message for unexpected errors.</p>
+
+  <h2><span class="num">§4</span>Status Codes</h2>
+  <p>Use them precisely: <code>200</code> OK, <code>201</code> Created (with a <code>Location</code> header), <code>204</code> No Content, <code>400</code> malformed or invalid input, <code>401</code> not authenticated, <code>403</code> authenticated but not allowed, <code>404</code> not found, <code>409</code> conflict (duplicate, version mismatch), <code>422</code> semantically invalid, <code>429</code> too many requests, <code>500</code> an unexpected server bug. Don't return <code>200</code> with an error in the body. Make <code>PUT</code> and <code>DELETE</code> <strong>idempotent</strong> (repeating them has the same effect as doing them once), and consider an idempotency key for <code>POST</code> operations like payments that a client may retry.</p>
+
+  <h2><span class="num">§5</span>Pagination and Evolution</h2>
+  <p>Never return an unbounded list. Accept <code>page</code>/<code>size</code> or a cursor and cap the maximum. Treat the contract as public: adding optional fields is safe; renaming, removing, or changing the meaning of a field breaks consumers, so version the API before you do that.</p>
+
+  <div class="callout">
+    <span class="label">The controller is thin</span>
+    A controller should translate HTTP in and out: parse, validate, call a service, and shape the response. If it contains business logic or database calls, move them down a layer so they can be tested without HTTP.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Returning JPA entities directly from endpoints</td><td>Schema changes break clients, and sensitive fields can leak</td><td>Use separate DTOs</td></tr>
+    <tr><td>Skipping <code>@Valid</code> and checking input manually in each method</td><td>Inconsistent validation</td><td>Declare constraints and handle failures centrally</td></tr>
+    <tr><td>Returning <code>200</code> with <code>{"error": ...}</code></td><td>Clients and proxies misread failures</td><td>Use the proper 4xx/5xx status</td></tr>
+    <tr><td>Different error formats from different endpoints</td><td>Clients need special cases</td><td>Use one <code>@RestControllerAdvice</code> and <code>ProblemDetail</code></td></tr>
+    <tr><td>Unbounded list endpoints</td><td>Memory and latency blow up as data grows</td><td>Paginate with a maximum page size</td></tr>
+    <tr><td>Exposing stack traces in responses</td><td>Information disclosure</td><td>Log server-side, return a generic message</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build CRUD endpoints for a <code>Book</code> resource with DTO records, validation, <code>201</code> with <code>Location</code>, and <code>404</code> for missing ids.</li>
+      <li>Add a <code>@RestControllerAdvice</code> that returns <code>ProblemDetail</code> for validation errors and for your not-found exception.</li>
+      <li>Add pagination with a maximum <code>size</code> of 100, and test what happens when a client asks for 10,000.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Model resources with the right HTTP verbs, use DTOs, and keep controllers thin.</li>
+      <li>Validate input with annotations at the boundary and translate exceptions centrally into consistent error bodies.</li>
+      <li>Use precise status codes, paginate lists, and treat the API as a public contract.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Building Services — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

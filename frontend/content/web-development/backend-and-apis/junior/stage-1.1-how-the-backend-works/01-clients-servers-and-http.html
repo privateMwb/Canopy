@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clients, Servers &amp; HTTP — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · how the backend works</span> → lesson 01</p>
+  <h1>Clients, Servers &amp; HTTP</h1>
+  <p class="lede">Requests, responses, methods, status codes, and headers.</p>
+
+  <h2><span class="num">§1</span>The Conversation Behind Every Page</h2>
+
+  <p>A <strong>client</strong> (a browser, a mobile app, another server) asks for something; a <strong>server</strong> is a program that listens for those asks and answers them. The language they speak is <strong>HTTP</strong>: a text-based, request/response protocol that runs on top of TCP (and, with HTTP/3, QUIC). Each exchange is independent: the server does not inherently remember the previous request, which is why things like sessions and tokens exist later in this course.</p>
+
+  <p>Here is a complete request and response as they travel over the wire. Everything you build in the backend is, in the end, a program that turns the first block into the second.</p>
+
+  <pre>GET /api/books/42?expand=author HTTP/1.1
+Host: library.example.com
+Accept: application/json
+Authorization: Bearer eyJhbGciOi...
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Cache-Control: max-age=60
+
+{"id": 42, "title": "Dune", "author": {"id": 7, "name": "Frank Herbert"}}</pre>
+
+  <h2><span class="num">§2</span>Anatomy of a Request and Response</h2>
+
+  <ul>
+    <li><strong>Request line / status line:</strong> method, path (plus query string), and protocol version on the way in; protocol version, status code, and reason phrase on the way out.</li>
+    <li><strong>Headers:</strong> key-value metadata such as <code>Content-Type</code>, <code>Authorization</code>, <code>Accept</code>, <code>Cache-Control</code>, and <code>Set-Cookie</code>.</li>
+    <li><strong>Body:</strong> optional payload, usually JSON for APIs. <code>GET</code> requests normally have none; <code>POST</code>, <code>PUT</code>, and <code>PATCH</code> usually do.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Methods Carry Meaning</h2>
+
+  <p>The method states the <em>intent</em>. Two properties matter for correctness: a <strong>safe</strong> method does not change server state, and an <strong>idempotent</strong> method has the same effect whether you send it once or five times. Browsers, proxies, and retry logic all rely on these promises.</p>
+
+  <table>
+    <tr><th>Method</th><th>Typical use</th><th>Safe</th><th>Idempotent</th></tr>
+    <tr><td><code>GET</code></td><td>Read a resource</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td><code>POST</code></td><td>Create a resource or trigger an action</td><td>No</td><td>No</td></tr>
+    <tr><td><code>PUT</code></td><td>Replace a resource entirely</td><td>No</td><td>Yes</td></tr>
+    <tr><td><code>PATCH</code></td><td>Partially update a resource</td><td>No</td><td>Not guaranteed</td></tr>
+    <tr><td><code>DELETE</code></td><td>Remove a resource</td><td>No</td><td>Yes</td></tr>
+  </table>
+
+  <h2><span class="num">§4</span>Status Codes by Family</h2>
+
+  <p>The first digit tells the client what kind of outcome occurred, which lets generic tooling react sensibly even to codes it has never seen.</p>
+
+  <table>
+    <tr><th>Family</th><th>Meaning</th><th>Examples</th></tr>
+    <tr><td><code>2xx</code></td><td>Success</td><td>200 OK, 201 Created, 204 No Content</td></tr>
+    <tr><td><code>3xx</code></td><td>Redirection</td><td>301 Moved Permanently, 304 Not Modified</td></tr>
+    <tr><td><code>4xx</code></td><td>The client made a mistake</td><td>400 Bad Request, 401 Unauthorized, 404 Not Found</td></tr>
+    <tr><td><code>5xx</code></td><td>The server failed</td><td>500 Internal Server Error, 503 Service Unavailable</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Responsibility is split by the first digit. A 4xx says "fix your request and try again"; a 5xx says "I broke, and retrying later might work." Returning 500 for a bad input, or 200 for a failure, misleads every client and monitoring tool that depends on the family.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Returning <code>200</code> with <code>{"error": ...}</code> in the body</td><td>Clients, caches, and monitors treat the call as a success, so failures go unnoticed</td><td>Use a real 4xx or 5xx status and put the details in the body</td></tr>
+    <tr><td>Using <code>GET</code> for actions that change data</td><td>Crawlers, prefetchers, and retries trigger the change unintentionally</td><td>Use <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, or <code>DELETE</code> for mutations</td></tr>
+    <tr><td>Ignoring <code>Content-Type</code></td><td>The receiver guesses how to parse the body and often guesses wrong</td><td>Always set it on responses and send it on requests with bodies</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Open your browser's network tab, load any page, and pick one request. Write down its method, status, and three headers, and say what each header is for.</li>
+      <li>For each of these, choose a method and a success status: fetch a user, create an order, replace a profile, delete a comment.</li>
+      <li>Explain in two sentences why a client may safely retry a <code>PUT</code> but should be careful retrying a <code>POST</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>HTTP is a stateless request/response protocol: a start line, headers, and an optional body.</li>
+      <li>Methods express intent, and safe and idempotent are promises other software relies on.</li>
+      <li>Status code families (2xx, 3xx, 4xx, 5xx) tell the client who needs to act next.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · How the Backend Works — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

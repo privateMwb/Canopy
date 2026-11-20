@@ -1,0 +1,5 @@
+{
+  "title": "VPC Basics",
+  "description": "Subnets, route tables, gateways, and what makes a subnet public.",
+  "order": 3
+}

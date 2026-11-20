@@ -1,0 +1,5 @@
+{
+  "title": "Recursive CTEs & Hierarchies",
+  "description": "Trees, org charts, and graph walks in plain SQL.",
+  "order": 2
+}

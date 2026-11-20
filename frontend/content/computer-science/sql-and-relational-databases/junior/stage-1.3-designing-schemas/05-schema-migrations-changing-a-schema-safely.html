@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schema Migrations: Changing a Schema Safely — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · designing schemas</span> → lesson 05</p>
+  <h1>Schema Migrations: Changing a Schema Safely</h1>
+  <p class="lede">A migration is a versioned, repeatable change to your schema, which lets a database evolve alongside your code without hand-editing production.</p>
+
+  <h2><span class="num">§1</span>Why Migrations Exist</h2>
+  <p>Your schema changes as the product does: a new column here, a renamed table there. If those changes are applied by hand, your laptop, the test server, and production quickly disagree. A <strong>migration</strong> is a small file describing one change, applied in order and recorded in the database so it runs exactly once.</p>
+  <pre>migrations/
+  001_create_customers.sql
+  002_create_orders.sql
+  003_add_phone_to_customers.sql
+  004_add_index_orders_customer.sql</pre>
+  <p>A table such as <code>schema_migrations</code> records which have been applied, so tools know what's left to run.</p>
+
+  <h2><span class="num">§2</span>Anatomy of a Migration</h2>
+  <pre><span class="comment">-- 003_add_phone_to_customers.sql   (up)</span>
+ALTER TABLE customers ADD COLUMN phone TEXT;
+
+<span class="comment">-- 003_add_phone_to_customers.down.sql   (down, to reverse it)</span>
+ALTER TABLE customers DROP COLUMN phone;</pre>
+  <p>Tools such as Flyway, Liquibase, Alembic (Python), Rails/Django migrations, Prisma Migrate, and Knex all follow this model. Pick the one that matches your stack; the habits matter more than the tool.</p>
+
+  <h2><span class="num">§3</span>Habits That Keep Migrations Safe</h2>
+  <ul>
+    <li><strong>Never edit a migration that has already been applied elsewhere.</strong> Add a new one instead.</li>
+    <li><strong>Commit migrations with the code</strong> that needs them.</li>
+    <li><strong>Make each migration small and single-purpose</strong>, so failures are easy to understand.</li>
+    <li><strong>Run them against a copy of production data</strong> before the real thing when possible.</li>
+    <li><strong>Adding a <code>NOT NULL</code> column needs a default</strong> (or a staged approach), because existing rows have no value for it.</li>
+  </ul>
+  <pre><span class="comment">-- Adding a required column to a table that already has rows</span>
+ALTER TABLE customers ADD COLUMN country TEXT NOT NULL DEFAULT 'US';
+
+<span class="comment">-- Safer for large tables: add nullable, backfill, then add the constraint</span>
+ALTER TABLE customers ADD COLUMN country TEXT;
+UPDATE customers SET country = 'US' WHERE country IS NULL;
+ALTER TABLE customers ALTER COLUMN country SET NOT NULL;      <span class="comment">-- PostgreSQL syntax</span></pre>
+
+  <h2><span class="num">§4</span>What Can Go Wrong</h2>
+  <p>Some changes are easy and some are dangerous on a live database. Renaming or dropping a column breaks any code still using the old name; changing a column's type can rewrite the whole table and block writes while it runs. The <strong>expand-and-contract</strong> pattern (add the new thing, move code over, then remove the old) handles these safely, and Stage 3.3 covers it in depth. For now, the rule is: don't ship a destructive change in the same release as the code that stops needing it.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The schema is part of your codebase. Treat every change like code: versioned, reviewed, tested against realistic data, and applied by the same automated process in every environment.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Editing the production schema by hand</td><td>Environments drift and nobody knows what changed</td><td>Make every change a committed migration</td></tr>
+    <tr><td>Editing an already-applied migration file</td><td>Other environments never see the edit; checksums fail</td><td>Write a new migration that corrects the old one</td></tr>
+    <tr><td>Adding <code>NOT NULL</code> with no default to a populated table</td><td>The migration fails on existing rows</td><td>Add a default, or add nullable, backfill, then constrain</td></tr>
+    <tr><td>Dropping a column in the same deploy as the code change</td><td>Old servers still running the previous code break</td><td>Deploy the code first; drop the column in a later release</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Set up a <code>migrations/</code> folder with three numbered SQL files and a tiny script (or a tool such as Flyway or Alembic) that applies them in order and records them in a <code>schema_migrations</code> table.</li>
+      <li>Write the up and down migrations for adding a required <code>country</code> column to a table that already contains rows.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Migrations are versioned, ordered, run-once schema changes recorded in the database.</li>
+      <li>Never edit applied migrations; add a new one.</li>
+      <li>Adding constraints to populated tables takes a staged approach to stay safe.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Designing Schemas — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

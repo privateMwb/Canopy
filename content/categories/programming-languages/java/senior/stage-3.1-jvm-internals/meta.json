@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 \u2014 JVM Internals",
+  "description": "Class loading, memory areas, garbage collection, the JIT, and the Java Memory Model.",
+  "order": 1
+}

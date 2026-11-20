@@ -1,0 +1,5 @@
+{
+  "title": "Special Methods",
+  "description": "__repr__, __eq__, __len__, __iter__, and making your objects behave like built-ins.",
+  "order": 2
+}

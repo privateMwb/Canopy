@@ -1,0 +1,5 @@
+{
+  "title": "JIT Compilation & Tiered Execution",
+  "description": "Profiling hot code, compiling it at run time, and deoptimizing when assumptions break.",
+  "order": 4
+}

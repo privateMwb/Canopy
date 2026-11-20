@@ -1,0 +1,5 @@
+{
+  "title": "Concurrent Rendering",
+  "description": "Transitions, deferred values, and time slicing.",
+  "order": 3
+}

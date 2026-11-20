@@ -1,0 +1,5 @@
+{
+  "title": "WAL Internals & Checkpointing",
+  "description": "The WAL file, the wal-index, and when checkpoints run.",
+  "order": 3
+}

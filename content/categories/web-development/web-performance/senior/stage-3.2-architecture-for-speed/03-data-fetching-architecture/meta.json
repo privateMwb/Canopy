@@ -1,0 +1,5 @@
+{
+  "title": "Data Fetching Architecture",
+  "description": "Waterfalls, batching, and prefetching.",
+  "order": 3
+}

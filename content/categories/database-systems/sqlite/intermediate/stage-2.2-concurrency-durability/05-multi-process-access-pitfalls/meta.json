@@ -1,0 +1,5 @@
+{
+  "title": "Multi-Process Access & Pitfalls",
+  "description": "Several writers, network file systems, and why they don't mix.",
+  "order": 5
+}

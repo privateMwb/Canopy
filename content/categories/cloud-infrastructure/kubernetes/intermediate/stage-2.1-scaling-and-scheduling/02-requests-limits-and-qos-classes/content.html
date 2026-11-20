@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Requests, Limits &amp; QoS Classes — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · scaling &amp; scheduling</span> → lesson 02</p>
+  <h1>Requests, Limits &amp; QoS Classes</h1>
+  <p class="lede">Requests and limits decide where a pod fits, how much it can burst, and which pods are sacrificed first when a node runs short.</p>
+
+  <h2><span class="num">§1</span>Two Numbers, Two Jobs</h2>
+  <ul>
+    <li><strong>Requests</strong> are used by the scheduler for placement and define a pod's guaranteed share.</li>
+    <li><strong>Limits</strong> are enforced by the kernel through cgroups at runtime.</li>
+  </ul>
+  <p>The two resources behave differently when a limit is hit:</p>
+  <table>
+    <tr><th>Resource</th><th>Over the limit</th><th>Compressible?</th></tr>
+    <tr><td>CPU</td><td>The container is <strong>throttled</strong>: it gets less time, but keeps running</td><td>Yes</td></tr>
+    <tr><td>Memory</td><td>The kernel <strong>OOM-kills</strong> the container (exit code 137, reason <code>OOMKilled</code>)</td><td>No</td></tr>
+  </table>
+  <p>Memory cannot be taken back once given, which is why exceeding a memory limit is fatal while CPU is merely slowed.</p>
+  <h2><span class="num">§2</span>QoS Classes</h2>
+  <p>Kubernetes labels each pod with a <strong>Quality of Service class</strong>, derived from its requests and limits, and uses it to pick victims during node pressure.</p>
+  <table>
+    <tr><th>Class</th><th>Condition</th><th>Eviction order</th></tr>
+    <tr><td><code>Guaranteed</code></td><td>Every container has CPU and memory requests equal to limits</td><td>Evicted last</td></tr>
+    <tr><td><code>Burstable</code></td><td>At least one request or limit set, but not Guaranteed</td><td>Middle</td></tr>
+    <tr><td><code>BestEffort</code></td><td>No requests or limits at all</td><td>Evicted first</td></tr>
+  </table>
+  <pre>kubectl get pod web -o jsonpath='{.status.qosClass}'</pre>
+  <p>When a node runs low on memory, the kubelet evicts pods, starting with ones using more than they requested, and BestEffort pods go before Burstable. Beyond kubelet eviction, the Linux OOM killer can also act if memory runs out suddenly.</p>
+  <h2><span class="num">§3</span>Choosing Values</h2>
+  <p>A practical starting point:</p>
+  <ul>
+    <li><strong>Memory</strong>: set the limit slightly above the observed peak, and the request near typical usage. For critical services, requests equal to limits make behavior predictable.</li>
+    <li><strong>CPU</strong>: set a request based on average usage. Many teams omit CPU <strong>limits</strong> because throttling can hurt latency even when the node has idle CPU, while keeping requests so scheduling stays fair. This is a debated practice, so measure before adopting it.</li>
+  </ul>
+  <p>Namespace-wide guardrails come from a <strong>LimitRange</strong> (defaults and bounds per container) and a <strong>ResourceQuota</strong> (a total cap for the namespace).</p>
+  <pre>kubectl describe node worker-1      <span class="comment"># see Allocated resources: requests vs. capacity</span>
+kubectl top pod --containers</pre>
+  <div class="callout">
+    <span class="label">Requests are a promise to the scheduler</span>
+    A node full of requests is "full" even if its real CPU is idle. Over-requesting wastes money; under-requesting causes noisy neighbors and evictions.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Memory limit set to typical, not peak</td><td>Spikes cause OOMKilled restarts</td><td>Base the limit on peak plus headroom</td></tr>
+    <tr><td>Requests far above real usage</td><td>Nodes look full while mostly idle, so you pay for waste</td><td>Right-size from metrics</td></tr>
+    <tr><td>Relying on BestEffort for important pods</td><td>They are the first to be evicted</td><td>Set requests, or use Guaranteed for critical workloads</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create one pod of each QoS class and verify with <code>jsonpath</code> on <code>.status.qosClass</code>.</li>
+      <li>Run a container that allocates memory past its limit and find <code>OOMKilled</code> in its status.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Requests drive scheduling; limits are enforced, with CPU throttled and memory killed.</li>
+      <li>QoS classes (Guaranteed, Burstable, BestEffort) determine eviction order.</li>
+      <li>Base values on measurement, and use LimitRange and ResourceQuota for guardrails.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Scaling &amp; Scheduling — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

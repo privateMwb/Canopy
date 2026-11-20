@@ -1,0 +1,5 @@
+{
+  "title": "Debugging Regressions",
+  "description": "Bisecting, diffing traces, and finding the commit.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "multiprocessing & concurrent.futures",
+  "description": "Using multiple cores with process pools, and the cost of moving data between processes.",
+  "order": 2
+}

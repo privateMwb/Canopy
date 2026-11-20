@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Module Libraries &amp; Governance — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · platform design</span> → lesson 03</p>
+  <h1>Module Libraries &amp; Governance</h1>
+  <p class="lede">A shared module becomes a product with users. Versioning, ownership, and deprecation decide whether it helps your organization or slows it down.</p>
+
+  <h2><span class="num">§1</span>Treat Modules as Products</h2>
+  <p>Once several teams depend on a module, changes affect all of them. Give each module:</p>
+  <ul><li><strong>An owner.</strong> A team named in <code>CODEOWNERS</code> who reviews every change.</li><li><strong>Semantic versions.</strong> Tag releases <code>v1.4.0</code>. Patch for fixes, minor for backward-compatible additions, major for anything that can change existing plans.</li><li><strong>A changelog and upgrade notes.</strong> Callers must know what a bump will do before they run it.</li><li><strong>Tests.</strong> <code>terraform test</code> and example configurations that run in CI on every change.</li><li><strong>Documentation generated from code.</strong> Tools such as <code>terraform-docs</code> keep input and output tables accurate.</li></ul>
+  <pre>module "service" {
+  source  = "app.terraform.io/acme/service/aws"   <span class="comment"># private registry</span>
+  version = "~&gt; 2.3"
+}</pre>
+  <p>A private registry (in HCP Terraform, or a git tag convention) gives teams one discoverable place to find approved modules.</p>
+  <h2><span class="num">§2</span>Breaking Changes</h2>
+  <p>What counts as breaking in Terraform is broader than API changes. Renaming a resource inside a module, changing a default, or tightening a validation can all make an existing caller's plan show destroys or errors.</p>
+  <pre>moved {
+  from = aws_s3_bucket.logs
+  to   = aws_s3_bucket.this
+}</pre>
+  <p>Ship <code>moved</code> blocks with renames, keep old variable names working for a deprecation period, and announce the removal date.</p>
+  <h2><span class="num">§3</span>Deprecation</h2>
+  <p>Mark a variable or output as deprecated in its description, support it for a stated period, and then remove it in a major release. Track which stacks still use old versions, so you know when removal is safe.</p>
+  <div class="callout">
+    <span class="label">Governance should reduce friction</span>
+    The goal is paved roads people want to use. A module library with no owners becomes abandoned; one with heavy process becomes a bottleneck and teams copy code. Aim for clear ownership and a fast, predictable release path.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Publishing a changed default as a patch release</td><td>Existing stacks start planning destroys</td><td>Treat default changes as breaking and bump the major version</td></tr>
+    <tr><td>Removing a variable without notice</td><td>Callers' plans fail</td><td>Deprecate first, remove later in a major release</td></tr>
+    <tr><td>No tests on shared modules</td><td>Bugs reach every consumer at once</td><td>Run tests and example plans in CI before release</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a release checklist for a shared module covering tests, changelog, tag, and announcement.</li>
+      <li>List three changes to a module that you would classify as major, and explain how each could break a caller.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Shared modules need owners, semantic versions, tests, and a changelog.</li>
+      <li>Defaults, names, and validations can all be breaking changes.</li>
+      <li>Deprecate before you remove, and track who still uses old versions.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Platform Design — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

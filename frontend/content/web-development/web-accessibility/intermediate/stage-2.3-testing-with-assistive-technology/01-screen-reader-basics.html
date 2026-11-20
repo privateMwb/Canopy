@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Screen Reader Basics — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · testing with assistive technology</span> → lesson 01</p>
+  <h1>Screen Reader Basics</h1>
+  <p class="lede">You cannot judge how a page sounds by looking at it. Spending an hour with a screen reader teaches more about accessibility than any checklist, and you only need a handful of commands to start.</p>
+
+  <h2><span class="num">§1</span>Pick One and Learn It</h2>
+  <p>Every major platform ships a screen reader, and one is free on Windows. Start with one that matches how your users reach your product, and learn a small core of commands rather than all of them.</p>
+  <table>
+    <tr><th>Screen reader</th><th>Platform</th><th>Start it with</th></tr>
+    <tr><td><strong>NVDA</strong></td><td>Windows (free download)</td><td>Install, then launch NVDA. Press NVDA+Q to quit</td></tr>
+    <tr><td><strong>VoiceOver</strong></td><td>macOS</td><td>Press Cmd+F5</td></tr>
+    <tr><td><strong>VoiceOver</strong></td><td>iOS</td><td>Settings &gt; Accessibility &gt; VoiceOver, or the shortcut you set up</td></tr>
+    <tr><td><strong>TalkBack</strong></td><td>Android</td><td>Settings &gt; Accessibility &gt; TalkBack</td></tr>
+    <tr><td><strong>Narrator</strong></td><td>Windows (built in)</td><td>Press Win+Ctrl+Enter</td></tr>
+  </table>
+  <p>Pair a screen reader with a sensible browser: NVDA with Firefox or Chrome, VoiceOver with Safari. Turn the volume down at first, since speech is fast, or turn on a speech viewer so you can read what is spoken.</p>
+
+  <h2><span class="num">§2</span>The Commands That Matter</h2>
+  <p>Screen reader users rarely read from top to bottom. They navigate by element type. In NVDA's browse mode, single letters jump to the next item of a kind, and the same keys with Shift go backward.</p>
+  <table>
+    <tr><th>Goal</th><th>NVDA</th><th>VoiceOver (macOS)</th></tr>
+    <tr><td>Next heading</td><td><code>H</code></td><td><code>VO+Cmd+H</code></td></tr>
+    <tr><td>Next landmark</td><td><code>D</code></td><td>Use the rotor (<code>VO+U</code>)</td></tr>
+    <tr><td>Next link</td><td><code>K</code></td><td><code>VO+Cmd+L</code></td></tr>
+    <tr><td>Next form field</td><td><code>F</code></td><td><code>VO+Cmd+J</code></td></tr>
+    <tr><td>List elements</td><td><code>NVDA+F7</code></td><td>Rotor (<code>VO+U</code>)</td></tr>
+    <tr><td>Read next item</td><td><code>Down arrow</code></td><td><code>VO+Right arrow</code></td></tr>
+    <tr><td>Activate</td><td><code>Enter</code> or <code>Space</code></td><td><code>VO+Space</code></td></tr>
+    <tr><td>Stop speech</td><td><code>Ctrl</code></td><td><code>Ctrl</code></td></tr>
+  </table>
+  <p>On a phone, swipe right or left to move to the next or previous item, and double-tap to activate. On iOS, the rotor (a two-finger twist) switches the navigation unit to headings, links, and more.</p>
+
+  <h2><span class="num">§3</span>What to Listen For</h2>
+  <p>For every interactive thing, a screen reader should tell you four things: its <strong>name</strong>, its <strong>role</strong>, its <strong>state</strong>, and its <strong>value</strong>. When any one is missing or wrong, you have found a bug.</p>
+  <ul>
+    <li>Does the page title make sense when you arrive?</li>
+    <li>Can you reach the main content and the navigation by landmarks?</li>
+    <li>Does the heading list read like a table of contents?</li>
+    <li>Does each link and button have a name that makes sense out of context?</li>
+    <li>Does each form field announce its label, hints, errors, and required state?</li>
+    <li>Are updates (errors, search results, confirmations) announced?</li>
+  </ul>
+  <pre><span class="comment">What you should hear, and what signals a bug</span>
+"Subscribe, button"                         <span class="comment">good: name + role</span>
+"button"                                    <span class="comment">bug: no accessible name</span>
+"Email address, edit text, required"        <span class="comment">good: name, role, state</span>
+"edit text"                                 <span class="comment">bug: no label</span>
+"Menu, button, collapsed"                   <span class="comment">good: state is announced</span>
+"Menu, button"                              <span class="comment">bug: aria-expanded is missing</span></pre>
+  <p>NVDA has two modes. <strong>Browse mode</strong> lets you move through the page with single-letter keys. <strong>Focus mode</strong> passes keys straight to form fields so you can type. It switches automatically on most form controls, and Insert+Space (NVDA+Space) toggles it by hand. If a widget behaves oddly, the mode is often the reason.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    You are not trying to become an expert user. You are checking that name, role, state, and value come through, and that the page can be navigated by structure. That alone catches most serious problems.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Testing only by reading the whole page top to bottom</td><td>Misses how real users navigate, by headings, landmarks, and links</td><td>Practice navigating by element type, as users do</td></tr>
+    <tr><td>Running the screen reader at full speed on day one</td><td>You cannot follow what it says and learn nothing</td><td>Slow the speech rate, or use a speech viewer while learning</td></tr>
+    <tr><td>Judging a widget in the wrong mode</td><td>Keys appear to fail because the screen reader intercepted them</td><td>Know when NVDA is in browse mode and when it is in focus mode</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Install NVDA, or turn on VoiceOver, and navigate a news site from the top using only headings, landmarks, and links. Note what you could not find.</li>
+      <li>Fill in a login form with a screen reader on. Write down what was announced for each field and each button.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Learn a few commands for headings, landmarks, links, form fields, and element lists, on one screen reader to start.</li>
+      <li>For every control, check that name, role, state, and value are announced.</li>
+      <li>Know the difference between browse mode and focus mode when testing with NVDA.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Testing with Assistive Technology — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

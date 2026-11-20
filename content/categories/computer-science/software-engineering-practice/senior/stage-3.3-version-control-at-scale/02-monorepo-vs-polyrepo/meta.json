@@ -1,0 +1,5 @@
+{
+  "title": "Monorepo vs. Polyrepo",
+  "description": "Atomic changes and shared tooling against build scale and ownership, and what large-repo tooling is for.",
+  "order": 2
+}

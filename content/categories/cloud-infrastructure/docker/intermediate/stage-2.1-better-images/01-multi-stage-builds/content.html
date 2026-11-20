@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multi-Stage Builds — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · better images</span> → lesson 01</p>
+  <h1>Multi-Stage Builds</h1>
+  <p class="lede">A multi-stage Dockerfile uses several <code>FROM</code> stages so you can build with a full toolchain and ship only the finished artifact.</p>
+
+  <h2><span class="num">§1</span>The Idea</h2>
+  <p>Building software needs compilers, headers, and package managers. Running it usually needs none of them. A multi-stage build keeps them in a <strong>builder stage</strong> and copies just the output into a clean <strong>final stage</strong>; only the last stage becomes your image, and earlier stages are discarded.</p>
+  <pre>FROM node:22 AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html</pre>
+  <p>The final image contains nginx and static files, not Node, <code>node_modules</code>, or your source. It is often a tenth of the single-stage size.</p>
+  <h2><span class="num">§2</span>Named Stages and Targets</h2>
+  <p><code>AS name</code> labels a stage, <code>COPY --from=name</code> pulls files out of it, and <code>--target</code> lets you build up to a specific stage:</p>
+  <pre>FROM golang:1.23 AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -o /out/app .
+
+FROM build AS test
+RUN go test ./...
+
+FROM gcr.io/distroless/static-debian12 AS final
+COPY --from=build /out/app /app
+USER nonroot
+ENTRYPOINT ["/app"]</pre>
+  <pre>docker build --target test -t app:test .      <span class="comment"># run the tests stage</span>
+docker build -t app:1.0 .                     <span class="comment"># default: last stage</span></pre>
+  <p>With BuildKit (the default builder), stages that the target does not depend on are <strong>skipped entirely</strong>, and independent stages build in parallel.</p>
+  <h2><span class="num">§3</span>What to Copy Between Stages</h2>
+  <p>Copy only what is needed at run time: a compiled binary, a <code>dist</code> folder, or a virtualenv or installed <code>node_modules</code> tree. You can also copy from an external image with <code>COPY --from=nginx:1.27 /etc/nginx/nginx.conf /tmp/</code>. Make sure runtime libraries match: a binary linked against glibc will not run on a musl-based Alpine final stage, which is why static Go binaries pair so well with minimal bases.</p>
+  <div class="callout">
+    <span class="label">A stage is a throwaway, not a hiding place</span>
+    Secrets used in an earlier stage do not appear in the final image, but they do stay in the <strong>build cache</strong> and in any image you tag from that stage. Do not rely on stages as a secret-handling mechanism; use build secrets, covered shortly.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Copying the whole builder filesystem</td><td>Final image is as large as before</td><td>Copy only the artifact paths</td></tr>
+    <tr><td>Final stage missing runtime libraries</td><td>"not found" or crashes at start</td><td>Choose a base compatible with how the binary was built</td></tr>
+    <tr><td>Running tests only on the final image</td><td>Build tools are not there</td><td>Add a <code>test</code> stage and build it with <code>--target</code></td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Convert a single-stage Dockerfile for a compiled or bundled app into two stages and compare image sizes.</li>
+      <li>Add a <code>test</code> stage and run it with <code>docker build --target test</code>.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Build with the full toolchain, ship only the artifact in a minimal final stage.</li>
+      <li><code>AS</code>, <code>COPY --from</code>, and <code>--target</code> give you named, selectable stages.</li>
+      <li>BuildKit skips unneeded stages and runs independent ones in parallel.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Better Images — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

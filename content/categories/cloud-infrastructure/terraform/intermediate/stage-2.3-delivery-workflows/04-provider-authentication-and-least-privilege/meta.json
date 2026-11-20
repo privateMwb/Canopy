@@ -1,0 +1,5 @@
+{
+  "title": "Provider Authentication & Least Privilege",
+  "description": "Short-lived credentials and narrow permissions.",
+  "order": 4
+}

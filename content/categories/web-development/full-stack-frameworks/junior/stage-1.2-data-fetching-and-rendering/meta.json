@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Data Fetching & Rendering",
+  "description": "Server-side fetching, static vs. dynamic rendering, caching, loading and error UI, and SEO.",
+  "order": 2
+}

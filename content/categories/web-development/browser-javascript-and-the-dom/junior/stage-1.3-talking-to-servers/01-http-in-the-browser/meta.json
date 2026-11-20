@@ -1,0 +1,5 @@
+{
+  "title": "HTTP in the Browser",
+  "description": "Requests, responses, status codes, and headers from the browser's side.",
+  "order": 1
+}

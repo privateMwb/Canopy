@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Document Databases &amp; Data Modeling — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · beyond relational</span> → lesson 02</p>
+  <h1>Document Databases &amp; Data Modeling</h1>
+  <p class="lede">In a document database you model data around how your application reads it: embed what is read together, reference what is shared or grows without bound.</p>
+
+  <h2><span class="num">§1</span>Documents and Collections</h2>
+  <p>A document database stores self-describing, JSON-like <strong>documents</strong> grouped into <strong>collections</strong>. Each document has an <code>_id</code> and can hold nested objects and arrays, so one document can contain what would take several relational tables.</p>
+  <pre><span class="comment">// MongoDB shell</span>
+db.orders.insertOne({
+  _id: 101,
+  customer: { id: 1, name: "Ada" },
+  placedAt: ISODate("2026-03-01T10:00:00Z"),
+  items: [
+    { sku: "NB-1", name: "Notebook", qty: 2, unitPrice: 4.50 },
+    { sku: "PN-3", name: "Pen",      qty: 1, unitPrice: 1.20 }
+  ],
+  total: 10.20
+})
+
+db.orders.find({ "customer.id": 1, total: { $gt: 5 } }).sort({ placedAt: -1 })</pre>
+  <p>Reading an order is a single lookup with no joins: the whole thing arrives together.</p>
+
+  <h2><span class="num">§2</span>Embed or Reference?</h2>
+  <p>The central design decision: put related data <strong>inside</strong> the document (embedding) or store an id and look it up (referencing).</p>
+  <table>
+    <tr><th>Embed when</th><th>Reference when</th></tr>
+    <tr><td>Data is read together almost always</td><td>Data is shared by many documents (a product used in many orders)</td></tr>
+    <tr><td>The child belongs to one parent</td><td>The related set grows without bound (all comments on a viral post)</td></tr>
+    <tr><td>The child is bounded in size</td><td>The child is updated independently and often</td></tr>
+    <tr><td>You want atomic update of the whole thing</td><td>You need to query the child on its own</td></tr>
+  </table>
+  <p>Note the order above: the <strong>order items</strong> are embedded (they belong to the order and never change), but the <strong>product</strong> is referenced by <code>sku</code> for the live catalog, with the name and price <strong>copied</strong> into the item as a snapshot of the sale, much like a relational <code>unit_price</code>.</p>
+
+  <h2><span class="num">§3</span>Design Around Access Patterns</h2>
+  <p>List your application's queries first, then shape documents so each is answered from <strong>one document</strong> (or one indexed lookup).</p>
+  <ul>
+    <li>A <strong>blog</strong>: embed the author's display name and the last few comments in the post; keep the full comment set in its own collection.</li>
+    <li>An <strong>activity feed</strong>: precompute each user's feed as documents (denormalization on purpose).</li>
+  </ul>
+  <p>Duplication is normal here, and it moves the cost to writes: if a customer changes their name, you decide whether to update every embedded copy or accept stale snapshots.</p>
+  <pre>db.orders.createIndex({ "customer.id": 1, placedAt: -1 })     <span class="comment">// indexes work as in SQL</span></pre>
+
+  <h2><span class="num">§4</span>Schema Flexibility, Carefully</h2>
+  <p>Documents in a collection may differ in shape, which makes evolving fields easy: new documents simply include the new field. But your code must then cope with old documents that lack it. Practices that help:</p>
+  <ul>
+    <li>Include a <code>schemaVersion</code> field and migrate lazily or in batches.</li>
+    <li>Use the database's <strong>schema validation</strong> (for example MongoDB's <code>$jsonSchema</code>) to enforce required fields and types.</li>
+    <li>Remember that MongoDB documents have a size limit (16 MB), which unbounded embedded arrays can eventually hit.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    In a relational database you normalize and join at read time. In a document store you pre-join at write time by embedding. Decide by asking: what data does this one screen or API call need, and can I fetch it in one read?
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Embedding an unbounded list (all comments, all events)</td><td>Documents grow without limit and every update rewrites a huge document</td><td>Reference or bucket unbounded children into a separate collection</td></tr>
+    <tr><td>Modeling documents like normalized tables and joining in code</td><td>Many round trips; lost the benefit of the model</td><td>Embed what is read together</td></tr>
+    <tr><td>Duplicating data with no plan to keep it in sync</td><td>Stale or conflicting copies</td><td>Decide per field: snapshot (frozen) or live (update everywhere or reference)</td></tr>
+    <tr><td>Skipping validation because it's "schemaless"</td><td>Inconsistent documents that break readers</td><td>Add schema validation and a <code>schemaVersion</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Model a blog (posts, authors, comments) in documents. Decide what to embed and what to reference, and write down the queries your design must answer in one read.</li>
+      <li>Take your relational shop schema and convert the order, order items, and customer into a document design. Which fields are snapshots, and which are references?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Document databases store nested JSON-like documents, which removes many joins.</li>
+      <li>Embed data read together and bounded in size; reference shared or unbounded data.</li>
+      <li>Design from the queries backwards, and plan for how duplicated data stays correct.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Beyond Relational — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

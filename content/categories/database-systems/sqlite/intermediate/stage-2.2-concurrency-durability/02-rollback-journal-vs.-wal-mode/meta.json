@@ -1,0 +1,5 @@
+{
+  "title": "Rollback Journal vs. WAL Mode",
+  "description": "How each works, and why WAL changes the concurrency story.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Optimizing Loading",
+  "description": "The critical rendering path, resource hints, LCP, modern protocols, and server response time.",
+  "order": 2
+}

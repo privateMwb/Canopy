@@ -1,0 +1,5 @@
+{
+  "title": "Scripting With Git: Formats & Plumbing Output",
+  "description": "Porcelain output, format strings, and building small tools on top of Git.",
+  "order": 4
+}

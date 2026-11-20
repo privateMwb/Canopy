@@ -1,0 +1,5 @@
+{
+  "title": "Secrets & Sensitive Data Deep Dive",
+  "description": "Where secrets leak in Terraform and how to stop each leak.",
+  "order": 1
+}

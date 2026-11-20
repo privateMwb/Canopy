@@ -1,0 +1,5 @@
+{
+  "title": "Smart Pointers",
+  "description": "unique_ptr, shared_ptr, weak_ptr, and expressing ownership in the type.",
+  "order": 3
+}

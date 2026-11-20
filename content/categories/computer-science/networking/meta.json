@@ -1,0 +1,6 @@
+{
+  "title": "Computer Networks",
+  "description": "TCP/IP, HTTP, and APIs, from packets to production services.",
+  "order": 4,
+  "compileRoot": true
+}

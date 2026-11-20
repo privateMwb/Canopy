@@ -1,0 +1,5 @@
+{
+  "title": "Layered, Hexagonal & Clean Architecture",
+  "description": "Ports and adapters, the dependency rule, and keeping business logic free of frameworks and databases.",
+  "order": 1
+}

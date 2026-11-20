@@ -1,0 +1,5 @@
+{
+  "title": "Requests, Limits & QoS Classes",
+  "description": "How resource settings affect scheduling and eviction.",
+  "order": 2
+}

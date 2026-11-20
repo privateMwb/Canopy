@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Is Kubernetes the Right Tool? — Lesson 06</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · extending &amp; platform engineering</span> → lesson 06</p>
+  <h1>Is Kubernetes the Right Tool?</h1>
+  <p class="lede">Kubernetes is a powerful answer to a specific set of problems, and the senior skill is recognizing when it is the wrong answer.</p>
+
+  <h2><span class="num">§1</span>What You Are Really Buying</h2>
+  <p>Kubernetes provides a portable, extensible platform for running many containerized services with scheduling, self-healing, service discovery, declarative rollout, and an ecosystem of tools. You pay in <strong>complexity</strong>: concepts to learn, components to run, YAML to maintain, security to configure, upgrades to schedule, and engineers who understand it.</p>
+  <p>A useful framing is <strong>total cost of ownership</strong>: infrastructure cost, plus engineer time to run, plus time developers spend learning, minus the time saved by the platform's capabilities.</p>
+  <h2><span class="num">§2</span>Signs It Is Worth It</h2>
+  <ul>
+    <li>Many services (dozens or more) with varied scaling needs and independent teams and release cadences.</li>
+    <li>A need for portability across clouds, on-premises, or edge, or for a consistent platform across them.</li>
+    <li>Substantial in-house capability, or a budget for a platform team or managed services.</li>
+    <li>Workloads that benefit from bin packing, autoscaling, and rich scheduling, such as batch, ML, or mixed-size services.</li>
+    <li>The ecosystem itself is valuable: operators, GitOps, policy engines, and service meshes.</li>
+  </ul>
+  <h2><span class="num">§3</span>Signs It Is Not</h2>
+  <ul>
+    <li>A handful of services, or a monolith with a database.</li>
+    <li>A tiny team with no time to learn or operate a platform.</li>
+    <li>Steady, predictable load that does not need dynamic scheduling.</li>
+    <li>The motive is fashion, a resume, or "everyone uses it."</li>
+  </ul>
+  <h2><span class="num">§4</span>Alternatives</h2>
+  <table>
+    <tr><th>Option</th><th>Good for</th><th>Trade-off</th></tr>
+    <tr><td>Single VM with Docker Compose</td><td>Small apps and early products</td><td>Manual scaling and failover</td></tr>
+    <tr><td>Platform-as-a-service (Heroku-style, Render, Fly.io)</td><td>Teams who want to ship with little operations</td><td>Less control, cost at scale</td></tr>
+    <tr><td>Serverless containers (Cloud Run, Azure Container Apps, AWS App Runner)</td><td>Stateless HTTP services with variable load</td><td>Platform limits and some lock-in</td></tr>
+    <tr><td>AWS ECS / Fargate</td><td>Container orchestration on AWS with less to learn</td><td>AWS-specific</td></tr>
+    <tr><td>HashiCorp Nomad</td><td>A simpler scheduler for mixed workloads</td><td>Smaller ecosystem</td></tr>
+    <tr><td>Functions / serverless</td><td>Event-driven glue and spiky workloads</td><td>Constraints on runtime and state</td></tr>
+  </table>
+  <p>Many of these run containers and give you rolling deploys, health checks, and autoscaling with far less machinery.</p>
+  <h2><span class="num">§5</span>Managed or Self-Run</h2>
+  <p>If Kubernetes is the right fit, <strong>use a managed control plane</strong> (EKS, GKE, AKS) unless a requirement prevents it. Consider GKE Autopilot or similar modes if you want even less node management. Self-run clusters make sense on-premises, in constrained environments, or at a scale where the control is worth the staffing.</p>
+  <h2><span class="num">§6</span>Reversibility</h2>
+  <p>Start with the simplest thing that meets today's needs while avoiding choices that trap you: containerize applications, keep configuration in the environment, and use standard interfaces. A container that runs on Cloud Run today can move to Kubernetes later, but a company-wide Kubernetes platform is much harder to unwind.</p>
+  <div class="callout">
+    <span class="label">Complexity is a loan</span>
+    Kubernetes can repay the loan many times over at the right scale. At the wrong one you pay interest, in engineer-hours, every month.
+  </div>
+  <h2><span class="num">§7</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Adopting Kubernetes first and deriving requirements later</td><td>The platform's cost exceeds its benefit</td><td>List requirements and compare options before choosing</td></tr>
+    <tr><td>Ignoring simpler managed options</td><td>You operate infrastructure that a service could run for you</td><td>Evaluate PaaS, serverless containers, and ECS honestly</td></tr>
+    <tr><td>Underestimating day-two operations</td><td>Upgrades, security, and incidents consume the team</td><td>Include operations staffing in the decision</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>For a system you know, score it against the "worth it" and "not worth it" lists and give a recommendation.</li>
+      <li>Choose two alternatives and describe what you would give up by not using Kubernetes.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Kubernetes buys flexibility and an ecosystem and costs significant complexity.</li>
+      <li>Many small and medium systems are better served by simpler platforms.</li>
+      <li>If you choose it, prefer managed control planes and plan for day-two operations.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Extending &amp; Platform Engineering — Lesson 6 of 6</p>
+  </footer>
+</div>
+</body>
+</html>

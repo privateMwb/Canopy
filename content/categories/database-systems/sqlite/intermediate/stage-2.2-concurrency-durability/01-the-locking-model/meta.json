@@ -1,0 +1,5 @@
+{
+  "title": "The Locking Model",
+  "description": "Shared, reserved, and exclusive locks, and what blocks what.",
+  "order": 1
+}

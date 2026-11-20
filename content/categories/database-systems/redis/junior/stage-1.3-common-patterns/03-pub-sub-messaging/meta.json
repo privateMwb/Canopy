@@ -1,0 +1,5 @@
+{
+  "title": "Pub/Sub Messaging",
+  "description": "Publishing and subscribing, and what fire-and-forget implies.",
+  "order": 3
+}

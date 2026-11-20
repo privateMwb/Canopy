@@ -1,0 +1,5 @@
+{
+  "title": "The Planner & Join Algorithms",
+  "description": "Nested loop, hash, and merge joins, and how cost estimates choose between them.",
+  "order": 3
+}

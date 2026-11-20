@@ -1,0 +1,5 @@
+{
+  "title": "Foreign Keys & Referential Integrity",
+  "description": "ON DELETE choices, orphan rows, and letting the database enforce what the code assumes.",
+  "order": 3
+}

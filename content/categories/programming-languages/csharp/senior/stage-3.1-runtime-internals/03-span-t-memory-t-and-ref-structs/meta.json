@@ -1,0 +1,5 @@
+{
+  "title": "Span<T>, Memory<T> & ref structs",
+  "description": "Slicing and parsing without allocating, and the rules that keep it safe.",
+  "order": 3
+}

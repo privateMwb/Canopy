@@ -1,0 +1,5 @@
+{
+  "title": "Monitoring Basics with CloudWatch",
+  "description": "Metrics, logs, and a first alarm.",
+  "order": 4
+}

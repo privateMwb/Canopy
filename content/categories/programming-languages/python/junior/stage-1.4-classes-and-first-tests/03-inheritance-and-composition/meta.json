@@ -1,0 +1,5 @@
+{
+  "title": "Inheritance & Composition",
+  "description": "Subclassing, super(), and when \"has a\" beats \"is a.\"",
+  "order": 3
+}

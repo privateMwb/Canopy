@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 \u2014 Threads & Build Systems",
+  "description": "Threads, synchronization, futures and jthread, CMake, and testing with sanitizers in CI.",
+  "order": 4
+}

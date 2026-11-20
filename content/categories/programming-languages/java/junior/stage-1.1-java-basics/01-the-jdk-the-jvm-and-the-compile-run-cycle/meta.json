@@ -1,0 +1,5 @@
+{
+  "title": "The JDK, the JVM & the Compile-Run Cycle",
+  "description": "What javac produces, what java runs, and how source becomes behavior.",
+  "order": 1
+}

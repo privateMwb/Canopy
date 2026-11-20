@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Observability for JavaScript — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · architecture &amp; judgment</span> → lesson 04</p>
+  <h1>Observability for JavaScript</h1>
+  <p class="lede">You can't reproduce every user's browser — so production needs error tracking, readable stack traces, and traces that connect a click to a server query.</p>
+
+  <h2><span class="num">§1</span>Capturing Errors Where They Happen</h2>
+
+  <p>Errors in users' browsers vanish unless you collect them. Listen globally for uncaught errors and unhandled rejections, and send them to an error tracker (Sentry, Datadog, Rollbar, or your own endpoint) with context: release version, route, user id (if permitted), and the recent breadcrumbs of what the user did.</p>
+
+  <pre>window.addEventListener("error", (e) =&gt; report({ type: "error", message: e.message, stack: e.error?.stack, source: e.filename }));
+window.addEventListener("unhandledrejection", (e) =&gt; report({ type: "rejection", reason: String(e.reason), stack: e.reason?.stack }));
+
+function report(payload) {
+  const body = JSON.stringify({ ...payload, release: __RELEASE__, url: location.pathname, ua: navigator.userAgent });
+  navigator.sendBeacon("/api/errors", body);       <span class="comment">// survives page unload, doesn't block</span>
+}
+
+<span class="comment">// Node: never let these go unseen</span>
+process.on("uncaughtException", (err) =&gt; { logger.fatal({ err }, "uncaught"); process.exit(1); });
+process.on("unhandledRejection", (err) =&gt; { logger.fatal({ err }, "unhandled rejection"); process.exit(1); });
+
+<span class="comment">// A failing fetch that nobody awaited is the classic invisible failure — report it in your fetch wrapper</span></pre>
+
+  <h2><span class="num">§2</span>Source Maps</h2>
+
+  <p>Production code is minified, so a raw stack trace points to <code>a.js:1:48213</code>. <strong>Source maps</strong> translate it back to your original file, line, and name. Generate them at build time, upload them privately to your error tracker keyed by release, and don't serve them publicly unless you intend your source to be readable.</p>
+
+  <pre><span class="comment">// vite.config.js</span>
+export default { build: { sourcemap: "hidden" } };    <span class="comment">// emits maps but no //# sourceMappingURL comment</span>
+
+# In CI, after the build and before deploy:
+#   sentry-cli sourcemaps upload --release=$GIT_SHA ./dist
+#   then delete the .map files from the deployable output
+
+# Tag every deploy with a release id so errors map to the exact code that ran
+# define: { __RELEASE__: JSON.stringify(process.env.GIT_SHA) }</pre>
+
+  <p>Scrub personal data before it leaves the browser: URLs with tokens, form fields, and request bodies often contain secrets.</p>
+
+  <h2><span class="num">§3</span>Tracing and Diagnosing What You Can't Reproduce</h2>
+
+  <p>A <strong>trace</strong> follows one request across services as a tree of timed <strong>spans</strong>. Propagate a trace id from the browser to the API to the database (W3C <code>traceparent</code> header) and a slow click becomes a readable chain. OpenTelemetry is the vendor-neutral standard. Combine it with structured logs and <strong>real-user monitoring</strong> for Web Vitals.</p>
+
+  <pre>import { trace } from "@opentelemetry/api";
+const tracer = trace.getTracer("checkout");
+
+async function placeOrder(order) {
+  return tracer.startActiveSpan("placeOrder", async (span) =&gt; {
+    try {
+      span.setAttribute("order.items", order.items.length);
+      await chargeCard(order);                       <span class="comment">// child spans created automatically by instrumentation</span>
+      return await saveOrder(order);
+    } catch (err) {
+      span.recordException(err);
+      span.setStatus({ code: 2, message: String(err) });
+      throw err;
+    } finally {
+      span.end();
+    }
+  });
+}
+
+logger.info({ traceId, userId, route, durationMs }, "order placed");   <span class="comment">// structured: searchable fields, not prose</span></pre>
+
+  <p>When a bug "can't be reproduced", the evidence is in the breadcrumbs, the release id, the device and browser, the trace, and the exact stack trace — collect all of them before you need them.</p>
+
+  <div class="callout">
+    <span class="label">Instrument before the incident</span>
+    The data you need to debug an outage must already be flowing when it starts. Add error reporting, release tags, source maps, and trace ids on a calm day.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Shipping minified code without uploaded source maps</td><td>Stack traces are unreadable</td><td>Upload maps per release; keep them off the public site</td></tr>
+    <tr><td>No release id on errors</td><td>You can't tell which deploy introduced a bug</td><td>Tag every report with the git SHA</td></tr>
+    <tr><td>Sending raw URLs and form data to a third-party tracker</td><td>Leaks tokens and personal data</td><td>Scrub sensitive fields before sending</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add global error and unhandled-rejection reporting to a small app with <code>sendBeacon</code>, trigger a deliberate error, and confirm you receive a readable (source-mapped) stack trace.</li>
+      <li>Instrument one request path with spans for the HTTP handler and a database call, and read the resulting trace to find the slowest step.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Capture uncaught errors and unhandled rejections with context and a release id.</li>
+      <li>Source maps make minified traces readable — upload them privately per release.</li>
+      <li>Distributed traces, structured logs, and real-user metrics let you diagnose failures you can't reproduce.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Architecture &amp; Judgment — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Rendering Strategy Trade-offs",
+  "description": "SSR, SSG, ISR, streaming, and islands.",
+  "order": 1
+}

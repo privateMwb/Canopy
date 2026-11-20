@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Architecture & Design at Scale",
+  "description": "Hexagonal and clean architecture, domain-driven design, stable interfaces, dependency costs, and evolutionary architecture.",
+  "order": 2
+}

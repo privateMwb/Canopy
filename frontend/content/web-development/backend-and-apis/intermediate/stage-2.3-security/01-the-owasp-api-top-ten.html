@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The OWASP API Top Ten — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · security</span> → lesson 01</p>
+  <h1>The OWASP API Top Ten</h1>
+  <p class="lede">The most common API vulnerabilities.</p>
+
+  <h2><span class="num">§1</span>A Shared Map of What Goes Wrong</h2>
+
+  <p>The <strong>OWASP API Security Top 10</strong> is a community-maintained ranking of the most common and damaging API vulnerabilities. It is not a complete security program, but it is an excellent checklist: most real-world API breaches are variations of items on this list. The list below follows the 2023 edition; OWASP revises it periodically, so check owasp.org for the current version.</p>
+
+  <table>
+    <tr><th>Risk</th><th>What it means</th><th>Core defense</th></tr>
+    <tr><td><strong>API1: Broken Object Level Authorization</strong></td><td>Changing an id in a request exposes someone else's object (the IDOR bug from stage 1.4)</td><td>Check access to every object on every request</td></tr>
+    <tr><td><strong>API2: Broken Authentication</strong></td><td>Weak login, credential stuffing, bad token handling</td><td>Strong hashing, rate limits, MFA, careful token validation</td></tr>
+    <tr><td><strong>API3: Broken Object Property Level Authorization</strong></td><td>Exposing or accepting fields the caller should not touch (excessive data exposure, mass assignment)</td><td>Allow-list response and request fields</td></tr>
+    <tr><td><strong>API4: Unrestricted Resource Consumption</strong></td><td>No limits on request rate, size, or cost</td><td>Rate limits, quotas, pagination caps, timeouts</td></tr>
+    <tr><td><strong>API5: Broken Function Level Authorization</strong></td><td>A normal user can call admin endpoints</td><td>Deny by default; explicit role checks on every function</td></tr>
+    <tr><td><strong>API6: Unrestricted Access to Sensitive Business Flows</strong></td><td>Automated abuse of legitimate flows (ticket scalping, mass signup)</td><td>Detect and throttle automation; bot protection</td></tr>
+    <tr><td><strong>API7: Server-Side Request Forgery</strong></td><td>Your server fetches a URL the attacker chose, reaching internal systems</td><td>Allow-list destinations; block private address ranges</td></tr>
+    <tr><td><strong>API8: Security Misconfiguration</strong></td><td>Debug mode, verbose errors, default credentials, open CORS</td><td>Hardened, reviewed, automated configuration</td></tr>
+    <tr><td><strong>API9: Improper Inventory Management</strong></td><td>Forgotten old versions, test endpoints, and undocumented APIs still exposed</td><td>Keep an inventory; retire what you no longer need</td></tr>
+    <tr><td><strong>API10: Unsafe Consumption of APIs</strong></td><td>Blindly trusting data from third-party APIs</td><td>Validate upstream data like any other input</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Mass Assignment in Practice</h2>
+
+  <p>API3 is easy to introduce by accident. Spreading the whole request body into a database update lets clients set fields they should never control.</p>
+
+  <pre><span class="comment">// VULNERABLE: client sends {"title": "x", "role": "admin"} and promotes themselves</span>
+await db.users.update(req.user.id, req.body);
+
+<span class="comment">// SAFE: validate against an explicit schema, accept ONLY known, permitted fields</span>
+const UpdateProfile = z.object({ displayName: z.string().max(60).optional(), bio: z.string().max(500).optional() }).strict();
+await db.users.update(req.user.id, UpdateProfile.parse(req.body));
+
+<span class="comment">// Same idea for responses: build the output explicitly, never return the raw row</span>
+const toPublic = u =&gt; ({ id: u.id, displayName: u.displayName, avatarUrl: u.avatarUrl });   <span class="comment">// no email, hash, or role</span>
+res.json(toPublic(user));</pre>
+
+  <h2><span class="num">§3</span>SSRF: When Your Server Is the Attacker's Proxy</h2>
+
+  <p>Features like "import from URL", webhooks, or link previews make your server issue requests to user-supplied addresses. An attacker supplies <code>http://169.254.169.254/latest/meta-data/</code> (a cloud metadata service) or an internal admin URL, and your server fetches it from <em>inside</em> your network. Defend by allow-listing hosts where possible, resolving the hostname and rejecting private, loopback, and link-local addresses, disabling redirects, and running such fetches from a network segment with no internal access.</p>
+
+  <h2><span class="num">§4</span>Using the List</h2>
+
+  <ul>
+    <li><strong>Threat-model each endpoint</strong> by asking which of the ten could apply.</li>
+    <li><strong>Turn each risk into tests:</strong> a user cannot read another's object, a member cannot call an admin route, an oversized request is rejected.</li>
+    <li><strong>Automate where possible:</strong> dependency scanners, DAST/API scanners, and linting of the OpenAPI spec for missing auth on endpoints.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Authorization dominates the list</span>
+    Three of the top five (BOLA, property-level, and function-level authorization) are variations of "the server checked who you are but not what you may touch." Centralize and test your authorization logic; it pays off more than any other single security investment.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating the Top 10 as a one-time audit</td><td>New endpoints reintroduce old bugs</td><td>Bake the checks into code review, tests, and CI</td></tr>
+    <tr><td>Returning whole database rows</td><td>Hashes, emails, and internal flags leak</td><td>Map rows to explicit response objects</td></tr>
+    <tr><td>Leaving old API versions and test routes running</td><td>Unpatched, forgotten attack surface</td><td>Maintain an inventory and decommission what is unused</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Walk through your API and, for each of the ten risks, write one sentence on whether it applies and what currently protects you.</li>
+      <li>Find an endpoint that accepts <code>req.body</code> directly and rewrite it with a strict allow-list schema.</li>
+      <li>Write tests proving that user B cannot read user A's resource and a member cannot call an admin endpoint.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The OWASP API Top 10 is a practical checklist; most breaches map to one of its items.</li>
+      <li>Authorization failures (object, property, function level) are the most common and most damaging.</li>
+      <li>Use allow-lists for inputs, outputs, and outbound requests, and turn each risk into an automated test.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Security — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

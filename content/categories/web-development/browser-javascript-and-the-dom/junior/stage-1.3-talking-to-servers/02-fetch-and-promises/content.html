@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>fetch &amp; Promises — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · talking to servers</span> → lesson 02</p>
+  <h1>fetch &amp; Promises</h1>
+  <p class="lede"><code>fetch</code> asks a server for data without reloading the page. It returns a promise, so you also need to understand the small set of promise ideas that make asynchronous code work.</p>
+
+  <h2><span class="num">§1</span>Promises in One Page</h2>
+
+  <p>A <strong>promise</strong> is an object that stands for a value that is not available yet. It is in one of three states: *pending*, *fulfilled* with a value, or *rejected* with an error. You attach handlers with <code>then</code> (success) and <code>catch</code> (failure).</p>
+
+  <pre>const p = new Promise((resolve, reject) =&gt; {
+  setTimeout(() =&gt; resolve("done"), 500);
+});
+
+p.then((value) =&gt; console.log(value))      <span class="comment">// "done" after 0.5s</span>
+ .catch((err) =&gt; console.error(err))
+ .finally(() =&gt; console.log("always runs"));</pre>
+
+  <p>Each <code>then</code> returns a <strong>new</strong> promise, which is what makes chaining possible: whatever you return from a handler becomes the value for the next one, and a thrown error skips ahead to the next <code>catch</code>.</p>
+
+  <h2><span class="num">§2</span>Making a Request with fetch</h2>
+
+  <p><code>fetch(url, options)</code> returns a promise that resolves to a <code>Response</code> as soon as the <strong>headers</strong> arrive. The body is read with a second promise, such as <code>res.json()</code> or <code>res.text()</code>.</p>
+
+  <pre>fetch("https://api.example.com/users/7")
+  .then((res) =&gt; res.json())
+  .then((user) =&gt; console.log(user.name))
+  .catch((err) =&gt; console.error("failed", err));
+
+<span class="comment">// sending data</span>
+fetch("/api/notes", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: "Buy milk" }),
+});</pre>
+
+  <p>The body can be read <strong>once</strong>. If you need it twice, call <code>res.clone()</code> first. Common readers are <code>json()</code>, <code>text()</code>, <code>blob()</code>, and <code>arrayBuffer()</code>.</p>
+
+  <h2><span class="num">§3</span>The Big Gotcha: HTTP Errors Do Not Reject</h2>
+
+  <p><code>fetch</code> rejects its promise only when the request itself fails, such as a network outage, DNS failure, or a CORS block. A <code>404</code> or <code>500</code> response is still a successful *fetch*, so the promise <strong>fulfills</strong>. You must check the status yourself.</p>
+
+  <pre>fetch("/api/missing")
+  .then((res) =&gt; {
+    if (!res.ok) {                        <span class="comment">// ok is true for 200-299</span>
+      throw new Error(`HTTP ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(render)
+  .catch(showError);                      <span class="comment">// now 404s land here too</span></pre>
+
+  <p>Wrapping this in a small helper means you write the check once:</p>
+
+  <pre>function getJSON(url) {
+  return fetch(url).then((res) =&gt; {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  });
+}</pre>
+
+  <div class="callout">
+    <span class="label">fetch only rejects on network failure</span>
+    A <code>404</code> or <code>500</code> fulfills the promise. Always check <code>res.ok</code> before you parse the body, or your <code>catch</code> will never see server errors.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Not checking <code>res.ok</code></td><td>An error page is parsed as if it were data</td><td>Throw when <code>!res.ok</code></td></tr>
+    <tr><td>Forgetting to <code>return</code> inside <code>then</code></td><td>The next step receives <code>undefined</code></td><td>Return the value or promise</td></tr>
+    <tr><td>Reading the body twice</td><td><code>body stream already read</code> error</td><td>Use <code>res.clone()</code> first</td></tr>
+    <tr><td>Omitting <code>JSON.stringify</code> on the body</td><td>Server receives <code>[object Object]</code></td><td>Stringify objects and set <code>Content-Type</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Fetch a public JSON API and log one field using only <code>then</code>/<code>catch</code>.</li>
+      <li>Request a URL that returns a 404 and show that the promise still fulfills, then handle it with a <code>res.ok</code> check.</li>
+      <li>Write <code>postJSON(url, data)</code> that stringifies the data, sets headers, and rejects on any non-2xx status.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A promise represents a future value; <code>then</code>, <code>catch</code>, and <code>finally</code> handle the outcome.</li>
+      <li><code>fetch</code> resolves when headers arrive; read the body with a second promise.</li>
+      <li>HTTP error statuses do not reject: check <code>res.ok</code> yourself.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Talking to Servers — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "RDB Snapshots vs. AOF",
+  "description": "The two persistence models and what each one can lose.",
+  "order": 1
+}

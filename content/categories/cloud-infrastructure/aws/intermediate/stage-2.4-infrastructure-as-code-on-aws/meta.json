@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Infrastructure as Code on AWS",
+  "description": "CloudFormation, the CDK, SAM, and multi-account promotion pipelines.",
+  "order": 4
+}

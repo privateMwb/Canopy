@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Operating Postgres",
+  "description": "Privileges and row-level security, configuration, monitoring, vacuum, and PITR.",
+  "order": 4
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — Core Concepts",
+  "description": "Why orchestration exists, how a cluster is built, and how to run your first pod from a manifest.",
+  "order": 1
+}

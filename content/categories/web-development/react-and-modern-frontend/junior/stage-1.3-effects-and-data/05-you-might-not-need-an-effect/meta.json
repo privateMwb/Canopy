@@ -1,0 +1,5 @@
+{
+  "title": "You Might Not Need an Effect",
+  "description": "Deriving values during render and avoiding extra effects.",
+  "order": 5
+}

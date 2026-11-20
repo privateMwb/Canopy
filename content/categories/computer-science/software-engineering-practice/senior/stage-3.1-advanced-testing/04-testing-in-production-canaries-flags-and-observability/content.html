@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Testing in Production: Canaries, Flags &amp; Observability — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · advanced testing</span> → lesson 04</p>
+  <h1>Testing in Production: Canaries, Flags &amp; Observability</h1>
+  <p class="lede">No pre-release environment can fully copy production, so real systems add a last layer of safety: releasing gradually and watching closely.</p>
+
+  <h2><span class="num">§1</span>What Pre-Release Tests Miss</h2>
+  <p>Production has real data volumes, real traffic patterns, odd clients, and failures nobody scripted. Some bugs only appear there. Testing in production doesn't mean skipping tests; it means adding <strong>controlled exposure</strong> and <strong>good observability</strong> as a final safety layer, so that a bad change hurts few users and is noticed quickly.</p>
+  <p>Careful teams use it <strong>in addition to</strong> a strong suite, never instead of one.</p>
+  <h2><span class="num">§2</span>Gradual Rollout Techniques</h2>
+  <table>
+    <tr><th>Technique</th><th>How it works</th><th>Protects against</th></tr>
+    <tr><td><strong>Feature flag</strong></td><td>Ship code dark; turn it on for chosen users</td><td>Big-bang launches; instant off-switch</td></tr>
+    <tr><td><strong>Canary release</strong></td><td>Send 1-5% of traffic to the new version first</td><td>Bad deploys affecting everyone</td></tr>
+    <tr><td><strong>Gradual rollout</strong></td><td>Step up 1% -&gt; 10% -&gt; 50% -&gt; 100% as metrics hold</td><td>Load and scale problems</td></tr>
+    <tr><td><strong>Shadow traffic</strong></td><td>Copy live requests to the new version, discard its responses</td><td>Wrong results in a rewrite, without user impact</td></tr>
+    <tr><td><strong>Synthetic checks</strong></td><td>Scripted probes of key journeys on a schedule</td><td>Outages nobody reported yet</td></tr>
+  </table>
+  <pre>if flags.enabled("new_checkout", user_id=user.id):   <span class="comment"># 5% of users today</span>
+    return new_checkout(cart)
+return old_checkout(cart)                              <span class="comment"># instant rollback: flip the flag</span></pre>
+  <h2><span class="num">§3</span>Observability Is the Test</h2>
+  <p>Gradual rollout only works if you can <strong>see</strong> whether the change is healthy: error rate, latency, and business metrics (orders per minute), compared between the new and old versions. Define the signals <strong>before</strong> rollout, with thresholds that trigger an automatic or manual rollback.</p>
+  <pre>canary health check, evaluated every minute:
+  error_rate(canary)   &lt; 1.2 x error_rate(stable)
+  p99_latency(canary)  &lt; 1.1 x p99_latency(stable)
+  orders_per_min(canary) within 10% of expected
+  -&gt; any breach: halt rollout and revert automatically</pre>
+  <ul>
+    <li>Make rollback fast and rehearsed; a rollback you've never practiced is a hope</li>
+    <li>Keep flags short-lived and remove them once fully rolled out; stale flags are their own debt</li>
+    <li>Take care with data: a canary that writes bad data can't always be rolled back as easily as code</li>
+  </ul>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Treat each release as an experiment with a limited blast radius, defined success signals, and a quick way back.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Releasing to everyone at once</td><td>A bad change hits all users before anyone notices</td><td>Roll out in stages behind a flag or canary</td></tr>
+    <tr><td>No defined health metrics</td><td>You can't tell whether the canary is working</td><td>Set thresholds on errors, latency, and business metrics beforehand</td></tr>
+    <tr><td>Leaving flags in the code forever</td><td>Combinatorial paths, dead code, and confusion</td><td>Remove each flag after full rollout</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Put one risky change behind a flag and describe how you would roll it out in four steps.</li>
+      <li>Define three health signals and thresholds that would halt that rollout.</li>
+      <li>List the flags in your code and find one ready to be deleted.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Production exposes problems no pre-release environment can.</li>
+      <li>Flags, canaries, and shadow traffic limit the blast radius.</li>
+      <li>Observability with preset thresholds is what makes gradual rollout safe.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Advanced Testing — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

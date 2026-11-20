@@ -1,0 +1,5 @@
+{
+  "title": "Validating Data at the Boundary",
+  "description": "dataclasses, attrs, and Pydantic for turning untrusted input into trusted objects.",
+  "order": 5
+}

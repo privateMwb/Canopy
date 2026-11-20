@@ -1,0 +1,5 @@
+{
+  "title": "Memory Management & Fragmentation",
+  "description": "Allocators, overhead per key, and finding where memory goes.",
+  "order": 3
+}

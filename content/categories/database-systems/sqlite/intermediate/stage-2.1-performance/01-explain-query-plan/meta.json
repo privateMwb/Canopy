@@ -1,0 +1,5 @@
+{
+  "title": "EXPLAIN QUERY PLAN",
+  "description": "Reading scans, searches, and why a query chose its plan.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "UI State & Rendering",
+  "description": "Why frameworks exist: state, derived views, and the component mental model.",
+  "order": 1
+}

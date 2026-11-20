@@ -1,0 +1,5 @@
+{
+  "title": "WAL, Checkpoints & Crash Recovery",
+  "description": "Why writes are logged first, what a checkpoint does, and how recovery replays.",
+  "order": 2
+}

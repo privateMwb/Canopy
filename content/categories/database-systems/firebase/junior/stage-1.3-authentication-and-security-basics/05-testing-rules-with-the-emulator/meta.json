@@ -1,0 +1,5 @@
+{
+  "title": "Testing Rules with the Emulator",
+  "description": "Running rules locally and proving what is allowed and denied.",
+  "order": 5
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Objects: Blobs, Trees, Commits & Tags",
+  "description": "The content-addressable store behind every commit.",
+  "order": 1
+}

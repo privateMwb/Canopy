@@ -1,0 +1,5 @@
+{
+  "title": "Component Patterns",
+  "description": "Composition, compound components, and render props.",
+  "order": 4
+}

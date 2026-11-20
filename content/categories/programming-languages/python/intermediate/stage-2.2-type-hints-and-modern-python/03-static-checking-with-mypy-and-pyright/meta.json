@@ -1,0 +1,5 @@
+{
+  "title": "Static Checking with mypy & pyright",
+  "description": "Running a type checker, reading its errors, and adopting it gradually.",
+  "order": 3
+}

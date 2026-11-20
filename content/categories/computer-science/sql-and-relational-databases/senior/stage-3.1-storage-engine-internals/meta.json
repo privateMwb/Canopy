@@ -1,0 +1,1 @@
+{"title": "Stage 3.1 — Storage Engine Internals", "description": "Pages, buffer pools, B-trees vs. LSM-trees, write-ahead logs, and join algorithms.", "order": 1}

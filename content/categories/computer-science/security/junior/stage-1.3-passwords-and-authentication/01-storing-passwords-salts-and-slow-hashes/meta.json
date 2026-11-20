@@ -1,0 +1,1 @@
+{"title": "Storing Passwords: Salts & Slow Hashes", "description": "Why a fast hash is the wrong tool, and how salting plus bcrypt, scrypt, or Argon2 slows attackers down.", "order": 1}

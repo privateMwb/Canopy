@@ -1,0 +1,7 @@
+{
+  "title": "Web Performance",
+  "description": "Core Web Vitals, loading, and caching, from measuring to fast sites.",
+  "order": 7,
+  "compileRoot": true,
+  "icon": "web_perf"
+}

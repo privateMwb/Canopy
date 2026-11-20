@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rendering Strategy Trade-offs — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · architecture for speed</span> → lesson 01</p>
+  <h1>Rendering Strategy Trade-offs</h1>
+  <p class="lede">Where and when HTML gets produced, on the server, at build time, in the browser, or in pieces, shapes almost every performance number. There is no best strategy, only trade-offs.</p>
+
+  <h2><span class="num">§1</span>The Main Strategies</h2>
+  <table>
+    <tr><th>Strategy</th><th>HTML is produced</th><th>Strength</th><th>Weakness</th></tr>
+    <tr><td><strong>CSR</strong> (client-side rendering)</td><td>In the browser, by JavaScript</td><td>Rich interactivity, simple hosting</td><td>Empty first load, late LCP, heavy JS, weaker for crawlers</td></tr>
+    <tr><td><strong>SSR</strong> (server-side rendering)</td><td>On the server, per request</td><td>Fresh and personalized, fast first paint</td><td>Server cost and TTFB, hydration needed</td></tr>
+    <tr><td><strong>SSG</strong> (static generation)</td><td>At build time</td><td>Fastest delivery from a CDN, cheap, resilient</td><td>Stale until rebuilt, build time grows with page count</td></tr>
+    <tr><td><strong>ISR / revalidation</strong></td><td>At build time, then regenerated in the background</td><td>Static speed with bounded staleness</td><td>More moving parts, cache invalidation</td></tr>
+    <tr><td><strong>Streaming SSR</strong></td><td>On the server, sent in chunks</td><td>Early first bytes, slow parts do not block the rest</td><td>Complexity, careful handling of errors and status codes</td></tr>
+    <tr><td><strong>Islands / partial hydration</strong></td><td>Static HTML plus small interactive pieces</td><td>Little JavaScript, fast interactivity</td><td>Needs framework support, state sharing is harder</td></tr>
+  </table>
+  <p>Real sites mix them. A marketing page is static, a product page is regenerated every few minutes, a dashboard is client-rendered behind a login, and checkout is server-rendered and personalized.</p>
+
+  <h2><span class="num">§2</span>Choosing by Constraint</h2>
+  <p>Start from what must be true about the page, not from what the framework defaults to. A few questions decide most cases.</p>
+  <ol>
+    <li><strong>How personalized is it?</strong> If the HTML is the same for everyone, it can be cached at the edge, so prefer static or revalidated.</li>
+    <li><strong>How fresh must it be?</strong> Seconds, minutes, or days? Freshness requirement sets the revalidation window.</li>
+    <li><strong>Does a crawler or a first-time visitor need the content?</strong> Then it must be in the initial HTML.</li>
+    <li><strong>How interactive is it?</strong> Mostly reading means ship little JavaScript. Mostly app-like means a larger client is justified.</li>
+    <li><strong>What does the audience's device look like?</strong> Slow phones punish heavy hydration.</li>
+  </ol>
+  <pre><span class="comment">// Pattern: static shell + dynamic island, in framework-neutral terms</span>
+<span class="comment">// 1. Build the page HTML at deploy time (fast, cacheable at the edge).</span>
+<span class="comment">// 2. Hydrate only the cart widget and the search box.</span>
+<span class="comment">// 3. Fetch personalized data client-side after first paint.</span></pre>
+
+  <h2><span class="num">§3</span>Measuring the Trade-offs</h2>
+  <p>Each strategy moves cost to a different place, so judge it with the metric that cost lands on.</p>
+  <table>
+    <tr><th>Metric</th><th>CSR tends to</th><th>SSR tends to</th><th>SSG tends to</th></tr>
+    <tr><td>TTFB</td><td>Excellent (static shell)</td><td>Worse, depends on server work</td><td>Excellent (edge cache)</td></tr>
+    <tr><td>LCP</td><td>Poor, waits on JS and data</td><td>Good if the server is fast</td><td>Best</td></tr>
+    <tr><td>INP</td><td>Depends on JS size</td><td>Hydration can delay first input</td><td>Good with little JS</td></tr>
+    <tr><td>Server cost</td><td>Low</td><td>High, scales with traffic</td><td>Low</td></tr>
+  </table>
+  <p>These are tendencies, not laws. A badly cached SSR page can be slower than a lean CSR one, and a huge static page can still hydrate slowly. Prototype the real page, and compare field metrics for the strategies you are choosing between.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Rendering strategy is a decision about <strong>where to pay</strong>: build time, server time, or the user's device. Pay as early and as far from the user's CPU as the content's freshness and personalization allow.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Choosing CSR for content-heavy public pages</td><td>Slow LCP, poor discoverability</td><td>Render the content on the server or at build time</td></tr>
+    <tr><td>Using SSR for pages that are identical for everyone</td><td>Pays server cost on every request for no benefit</td><td>Generate statically and cache at the edge</td></tr>
+    <tr><td>Picking a strategy from framework defaults</td><td>Misfit with the actual content and traffic</td><td>Decide from personalization, freshness, and interactivity</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a site with five page types and assign each a rendering strategy. Justify each in terms of freshness, personalization, and interactivity.</li>
+      <li>Choose one page and describe which metric you would watch to confirm your choice was right.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>CSR, SSR, SSG, ISR, streaming, and islands each shift cost between build, server, and client.</li>
+      <li>Decide per page type, from personalization, freshness, crawler needs, and interactivity.</li>
+      <li>Verify with field metrics, because the tendencies differ in practice.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Architecture for Speed — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

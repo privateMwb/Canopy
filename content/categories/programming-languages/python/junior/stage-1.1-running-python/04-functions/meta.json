@@ -1,0 +1,5 @@
+{
+  "title": "Functions",
+  "description": "Parameters, defaults, *args and **kwargs, return values, and scope.",
+  "order": 4
+}

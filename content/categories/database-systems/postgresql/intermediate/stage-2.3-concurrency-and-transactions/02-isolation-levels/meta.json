@@ -1,0 +1,5 @@
+{
+  "title": "Isolation Levels",
+  "description": "Read Committed, Repeatable Read, Serializable, and the anomalies each one allows.",
+  "order": 2
+}

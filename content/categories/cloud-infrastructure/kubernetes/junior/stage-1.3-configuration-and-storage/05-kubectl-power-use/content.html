@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>kubectl Power Use — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · configuration &amp; storage</span> → lesson 05</p>
+  <h1>kubectl Power Use</h1>
+  <p class="lede">A few kubectl output and editing features turn it from a viewer into a fast, scriptable tool for inspecting and changing a cluster.</p>
+
+  <h2><span class="num">§1</span>Output Formats</h2>
+  <pre>kubectl get pods -o wide                  <span class="comment"># adds node and pod IP</span>
+kubectl get pod web -o yaml               <span class="comment"># the full live object</span>
+kubectl get pods -o name                  <span class="comment"># just kind/name, handy for scripts</span>
+kubectl get pods --sort-by=.metadata.creationTimestamp
+kubectl get pods --field-selector=status.phase=Running</pre>
+  <h2><span class="num">§2</span>JSONPath and Custom Columns</h2>
+  <p>When you need one field, extract it instead of scanning YAML:</p>
+  <pre>kubectl get pod web -o jsonpath='{.status.podIP}'
+kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.nodeName}{"\n"}{end}'
+kubectl get pods -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName,IMAGE:.spec.containers[0].image</pre>
+  <p><code>jsonpath</code> shines in scripts; <code>custom-columns</code> gives readable tables. Pair with <code>jq</code> when you need heavier filtering: <code>kubectl get pods -o json | jq '.items[].metadata.name'</code>.</p>
+  <h2><span class="num">§3</span>Changing Objects Precisely</h2>
+  <pre>kubectl patch deployment web -p '{"spec":{"replicas":4}}'
+kubectl patch deployment web --type=json \
+  -p='[{"op":"replace","path":"/spec/replicas","value":4}]'
+kubectl set image deployment/web nginx=nginx:1.28
+kubectl label pod web-1 tier=frontend
+kubectl annotate pod web-1 owner=team-a
+kubectl rollout restart deployment/web</pre>
+  <p><code>patch</code> changes only the fields you name. The default merge patch is easiest; <code>--type=json</code> is exact and good for list edits.</p>
+  <h2><span class="num">§4</span>Diff, Dry-Run, and Server-Side Apply</h2>
+  <pre>kubectl diff -f web.yaml                      <span class="comment"># preview against the live object</span>
+kubectl apply -f web.yaml --dry-run=server    <span class="comment"># validated by the real API server</span>
+kubectl apply -f web.yaml --server-side       <span class="comment"># field ownership tracked by the server</span></pre>
+  <p><code>--dry-run=server</code> is stronger than <code>client</code> because admission rules and the true schema are checked. Server-side apply records which manager owns which field, which reduces conflicts when several tools touch one object.</p>
+  <h2><span class="num">§5</span>Plugins and Convenience</h2>
+  <ul>
+    <li><strong>Plugins</strong> are executables named <code>kubectl-&lt;name&gt;</code> on your <code>PATH</code>. The <strong>krew</strong> plugin manager installs many, such as <code>ctx</code>, <code>ns</code>, and <code>neat</code>.</li>
+    <li><code>kubectl explain</code>, <code>kubectl api-resources</code>, and shell completion (<code>source &lt;(kubectl completion zsh)</code>) save constant lookups.</li>
+    <li>Aliases such as <code>k=kubectl</code> are worth setting up.</li>
+  </ul>
+  <div class="callout">
+    <span class="label">Safety habit</span>
+    For any change you did not just write, run <code>kubectl diff</code> first, and for anything destructive, double-check <code>kubectl config current-context</code>.
+  </div>
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Parsing <code>kubectl get</code> table text in scripts</td><td>Column formats change and break the script</td><td>Use <code>-o json</code> or <code>-o jsonpath</code></td></tr>
+    <tr><td>Patching with the wrong strategy</td><td>Lists are replaced instead of merged</td><td>Use a JSON patch for precise list edits</td></tr>
+    <tr><td>Skipping <code>diff</code> before apply</td><td>Unexpected fields change in production</td><td>Make <code>diff</code> plus <code>dry-run=server</code> part of the routine</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Print every pod name with its node using a single <code>jsonpath</code> command.</li>
+      <li>Change a Deployment's replica count with <code>patch</code>, then confirm with <code>kubectl get deploy -o jsonpath</code>.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>-o yaml</code>, <code>jsonpath</code>, and <code>custom-columns</code> extract exactly what you need.</li>
+      <li><code>patch</code>, <code>diff</code>, and <code>--dry-run=server</code> change and verify objects safely.</li>
+      <li>Plugins and completion make daily use faster.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Configuration &amp; Storage — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

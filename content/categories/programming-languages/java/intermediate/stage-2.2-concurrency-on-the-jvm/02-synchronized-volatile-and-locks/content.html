@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>synchronized, volatile &amp; Locks — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · concurrency on the jvm</span> → lesson 02</p>
+  <h1>synchronized, volatile &amp; Locks</h1>
+  <p class="lede">When threads share mutable data, you need rules for who may touch it and when changes become visible, and Java gives you <code>synchronized</code>, <code>volatile</code>, and explicit locks, each guaranteeing something different.</p>
+
+  <h2><span class="num">§1</span>The Problem: Races and Visibility</h2>
+  <p>Two threads incrementing a shared counter can lose updates, because <code>count++</code> is really three steps (read, add, write). That is a <strong>race condition</strong>. A second, subtler problem is <strong>visibility</strong>: without proper synchronization, one thread may never see another thread's write, because of CPU caches and compiler reordering.</p>
+  <pre>class Counter {
+    private int count = 0;
+    void inc() { count++; }              <span class="comment">// not atomic: two threads can both read 5 and both write 6</span>
+    int get() { return count; }
+}
+<span class="comment">// 2 threads x 100,000 inc() calls usually give a total below 200,000</span></pre>
+
+  <h2><span class="num">§2</span>synchronized</h2>
+  <p>A <code>synchronized</code> method or block acquires a <strong>monitor lock</strong> on an object. Only one thread at a time can hold a given lock, and releasing it makes all changes visible to the next thread that acquires the same lock. That gives you both <strong>mutual exclusion</strong> and <strong>visibility</strong>.</p>
+  <pre>class SafeCounter {
+    private int count = 0;
+    synchronized void inc() { count++; }           <span class="comment">// locks on 'this'</span>
+    synchronized int get() { return count; }       <span class="comment">// reads need the lock too, for visibility</span>
+}
+
+private final Object lock = new Object();           <span class="comment">// a private lock is safer than 'this'</span>
+void transfer() {
+    synchronized (lock) {
+        <span class="comment">// critical section: keep it as short as possible</span>
+    }
+}</pre>
+  <p>The lock is reentrant: a thread already holding it can enter another synchronized block on the same object. Everything that touches the shared data must use the <strong>same</strong> lock, or the protection means nothing. Locking on a public object, or on a string literal or boxed number, invites unrelated code to contend with you.</p>
+
+  <h2><span class="num">§3</span>volatile</h2>
+  <p>A <code>volatile</code> field guarantees <strong>visibility</strong> and ordering for reads and writes of that one variable, but it does <strong>not</strong> make compound operations atomic. It is the right tool for a simple flag written by one thread and read by others.</p>
+  <pre>private volatile boolean running = true;
+void stop() { running = false; }                    <span class="comment">// visible to the worker immediately</span>
+void work() { while (running) { doStep(); } }
+
+private volatile int hits;
+void bad() { hits++; }                              <span class="comment">// still a race: read-modify-write</span></pre>
+
+  <h2><span class="num">§4</span>Explicit Locks</h2>
+  <p><code>java.util.concurrent.locks.ReentrantLock</code> offers what <code>synchronized</code> cannot: attempting the lock without blocking, timing out, and being interruptible, plus separate <code>Condition</code>s and read/write locking. The cost is that you must release the lock yourself, always in a <code>finally</code>.</p>
+  <pre>private final ReentrantLock lock = new ReentrantLock();
+
+void update() {
+    lock.lock();
+    try {
+        <span class="comment">// critical section</span>
+    } finally {
+        lock.unlock();                              <span class="comment">// must happen even on exception</span>
+    }
+}
+
+if (lock.tryLock(100, TimeUnit.MILLISECONDS)) {     <span class="comment">// give up instead of waiting forever</span>
+    try { <span class="comment">/* ... */</span> } finally { lock.unlock(); }
+}</pre>
+  <p><code>ReentrantReadWriteLock</code> allows many concurrent readers or one writer, which helps for read-heavy data. For the simplest cases, <code>AtomicInteger</code> (next lesson) is better than either.</p>
+
+  <h2><span class="num">§5</span>Deadlock</h2>
+  <p>If thread A holds lock 1 and wants lock 2 while thread B holds lock 2 and wants lock 1, both wait forever. Avoid it by always acquiring multiple locks in the same global order, by holding locks for as short a time as possible, and by never calling unknown code (callbacks, overridable methods) while holding a lock.</p>
+
+  <div class="callout">
+    <span class="label">Visibility and atomicity are different guarantees</span>
+    <code>volatile</code> gives visibility only. <code>synchronized</code> and locks give both visibility and atomicity for the code inside them. Ask which one your problem actually needs.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>volatile</code> for a counter</td><td>Lost updates, because <code>++</code> is still three steps</td><td>Use <code>AtomicInteger</code>, or <code>synchronized</code></td></tr>
+    <tr><td>Synchronizing the writer but not the reader</td><td>The reader can see stale values</td><td>Use the same lock for every access</td></tr>
+    <tr><td>Forgetting <code>unlock()</code> in a <code>finally</code></td><td>One exception leaves the lock held forever</td><td>Always <code>try { ... } finally { lock.unlock(); }</code></td></tr>
+    <tr><td>Locking on <code>this</code> or a string literal</td><td>Unrelated code can contend on the same lock</td><td>Use a private final lock object</td></tr>
+    <tr><td>Acquiring two locks in different orders</td><td>Deadlock</td><td>Define one global lock order</td></tr>
+    <tr><td>Calling a callback while holding a lock</td><td>The callback may take another lock and deadlock</td><td>Release the lock first, or copy the data out</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write the unsafe <code>Counter</code>, run it with two threads for 100,000 increments each, and observe the wrong total. Fix it with <code>synchronized</code>, then with <code>AtomicInteger</code>.</li>
+      <li>Write a worker loop that stops via a <code>volatile boolean</code>, then remove <code>volatile</code> and see whether it still stops (it may not).</li>
+      <li>Construct a deliberate deadlock with two locks and two threads, then fix it by ordering the locks.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Shared mutable state needs both mutual exclusion and visibility.</li>
+      <li><code>synchronized</code> and locks provide both; <code>volatile</code> provides visibility only and doesn't make <code>x++</code> atomic.</li>
+      <li>Always release locks in <code>finally</code>, keep critical sections small, and acquire multiple locks in a fixed order.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Concurrency on the JVM — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

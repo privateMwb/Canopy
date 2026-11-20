@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sessions &amp; Cookies — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · authentication basics</span> → lesson 02</p>
+  <h1>Sessions &amp; Cookies</h1>
+  <p class="lede">Server-side sessions and secure cookie settings.</p>
+
+  <h2><span class="num">§1</span>Remembering Who Is Logged In</h2>
+
+  <p>HTTP is stateless, so after a successful login the server needs a way to recognize the same user on later requests. The classic solution is a <strong>session</strong>: the server creates a random, unguessable <strong>session id</strong>, stores it with the user's identity, and sends the id to the browser in a <strong>cookie</strong>. The browser then attaches that cookie automatically to every request to your site.</p>
+
+  <pre>import crypto from "node:crypto";
+
+<span class="comment">// On successful login</span>
+const sessionId = crypto.randomBytes(32).toString("base64url");     <span class="comment">// 256 bits of randomness</span>
+await pool.query(
+  "INSERT INTO sessions (id, user_id, expires_at) VALUES ($1, $2, now() + interval '7 days')",
+  [sessionId, user.id]
+);
+res.cookie("sid", sessionId, {
+  httpOnly: true,                                    <span class="comment">// JavaScript cannot read it (limits XSS theft)</span>
+  secure: true,                                      <span class="comment">// only sent over HTTPS</span>
+  sameSite: "lax",                                   <span class="comment">// not sent on most cross-site requests (CSRF defense)</span>
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  path: "/",
+});
+res.json({ ok: true });</pre>
+
+  <pre><span class="comment">// Middleware: turn the cookie into req.user on every request</span>
+async function loadSession(req, res, next) {
+  const sid = req.cookies?.sid;                      <span class="comment">// needs the cookie-parser middleware</span>
+  if (!sid) return next();
+  const { rows } = await pool.query(
+    `SELECT u.id, u.email FROM sessions s JOIN users u ON u.id = s.user_id
+      WHERE s.id = $1 AND s.expires_at &gt; now()`, [sid]);
+  req.user = rows[0];                                <span class="comment">// undefined if invalid or expired</span>
+  next();
+}
+
+<span class="comment">// Logout: destroy it on the server, then clear the cookie</span>
+await pool.query("DELETE FROM sessions WHERE id = $1", [req.cookies.sid]);
+res.clearCookie("sid");</pre>
+
+  <h2><span class="num">§2</span>What the Cookie Flags Do</h2>
+
+  <table>
+    <tr><th>Flag</th><th>Purpose</th></tr>
+    <tr><td><code>HttpOnly</code></td><td>Hides the cookie from <code>document.cookie</code>, so injected scripts cannot steal it</td></tr>
+    <tr><td><code>Secure</code></td><td>Sends the cookie only over HTTPS, so it cannot be sniffed on plain HTTP</td></tr>
+    <tr><td><code>SameSite</code></td><td><code>Lax</code> or <code>Strict</code> stops the browser attaching it to most cross-site requests, which blunts CSRF</td></tr>
+    <tr><td><code>Max-Age</code> / <code>Expires</code></td><td>Bounds the cookie's lifetime; omit for a session-only cookie</td></tr>
+    <tr><td><code>__Host-</code> name prefix</td><td>Forces Secure, no Domain, and path <code>/</code>, preventing subdomain tricks</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>Why Server-Side Sessions Are Good</h2>
+
+  <ul>
+    <li><strong>Revocation is trivial.</strong> Delete the row and the user is logged out everywhere, immediately. That matters when an account is compromised.</li>
+    <li><strong>The cookie holds nothing sensitive,</strong> only a random id that means nothing without your database.</li>
+    <li><strong>You can see and manage active sessions,</strong> for example a "log out other devices" feature.</li>
+  </ul>
+
+  <p>The cost is a lookup on every request, which is why sessions usually live in a fast store such as Redis (or an indexed database table at modest scale). Two more rules: generate a <strong>new</strong> session id at login (never reuse one that existed before authentication, to prevent session fixation), and expire sessions on both an idle and an absolute timeout.</p>
+
+  <div class="callout">
+    <span class="label">Cookies and CSRF</span>
+    Because browsers attach cookies automatically, a malicious site can try to make your user's browser send a request to your API. <code>SameSite=Lax</code> blocks most of that; for state-changing requests also consider CSRF tokens or checking the <code>Origin</code> header. Bearer tokens in the <code>Authorization</code> header (next lesson) are not attached automatically, which is part of their appeal for APIs.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Cookie without <code>HttpOnly</code> and <code>Secure</code></td><td>XSS or network sniffing steals sessions</td><td>Always set <code>httpOnly</code>, <code>secure</code> in production, and <code>sameSite</code></td></tr>
+    <tr><td>Using predictable session ids (counters, timestamps)</td><td>Attackers guess other users' sessions</td><td>Use at least 128 bits from a cryptographic random source</td></tr>
+    <tr><td>Keeping the same session id across login</td><td>Session fixation: an attacker plants a known id before the victim logs in</td><td>Issue a fresh id when privilege changes</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Implement login, an authenticated <code>GET /me</code> route, and logout using a sessions table. Confirm that after logout the old cookie no longer works.</li>
+      <li>Open the browser dev tools, find your cookie, and check each flag. Try reading it with <code>document.cookie</code> in the console.</li>
+      <li>Add an idle timeout: extend <code>expires_at</code> on activity, but cap total lifetime at 30 days.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A session is a random id in a cookie that maps, on the server, to a logged-in user.</li>
+      <li>Set HttpOnly, Secure, and SameSite; regenerate the id at login and expire it sensibly.</li>
+      <li>Server-side sessions are easy to revoke, at the cost of a lookup per request.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Authentication Basics — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

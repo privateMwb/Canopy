@@ -1,0 +1,5 @@
+{
+  "title": "Values, Types & Coercion",
+  "description": "Primitives vs. objects, typeof, null vs. undefined, and why == and === differ.",
+  "order": 2
+}

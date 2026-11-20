@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Canvas &amp; SVG in Script — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · powerful web apis</span> → lesson 03</p>
+  <h1>Canvas &amp; SVG in Script</h1>
+  <p class="lede">Canvas and SVG both draw graphics from script, but they work in opposite ways. Knowing which to choose, and the basics of each, covers most charts, games, and visualizations.</p>
+
+  <h2><span class="num">§1</span>Canvas: Pixels You Paint</h2>
+
+  <p><code>&lt;canvas&gt;</code> is a bitmap. You get a 2D drawing context, issue drawing commands, and the result is pixels. The browser remembers nothing about what you drew, so to change something you clear and redraw.</p>
+
+  <pre>&lt;canvas id="c" width="400" height="200"&gt;&lt;/canvas&gt;
+
+const canvas = document.querySelector("#c");
+const ctx = canvas.getContext("2d");
+
+ctx.fillStyle = "#15803D";
+ctx.fillRect(20, 20, 120, 60);
+
+ctx.strokeStyle = "#1C1F26";
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(20, 150);
+ctx.lineTo(200, 100);
+ctx.lineTo(380, 150);
+ctx.stroke();
+
+ctx.font = "16px Inter, sans-serif";
+ctx.fillText("Hello", 20, 190);</pre>
+
+  <p>On high-density screens a canvas looks blurry unless you scale its backing store. Set <code>canvas.width</code>/<code>height</code> to the CSS size times <code>devicePixelRatio</code>, set the CSS size separately, and scale the context once. For animation, clear and redraw on each <code>requestAnimationFrame</code>.</p>
+
+  <pre>const dpr = window.devicePixelRatio || 1;
+canvas.style.width = "400px";  canvas.style.height = "200px";
+canvas.width = 400 * dpr;      canvas.height = 200 * dpr;
+ctx.scale(dpr, dpr);           <span class="comment">// now draw in CSS pixels</span></pre>
+
+  <h2><span class="num">§2</span>SVG: Elements You Manipulate</h2>
+
+  <p>SVG is <strong>retained mode</strong>: each shape is a real element in the DOM, so it can be styled with CSS, targeted by events, and changed by setting attributes. It stays sharp at any zoom. You create SVG elements with <code>createElementNS</code> and the SVG namespace.</p>
+
+  <pre>const NS = "http://www.w3.org/2000/svg";
+const svg = document.createElementNS(NS, "svg");
+svg.setAttribute("viewBox", "0 0 400 200");
+
+function bar(x, h) {
+  const r = document.createElementNS(NS, "rect");
+  r.setAttribute("x", x);
+  r.setAttribute("y", 200 - h);
+  r.setAttribute("width", 30);
+  r.setAttribute("height", h);
+  r.addEventListener("pointerenter", () =&gt; r.classList.add("hot"));
+  return r;
+}
+[40, 90, 60, 130].forEach((h, i) =&gt; svg.append(bar(20 + i * 50, h)));
+document.body.append(svg);</pre>
+
+  <p>Setting <code>viewBox</code> makes the drawing scale to whatever size the <code>&lt;svg&gt;</code> is given in CSS, which is how you get responsive graphics without scripting. Each shape being a DOM node also means accessibility is possible: add <code>role</code>, <code>&lt;title&gt;</code>, and <code>aria-label</code> so that screen readers can describe it.</p>
+
+  <h2><span class="num">§3</span>Choosing Between Them</h2>
+
+  <table>
+    <tr><th>Question</th><th>Canvas</th><th>SVG</th></tr>
+    <tr><td>How many objects?</td><td>Thousands to millions</td><td>Up to a few thousand</td></tr>
+    <tr><td>Interactivity per shape</td><td>You hit-test manually</td><td>Native events and CSS <code>:hover</code></td></tr>
+    <tr><td>Scales without blur</td><td>Only if you redraw</td><td>Always</td></tr>
+    <tr><td>Accessibility</td><td>Needs a separate text alternative</td><td>Shapes can carry labels and titles</td></tr>
+    <tr><td>Typical uses</td><td>Games, image editing, heatmaps, particles</td><td>Charts, icons, diagrams, maps</td></tr>
+  </table>
+
+  <p>A bar chart with twenty bars is a natural fit for SVG; a particle simulation with fifty thousand moving dots needs canvas. Libraries such as D3 (SVG-centric) and Chart.js (canvas) build on these two primitives.</p>
+
+  <div class="callout">
+    <span class="label">Retained vs. immediate</span>
+    SVG keeps a scene graph for you (and pays for it per element). Canvas keeps nothing (and is fast for huge drawings). Pick based on how many things you draw and how much per-thing interaction you need.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Sizing a canvas only with CSS</td><td>Stretched, blurry output</td><td>Set <code>width</code>/<code>height</code> attributes and handle <code>devicePixelRatio</code></td></tr>
+    <tr><td>Creating SVG elements with <code>createElement</code></td><td>They do not render</td><td>Use <code>createElementNS</code> with the SVG namespace</td></tr>
+    <tr><td>Forgetting to clear the canvas between frames</td><td>Trails of old drawings</td><td><code>ctx.clearRect(0, 0, w, h)</code> each frame</td></tr>
+    <tr><td>Drawing 50,000 SVG nodes</td><td>DOM becomes slow and heavy</td><td>Switch to canvas</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Draw a bar chart from an array of numbers twice: once with canvas, once with SVG, and compare the code.</li>
+      <li>Animate a bouncing ball on canvas with <code>requestAnimationFrame</code> and time-based movement.</li>
+      <li>Make the SVG chart bars highlight on hover with CSS only, then add <code>&lt;title&gt;</code> elements for accessibility.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Canvas is an immediate-mode bitmap; SVG is a DOM of shapes you can style and listen to.</li>
+      <li>Handle <code>devicePixelRatio</code> on canvas and use <code>viewBox</code> and <code>createElementNS</code> for SVG.</li>
+      <li>Choose by scale and interactivity: many objects favor canvas, accessible and interactive graphics favor SVG.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Powerful Web APIs — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

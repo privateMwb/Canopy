@@ -1,0 +1,5 @@
+{
+  "title": "Static Single Assignment",
+  "description": "One definition per variable, phi nodes, and why SSA makes optimizations simpler.",
+  "order": 4
+}

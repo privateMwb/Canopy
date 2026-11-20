@@ -1,0 +1,1 @@
+{"title": "Secrets Management & Workload Identity", "description": "Vaults, short-lived credentials, and OIDC so pipelines hold no long-lived keys.", "order": 2}

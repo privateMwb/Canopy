@@ -1,0 +1,5 @@
+{
+  "title": "XSS & Trusted Types",
+  "description": "Injection defenses and safe DOM APIs.",
+  "order": 2
+}

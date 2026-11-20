@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The First Rule of ARIA — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · aria &amp; dynamic content</span> → lesson 02</p>
+  <h1>The First Rule of ARIA</h1>
+  <p class="lede">The most useful advice about ARIA is about when not to use it. Bad ARIA is often worse than none, so there is a short set of rules to check before adding any attribute.</p>
+
+  <h2><span class="num">§1</span>The Rules</h2>
+  <p>The W3C's guidance on using ARIA reduces to five rules. The first is the one that matters most.</p>
+  <ol>
+    <li><strong>If you can use a native HTML element or attribute with the semantics and behavior you need, do that instead.</strong></li>
+    <li>Do not change native semantics unless you really have to.</li>
+    <li>All interactive ARIA controls must be usable with the keyboard.</li>
+    <li>Do not use <code>role="presentation"</code> or <code>aria-hidden="true"</code> on a visible, focusable element.</li>
+    <li>All interactive elements must have an accessible name.</li>
+  </ol>
+  <p>Studies of large numbers of home pages (the annual WebAIM Million) have repeatedly found that pages using ARIA tend to have more detectable accessibility errors than pages without it. That does not mean ARIA is bad. It means it is often applied where HTML would have been enough, and misapplied when it is not.</p>
+
+  <h2><span class="num">§2</span>Native Beats ARIA</h2>
+  <p>Each of these pairs does the same job. The native version is shorter, more robust, and works everywhere.</p>
+  <pre><span class="comment">&lt;!-- Bad: ARIA rebuilds a button --&gt;</span>
+&lt;div role="button" tabindex="0" onclick="save()" onkeydown="..."&gt;Save&lt;/div&gt;
+<span class="comment">&lt;!-- Good --&gt;</span>
+&lt;button type="button" onclick="save()"&gt;Save&lt;/button&gt;
+
+<span class="comment">&lt;!-- Bad: ARIA rebuilds a heading and a link --&gt;</span>
+&lt;div role="heading" aria-level="2"&gt;Our story&lt;/div&gt;
+&lt;span role="link" tabindex="0" onclick="go()"&gt;Read more&lt;/span&gt;
+<span class="comment">&lt;!-- Good --&gt;</span>
+&lt;h2&gt;Our story&lt;/h2&gt;
+&lt;a href="/story"&gt;Read more&lt;/a&gt;
+
+<span class="comment">&lt;!-- Bad: ARIA for a required field --&gt;</span>
+&lt;input aria-required="true"&gt;
+<span class="comment">&lt;!-- Good: the native attribute also enables browser validation --&gt;</span>
+&lt;input required&gt;</pre>
+
+  <h2><span class="num">§3</span>Do Not Fight the Native Semantics</h2>
+  <p>Rule 2 stops you from making elements say something false. Overriding native semantics usually creates confusion.</p>
+  <pre><span class="comment">&lt;!-- Bad: changes what a heading is, breaking the outline --&gt;</span>
+&lt;h2 role="tab"&gt;Settings&lt;/h2&gt;
+
+<span class="comment">&lt;!-- Good: keep the heading, and put the interactive control inside it --&gt;</span>
+&lt;h2&gt;&lt;button type="button" aria-expanded="false" aria-controls="settings-panel"&gt;Settings&lt;/button&gt;&lt;/h2&gt;</pre>
+  <p>When you do have to use ARIA, treat it as a full package: the role, the states, the accessible name, and the keyboard behavior. Leaving any of them out is how widgets end up announced as one thing and behaving as another.</p>
+
+  <div class="callout">
+    <span class="label">No ARIA is better than bad ARIA</span>
+    Before adding any ARIA attribute, ask: is there an HTML element or attribute that already does this? If so, use it. If not, make sure you can deliver the role, name, state, and keyboard behavior as a set.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Reaching for <code>role="button"</code> on a <code>div</code></td><td>Extra code, easy bugs, and missing behavior</td><td>Use <code>button</code>, or an <code>a href</code> for navigation</td></tr>
+    <tr><td>Overriding native roles, such as <code>role="tab"</code> on a heading</td><td>The outline and announcements become wrong</td><td>Keep native semantics, or wrap them in an element with the new role</td></tr>
+    <tr><td>Interactive ARIA elements with no accessible name</td><td>Announced as "button" or "link" with no purpose</td><td>Give every interactive element a name from content, <code>aria-label</code>, or <code>aria-labelledby</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Search a codebase for <code>role="button"</code>. For each hit, decide whether a native <code>button</code> could replace it, and rewrite one.</li>
+      <li>Pick one ARIA attribute you use often, and look it up in the ARIA specification. Check that every use gives the matching role, name, state, and keyboard support.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Use native HTML first. ARIA is for what HTML cannot express.</li>
+      <li>Do not override native semantics, and never hide visible, focusable elements from assistive technology.</li>
+      <li>Every interactive ARIA control needs a name and full keyboard support.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · ARIA &amp; Dynamic Content — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

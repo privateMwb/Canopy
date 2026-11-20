@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Profiling with cProfile &amp; timeit — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · concurrency &amp; performance</span> → lesson 04</p>
+  <h1>Profiling with cProfile &amp; timeit</h1>
+  <p class="lede">Measure where time actually goes before optimizing, because the real bottleneck is almost never where you'd guess.</p>
+
+  <h2><span class="num">§1</span>Timing Small Snippets</h2>
+
+  <p><code>timeit</code> runs a snippet many times and reports the total, which smooths out noise. It's the right tool for comparing two small alternatives.</p>
+
+  <pre>import timeit
+
+a = timeit.timeit("sum(x * x for x in range(1000))", number=2000)
+b = timeit.timeit("sum([x * x for x in range(1000)])", number=2000)
+print(f"generator: {a:.3f}s  list: {b:.3f}s")</pre>
+
+  <pre>python -m timeit -s "data = list(range(1000))" "999 in data"
+python -m timeit -s "data = set(range(1000))" "999 in data"</pre>
+
+  <p>For a quick wall-clock measure around a block, use <code>time.perf_counter()</code>. Run measurements several times and prefer the minimum; the system adds noise, never subtracts it.</p>
+
+  <h2><span class="num">§2</span>Profiling a Whole Program</h2>
+
+  <p><code>cProfile</code> records how many times each function was called and how long it took.</p>
+
+  <pre>python -m cProfile -s cumulative script.py | head -20
+python -m cProfile -o out.prof script.py        <span class="comment"># save for later analysis</span></pre>
+
+  <pre>import cProfile, pstats
+
+with cProfile.Profile() as pr:
+    main()
+stats = pstats.Stats(pr).sort_stats("cumulative")
+stats.print_stats(10)</pre>
+
+  <p>Key columns:</p>
+
+  <table>
+    <tr><th>Column</th><th>Meaning</th></tr>
+    <tr><td><code>ncalls</code></td><td>number of calls</td></tr>
+    <tr><td><code>tottime</code></td><td>time spent in the function itself, excluding subcalls</td></tr>
+    <tr><td><code>cumtime</code></td><td>time including everything it called</td></tr>
+    <tr><td><code>percall</code></td><td>the above divided by calls</td></tr>
+  </table>
+
+  <p>Sort by <code>cumulative</code> to see which high-level operations dominate, and by <code>tottime</code> to find the functions that burn the cycles themselves.</p>
+
+  <h2><span class="num">§3</span>Reading the Result</h2>
+
+  <pre>   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.002    0.002    4.810    4.810 report.py:12(build_report)
+    20000    0.050    0.000    4.700    0.000 report.py:30(find_customer)
+ 20000000    4.600    0.000    4.600    0.000 report.py:35(&lt;genexpr&gt;)</pre>
+
+  <p>Here <code>find_customer</code> does a linear scan 20,000 times: the cost sits in a generator expression called twenty million times. The fix is structural (build a dict once), not micro-tuning. Visual tools such as <code>snakeviz</code> display profiles as flame-style charts.</p>
+
+  <h2><span class="num">§4</span>A Disciplined Process</h2>
+
+  <ul>
+    <li>Write a benchmark or a realistic input first, so you can repeat the measurement.</li>
+    <li>Profile, and fix the <strong>largest</strong> cost, not the one that looks ugly.</li>
+    <li>Measure again. If the gain isn't real, revert.</li>
+    <li>Stop when it's fast enough.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Profilers add overhead and slow the program down, so read them for <strong>proportions</strong>, not absolute times. If one function owns 80% of the cumulative time, that's where to look; no other change can give a large win.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Optimizing without measuring</td><td>Effort goes to code that takes 1% of the time</td><td>Profile first and target the top entry</td></tr>
+    <tr><td>Timing a snippet once</td><td>Noise and caching dominate the result</td><td>Use <code>timeit</code> with many repetitions, and take the best</td></tr>
+    <tr><td>Profiling toy input</td><td>The bottleneck shifts at real scale</td><td>Profile with realistic data sizes</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Profile a script that processes a few hundred thousand records, and name the top three functions by cumulative time.</li>
+      <li>Use <code>timeit</code> to compare string building with <code>+=</code> and <code>"".join</code> at 10, 1,000, and 100,000 pieces.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>timeit</code> compares small snippets; <code>cProfile</code> finds hot spots in a whole program.</li>
+      <li>Sort by <code>cumulative</code> for the big picture and <code>tottime</code> for the functions doing the work.</li>
+      <li>Measure, change one thing, and measure again.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Concurrency &amp; Performance — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

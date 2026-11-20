@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Access at Scale — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · production services</span> → lesson 03</p>
+  <h1>Data Access at Scale</h1>
+  <p class="lede">Most production slowdowns are database slowdowns. At scale, how you query, batch, cache, and scope transactions matters more than any micro-optimization in C#.</p>
+
+  <h2><span class="num">§1</span>Query Performance in EF Core</h2>
+
+  <pre><span class="comment">// Read-only, projected, paged, no tracking</span>
+var page = await db.Orders
+    .AsNoTracking()
+    .Where(o =&gt; o.CustomerId == customerId &amp;&amp; o.Status == OrderStatus.Open)
+    .OrderByDescending(o =&gt; o.CreatedAt).ThenBy(o =&gt; o.Id)
+    .Select(o =&gt; new OrderSummary(o.Id, o.Total, o.CreatedAt))
+    .Take(50)
+    .ToListAsync(ct);
+
+<span class="comment">// Keyset pagination: stable and fast on large tables (OFFSET gets slower the deeper you go)</span>
+var next = await db.Orders.AsNoTracking()
+    .Where(o =&gt; o.CreatedAt &lt; lastSeen)
+    .OrderByDescending(o =&gt; o.CreatedAt).Take(50).ToListAsync(ct);
+
+<span class="comment">// Server-side bulk operations without loading entities</span>
+await db.Orders.Where(o =&gt; o.Status == OrderStatus.Expired).ExecuteDeleteAsync(ct);
+await db.Products.Where(p =&gt; p.Stock == 0).ExecuteUpdateAsync(s =&gt; s.SetProperty(p =&gt; p.Active, false), ct);</pre>
+  <ul>
+    <li>Project only the columns you need, add <code>AsNoTracking</code> to reads, and always page large results.</li>
+    <li>Index the columns you filter and sort on, and check the <strong>execution plan</strong> in the database, because EF writes the SQL but the database decides how to run it.</li>
+    <li>Watch for <strong>N+1</strong> queries and for client-side evaluation: log the SQL in development and in load tests.</li>
+    <li><code>AsSplitQuery()</code> avoids the row explosion of multiple <code>Include</code> collections in one query, at the cost of several round trips.</li>
+  </ul>
+
+  <h2><span class="num">§2</span>Batching and Caching</h2>
+
+  <pre><span class="comment">// Batching: one round trip, many rows. SaveChanges already batches commands.</span>
+db.Orders.AddRange(newOrders);
+await db.SaveChangesAsync(ct);
+
+<span class="comment">// Caching read-mostly data</span>
+var product = await cache.GetOrCreateAsync($"product:{id}", async entry =&gt;
+{
+    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+    entry.SetSize(1);
+    return await db.Products.AsNoTracking().FirstOrDefaultAsync(p =&gt; p.Id == id, ct);
+});
+
+<span class="comment">// .NET 9+: HybridCache combines in-memory (L1) and distributed (L2) with stampede protection</span>
+var item = await hybridCache.GetOrCreateAsync($"product:{id}", async token =&gt; await LoadAsync(id, token), cancellationToken: ct);</pre>
+  <p>Cache data that is <strong>read often, changed rarely, and tolerates staleness</strong>. Every cache needs three decisions: a <em>key</em> that includes everything the value depends on (tenant, culture), an <em>expiry</em> or invalidation rule, and a <em>size bound</em>. Beware the <strong>cache stampede</strong>, where many requests miss at once and all hit the database, which is what <code>HybridCache</code> and per-key locking prevent. Use <code>IMemoryCache</code> for one instance, and a distributed cache (such as Redis) when several instances must share it.</p>
+
+  <h2><span class="num">§3</span>Transaction Boundaries</h2>
+
+  <pre><span class="comment">// Default: one SaveChangesAsync = one transaction. Keep units of work small.</span>
+await using var tx = await db.Database.BeginTransactionAsync(ct);
+var from = await db.Accounts.FindAsync([fromId], ct);
+var to = await db.Accounts.FindAsync([toId], ct);
+from!.Balance -= amount; to!.Balance += amount;
+await db.SaveChangesAsync(ct);
+await tx.CommitAsync(ct);
+
+<span class="comment">// Optimistic concurrency: detect conflicting writes</span>
+public class Product { public int Id { get; set; } [Timestamp] public byte[] RowVersion { get; set; } = []; }
+<span class="comment">// SaveChangesAsync throws DbUpdateConcurrencyException if the row changed since it was read</span></pre>
+  <ul>
+    <li>Keep transactions <strong>short</strong>: never hold one open across a user interaction or a slow external call, because locks are held until commit.</li>
+    <li>Never call an <strong>HTTP API or message broker</strong> inside a transaction and assume it rolls back with the database. Use an outbox table for reliable side effects.</li>
+    <li>Use <strong>optimistic concurrency</strong> (row versions) so concurrent edits fail loudly instead of silently overwriting each other.</li>
+    <li>Pick the isolation level deliberately. The default (often Read Committed) is usually right, and Serializable costs throughput.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Make the database do less: fewer rows, fewer columns, fewer round trips, shorter transactions. Then measure with real data volumes, because a query that is fast on 1,000 rows can collapse on 10 million.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td><code>OFFSET</code> pagination on deep pages</td><td>Each page is slower than the last</td><td>Use keyset pagination with a stable ordering</td></tr>
+    <tr><td>A cache key missing a dimension such as tenant or culture</td><td>One tenant sees another's data</td><td>Include every input of the computation in the key</td></tr>
+    <tr><td>Calling external services inside a database transaction</td><td>Long-held locks, and side effects that can't be rolled back</td><td>Commit first, and use an outbox for reliable follow-up work</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Load-test a list endpoint with 1 million rows using <code>OFFSET</code> and then keyset pagination, and compare the SQL execution time of the last page.</li>
+      <li>Add optimistic concurrency to an entity, simulate two simultaneous edits, and handle the <code>DbUpdateConcurrencyException</code> by returning a 409.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Project, track nothing for reads, page with keysets, and use <code>ExecuteUpdate</code> and <code>ExecuteDelete</code> for bulk work.</li>
+      <li>Cache read-mostly data with correct keys, expiry, size limits, and stampede protection.</li>
+      <li>Keep transactions short, avoid external calls inside them, and use optimistic concurrency.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Production Services — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

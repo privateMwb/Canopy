@@ -1,0 +1,5 @@
+{
+  "title": "Tracing, Counters & Dumps",
+  "description": "dotnet-trace, dotnet-counters, and dotnet-dump on a live process.",
+  "order": 2
+}

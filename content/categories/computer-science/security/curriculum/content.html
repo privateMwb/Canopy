@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / security</p>
+    <h1>From hashing a password to defending a whole system</h1>
+    <p class="lede">Three levels, twelve stages — cryptography, web security, and threat modeling, built toward the judgment to model threats, understand how defenses fail in practice, and explain risk to the people who have to act on it.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've heard the word encryption" to "I can tell encoding, hashing, and encryption apart, store passwords and sessions correctly, and find and fix the classic web bugs: injection, XSS, and CSRF."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Thinking Like a Defender</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Assets, Attackers &amp; Trust Boundaries</p><p class="lesson-desc">What you're protecting, who might attack it, and where data crosses from trusted to untrusted.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Confidentiality, Integrity &amp; Availability</p><p class="lesson-desc">The three properties security is about, and which kinds of attack break which.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Threat Modeling 101: Data-Flow Diagrams &amp; STRIDE</p><p class="lesson-desc">Draw the system, mark the trust boundaries, and ask what can go wrong at each one.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Secure Design Principles</p><p class="lesson-desc">Least privilege, defense in depth, fail-safe defaults, and shrinking the attack surface.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Threat-model a small web app with login and file upload: draw the data-flow diagram, list at least eight threats by STRIDE category, and pick the three to fix first.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Hashing &amp; Randomness</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Encoding, Hashing &amp; Encryption: Three Different Things</p><p class="lesson-desc">Base64 hides nothing, hashes can't be reversed, and ciphers need a key: choosing the right tool for the job.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Hash Functions: What They Guarantee</p><p class="lesson-desc">Determinism, preimage and collision resistance, the avalanche effect, and why MD5 and SHA-1 are no longer safe for security uses.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Using Hashes: Integrity &amp; Fingerprints</p><p class="lesson-desc">Verifying downloads, content addressing in Git, and what a bare hash does not prove.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Randomness &amp; CSPRNGs</p><p class="lesson-desc">Why Math.random() is not for secrets, where secure randomness comes from, and generating tokens and IDs safely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Verify a download against a published SHA-256, then explain what the check proves and what it doesn't, and generate a password-reset token and justify its length and source.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Passwords &amp; Authentication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Storing Passwords: Salts &amp; Slow Hashes</p><p class="lesson-desc">Why a fast hash is the wrong tool, and how salting plus bcrypt, scrypt, or Argon2 slows attackers down.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Sessions &amp; Login State on the Server</p><p class="lesson-desc">Generating, storing, rotating, and ending session IDs, picking up where Networking's cookies lesson left off.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Multi-Factor Authentication &amp; TOTP</p><p class="lesson-desc">Something you know, have, and are, and how time-based one-time codes work.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Account Recovery &amp; User Enumeration</p><p class="lesson-desc">Password resets, 'forgot password' flows, and error messages that tell attackers which accounts exist.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Credential Attacks: Brute Force, Stuffing &amp; Spraying</p><p class="lesson-desc">How attackers actually get into accounts, and the throttling, lockout, and breach-check defenses that work.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build registration and login with a slow salted hash, server-side sessions, and throttling, then list every way it could still be attacked.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Classic Web Vulnerabilities</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Web Attack Surface: Never Trust Input</p><p class="lesson-desc">Every place user-controlled data enters an application, and the one rule that governs all of it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Injection Beyond SQL</p><p class="lesson-desc">Command injection, path traversal, and the shared pattern behind them, building on the SQL injection lesson in the SQL track.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Cross-Site Scripting (XSS)</p><p class="lesson-desc">Stored, reflected, and DOM-based XSS, and how injected script steals sessions and acts as the user.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Cross-Site Request Forgery (CSRF)</p><p class="lesson-desc">How a malicious page triggers actions with your cookies, and why SameSite and anti-CSRF tokens work where CORS does not.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Validating Input &amp; Encoding Output</p><p class="lesson-desc">Allow-lists, context-aware output encoding, and why escaping at the right place beats filtering.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a deliberately vulnerable practice app running locally, find an XSS, a CSRF, and a command-injection bug, fix each, and write a test that fails before the fix and passes after.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I know the classic bugs" to "I can use real cryptography correctly through vetted libraries, manage keys, implement modern authentication, and defend a web app against the second tier of attacks."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Symmetric &amp; Public-Key Cryptography</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Symmetric Encryption: Block Ciphers &amp; Modes</p><p class="lesson-desc">AES, why ECB leaks patterns, what CBC and CTR add, and how keys, IVs, and nonces differ.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Authenticated Encryption: AES-GCM &amp; ChaCha20-Poly1305</p><p class="lesson-desc">The AEAD ciphers named in the TLS lesson, up close: why nonce reuse is catastrophic and why to reach for a vetted library's high-level API.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">MACs &amp; HMAC</p><p class="lesson-desc">Proving a message wasn't altered by anyone without the key, and the design behind the webhook signatures in the Networking track.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Public-Key Cryptography &amp; Key Exchange</p><p class="lesson-desc">RSA, elliptic curves, and Diffie-Hellman: enough of the math to reason about them, and when to use each.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Digital Signatures</p><p class="lesson-desc">Signing and verifying with Ed25519 and ECDSA, what a signature proves that a MAC cannot, and how signing fails.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Using a vetted library, encrypt a file with AEAD, sign the result, then verify and decrypt it, and write down which property each step provides and what breaks if a nonce repeats.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Keys, Trust &amp; Protocols</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Key Derivation: KDFs, HKDF &amp; Stretching</p><p class="lesson-desc">Turning passwords and shared secrets into keys, and why one key should never serve two purposes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Key Management: Generation, Storage &amp; Rotation</p><p class="lesson-desc">Where keys live, envelope encryption with a KMS, and rotating without downtime, extending the encryption notes in the SQL track.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Reading TLS 1.3 as Cryptography</p><p class="lesson-desc">Map each primitive from Stage 2.1 onto the handshake you already know, and see what each one protects.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Trusting Public Keys: TOFU, Pinning &amp; Private CAs</p><p class="lesson-desc">How systems decide whose key to believe when the public CA model doesn't fit: SSH host keys, pinning, and internal PKI.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">End-to-End Encryption &amp; What It Doesn't Protect</p><p class="lesson-desc">Who holds the keys, what metadata still leaks, and how messaging apps design around a server they don't trust.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design the key hierarchy for an app that stores encrypted user documents: where each key lives, how it rotates, and exactly what a database leak versus a server compromise exposes.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Modern Authentication &amp; Authorization</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Sessions vs. Tokens: Storage, Rotation &amp; Revocation</p><p class="lesson-desc">Where to keep credentials in browsers and mobile apps, session fixation, refresh-token rotation, and logging out for real.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">OAuth 2.0 &amp; OpenID Connect: Flows and Their Attacks</p><p class="lesson-desc">The authorization code flow with PKCE in depth, ID tokens versus access tokens, and the redirect and token-leakage bugs that keep recurring.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">JWT Pitfalls: Algorithm &amp; Key Confusion</p><p class="lesson-desc">How trusting the alg header, confusing keys, and skipping claim checks break token validation, now that you know what signatures guarantee.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Passkeys &amp; WebAuthn</p><p class="lesson-desc">Public-key login that resists phishing, how it differs from passwords and TOTP, and the recovery tradeoffs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Authorization Models: RBAC, ABAC &amp; Policy Placement</p><p class="lesson-desc">Roles, attributes, and relationships, and where in the code authorization checks should live, setting up BOLA in the OWASP API lesson.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Review a provided OAuth login and session implementation and list every missing or wrong check, ordered by severity.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Web Application Security in Depth</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Content Security Policy &amp; Defending Against XSS</p><p class="lesson-desc">Policies, nonces, and Trusted Types as a second wall behind output encoding.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Clickjacking, Frames &amp; Security Headers</p><p class="lesson-desc">frame-ancestors, X-Content-Type-Options, Referrer-Policy, and what each header actually stops, extending the HSTS lesson.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">SSRF &amp; Trusting User-Supplied URLs</p><p class="lesson-desc">Going past the OWASP list entry: redirects, DNS tricks, URL-parser disagreements, and cloud metadata endpoints.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Deserialization, Templates &amp; XML Pitfalls</p><p class="lesson-desc">Unsafe deserialization, server-side template injection, and XXE: what happens when a parser does more than you intended.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">File Uploads &amp; Untrusted Content</p><p class="lesson-desc">Type and size checks, storage outside the web root, content sniffing, and serving user files from a separate origin.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given an app with a URL-preview feature, a file upload, and a profile editor, find the bugs, fix them, and add a regression test for each.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I can secure a feature" to "I can threat-model a whole system, reason about how cryptography and defenses fail in practice, run detection and response, and explain risk to engineers and executives."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Threat Modeling &amp; Risk</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Threat Modeling in Practice: Scoping, STRIDE per Element &amp; Attack Trees</p><p class="lesson-desc">Running a real session: what to scope, who to invite, and how to turn a diagram into a ranked list of threats.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Attacker Models: Capabilities, Motives &amp; Kill Chains</p><p class="lesson-desc">Opportunistic criminals, insiders, and targeted adversaries need different defenses, and frameworks like MITRE ATT&amp;CK help you reason about them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Risk Assessment: Likelihood, Impact &amp; Prioritization</p><p class="lesson-desc">Scoring with CVSS and its limits, using exploitability signals, and deciding what to fix, accept, transfer, or mitigate.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Security Requirements &amp; Abuse Cases</p><p class="lesson-desc">Writing "the attacker must not be able to..." requirements and abuse stories, and finding design flaws before code exists.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Threat-model a payments-webhook service end to end: data-flow diagram, ranked threats, mitigations, and a list of the risks you are explicitly accepting.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — How Cryptography Fails</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Padding Oracles &amp; Other Decryption Oracles</p><p class="lesson-desc">How error messages and response differences let an attacker decrypt data without ever holding the key.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Timing &amp; Side Channels in Application Code</p><p class="lesson-desc">Carrying the Architecture track's side-channel lessons up to software: secret-dependent branches, comparison timing, and enumeration by response time.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Protocol Pitfalls: Replay, Reflection &amp; Downgrade</p><p class="lesson-desc">Nonces, sequence numbers, and context binding, and why composing sound primitives can still produce a broken protocol.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Randomness Failures &amp; Key Compromise</p><p class="lesson-desc">Weak seeds, repeated nonces, and keys leaked in repos and logs, and how to recover when a key is gone.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Post-Quantum Cryptography &amp; Crypto Agility</p><p class="lesson-desc">What quantum computers threaten and what they don't, the NIST standards, hybrid key exchange, and designing systems that can swap algorithms.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a code excerpt with a homegrown encrypt-and-sign scheme, find at least three flaws, explain the attack against each, and replace it with a vetted construction.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Detection, Response &amp; Data Protection</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Logging, Detection &amp; Audit Trails</p><p class="lesson-desc">What to log and what never to, tamper-evident logs, and turning events into alerts people act on, pairing with the alerting lesson in DevOps.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Abuse, Fraud &amp; Business-Logic Attacks</p><p class="lesson-desc">Race conditions, coupon and quota abuse, and automated account takeover that no scanner flags, building on API6 in the OWASP lesson.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Multi-Tenant Isolation &amp; Authorization at Scale</p><p class="lesson-desc">Policy engines, tenant boundaries, confused-deputy bugs, and enforcing who may touch what across many services, extending row-level security in the SQL track.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Incident Response for Security Events</p><p class="lesson-desc">Containment, evidence, credential and key rotation, and communicating a breach, the security layer on top of blameless postmortems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Data Protection &amp; Privacy Engineering</p><p class="lesson-desc">Data minimization, retention, tokenization, and designing so a breach exposes as little as possible.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given logs from a suspected account takeover, reconstruct the attack path, decide what to contain first, and write the incident timeline.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Security Engineering &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Secure-by-Default Design &amp; Paved Roads</p><p class="lesson-desc">Making the safe way the easy way: frameworks, libraries, and APIs that prevent whole classes of bugs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Security Code Review</p><p class="lesson-desc">Tracing untrusted data from sources to sinks, and checking every authorization and cryptography decision on the way.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Security Testing: Fuzzing, SAST, DAST &amp; Pen Tests</p><p class="lesson-desc">What each technique finds and misses, and how to scope and act on a penetration test.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Vulnerability Management &amp; Disclosure</p><p class="lesson-desc">Patch SLAs, CVE triage, coordinated disclosure, and bug bounty programs, building on the supply-chain lessons in DevOps.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Explaining Risk to Engineers &amp; Executives</p><p class="lesson-desc">Writing a finding people act on: impact in business terms, a concrete fix, and an honest account of uncertainty.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Review a design document, write up the top five risks with fixes, and add a one-page summary for non-technical leadership.</p></div></div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>This track builds on the others instead of repeating them.</strong> TLS, certificates, HSTS, cookies, CORS, OAuth, and the OWASP API Top 10 are taught in Networking; side channels and Spectre in Computer Architecture; SQL injection and database encryption in SQL; secrets, supply chain, and pipeline hardening in Linux &amp; DevOps. Security picks each of them up where it left off: the cryptography underneath TLS, the attacks that go past what an API lesson can show, and the judgment about which defenses to buy.</p>
+    <p><strong>Levels aren't strict walls.</strong> Passwords appear at Junior as salts and slow hashes, return at Intermediate as key derivation and passkeys, and come back at Senior as breach recovery and incident response. XSS follows the same arc, from escaping output to Content Security Policy to code review. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how an attack works and deciding which of forty possible threats deserves this quarter's effort, then explaining that choice to someone who has to approve it, are different skills, and the last two stages are built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

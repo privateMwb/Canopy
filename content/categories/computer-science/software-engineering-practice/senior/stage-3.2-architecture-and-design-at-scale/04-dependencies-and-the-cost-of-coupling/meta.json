@@ -1,0 +1,5 @@
+{
+  "title": "Dependencies & the Cost of Coupling",
+  "description": "Third-party libraries, internal packages, and dependency direction as long-term liabilities.",
+  "order": 4
+}

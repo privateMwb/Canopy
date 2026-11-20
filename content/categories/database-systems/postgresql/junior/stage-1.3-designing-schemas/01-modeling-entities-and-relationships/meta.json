@@ -1,0 +1,5 @@
+{
+  "title": "Modeling Entities & Relationships",
+  "description": "One-to-many, many-to-many, and join tables, drawn before they are built.",
+  "order": 1
+}

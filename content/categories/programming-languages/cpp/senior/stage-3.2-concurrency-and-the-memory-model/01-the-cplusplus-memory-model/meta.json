@@ -1,0 +1,5 @@
+{
+  "title": "The C++ Memory Model",
+  "description": "Sequential consistency, acquire/release, and the orderings you can choose.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Upgrading Java & Managing Dependencies",
+  "description": "Moving across LTS versions, dependency conflicts, and reducing upgrade risk.",
+  "order": 2
+}

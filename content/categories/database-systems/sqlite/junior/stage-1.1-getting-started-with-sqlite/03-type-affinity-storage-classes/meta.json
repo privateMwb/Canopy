@@ -1,0 +1,5 @@
+{
+  "title": "Type Affinity & Storage Classes",
+  "description": "SQLite's flexible typing, what affinity means, and the surprises it causes.",
+  "order": 3
+}

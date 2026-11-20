@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Inside React",
+  "description": "Render and commit phases, reconciliation, concurrent rendering, server components, and hooks internals.",
+  "order": 1
+}

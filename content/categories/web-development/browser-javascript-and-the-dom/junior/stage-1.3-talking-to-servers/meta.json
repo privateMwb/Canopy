@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Talking to Servers",
+  "description": "HTTP from the browser, fetch and promises, async and await, rendering JSON, and CORS.",
+  "order": 3
+}

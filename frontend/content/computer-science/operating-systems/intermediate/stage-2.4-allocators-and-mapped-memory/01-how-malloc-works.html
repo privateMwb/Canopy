@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How malloc Works — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · allocators & mapped memory</span> → lesson 01</p>
+  <h1>How malloc Works</h1>
+  <p class="lede"><code>malloc</code> is a user-space library that manages memory it borrows from the kernel in large pieces, which is why its behavior often surprises people.</p>
+
+  <h2><span class="num">§1</span>Two Sources of Memory</h2>
+  <p><code>malloc</code> doesn't ask the kernel for memory on every call, because system calls are expensive and the kernel only deals in whole pages. glibc's allocator gets memory in two ways:</p>
+  <ul>
+    <li><strong>The heap (<code>brk</code>/<code>sbrk</code>):</strong> one region that grows upward; the allocator extends it as needed and carves it into blocks</li>
+    <li><strong>Anonymous <code>mmap</code>:</strong> a separate mapping, used for large requests (the default threshold is 128 KiB, and it adjusts dynamically)</li>
+  </ul>
+  <pre><span class="comment"># Watch the system calls behind malloc</span>
+strace -e trace=brk,mmap,munmap ./prog
+
+<span class="comment">// malloc(100)        -&gt; carved from the heap, usually no syscall</span>
+<span class="comment">// malloc(1 &lt;&lt; 20)    -&gt; mmap of its own region</span>
+<span class="comment">// free of the large block -&gt; munmap, memory returns to the OS immediately</span></pre>
+  <p>Large blocks are mapped separately so they can be returned to the OS the instant they're freed, without leaving a hole in the heap.</p>
+
+  <h2><span class="num">§2</span>Chunks and Headers</h2>
+  <p>Each allocation is a <strong>chunk</strong>: a small header recording the size, then the memory handed to you. When you call <code>free(p)</code>, the allocator finds the header just before <code>p</code>, which is how <code>free</code> knows the size without being told.</p>
+  <pre>         ┌──────────┬───────────────────────┐
+ chunk:  │ header   │ user data (what       │
+         │ size|flags│ malloc returned)     │
+         └──────────┴───────────────────────┘
+              ▲              ▲
+          p - 16            p</pre>
+  <p>This is also why overflowing a buffer is so dangerous: the bytes after your block are often the next chunk's header, and corrupting them breaks the allocator's bookkeeping, not just your data.</p>
+
+  <h2><span class="num">§3</span>Bins, Caches, and Arenas</h2>
+  <p>Freed chunks go onto lists called <strong>bins</strong>, organized by size, so the next request of that size can reuse one quickly. glibc keeps a small per-thread cache (<strong>tcache</strong>) for the fastest path with no locking. In multithreaded programs, glibc also creates several <strong>arenas</strong>, each its own heap with its own lock, so threads don't all contend for one.</p>
+  <pre><span class="comment"># Inspect the allocator's state from inside a program</span>
+malloc_stats();      <span class="comment">// prints arena and in-use totals to stderr</span>
+malloc_trim(0);      <span class="comment">// ask glibc to return free memory at the top of the heap</span></pre>
+  <p>Alternative allocators such as jemalloc, tcmalloc, and mimalloc make different tradeoffs on speed, fragmentation, and thread scaling, and are often swapped in for long-running servers.</p>
+
+  <div class="callout">
+    <span class="label">Why RSS doesn't shrink</span>
+    Calling <code>free</code> usually puts a block back on a list for reuse; it does not return memory to the OS. A heap block in the middle can't be released while higher blocks are in use, so a process's RSS can stay high after you free a lot.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Expecting <code>free</code> to lower the process's memory in <code>top</code></td><td>The memory is retained for reuse</td><td>Use <code>malloc_trim</code>, an allocator tuned for returning memory, or measure live bytes</td></tr>
+    <tr><td>Writing even one byte before or after a block</td><td>Corrupts neighboring headers and crashes later</td><td>Run AddressSanitizer, which places guard zones around allocations</td></tr>
+    <tr><td>Assuming <code>malloc</code> is cheap in hot paths</td><td>Locks and bin searches add up under contention</td><td>Reuse buffers, use pools, or choose a scalable allocator</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use <code>strace</code> to find the size at which your system switches from <code>brk</code> to <code>mmap</code> for a single <code>malloc</code>.</li>
+      <li>Allocate and free a million small blocks, then check RSS. Does it drop? Try <code>malloc_trim(0)</code> and compare.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>malloc</code> gets memory from the kernel in bulk using <code>brk</code> and <code>mmap</code>, then subdivides it.</li>
+      <li>Each chunk has a header, so overflows can damage the allocator's own bookkeeping.</li>
+      <li>Freed memory typically stays in the process until trimmed.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Allocators & Mapped Memory — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

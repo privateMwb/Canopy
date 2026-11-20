@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Records, Sealed Types &amp; Pattern Matching — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · modern java &amp; functional style</span> → lesson 04</p>
+  <h1>Records, Sealed Types &amp; Pattern Matching</h1>
+  <p class="lede">Records model data, sealed types model a closed set of alternatives, and pattern matching in <code>switch</code> lets the compiler check that you handled every alternative.</p>
+
+  <h2><span class="num">§1</span>Records as Data</h2>
+  <p>A record is a transparent, immutable carrier of data, with a constructor, accessors, <code>equals</code>, <code>hashCode</code>, and <code>toString</code> generated for you. Records can have a compact constructor for validation, extra methods, and static factories, and they can implement interfaces.</p>
+  <pre>record Point(double x, double y) {
+    Point { if (Double.isNaN(x) || Double.isNaN(y)) throw new IllegalArgumentException(); }
+    double dist(Point o) { return Math.hypot(x - o.x, y - o.y); }
+    static Point origin() { return new Point(0, 0); }
+}</pre>
+
+  <h2><span class="num">§2</span>Sealed Types</h2>
+  <p>A <strong>sealed</strong> class or interface lists exactly which types may extend it. That turns an open-ended hierarchy into a closed set, the same idea as an algebraic data type in other languages. Permitted subtypes must be <code>final</code>, <code>sealed</code>, or <code>non-sealed</code>; records are implicitly final, which makes them a natural fit.</p>
+  <pre>sealed interface Shape permits Circle, Rectangle, Triangle { }
+record Circle(double radius) implements Shape { }
+record Rectangle(double w, double h) implements Shape { }
+record Triangle(double base, double height) implements Shape { }</pre>
+  <p>If the permitted classes are in the same file, the <code>permits</code> clause can be omitted. Nobody outside can add a fourth shape without editing the sealed declaration, so the compiler always knows the full list.</p>
+
+  <h2><span class="num">§3</span>Pattern Matching</h2>
+  <p><code>instanceof</code> patterns test and cast in one step, and <code>switch</code> can match on type, with the compiler checking <strong>exhaustiveness</strong> for sealed types, so no <code>default</code> is needed.</p>
+  <pre>static double area(Shape s) {
+    return switch (s) {
+        case Circle c -&gt; Math.PI * c.radius() * c.radius();
+        case Rectangle r -&gt; r.w() * r.h();
+        case Triangle t -&gt; 0.5 * t.base() * t.height();
+    };                                   <span class="comment">// no default: adding a new Shape makes this a compile error</span>
+}
+
+if (obj instanceof String str &amp;&amp; str.length() &gt; 3) {         <span class="comment">// pattern variable scoped to the &amp;&amp; branch</span>
+    System.out.println(str.toUpperCase());
+}</pre>
+  <p><strong>Record patterns</strong> deconstruct a record directly, even when nested, and <code>when</code> adds a guard.</p>
+  <pre>sealed interface Expr permits Num, Add, Mul { }
+record Num(int v) implements Expr { }
+record Add(Expr l, Expr r) implements Expr { }
+record Mul(Expr l, Expr r) implements Expr { }
+
+static int eval(Expr e) {
+    return switch (e) {
+        case Num(int v) -&gt; v;
+        case Add(Expr l, Expr r) -&gt; eval(l) + eval(r);
+        case Mul(Expr l, Expr r) -&gt; eval(l) * eval(r);
+    };
+}
+
+static String classify(Object o) {
+    return switch (o) {
+        case null -&gt; "null";
+        case Integer i when i &gt; 100 -&gt; "big int";
+        case Integer i -&gt; "int";
+        case String s -&gt; "string of " + s.length();
+        default -&gt; "other";
+    };
+}</pre>
+  <p>Order matters when patterns overlap: the compiler rejects a case that an earlier case already dominates.</p>
+
+  <h2><span class="num">§4</span>The Payoff</h2>
+  <p>Adding an <strong>operation</strong> (like <code>eval</code>) means writing one new <code>switch</code>, with no changes to the data types. Adding a <strong>new variant</strong> breaks every <code>switch</code> that lacks a case, and the compiler lists them for you. Compare that with a class hierarchy using virtual methods, where adding a variant is easy and adding an operation touches every class. Choose based on which kind of change you expect.</p>
+
+  <div class="callout">
+    <span class="label">Make illegal states unrepresentable</span>
+    Instead of a class with an <code>int type</code> field and nullable fields for each case, use a sealed interface with one record per case. Each variant carries exactly the data it needs, and a missing case is a compile error rather than a runtime surprise.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Adding a <code>default</code> branch to a switch over a sealed type</td><td>It hides the compiler's exhaustiveness check for new variants</td><td>Omit <code>default</code> so new subtypes cause a compile error</td></tr>
+    <tr><td>Putting a general case before a specific one</td><td><code>this case label is dominated by a preceding case label</code></td><td>Order specific patterns before general ones</td></tr>
+    <tr><td>Using a record for an entity with identity and changing state</td><td>Immutable semantics don't fit</td><td>Use a normal class</td></tr>
+    <tr><td>Sealing a hierarchy that other modules must extend</td><td>They can't add subtypes</td><td>Leave it open, or use <code>non-sealed</code> deliberately</td></tr>
+    <tr><td>Forgetting a <code>null</code> case in a pattern switch</td><td>A <code>NullPointerException</code> at runtime</td><td>Add <code>case null</code> or check beforehand</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Model a <code>PaymentResult</code> as a sealed interface with <code>Success(String id)</code>, <code>Declined(String reason)</code>, and <code>Error(Exception cause)</code>, and write a method that turns each into a message.</li>
+      <li>Extend the <code>Expr</code> example with a <code>Neg</code> variant and observe which methods stop compiling.</li>
+      <li>Add a guard (<code>when</code>) to a pattern switch to treat negative numbers differently.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Records carry immutable data, and sealed types fix the set of allowed subtypes.</li>
+      <li>Pattern matching in <code>switch</code> deconstructs values and is checked for exhaustiveness without a <code>default</code>.</li>
+      <li>Together they let you model alternatives so that a forgotten case is a compile error.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Modern Java &amp; Functional Style — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

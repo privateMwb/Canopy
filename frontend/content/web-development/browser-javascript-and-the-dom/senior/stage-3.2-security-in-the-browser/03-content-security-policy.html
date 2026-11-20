@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Content Security Policy — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · security in the browser</span> → lesson 03</p>
+  <h1>Content Security Policy</h1>
+  <p class="lede">A Content Security Policy tells the browser which sources of script, style, and other resources are allowed. A strict CSP can stop an XSS bug from becoming an incident, but only if you roll it out carefully.</p>
+
+  <h2><span class="num">§1</span>What CSP Does</h2>
+
+  <p>CSP is a response header that sets rules for what a page may load and execute. When injected script violates the policy, the browser <strong>refuses to run it</strong>, so CSP reduces the damage of XSS bugs you have not found. It is defense in depth, not a replacement for escaping.</p>
+
+  <pre>Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' https://cdn.example.com;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: https:;
+  connect-src 'self' https://api.example.com;
+  frame-ancestors 'none';
+  base-uri 'none';
+  object-src 'none'</pre>
+
+  <table>
+    <tr><th>Directive</th><th>Controls</th></tr>
+    <tr><td><code>default-src</code></td><td>Fallback for any fetch directive not listed</td></tr>
+    <tr><td><code>script-src</code></td><td>Where JavaScript may come from, and whether inline scripts run</td></tr>
+    <tr><td><code>style-src</code></td><td>Stylesheets and inline styles</td></tr>
+    <tr><td><code>connect-src</code></td><td><code>fetch</code>, <code>XMLHttpRequest</code>, WebSocket, EventSource targets</td></tr>
+    <tr><td><code>img-src</code>, <code>font-src</code>, <code>media-src</code></td><td>Those resource types</td></tr>
+    <tr><td><code>frame-src</code> / <code>frame-ancestors</code></td><td>What you may embed / who may embed you</td></tr>
+    <tr><td><code>base-uri</code>, <code>form-action</code>, <code>object-src</code></td><td>Close off less obvious injection routes</td></tr>
+  </table>
+
+  <p>An allow-list of hosts such as <code>https://cdn.example.com</code> looks simple but is <strong>weak in practice</strong>: many CDNs and JSONP endpoints host content an attacker can abuse to run script from an "allowed" host. Modern guidance is a <strong>nonce- or hash-based strict CSP</strong>.</p>
+
+  <h2><span class="num">§2</span>Strict CSP with Nonces</h2>
+
+  <p>With a <strong>nonce</strong>, the server generates a fresh random value for every response, puts it in the header, and adds the same value to each legitimate <code>&lt;script&gt;</code>. The browser runs <strong>only</strong> scripts carrying the matching nonce, so an injected script, which cannot know the nonce, is blocked. <code>'strict-dynamic'</code> lets those trusted scripts load further scripts.</p>
+
+  <pre>Content-Security-Policy:
+  script-src 'nonce-r4nd0mPerResponse' 'strict-dynamic' https: 'unsafe-inline';
+  object-src 'none';
+  base-uri 'none'
+
+&lt;script nonce="r4nd0mPerResponse" src="/app.js"&gt;&lt;/script&gt;
+&lt;script nonce="r4nd0mPerResponse"&gt;window.__CONFIG__ = { api: "/v1" };&lt;/script&gt;
+&lt;script&gt;alert("injected: has no nonce, blocked")&lt;/script&gt;
+
+<span class="comment">// the nonce must be unguessable and different on every response</span>
+<span class="comment">// (in Node: crypto.randomBytes(16).toString("base64"))</span></pre>
+
+  <p>Older browsers ignore <code>'nonce-…'</code> and <code>'strict-dynamic'</code> and fall back to the <code>https: 'unsafe-inline'</code> tokens, which is why they are included. Nonces need server-rendered HTML; for static sites, use <strong>hashes</strong> (<code>'sha256-…'</code>) of each inline script instead. Avoid <code>'unsafe-inline'</code> and <code>'unsafe-eval'</code> for scripts: they remove most of CSP's protection.</p>
+
+  <h2><span class="num">§3</span>Rolling Out Safely</h2>
+
+  <p>Adding CSP to an existing app tends to break things: inline handlers (<code>onclick=</code>), inline <code>&lt;script&gt;</code> blocks, third-party widgets, and <code>eval</code> in libraries. Roll out in stages.</p>
+
+  <ol>
+    <li><strong>Report only</strong>: send <code>Content-Security-Policy-Report-Only</code> with a <code>report-to</code> endpoint. Nothing is blocked, but you collect every violation.</li>
+    <li><strong>Clean up</strong> the findings: move inline handlers to <code>addEventListener</code>, replace <code>eval</code>-using libraries, add nonces to legitimate inline scripts.</li>
+    <li><strong>Tighten gradually</strong>: start with <code>object-src 'none'; base-uri 'none'</code>, then <code>script-src</code>, then the rest.</li>
+    <li><strong>Enforce</strong> with <code>Content-Security-Policy</code>, keeping a report endpoint to catch regressions. Keep the report-only header to test the *next*, stricter policy.</li>
+  </ol>
+
+  <pre>Content-Security-Policy-Report-Only:
+  script-src 'nonce-abc' 'strict-dynamic'; object-src 'none'; base-uri 'none';
+  report-to csp-endpoint
+Reporting-Endpoints: csp-endpoint="https://example.com/csp-reports"
+
+<span class="comment">// listen for violations during testing</span>
+document.addEventListener("securitypolicyviolation", (e) =&gt; {
+  console.warn("CSP blocked", e.violatedDirective, e.blockedURI, e.sourceFile, e.lineNumber);
+});</pre>
+
+  <p>Pair CSP with other headers: <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy</code>, and <code>Permissions-Policy</code>. Evaluate your draft policy with Google's CSP Evaluator before shipping.</p>
+
+  <div class="callout">
+    <span class="label">Allow-lists age badly, nonces do not</span>
+    Host allow-lists tend to include endpoints that an attacker can abuse. A per-response nonce with <code>strict-dynamic</code> ties trust to *your* scripts, not to whole domains.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Adding <code>'unsafe-inline'</code> to <code>script-src</code> to "make it work"</td><td>Injected inline scripts run again; CSP loses its value</td><td>Use nonces or hashes for legitimate inline scripts</td></tr>
+    <tr><td>Reusing one static nonce</td><td>Attackers can read it from earlier responses and reuse it</td><td>Generate a fresh random nonce per response</td></tr>
+    <tr><td>Deploying an enforcing policy straight to production</td><td>Pages and widgets break for real users</td><td>Start with <code>Report-Only</code> and fix violations first</td></tr>
+    <tr><td>Allow-listing broad CDNs like <code>https://*.googleapis.com</code></td><td>Abusable hosted scripts bypass the policy</td><td>Prefer nonces plus <code>strict-dynamic</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a report-only CSP to a small app and collect the violations it generates; categorize them.</li>
+      <li>Convert an inline <code>onclick</code> attribute and an inline script block so the page works under a nonce-based CSP.</li>
+      <li>Run your policy through the CSP Evaluator and fix every high-severity finding.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>CSP limits what the browser will load and run, reducing the impact of XSS.</li>
+      <li>Prefer a nonce or hash with <code>'strict-dynamic'</code> over host allow-lists; avoid <code>'unsafe-inline'</code> for scripts.</li>
+      <li>Roll out with report-only, clean up violations, then enforce and keep monitoring.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Security in the Browser — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

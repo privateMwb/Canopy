@@ -1,0 +1,5 @@
+{
+  "title": "Service Meshes & Advanced Networking",
+  "description": "CNI plugins, eBPF, and what a mesh adds and costs.",
+  "order": 3
+}

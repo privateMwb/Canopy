@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Namespaces &amp; cgroups — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · under the hood</span> → lesson 01</p>
+  <h1>Namespaces &amp; cgroups</h1>
+  <p class="lede">Namespaces control what a process can see and cgroups control what it can use, and together they are what a container is.</p>
+
+  <h2><span class="num">§1</span>Namespaces: What a Process Can See</h2>
+  <p>A namespace wraps a global kernel resource so processes inside get their own private view of it. Linux has several kinds:</p>
+  <table>
+    <tr><th>Namespace</th><th>Isolates</th><th>Effect inside a container</th></tr>
+    <tr><td><code>pid</code></td><td>Process IDs</td><td>The main process is PID 1; host processes are invisible</td></tr>
+    <tr><td><code>net</code></td><td>Network stack</td><td>Own interfaces, routing table, and ports</td></tr>
+    <tr><td><code>mnt</code></td><td>Mount points</td><td>Own root filesystem view</td></tr>
+    <tr><td><code>uts</code></td><td>Hostname and domain</td><td>Own hostname</td></tr>
+    <tr><td><code>ipc</code></td><td>System V IPC, POSIX queues</td><td>Separate shared memory</td></tr>
+    <tr><td><code>user</code></td><td>User and group IDs</td><td>Container root can map to an unprivileged host user</td></tr>
+    <tr><td><code>cgroup</code></td><td>The cgroup tree view</td><td>Sees its own cgroup as the root</td></tr>
+    <tr><td><code>time</code></td><td>Selected system clocks</td><td>Optional offset of boot and monotonic clocks</td></tr>
+  </table>
+  <pre>lsns                                    <span class="comment"># list namespaces on the host</span>
+ls -l /proc/&lt;pid&gt;/ns                    <span class="comment"># a process's namespace handles</span>
+sudo nsenter --target &lt;pid&gt; --net ip addr   <span class="comment"># run a command inside a container's netns</span>
+unshare --pid --fork --mount-proc bash  <span class="comment"># make your own PID namespace</span></pre>
+  <h2><span class="num">§2</span>cgroups: What a Process Can Use</h2>
+  <p>Control groups account for and limit CPU, memory, I/O, and process counts for a group of processes. Modern systems use <strong>cgroup v2</strong>, one unified hierarchy mounted at <code>/sys/fs/cgroup</code>. Docker's flags map directly to files:</p>
+  <pre>docker run -d --name t --memory 256m --cpus 0.5 --pids-limit 100 alpine sleep 3600
+cat /sys/fs/cgroup/system.slice/docker-&lt;container-id&gt;.scope/memory.max
+cat /sys/fs/cgroup/system.slice/docker-&lt;container-id&gt;.scope/cpu.max
+cat /sys/fs/cgroup/system.slice/docker-&lt;container-id&gt;.scope/pids.max</pre>
+  <p>Writing a number to <code>memory.max</code> is all that "setting a memory limit" means. When usage hits it, the kernel reclaims memory and then invokes the OOM killer inside that cgroup, which is how exit code 137 is produced. <code>memory.events</code> and <code>cpu.stat</code> (with its <code>nr_throttled</code> counter) are where to look when diagnosing limits. The exact path depends on the cgroup driver (systemd or cgroupfs).</p>
+  <h2><span class="num">§3</span>Seeing It From Both Sides</h2>
+  <p>The same process is visible with two different identities:</p>
+  <pre>docker run -d --name t alpine sleep 3600
+docker exec t ps                          <span class="comment"># PID 1 is "sleep 3600"</span>
+docker inspect t --format '{{.State.Pid}}'    <span class="comment"># e.g. 48213</span>
+ps -p 48213 -o pid,cmd                    <span class="comment"># the same process, host PID</span>
+cat /proc/48213/cgroup</pre>
+  <p>There is no container object in the kernel; the runtime assembles a normal process with a set of namespaces and a cgroup, and <code>/proc</code> shows both.</p>
+  <div class="callout">
+    <span class="label">Limits are not visible to everything</span>
+    Many tools read <code>/proc/meminfo</code> or CPU counts, which show the host's totals, not the cgroup's. Programs that size pools from those values (older JVMs, some native libraries) can overcommit inside a limited container. Check that your runtime reads the cgroup files.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating a container as a VM-like boundary</td><td>Kernel bugs and misconfigurations can cross it</td><td>Layer additional controls such as seccomp, user namespaces, and non-root</td></tr>
+    <tr><td>Reading memory from <code>free</code> inside a container</td><td>Host totals, not your limit</td><td>Read <code>memory.max</code> and <code>memory.current</code></td></tr>
+    <tr><td>Assuming cgroup v1 paths</td><td>File names and layout differ in v2</td><td>Check <code>stat -fc %T /sys/fs/cgroup</code> and use v2 paths</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Start a container with a memory and PID limit, locate its cgroup directory on the host, and read the limit files.</li>
+      <li>Use <code>unshare</code> to start a shell in a new PID and mount namespace, and confirm it sees itself as PID 1.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Namespaces provide the view; cgroups provide the limits and accounting.</li>
+      <li>A container is an ordinary process with a namespace set and a cgroup, visible in <code>/proc</code>.</li>
+      <li>Limit enforcement and diagnosis happen through cgroup files, not the Docker daemon.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Under the Hood — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

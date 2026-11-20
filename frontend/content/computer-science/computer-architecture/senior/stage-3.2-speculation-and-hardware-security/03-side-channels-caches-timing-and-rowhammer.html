@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Side Channels: Caches, Timing &amp; Rowhammer — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · speculation & hardware security</span> → lesson 03</p>
+  <h1>Side Channels: Caches, Timing &amp; Rowhammer</h1>
+  <p class="lede">Whenever two programs share hardware, how long an operation takes can leak information about what the other one did, and flipping bits in DRAM shows that even memory isolation can be bypassed physically.</p>
+
+  <h2><span class="num">§1</span>Timing Reveals Cache State</h2>
+  <p>A <strong>side channel</strong> leaks information through a physical or timing effect rather than through the program's intended output. The most studied one is <strong>cache timing</strong>. An access that hits in the cache is much faster than one that misses, so an observer who can measure time precisely can tell whether a given line was recently touched.</p>
+  <ul>
+    <li><strong>Shared lines:</strong> when attacker and victim share memory, such as a shared library, the attacker can evict a line and later check whether the victim brought it back, which reveals that the victim accessed it (the *flush-and-reload* idea)</li>
+    <li><strong>Shared sets:</strong> without shared memory, the attacker fills cache sets with its own data and later checks which of its lines the victim evicted (the *prime-and-probe* idea)</li>
+  </ul>
+  <p>Cryptographic code was the first major target: if the table lookups in an encryption routine depend on key bytes, the pattern of cache accesses reveals the key. That's why modern CPUs provide dedicated instructions (AES-NI) and why crypto libraries are written to be <strong>constant-time</strong>.</p>
+
+  <h2><span class="num">§2</span>Other Shared Resources</h2>
+  <table>
+    <tr><th>Resource</th><th>What it can leak</th></tr>
+    <tr><td>Caches (L1, L2, L3)</td><td>Which memory a program touched</td></tr>
+    <tr><td>Branch predictor</td><td>Which way secret-dependent branches went</td></tr>
+    <tr><td>TLB</td><td>Which pages were accessed</td></tr>
+    <tr><td>Execution ports (with SMT)</td><td>What instruction mix the sibling thread runs</td></tr>
+    <tr><td>DRAM row buffer</td><td>Which rows were recently accessed</td></tr>
+    <tr><td>Power and frequency</td><td>Data-dependent activity</td></tr>
+  </table>
+  <p>Hyper-threading (SMT) is a particular concern because the two threads of a core share almost everything, including L1 caches and execution units, so a co-resident hostile thread sees very fine-grained effects.</p>
+
+  <h2><span class="num">§3</span>Rowhammer: A Physical Attack</h2>
+  <p>DRAM rows are packed so closely that <strong>repeatedly activating one row</strong> can disturb charge in the neighboring rows, flipping bits there. This <strong>Rowhammer</strong> effect, reported in 2014, means a program that can only read and write its own memory may corrupt memory it doesn't own, and researchers have used it to escalate privileges.</p>
+  <ul>
+    <li><strong>Mitigations:</strong> error-correcting (ECC) memory catches some flips, higher refresh rates reduce the window, and <strong>target row refresh</strong> (TRR) in newer DRAM refreshes neighbors of heavily activated rows</li>
+    <li><strong>Limits of mitigation:</strong> later research showed ways to bypass TRR implementations, so the defenses are partial</li>
+    <li><strong>Software side:</strong> isolating untrusted workloads and limiting access to precise timers and cache-flush instructions reduce risk</li>
+  </ul>
+  <p>Rowhammer is a reminder that memory protection built on page tables assumes the memory cells behave ideally, and that physical reality can break the assumption.</p>
+
+  <h2><span class="num">§4</span>Defensive Habits</h2>
+  <ul>
+    <li><strong>Constant-time code</strong> for secrets: no secret-dependent branches or memory indices</li>
+    <li><strong>Reduce timer precision</strong> where untrusted code runs, as browsers did, because attacks need fine timing</li>
+    <li><strong>Isolate by process and by core:</strong> keep mutually distrusting code from sharing a core, a cache, or an address space</li>
+    <li><strong>Use hardware crypto instructions</strong> and vetted libraries rather than writing your own</li>
+  </ul>
+  <p>Software can't observe most microarchitectural state, so these channels are invisible to ordinary debugging, and reasoning about the threat model is the main defense.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Isolation at the ISA level doesn't imply isolation at the timing level. Anything two programs share, a cache set, a predictor entry, a DRAM row, is a potential channel.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Writing crypto with secret-dependent table lookups or branches</td><td>Cache timing leaks the secret</td><td>Use constant-time implementations and vetted libraries</td></tr>
+    <tr><td>Assuming memory protection is absolute</td><td>Physical effects such as Rowhammer bypass it</td><td>Use ECC and defense in depth for sensitive systems</td></tr>
+    <tr><td>Running untrusted and sensitive code on sibling hyper-threads</td><td>Fine-grained sharing eases leakage</td><td>Disable SMT or schedule them on separate cores in high-risk settings</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Explain in a few sentences how a cache-timing observer can learn whether a victim accessed a specific cache line.</li>
+      <li>Review a function that compares two secret byte arrays with an early <code>return</code> on the first mismatch. Why is that a timing leak, and how do you fix it?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Cache, predictor, TLB, port, and DRAM-row behavior can leak information through timing.</li>
+      <li>Rowhammer shows physical effects can corrupt memory despite software isolation.</li>
+      <li>Defend with constant-time code, timer limits, process and core isolation, and hardware crypto.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Speculation & Hardware Security — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Creational Patterns: Factory, Builder & Singleton",
+  "description": "Controlling how objects get made, and why Singleton so often becomes hidden global state.",
+  "order": 2
+}

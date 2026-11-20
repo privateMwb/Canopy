@@ -1,0 +1,5 @@
+{
+  "title": "Reading EXPLAIN & EXPLAIN ANALYZE",
+  "description": "Plans, costs, row estimates, and finding the node where the time really goes.",
+  "order": 1
+}

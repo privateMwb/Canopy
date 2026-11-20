@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OAuth 2.0 &amp; OpenID Connect: Flows and Their Attacks — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · modern authentication &amp; authorization</span> → lesson 02</p>
+  <h1>OAuth 2.0 &amp; OpenID Connect: Flows and Their Attacks</h1>
+  <p class="lede">OAuth and OpenID Connect are the standard way to sign in with another service, and most real attacks are not on the cryptography but on skipped checks in the flow.</p>
+
+  <h2><span class="num">§1</span>The Flow, in One Request</h2>
+  <p>The Networking track introduced OAuth 2.0 and the authorization code flow with PKCE. Here is the request that starts it, with every security-relevant parameter.</p>
+  <pre>GET /authorize
+  ?response_type=code
+  &amp;client_id=abc123
+  &amp;redirect_uri=https://app.example/callback    <span class="comment"># must exactly match a registered URI</span>
+  &amp;scope=openid profile
+  &amp;state=&lt;random per login&gt;                      <span class="comment"># ties the response to this browser</span>
+  &amp;nonce=&lt;random per login&gt;                      <span class="comment"># ties the ID token to this request</span>
+  &amp;code_challenge=&lt;BASE64URL(SHA256(verifier))&gt;  <span class="comment"># PKCE</span>
+  &amp;code_challenge_method=S256</pre>
+  <ul>
+    <li><strong>PKCE</strong> makes a stolen authorization code useless: only the client that knows the original <code>code_verifier</code> can redeem it.</li>
+    <li><strong><code>state</code></strong> prevents login CSRF, where an attacker forces your browser to complete *their* login. The app must check the value on return.</li>
+    <li><strong>Exact-match redirect URIs</strong> stop the server from sending the code to an attacker's page. Patterns, wildcards, or open redirects on the client's domain break this.</li>
+  </ul>
+
+  <h2><span class="num">§2</span>OpenID Connect: Authentication on Top</h2>
+  <p>OAuth by itself is about *authorization* to access an API. <strong>OpenID Connect (OIDC)</strong> adds an <strong>ID token</strong>, a signed JWT that tells the client who logged in. The two tokens have different audiences and purposes.</p>
+  <table>
+    <tr><th></th><th>ID token</th><th>Access token</th></tr>
+    <tr><td>For</td><td>The client app</td><td>The resource server (API)</td></tr>
+    <tr><td>Says</td><td>Who authenticated, when, and how</td><td>What the bearer may access</td></tr>
+    <tr><td>Client must</td><td>Validate <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>nonce</code>, and signature</td><td>Treat as opaque and send to the API</td></tr>
+  </table>
+  <p>Don't use an access token as proof of identity. A token issued to a different app for the same user could be replayed to yours, a <strong>confused-deputy</strong> problem.</p>
+
+  <h2><span class="num">§3</span>Bugs That Keep Recurring</h2>
+  <ul>
+    <li>Skipping or not verifying <code>state</code>, enabling login CSRF.</li>
+    <li>Loose redirect URI matching, leaking codes and tokens to attackers.</li>
+    <li>The legacy <strong>implicit flow</strong>, which returns tokens in the URL; current guidance (the OAuth Security Best Current Practice and OAuth 2.1) is to use code flow with PKCE instead.</li>
+    <li>Accepting an ID token without checking <code>aud</code> and <code>iss</code>, or the <code>nonce</code> value.</li>
+    <li>Over-broad <strong>scopes</strong> requested "just in case," widening the damage of any leak.</li>
+    <li>Trusting an email claim without checking it's verified, which enables account takeover via account linking.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Use a vetted library</span>
+    Validating every parameter, signature, and claim correctly is hard to get right by hand. Use a maintained OIDC client library and then review its configuration, because misconfiguration is where the bugs live.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Not verifying <code>state</code> on the callback</td><td>An attacker logs the victim into the attacker's account</td><td>Generate <code>state</code> per login and require it to match</td></tr>
+    <tr><td>Allowing wildcard or prefix redirect URIs</td><td>Authorization codes are delivered to attacker-controlled pages</td><td>Register exact URIs and compare them exactly</td></tr>
+    <tr><td>Using an access token to identify the user</td><td>Tokens meant for other apps are accepted as logins</td><td>Use the validated ID token, with <code>aud</code> and <code>nonce</code> checked</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Trace an OAuth login in your browser's Network panel and identify <code>state</code>, the code, and where PKCE appears.</li>
+      <li>List, for each parameter in the authorize request, the attack that would work if it were missing.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>PKCE, <code>state</code>, and exact redirect URIs each close a specific hole in the code flow.</li>
+      <li>OIDC's ID token proves who logged in; an access token is for calling APIs.</li>
+      <li>Most OAuth breaches are skipped validations, so use a vetted library and review the config.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Modern Authentication &amp; Authorization — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

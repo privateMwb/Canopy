@@ -1,0 +1,5 @@
+{
+  "title": "Thread Dumps, Heap Dumps & Deadlocks",
+  "description": "Reading dumps to find stuck threads, leaks, and lock cycles.",
+  "order": 4
+}

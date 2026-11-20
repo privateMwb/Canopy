@@ -1,0 +1,5 @@
+{
+  "title": "The sqlite3 Shell & Dot Commands",
+  "description": "Opening a database, exploring it, and the commands that aren't SQL.",
+  "order": 2
+}

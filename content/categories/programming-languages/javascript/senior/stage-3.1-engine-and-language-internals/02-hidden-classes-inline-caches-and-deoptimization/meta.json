@@ -1,0 +1,5 @@
+{
+  "title": "Hidden Classes, Inline Caches & Deoptimization",
+  "description": "Why object shape matters and how code silently loses its fast path.",
+  "order": 2
+}

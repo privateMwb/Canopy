@@ -1,0 +1,5 @@
+{
+  "title": "Rate Limiting, CORS & Hardening",
+  "description": "Protecting a public API.",
+  "order": 4
+}

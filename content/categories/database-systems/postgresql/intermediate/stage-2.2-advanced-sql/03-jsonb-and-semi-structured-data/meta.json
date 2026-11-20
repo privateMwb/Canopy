@@ -1,0 +1,5 @@
+{
+  "title": "JSONB & Semi-Structured Data",
+  "description": "Storing documents, querying with operators, and indexing with GIN.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Conventional Commits, Changelogs & Automated Releases",
+  "description": "Structured messages that drive version bumps, changelogs, and publishing, tied back to semantic versioning.",
+  "order": 4
+}

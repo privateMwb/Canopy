@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Accessibility in Design Systems — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · accessible components &amp; media</span> → lesson 05</p>
+  <h1>Accessibility in Design Systems</h1>
+  <p class="lede">A design system is the place where accessibility pays off the most. Fix a button once, and every product that uses it improves. Neglect it, and the same bug ships to a hundred screens.</p>
+
+  <h2><span class="num">§1</span>Accessibility as Part of the Component</h2>
+  <p>If accessibility is optional in a component, many teams will skip it. The strongest design systems make the accessible way the default, and the inaccessible way hard or impossible. Aim to build four things into every component.</p>
+  <table>
+    <tr><th>Built in</th><th>Example</th></tr>
+    <tr><td><strong>Semantics</strong></td><td>A <code>Button</code> always renders a real <code>button</code>, never a <code>div</code></td></tr>
+    <tr><td><strong>Names</strong></td><td>An <code>IconButton</code> will not render without a required label</td></tr>
+    <tr><td><strong>Keyboard and focus</strong></td><td>Every component has a tested keyboard model and a visible focus style</td></tr>
+    <tr><td><strong>Design tokens</strong></td><td>Only approved color pairs that already meet contrast requirements are offered</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>APIs That Prevent Mistakes</h2>
+  <p>Good component APIs make the right choice the easy one. A form field component, for example, can wire up the label, hint, and error relationships automatically, so no one has to remember <code>for</code>, <code>id</code>, and <code>aria-describedby</code>.</p>
+  <pre>import { useId } from 'react';
+
+export function TextField({ label, hint, error, ...props }) {
+  const id = useId();
+  const hintId = hint ? id + '-hint' : undefined;
+  const errId = error ? id + '-err' : undefined;
+  const describedBy = [hintId, errId].filter(Boolean).join(' ') || undefined;
+
+  return (
+    &lt;div&gt;
+      &lt;label htmlFor={id}&gt;{label}&lt;/label&gt;
+      {hint &amp;&amp; &lt;p id={hintId}&gt;{hint}&lt;/p&gt;}
+      &lt;input id={id} aria-invalid={!!error} aria-describedby={describedBy} {...props} /&gt;
+      {error &amp;&amp; &lt;p id={errId}&gt;Error: {error}&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}
+
+<span class="comment">// IconButton: the label is required, so there is no unnamed icon button</span>
+export function IconButton({ label, icon, ...props }) {
+  return &lt;button type="button" aria-label={label} {...props}&gt;{icon}&lt;/button&gt;;
+}</pre>
+  <p>Type checking and lint rules back this up: make <code>label</code> a required prop, and flag raw <code>div onClick</code> patterns in review.</p>
+
+  <h2><span class="num">§3</span>Documentation and Testing</h2>
+  <p>Components are used by people who are not accessibility experts, so document the details for them.</p>
+  <ul>
+    <li><strong>Accessibility notes</strong> on every component page: roles, keyboard behavior, focus management, and screen reader announcements.</li>
+    <li><strong>Do and don't</strong> examples, such as how to write a good label or when to use a link instead of a button.</li>
+    <li><strong>Automated checks</strong> in the component test suite and in Storybook, covering each state and variant.</li>
+    <li><strong>Manual checks</strong> with a keyboard and a screen reader before a component ships, recorded in a checklist.</li>
+    <li><strong>A changelog</strong> that notes accessibility fixes, so product teams know why to upgrade.</li>
+  </ul>
+  <p>Accessible components do not guarantee accessible products. Teams can still combine them badly, with a skipped heading level, a confusing page layout, or unclear copy. Pair the system with guidance on page-level patterns, and test the assembled result.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A design system multiplies your effort. Each accessibility improvement to a shared component is inherited by every product, and each missing one is inherited too.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Making accessibility props optional</td><td>Unnamed icon buttons and unlabeled fields ship by default</td><td>Require labels and other essentials in the component API</td></tr>
+    <tr><td>Documenting only the visuals</td><td>Developers rebuild keyboard behavior wrongly or skip it</td><td>Document roles, keys, focus, and announcements for each component</td></tr>
+    <tr><td>Assuming accessible components make accessible pages</td><td>Page-level problems such as heading order and copy go unnoticed</td><td>Test assembled pages, and provide page-level guidance</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Pick one component in a library you use. List its role, name source, keyboard model, and focus behavior, and note any gaps.</li>
+      <li>Redesign the API of a form field or icon button so that the inaccessible usage is impossible or raises a warning.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Build semantics, names, keyboard support, and approved colors into every component.</li>
+      <li>Design APIs where the accessible choice is the default, and required props prevent common mistakes.</li>
+      <li>Document and test each component for accessibility, and also test the pages built from them.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Accessible Components &amp; Media — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

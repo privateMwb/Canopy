@@ -1,0 +1,5 @@
+{
+  "title": "Failure Modes & Consistency",
+  "description": "What actually happens during partitions, restarts, and failover.",
+  "order": 2
+}

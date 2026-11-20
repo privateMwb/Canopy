@@ -1,0 +1,5 @@
+{
+  "title": "Stack vs. Heap & new/delete",
+  "description": "Automatic and dynamic storage, and why manual delete is a last resort.",
+  "order": 2
+}

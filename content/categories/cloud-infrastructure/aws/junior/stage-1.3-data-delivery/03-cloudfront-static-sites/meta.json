@@ -1,0 +1,5 @@
+{
+  "title": "CloudFront & Static Sites",
+  "description": "Serving a site from S3 through a CDN.",
+  "order": 3
+}

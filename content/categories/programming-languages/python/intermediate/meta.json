@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "The data model, type hints, concurrency, profiling, and packaging.",
+  "order": 2
+}

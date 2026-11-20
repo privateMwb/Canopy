@@ -1,0 +1,5 @@
+{
+  "title": "Utility, Mapped & Conditional Types",
+  "description": "Deriving types from other types instead of copying them.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Selectors & Specificity",
+  "description": "Type, class, ID, attribute, and pseudo selectors, and which rule wins.",
+  "order": 2
+}

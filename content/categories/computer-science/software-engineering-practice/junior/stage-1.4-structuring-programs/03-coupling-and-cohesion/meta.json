@@ -1,0 +1,5 @@
+{
+  "title": "Coupling & Cohesion",
+  "description": "The two measures behind most design advice, and how to see them in a dependency diagram.",
+  "order": 3
+}

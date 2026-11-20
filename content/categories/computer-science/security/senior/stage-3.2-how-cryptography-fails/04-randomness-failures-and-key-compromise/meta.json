@@ -1,0 +1,1 @@
+{"title": "Randomness Failures & Key Compromise", "description": "Weak seeds, repeated nonces, and keys leaked in repos and logs, and how to recover when a key is gone.", "order": 4}

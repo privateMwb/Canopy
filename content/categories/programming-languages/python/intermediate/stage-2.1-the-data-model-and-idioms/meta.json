@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 \u2014 The Data Model & Idioms",
+  "description": "Iterators, generators, closures, decorators, context managers, and the standard-library toolkit.",
+  "order": 1
+}

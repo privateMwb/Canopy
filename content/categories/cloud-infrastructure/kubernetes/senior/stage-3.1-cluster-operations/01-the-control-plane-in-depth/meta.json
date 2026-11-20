@@ -1,0 +1,5 @@
+{
+  "title": "The Control Plane in Depth",
+  "description": "The API server, etcd, scheduler, and the reconciliation loop.",
+  "order": 1
+}

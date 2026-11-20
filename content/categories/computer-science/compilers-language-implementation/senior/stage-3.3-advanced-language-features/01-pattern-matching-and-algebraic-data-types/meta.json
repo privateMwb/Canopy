@@ -1,0 +1,5 @@
+{
+  "title": "Pattern Matching & Algebraic Data Types",
+  "description": "Compiling match expressions into decision trees, and checking exhaustiveness.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Data Modeling",
+  "description": "Modeling for reads, subcollections versus top-level collections, counters, transactions, and offline sync.",
+  "order": 1
+}

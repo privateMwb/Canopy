@@ -1,0 +1,1 @@
+{"title": "Optimistic vs. Pessimistic Concurrency", "description": "Version columns, SELECT FOR UPDATE, and choosing by how often conflicts happen.", "order": 4}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Incident Response &amp; Postmortems — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · operating in production</span> → lesson 02</p>
+  <h1>Incident Response &amp; Postmortems</h1>
+  <p class="lede">Debugging live systems and learning from outages.</p>
+
+  <h2><span class="num">§1</span>When Production Breaks</h2>
+
+  <p>Every system eventually has an <strong>incident</strong>: an unplanned event that harms users. How well you respond depends less on individual heroics than on a calm, practiced process. The aims, in order: <strong>stop the harm, restore service, then understand why</strong>, so it does not recur.</p>
+
+  <h2><span class="num">§2</span>Roles and Structure</h2>
+
+  <table>
+    <tr><th>Role</th><th>Responsibility</th></tr>
+    <tr><td><strong>Incident commander (IC)</strong></td><td>Coordinates. Decides priorities, assigns tasks, keeps the group focused. Does <em>not</em> dig into debugging.</td></tr>
+    <tr><td><strong>Operations / responders</strong></td><td>Investigate and apply mitigations.</td></tr>
+    <tr><td><strong>Communications lead</strong></td><td>Updates stakeholders, support, and the status page on a regular cadence.</td></tr>
+    <tr><td><strong>Scribe</strong></td><td>Keeps a timestamped log of what was observed, hypothesized, and done.</td></tr>
+  </table>
+
+  <p>In a small team one person may wear several hats, but separating <em>coordinating</em> from <em>fixing</em> matters: it keeps someone looking at the whole picture while others look at a corner of it. Use a single shared channel or call, and declare severity early (for example SEV1 = major user-facing outage), because severity sets who is notified and how fast.</p>
+
+  <h2><span class="num">§3</span>Mitigate First, Diagnose Second</h2>
+
+  <p>Resist the urge to find the root cause while users are suffering. The fastest route to recovery is usually a <strong>mitigation</strong> that does not require understanding: roll back the last deploy, flip a feature flag off, fail over, scale up, shed load, or block a bad client. Root-cause analysis can wait until the bleeding stops.</p>
+
+  <pre><span class="comment"># A calm first five minutes</span>
+1. Acknowledge the page. Open the incident channel. State: "I'm IC. Severity SEV2 until we know more."
+2. Assess impact: which users, which journeys, since when? (SLO dashboard, error rates, support tickets)
+3. Ask: WHAT CHANGED? Recent deploys, config or flag changes, migrations, traffic spikes, dependency incidents.
+4. If a recent change correlates: roll it back FIRST, investigate afterwards.
+5. Post a first status update within ~10 minutes, then at a fixed cadence (e.g. every 20-30 min), even if "no change".</pre>
+
+  <h2><span class="num">§4</span>A Method for Diagnosis</h2>
+
+  <ul>
+    <li><strong>Form hypotheses and test them.</strong> State one ("the DB connection pool is exhausted"), name the evidence that would confirm or refute it, and check it. Avoid trying changes at random.</li>
+    <li><strong>Narrow the scope</strong> using breakdowns: which endpoint, tenant, region, version, or dependency is affected? Partial failures point to the cause.</li>
+    <li><strong>Follow the request path</strong> using traces and logs, from the edge inward, to find where latency or errors begin.</li>
+    <li><strong>Change one thing at a time</strong> and write down when you did, or you will not know what worked.</li>
+    <li><strong>Escalate early.</strong> Bring in the owner of the failing dependency sooner rather than later; calling for help is a strength.</li>
+  </ul>
+
+  <pre><span class="comment"># Useful questions, and where to look</span>
+Is it all traffic or a slice?     -&gt; metrics grouped by route / tenant / region / build version
+Did latency or errors start suddenly? -&gt; sharp step = change or dependency; slow ramp = leak or growth
+Is a dependency slow or down?     -&gt; dependency dashboards, circuit-breaker state, trace spans
+Are we saturated?                 -&gt; CPU, memory, event-loop lag, DB connections, queue depth, disk
+Is it new code?                   -&gt; deploy markers, canary vs stable comparison</pre>
+
+  <h2><span class="num">§5</span>Blameless Postmortems</h2>
+
+  <p>After resolution, write a <strong>postmortem</strong> (also called a retrospective or incident review). The goal is learning, not punishment. People make reasonable decisions with the information they have; when an engineer's action caused an outage, the real question is why the system made that mistake easy and the dangerous action possible without safeguards. A culture that blames individuals hides problems, and hidden problems recur.</p>
+
+  <pre><span class="comment"># Postmortem: Checkout errors on 14 March</span>
+
+Summary      One-paragraph description: what broke, impact, duration.
+Impact       Users affected, failed orders, revenue, SLO budget consumed.
+Timeline     Timestamps (UTC): first symptom, detection, escalation, mitigation, resolution.
+Root causes  Contributing factors, usually several (technical AND process).
+What went well / What went badly / Where we got lucky
+Detection    How did we find out? Could we have known sooner?
+Action items Specific, owned, dated: each tied to a cause and prioritized.
+Lessons      What this teaches about the system.</pre>
+
+  <ul>
+    <li><strong>Ask "why" repeatedly, but stop at systems, not people.</strong> Rather than "an engineer ran the wrong command," ask why the tool allowed it, why there was no confirmation or staging check, and why it took 20 minutes to notice.</li>
+    <li><strong>Seek multiple contributing factors.</strong> Serious outages rarely have a single "root cause"; they are alignments of several weaknesses.</li>
+    <li><strong>Make action items real:</strong> owned, scheduled, and tracked to completion. A postmortem whose actions are never done is theater.</li>
+    <li><strong>Share them widely.</strong> Other teams learn from your incidents, and publishing builds trust with customers (a public summary for major incidents).</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Practice before you need it</span>
+    Run game days: simulate an outage, such as killing a database replica or failing a dependency, and let the on-call practice. Test the pager, the runbooks, and the communication path when the stakes are zero. Teams that rehearse recover in minutes; teams that improvise recover in hours.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Hunting for root cause while users are still affected</td><td>Outages last far longer than needed</td><td>Mitigate first (roll back, flag off, fail over), then investigate</td></tr>
+    <tr><td>Everyone debugging, nobody coordinating</td><td>Duplicated effort, conflicting changes, silent stakeholders</td><td>Name an incident commander and a communications lead</td></tr>
+    <tr><td>Blaming a person in the postmortem</td><td>People hide mistakes, and the system's weaknesses stay</td><td>Examine how the system allowed the error; fix the system</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write the first-five-minutes checklist for your own service, including the three mitigations you would try first.</li>
+      <li>Take a past outage (yours or a public postmortem from a company) and rewrite its timeline and contributing factors in blameless form.</li>
+      <li>Run a 30-minute game day: break something in staging without telling the on-call engineer, and have them practice the full response.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>In an incident, stop the harm first: mitigate with rollback, flags, or failover before searching for root cause.</li>
+      <li>Use clear roles (incident commander, communications, scribe) and hypothesis-driven diagnosis, changing one thing at a time.</li>
+      <li>Hold blameless postmortems that find systemic causes and produce owned, tracked action items.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Operating in Production — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

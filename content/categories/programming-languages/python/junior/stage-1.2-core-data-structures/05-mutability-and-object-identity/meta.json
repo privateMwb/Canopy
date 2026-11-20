@@ -1,0 +1,5 @@
+{
+  "title": "Mutability & Object Identity",
+  "description": "Aliasing, shallow vs. deep copies, and the mutable-default-argument trap.",
+  "order": 5
+}

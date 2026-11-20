@@ -1,0 +1,5 @@
+{
+  "title": "Class Loading & Bytecode",
+  "description": "The loading lifecycle, reading output from javap, and classloader pitfalls.",
+  "order": 1
+}

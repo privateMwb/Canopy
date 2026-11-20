@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WCAG &amp; the POUR Principles — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · why accessibility</span> → lesson 03</p>
+  <h1>WCAG &amp; the POUR Principles</h1>
+  <p class="lede">The Web Content Accessibility Guidelines turn "make it accessible" into testable requirements. This lesson covers how they are organized and the four principles behind every rule.</p>
+
+  <h2><span class="num">§1</span>What WCAG Is</h2>
+  <p><strong>WCAG</strong> is published by the W3C's Web Accessibility Initiative. It is the most widely referenced technical standard for web accessibility and the basis for many laws. The major versions you will meet are 2.0 (2008), 2.1 (2018), and 2.2 (2023). Each newer version adds criteria without removing the older ones, apart from a few obsolete items.</p>
+  <p>Each requirement is a <strong>success criterion</strong>: a testable statement that a page either meets or does not. Every criterion has a <strong>conformance level</strong>.</p>
+  <table>
+    <tr><th>Level</th><th>Meaning</th><th>Typical use</th></tr>
+    <tr><td><strong>A</strong></td><td>The most basic barriers. Failing these blocks some users entirely</td><td>Required for any claim of conformance</td></tr>
+    <tr><td><strong>AA</strong></td><td>Removes the biggest and most common remaining barriers</td><td>The usual legal and procurement target</td></tr>
+    <tr><td><strong>AAA</strong></td><td>Highest, and not achievable for all content</td><td>Applied selectively where it makes sense</td></tr>
+  </table>
+  <p>When a contract or law says "WCAG 2.1 AA", it means every Level A and Level AA criterion in version 2.1.</p>
+
+  <h2><span class="num">§2</span>The Four POUR Principles</h2>
+  <p>All criteria sit under four principles. They are a useful mental checklist, because almost any barrier fits one of them.</p>
+  <table>
+    <tr><th>Principle</th><th>Question it asks</th><th>Example failure</th></tr>
+    <tr><td><strong>Perceivable</strong></td><td>Can users sense the content?</td><td>An image with no text alternative, or light grey text on white</td></tr>
+    <tr><td><strong>Operable</strong></td><td>Can users operate the interface?</td><td>A menu that works only with a mouse hover</td></tr>
+    <tr><td><strong>Understandable</strong></td><td>Can users understand the content and the interface?</td><td>An error that says "Invalid input" without saying what is wrong</td></tr>
+    <tr><td><strong>Robust</strong></td><td>Does it work with current and future tools?</td><td>A custom control with no role or name for a screen reader</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>From Principle to Test</h2>
+  <p>WCAG nests four layers: <strong>principles</strong>, <strong>guidelines</strong>, <strong>success criteria</strong>, and <strong>techniques</strong>. Only the criteria are normative. Techniques show ways to meet them (or common failures), and they are advice rather than requirements.</p>
+  <pre><span class="comment">Principle 1: Perceivable</span>
+<span class="comment">  Guideline 1.1: Text Alternatives</span>
+<span class="comment">    Success Criterion 1.1.1: Non-text Content (Level A)</span>
+<span class="comment">      Technique: give the image an alt attribute describing its purpose</span>
+<span class="comment">      Failure: image has no alt attribute</span>
+
+&lt;img src="chart.png" alt="Sales grew 20% from 2023 to 2024"&gt;</pre>
+  <p>Criteria are numbered by principle, guideline, and criterion, so 1.4.3 means Principle 1, Guideline 4, Criterion 3 (Contrast Minimum). You will see these numbers in audit reports and automated tool output.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    POUR is not a checklist to memorize. It is a way to classify any barrier you find. When you meet a problem with no obvious rule, ask which of the four principles it breaks.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating WCAG as a design review only</td><td>Many criteria concern code, behavior, and content, which design review misses</td><td>Check markup, interaction, and content, not only visuals</td></tr>
+    <tr><td>Aiming for AAA everywhere</td><td>Wasted effort, and some AAA criteria cannot apply to all content</td><td>Target AA, and add AAA criteria where they clearly help your users</td></tr>
+    <tr><td>Treating techniques as requirements</td><td>Rigid rules, or false failures when another valid approach is used</td><td>Judge pages against the success criteria, using techniques as guidance</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Open a page and find one real barrier. Classify it under Perceivable, Operable, Understandable, or Robust, and note the matching success criterion number if you can.</li>
+      <li>Look up Success Criterion 1.4.3 on the W3C "How to Meet WCAG" quick reference, and write the minimum contrast ratio for normal text in your own words.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>WCAG success criteria are testable, with levels A, AA, and AAA. AA is the usual target.</li>
+      <li>POUR (Perceivable, Operable, Understandable, Robust) groups every criterion into four ideas.</li>
+      <li>Criteria are normative. Techniques are helpful guidance, not extra requirements.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Why Accessibility — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

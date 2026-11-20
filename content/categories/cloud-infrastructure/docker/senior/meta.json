@@ -1,0 +1,5 @@
+{
+  "title": "Senior",
+  "description": "Kernel-level internals, hardening and supply chain, platform standards, and tooling beyond the Docker daemon.",
+  "order": 3
+}

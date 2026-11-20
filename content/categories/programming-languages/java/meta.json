@@ -1,0 +1,7 @@
+{
+  "title": "Java",
+  "description": "Object-oriented design, collections, and concurrency on the JVM.",
+  "order": 3,
+  "compileRoot": true,
+  "icon": "lang_java"
+}

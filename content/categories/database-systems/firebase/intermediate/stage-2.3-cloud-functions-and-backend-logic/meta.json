@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Cloud Functions & Backend Logic",
+  "description": "Triggers, callable functions, scheduled work, retries and idempotency, and configuration and secrets.",
+  "order": 3
+}

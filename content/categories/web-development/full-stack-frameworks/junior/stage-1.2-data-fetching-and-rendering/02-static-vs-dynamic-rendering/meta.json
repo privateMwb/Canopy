@@ -1,0 +1,5 @@
+{
+  "title": "Static vs. Dynamic Rendering",
+  "description": "When pages are built, and when they are built per request.",
+  "order": 2
+}

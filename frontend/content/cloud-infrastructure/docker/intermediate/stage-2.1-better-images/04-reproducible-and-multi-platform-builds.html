@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reproducible &amp; Multi-Platform Builds — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · better images</span> → lesson 04</p>
+  <h1>Reproducible &amp; Multi-Platform Builds</h1>
+  <p class="lede">A reproducible build gives the same result from the same inputs, and a multi-platform build produces one image reference that works on both Intel and ARM machines.</p>
+
+  <h2><span class="num">§1</span>Pin Your Inputs</h2>
+  <p>Reproducibility means controlling everything that can change between builds:</p>
+  <ul>
+    <li><strong>Base image</strong>: pin to an exact tag, and for strict control a digest: <code>FROM python:3.12.7-slim@sha256:&lt;digest&gt;</code>.</li>
+    <li><strong>Language dependencies</strong>: install from a lockfile (<code>npm ci</code>, <code>pip install -r</code> with pinned hashes, <code>go.sum</code>).</li>
+    <li><strong>OS packages</strong>: <code>apt-get install curl=&lt;version&gt;</code> is brittle but exact; at minimum, rebuild and scan on a schedule.</li>
+    <li><strong>Downloads</strong>: verify checksums when fetching binaries with <code>curl</code>.</li>
+  </ul>
+  <pre>RUN curl -fsSLo /tmp/tool.tgz https://example.com/tool-1.4.2.tgz \
+ &amp;&amp; echo "&lt;sha256&gt;  /tmp/tool.tgz" | sha256sum -c - \
+ &amp;&amp; tar -xzf /tmp/tool.tgz -C /usr/local/bin</pre>
+  <p>Pinning has a cost: you must update deliberately, so pair it with a tool such as Renovate or Dependabot to propose version bumps.</p>
+  <h2><span class="num">§2</span>Multi-Platform Images</h2>
+  <p>An image is built for one CPU architecture. A <strong>manifest list</strong> (also called an image index) groups several, and the client automatically pulls the right one. Buildx builds them:</p>
+  <pre>docker buildx create --use --name multi
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t myorg/app:1.0 --push .
+docker buildx imagetools inspect myorg/app:1.0</pre>
+  <p>Multi-platform results must be pushed to a registry (or exported), because the local image store traditionally holds one platform at a time. Non-native architectures are built by <strong>emulation (QEMU)</strong>, which is slow, or by native builders for each architecture, which is fast.</p>
+  <h2><span class="num">§3</span>Writing Portable Dockerfiles</h2>
+  <p>BuildKit provides the build platform and target in variables, so a cross-compiling stage can run natively and still output the right binary:</p>
+  <pre>FROM --platform=$BUILDPLATFORM golang:1.23 AS build
+ARG TARGETOS TARGETARCH
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/app .
+FROM gcr.io/distroless/static-debian12
+COPY --from=build /out/app /app</pre>
+  <div class="callout">
+    <span class="label">Same inputs is not the same bytes</span>
+    Even with pinned inputs, timestamps and file ordering can make image digests differ between builds. True bit-for-bit reproducibility needs extra controls such as <code>SOURCE_DATE_EPOCH</code>; for most teams, pinned inputs plus a lockfile are the practical goal.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Building on an M-series Mac and deploying to amd64</td><td><code>exec format error</code> on the server</td><td>Build with <code>--platform linux/amd64</code> or use a multi-platform build</td></tr>
+    <tr><td>Pinning once and never updating</td><td>Base image accumulates unpatched vulnerabilities</td><td>Automate version-bump pull requests</td></tr>
+    <tr><td>Downloading binaries without a checksum</td><td>A compromised or changed download goes unnoticed</td><td>Verify a pinned SHA-256</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Pin the base image of a project by digest, rebuild, and note what changes when the upstream tag moves.</li>
+      <li>Build an image for two platforms with buildx and inspect the manifest list.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Pin base images, dependencies, and downloads, and update them on purpose.</li>
+      <li>Multi-platform images are manifest lists built with <code>buildx --platform</code>.</li>
+      <li>Cross-compile on the build platform where you can; emulation works but is slow.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Better Images — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

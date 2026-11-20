@@ -1,0 +1,5 @@
+{
+  "title": "Maven & Gradle Basics",
+  "description": "Project layout, dependencies, and building a jar from the command line.",
+  "order": 4
+}

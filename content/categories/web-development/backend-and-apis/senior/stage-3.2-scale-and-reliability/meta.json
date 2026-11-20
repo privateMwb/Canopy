@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Scale & Reliability",
+  "description": "Horizontal scaling, database scaling, resilience patterns, distributed-systems pitfalls, and load testing.",
+  "order": 2
+}

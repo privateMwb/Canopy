@@ -1,0 +1,5 @@
+{
+  "title": "Fetching Data & Handling Failure",
+  "description": "Loading, error, and stale states, caching, and retry behavior in a real UI.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Generators & Lazy Evaluation",
+  "description": "yield, generator expressions, and processing data bigger than memory.",
+  "order": 2
+}

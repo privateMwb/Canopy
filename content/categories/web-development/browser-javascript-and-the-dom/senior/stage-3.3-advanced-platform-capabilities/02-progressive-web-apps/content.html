@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Progressive Web Apps — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced platform capabilities</span> → lesson 02</p>
+  <h1>Progressive Web Apps</h1>
+  <p class="lede">A Progressive Web App is an ordinary website that can be installed, launched like an app, and work offline. The pieces are small, and the real skill is knowing when installability is worth it.</p>
+
+  <h2><span class="num">§1</span>What Makes a PWA</h2>
+
+  <p>"PWA" is not a single API. It is a set of capabilities that, together, let a site behave like an installed app: a <strong>web app manifest</strong>, a <strong>service worker</strong> for offline support, and <strong>HTTPS</strong>. Browsers use these to offer an <strong>install</strong> option and to run the site in its own window with an icon on the home screen or desktop.</p>
+
+  <pre>&lt;link rel="manifest" href="/manifest.webmanifest"&gt;
+&lt;meta name="theme-color" content="#15803D"&gt;
+
+<span class="comment">// manifest.webmanifest</span>
+{
+  "name": "Canopy Notes",
+  "short_name": "Notes",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F6F1",
+  "theme_color": "#15803D",
+  "icons": [
+    { "src": "/icons/192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [{ "name": "New note", "url": "/new" }]
+}</pre>
+
+  <p><code>display: "standalone"</code> removes the browser chrome; a <strong>maskable</strong> icon lets the OS crop the icon into its own shape. Installability criteria differ between browsers and change over time, so check the Application → Manifest panel in DevTools, which lists exactly what is missing.</p>
+
+  <h2><span class="num">§2</span>Installing and Behaving Like an App</h2>
+
+  <p>Chromium browsers fire <code>beforeinstallprompt</code>, which you can capture to offer an install button at a sensible moment. Safari and Firefox have different flows (Safari uses *Add to Home Screen*), so never make install a requirement.</p>
+
+  <pre>let deferred;
+window.addEventListener("beforeinstallprompt", (e) =&gt; {
+  e.preventDefault();                       <span class="comment">// hold the browser's default prompt</span>
+  deferred = e;
+  installBtn.hidden = false;
+});
+installBtn.addEventListener("click", async () =&gt; {
+  deferred.prompt();
+  const { outcome } = await deferred.userChoice;   <span class="comment">// "accepted" | "dismissed"</span>
+  deferred = null;
+  installBtn.hidden = true;
+});
+window.addEventListener("appinstalled", () =&gt; track("installed"));
+
+<span class="comment">// detect that you are running as an installed app</span>
+const isInstalled = matchMedia("(display-mode: standalone)").matches || navigator.standalone;</pre>
+
+  <p>Once installed, users expect app behavior: it should open to something useful <strong>offline</strong>, handle the Back button sensibly, respect safe areas (<code>env(safe-area-inset-*)</code>), avoid tiny tap targets, and not feel like a webpage inside a frame.</p>
+
+  <h2><span class="num">§3</span>Push, Badges, and Reality Checks</h2>
+
+  <p>Installed PWAs can use more of the platform. <strong>Web Push</strong> lets a service worker receive a message from your server and show a notification even when no page is open. The flow has several parts, and each is a point of failure and a privacy decision.</p>
+
+  <pre><span class="comment">// page: after a user action, subscribe</span>
+const reg = await navigator.serviceWorker.ready;
+const sub = await reg.pushManager.subscribe({
+  userVisibleOnly: true,                              <span class="comment">// required: every push must show a notification</span>
+  applicationServerKey: VAPID_PUBLIC_KEY,
+});
+await fetch("/api/push/subscribe", { method: "POST", body: JSON.stringify(sub), headers: { "Content-Type": "application/json" } });
+
+<span class="comment">// sw.js: receive and show</span>
+self.addEventListener("push", (e) =&gt; {
+  const data = e.data?.json() ?? { title: "Update", body: "" };
+  e.waitUntil(self.registration.showNotification(data.title, { body: data.body, tag: data.tag, data: { url: data.url } }));
+});
+self.addEventListener("notificationclick", (e) =&gt; {
+  e.notification.close();
+  e.waitUntil(clients.openWindow(e.notification.data.url));
+});
+
+navigator.setAppBadge?.(3);                           <span class="comment">// badge the app icon where supported</span></pre>
+
+  <ul>
+    <li><strong>Decide if you need it.</strong> A PWA adds a service worker, a manifest, and an update flow to maintain. If your site is mostly content with no offline need, a fast normal site may serve users better.</li>
+    <li><strong>Support varies</strong>: iOS requires installation to the home screen for push, and some capabilities (background sync, certain device APIs) are absent on some platforms. Always feature-detect.</li>
+    <li><strong>Ask for push permission</strong> only after a user action and with a clear benefit, never on first load.</li>
+    <li><strong>Test installation</strong> on real devices and measure installs, retention, and offline use rather than assuming value.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Progressive means optional</span>
+    A PWA must be an enhancement: the site works normally in any browser, and installability, push, and offline are added where supported. Feature-detect everything and never gate core functionality behind them.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No maskable icon</td><td>The OS crops or letterboxes the icon awkwardly</td><td>Provide a maskable icon with a safe zone</td></tr>
+    <tr><td>Prompting for push notifications on first visit</td><td>Users deny; browsers may suppress future prompts</td><td>Ask after a relevant action with explained value</td></tr>
+    <tr><td>Assuming every browser supports the same install flow</td><td>No install button on Safari/Firefox; broken expectations</td><td>Feature-detect and provide instructions where needed</td></tr>
+    <tr><td>Skipping the offline experience</td><td>Installed app shows a dinosaur page without a connection</td><td>Precache a shell and an offline fallback</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a manifest and icons to a small app, and use DevTools' Manifest panel to confirm it is installable.</li>
+      <li>Build an in-app install button using <code>beforeinstallprompt</code>, hidden on browsers that do not fire it.</li>
+      <li>Write down, for a product you know, whether a PWA is worth it, with the evidence you would need to decide.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A PWA is a manifest, a service worker, and HTTPS, enabling install, offline, and app-like windows.</li>
+      <li>Install and push flows differ by browser: feature-detect, ask at the right moment, and never gate core features.</li>
+      <li>A PWA is a maintenance commitment; adopt it where installability and offline use bring real value.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Platform Capabilities — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"title": "HTTP/1.1: Persistent Connections & Head-of-Line Blocking", "description": "Keep-alive, why pipelining failed, and why browsers open six connections.", "order": 1}

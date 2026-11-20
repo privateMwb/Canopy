@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ConfigMaps &amp; Secrets — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · configuration &amp; storage</span> → lesson 01</p>
+  <h1>ConfigMaps &amp; Secrets</h1>
+  <p class="lede">ConfigMaps and Secrets hold configuration outside your image, so the same image runs in every environment with different settings.</p>
+
+  <h2><span class="num">§1</span>Why Separate Configuration</h2>
+  <p>An image should be identical in dev, staging, and production. What changes between them, such as database hostnames, feature flags, and credentials, belongs in objects you attach at runtime. Kubernetes has two for this: <strong>ConfigMap</strong> for ordinary settings and <strong>Secret</strong> for sensitive values.</p>
+  <h2><span class="num">§2</span>ConfigMaps</h2>
+  <pre>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  LOG_LEVEL: "info"
+  FEATURE_X: "true"
+  app.properties: |
+    cache.ttl=300
+    cache.size=1000</pre>
+  <p>Keys can hold single values or whole files. Create one quickly from the command line with <code>kubectl create configmap app-config --from-literal=LOG_LEVEL=info</code> or <code>--from-file=app.properties</code>.</p>
+  <h2><span class="num">§3</span>Using Them in a Pod</h2>
+  <p>There are two ways to consume a ConfigMap:</p>
+  <pre>containers:
+  - name: app
+    image: myapp:1.0
+    envFrom:
+      - configMapRef:
+          name: app-config          <span class="comment"># every key becomes an environment variable</span>
+    env:
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: db-credentials
+            key: password           <span class="comment"># a single key from a Secret</span>
+    volumeMounts:
+      - name: config
+        mountPath: /etc/app         <span class="comment"># keys appear as files in this directory</span>
+volumes:
+  - name: config
+    configMap:
+      name: app-config</pre>
+  <p>Environment variables are simple but are read once when the container starts. <strong>Mounted files</strong> are refreshed in the running pod after a short delay when the ConfigMap changes, though the app must reread them. Values from <code>subPath</code> mounts are never updated.</p>
+  <h2><span class="num">§4</span>Secrets</h2>
+  <p>A Secret has the same shape as a ConfigMap, with values stored base64-encoded.</p>
+  <pre>kubectl create secret generic db-credentials \
+  --from-literal=username=app --from-literal=password='s3cret'
+kubectl get secret db-credentials -o jsonpath='{.data.password}' | base64 -d</pre>
+  <div class="callout">
+    <span class="label">Base64 is not encryption</span>
+    Anyone who can read the Secret object can decode it in one command. By default Secrets are stored unencrypted in etcd. Restrict who can read them with RBAC, enable encryption at rest, and consider an external secret store. Never commit Secret YAML with real values to Git.
+  </div>
+  <h2><span class="num">§5</span>Limits and Behavior</h2>
+  <p>Each object is capped at 1 MiB. Changing a ConfigMap does not restart pods that use it as environment variables; you must roll the Deployment (<code>kubectl rollout restart deployment/web</code>). Marking a ConfigMap or Secret <code>immutable: true</code> prevents edits and reduces load on the API server.</p>
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Committing Secret manifests with real values</td><td>Credentials leak into Git history</td><td>Create Secrets out of band or use an external secrets tool</td></tr>
+    <tr><td>Expecting env vars to update live</td><td>Pods keep old values until restarted</td><td>Run <code>kubectl rollout restart</code>, or mount as files and reload in the app</td></tr>
+    <tr><td>Treating base64 as protection</td><td>Anyone with read access sees the value</td><td>Lock down access and encrypt at rest</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a ConfigMap and inject it into a pod both as environment variables and as a mounted file; verify with <code>exec</code>.</li>
+      <li>Decode a Secret value with <code>base64 -d</code> to see why it is not secure on its own.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>ConfigMaps and Secrets keep configuration out of images.</li>
+      <li>They can be injected as environment variables or as mounted files, and behave differently on change.</li>
+      <li>Secrets are encoded, not encrypted; protect them with access control and encryption at rest.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Configuration &amp; Storage — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

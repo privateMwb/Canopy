@@ -1,0 +1,5 @@
+{
+  "title": "Foreign Keys, Pragmas & Defaults",
+  "description": "The settings that are off by default and why you should turn them on.",
+  "order": 5
+}

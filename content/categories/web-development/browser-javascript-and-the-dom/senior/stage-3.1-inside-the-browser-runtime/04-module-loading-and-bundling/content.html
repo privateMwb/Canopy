@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Module Loading &amp; Bundling — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · inside the browser runtime</span> → lesson 04</p>
+  <h1>Module Loading &amp; Bundling</h1>
+  <p class="lede">The browser can load modules natively, yet nearly every production site is bundled. Understanding what the browser does, and what a bundler changes, lets you decide how to ship code rather than just accepting defaults.</p>
+
+  <h2><span class="num">§1</span>How the Browser Loads Modules</h2>
+
+  <p>When it meets <code>&lt;script type="module" src="main.js"&gt;</code>, the browser downloads the file, parses its <code>import</code> statements, then downloads those dependencies, and so on down the tree, before <strong>any</strong> module runs. This forms a dependency graph, and each level of imports can cost a network round trip: a <strong>waterfall</strong>.</p>
+
+  <pre>&lt;script type="module" src="/main.js"&gt;&lt;/script&gt;
+&lt;!-- main.js imports a.js; a.js imports b.js; b.js imports c.js ...
+     the browser cannot know about c.js until it has downloaded and parsed b.js --&gt;
+
+<span class="comment">&lt;!-- hints that flatten the waterfall --&gt;</span>
+&lt;link rel="modulepreload" href="/b.js"&gt;
+&lt;link rel="modulepreload" href="/c.js"&gt;
+
+<span class="comment">&lt;!-- import maps let you use bare names without a bundler --&gt;</span>
+&lt;script type="importmap"&gt;
+  { "imports": { "dayjs": "/vendor/dayjs.esm.js" } }
+&lt;/script&gt;</pre>
+
+  <p>Modules are deferred by default, executed once, in dependency order, and in strict mode. Unbundled apps with hundreds of modules suffer from deep waterfalls and many requests, which is the main practical reason to bundle for production, though HTTP/2 and <code>modulepreload</code> narrow the gap.</p>
+
+  <h2><span class="num">§2</span>What a Bundler Does</h2>
+
+  <p>A bundler (Vite/Rollup, esbuild, webpack, Parcel) starts at your entry point, follows every import, and emits a few optimized files. It does several jobs at once, and it helps to separate them mentally:</p>
+
+  <table>
+    <tr><th>Job</th><th>What happens</th><th>Effect</th></tr>
+    <tr><td><strong>Bundling</strong></td><td>Combine many modules into few files</td><td>Fewer requests, shallower waterfalls</td></tr>
+    <tr><td><strong>Tree shaking</strong></td><td>Drop exports that nothing imports</td><td>Smaller output (needs ES modules and side-effect-free code)</td></tr>
+    <tr><td><strong>Minification</strong></td><td>Shorten names, remove whitespace</td><td>Smaller files</td></tr>
+    <tr><td><strong>Code splitting</strong></td><td>Emit separate chunks for <code>import()</code> points and routes</td><td>Load only what the page needs</td></tr>
+    <tr><td><strong>Hashing</strong></td><td><code>app.3f9a1c.js</code> filenames from content</td><td>Safe to cache forever</td></tr>
+    <tr><td><strong>Transforms</strong></td><td>TypeScript, JSX, modern syntax to target browsers</td><td>Compatibility</td></tr>
+  </table>
+
+  <pre><span class="comment">// code splitting: the chart code is its own chunk, fetched on demand</span>
+button.addEventListener("click", async () =&gt; {
+  const { drawChart } = await import("./chart.js");
+  drawChart(data);
+});
+
+<span class="comment">// tree shaking works with named ES exports</span>
+import { debounce } from "lodash-es";        <span class="comment">// only debounce ends up in the bundle</span>
+import _ from "lodash";                      <span class="comment">// CommonJS: pulls in everything</span></pre>
+
+  <h2><span class="num">§3</span>Shipping Decisions</h2>
+
+  <p>Bundling is a set of trade-offs, and good decisions come from measuring the result. A bundle analyzer shows exactly which dependencies take space, and often reveals that one library accounts for a third of your JavaScript.</p>
+
+  <ul>
+    <li><strong>Analyze</strong>: use <code>rollup-plugin-visualizer</code> or <code>vite-bundle-visualizer</code> and look for large or duplicated dependencies.</li>
+    <li><strong>Split by route</strong> and by rarely used feature, so the first page loads only what it needs.</li>
+    <li><strong>Long-term cache</strong> hashed files (<code>Cache-Control: max-age=31536000, immutable</code>), and never cache the HTML that references them.</li>
+    <li><strong>Prefer small, ESM-friendly libraries</strong> over large CommonJS ones; check size before you add a dependency (e.g. bundlephobia).</li>
+    <li><strong>Set a budget</strong> (for example, 170 KB of compressed JavaScript for the initial route) and fail the build when it is exceeded.</li>
+    <li>Differential loading is mostly unnecessary now: target modern browsers and let <code>type="module"</code> serve them directly.</li>
+  </ul>
+
+  <p>Remember that bytes are only half the cost: JavaScript must also be <strong>parsed and executed</strong>, which is slow on mid-range phones. Shipping less code is the most reliable way to speed up both.</p>
+
+  <div class="callout">
+    <span class="label">Measure the output, not the config</span>
+    You cannot reason about bundle size from <code>package.json</code>. Open the analyzer, look at what actually ships, and check what each dependency costs your users in transfer and execution.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Importing a whole library for one function</td><td>Large bundle with unused code</td><td>Use ES-module builds and named imports; check the analyzer</td></tr>
+    <tr><td>Putting everything in one bundle</td><td>Users download code for pages they never visit</td><td>Split by route and by feature with <code>import()</code></td></tr>
+    <tr><td>Caching the HTML aggressively</td><td>Users get an old page pointing at deleted files</td><td>Cache hashed assets forever; revalidate the HTML</td></tr>
+    <tr><td>Ignoring parse and execution cost</td><td>Fast download, slow page on phones</td><td>Reduce JavaScript, not just compress it</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a project with Vite, open a bundle visualizer, and identify the three largest dependencies.</li>
+      <li>Turn a heavy feature into a dynamically imported chunk and confirm in the Network panel that it loads only on demand.</li>
+      <li>Draw the module waterfall for a small unbundled app, then add <code>modulepreload</code> and compare timings.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Native modules load as a dependency graph; deep import chains create network waterfalls.</li>
+      <li>Bundlers combine, tree-shake, minify, split, and hash; each job has a distinct effect.</li>
+      <li>Inspect the real output with an analyzer, split by route, cache hashed files forever, and set a budget.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Inside the Browser Runtime — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

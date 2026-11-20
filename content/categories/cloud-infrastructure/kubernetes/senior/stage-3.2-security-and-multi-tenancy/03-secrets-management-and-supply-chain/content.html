@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Secrets Management &amp; Supply Chain — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · security &amp; multi-tenancy</span> → lesson 03</p>
+  <h1>Secrets Management &amp; Supply Chain</h1>
+  <p class="lede">Secrets and the software supply chain are two sides of trust: protecting the credentials workloads use, and knowing that the images they run came from you and are what you think they are.</p>
+
+  <h2><span class="num">§1</span>Secrets: Beyond Base64</h2>
+  <p>Kubernetes Secrets are a start, not a vault. Improve them in layers:</p>
+  <ol>
+    <li><strong>Encrypt at rest</strong> in etcd with an <code>EncryptionConfiguration</code> that uses a KMS provider, so backups and disk access do not expose values.</li>
+    <li><strong>Restrict access</strong> with RBAC, and keep Secrets out of logs and environment variables where possible (env vars appear in process listings and crash dumps; mounted files are easier to scope).</li>
+    <li><strong>Use an external store</strong> (HashiCorp Vault, AWS Secrets Manager, GCP Secret Manager, Azure Key Vault) as the source of truth.</li>
+  </ol>
+  <p>Ways to bring external secrets into a cluster:</p>
+  <table>
+    <tr><th>Tool</th><th>How it works</th></tr>
+    <tr><td>External Secrets Operator</td><td>An <code>ExternalSecret</code> object references a remote secret; a controller creates and refreshes a Kubernetes Secret</td></tr>
+    <tr><td>Secrets Store CSI Driver</td><td>Mounts secrets from the store as files in the pod, optionally syncing to a Secret</td></tr>
+    <tr><td>Sealed Secrets</td><td>Encrypt a Secret with a cluster key so the ciphertext can live in Git</td></tr>
+    <tr><td>SOPS</td><td>Encrypt values in files with KMS or age keys, decrypted by your GitOps tool</td></tr>
+    <tr><td>Vault Agent / injector</td><td>A sidecar fetches and renews secrets, supporting dynamic, short-lived credentials</td></tr>
+  </table>
+  <p>Prefer <strong>dynamic, short-lived credentials</strong> and <strong>workload identity</strong> over static passwords, so a leak expires on its own.</p>
+  <h2><span class="num">§2</span>Supply Chain Risks</h2>
+  <p>Between source code and a running pod are many places to tamper: dependencies, the build system, the registry, and the deployment pipeline. Defenses form a chain:</p>
+  <ul>
+    <li><strong>Minimal, pinned base images</strong> and dependency pinning, with regular rebuilds.</li>
+    <li><strong>Vulnerability scanning</strong> in CI and in the registry (Trivy, Grype), and continuous scanning of running images.</li>
+    <li><strong>SBOMs</strong> (software bills of materials) in SPDX or CycloneDX format, so you can answer "are we running the vulnerable library?" quickly.</li>
+    <li><strong>Provenance and signing</strong>: build systems emit attestations (the SLSA framework describes levels), and images are signed with <strong>Sigstore cosign</strong>.</li>
+    <li><strong>Deploy by digest</strong>, not by mutable tag.</li>
+    <li><strong>Verify at admission</strong>: a policy engine refuses images that are unsigned, from unapproved registries, or lacking required attestations.</li>
+  </ul>
+  <pre>cosign sign ghcr.io/myorg/web@sha256:9b2f...
+cosign verify --certificate-identity-regexp 'https://github.com/myorg/.*' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  ghcr.io/myorg/web@sha256:9b2f...</pre>
+  <p>Keyless signing ties a signature to the CI workflow's identity, so there are no long-lived signing keys to guard. A Kyverno <code>verifyImages</code> rule or a similar admission policy can then require valid signatures before any pod starts.</p>
+  <h2><span class="num">§3</span>Controlling the Pipeline</h2>
+  <p>Protect the build and deploy path itself: least-privilege CI credentials, protected branches, reviewed changes to pipeline definitions, isolated build runners, and a private registry or pull-through cache so builds do not depend on arbitrary public sources.</p>
+  <div class="callout">
+    <span class="label">Trust is verified, not assumed</span>
+    "It came from our registry" is not proof. A signed image with provenance, checked automatically at admission, is.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Long-lived static credentials in Secrets</td><td>A leak is valid for months</td><td>Use dynamic credentials and workload identity</td></tr>
+    <tr><td>Scanning once at build</td><td>New vulnerabilities appear in images already running</td><td>Rescan continuously and keep SBOMs</td></tr>
+    <tr><td>Signing images but never verifying</td><td>The signature protects nothing</td><td>Enforce verification in admission policy</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Pick one workload and list every secret it uses, where each is stored, and how it would be rotated.</li>
+      <li>Sign an image with cosign and write a policy that rejects an unsigned one.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Encrypt Secrets at rest, restrict access, and prefer an external store with short-lived credentials.</li>
+      <li>Supply chain security combines scanning, SBOMs, signing, provenance, and digest pinning.</li>
+      <li>Verification must be enforced at admission, or signing is decoration.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Security &amp; Multi-Tenancy — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

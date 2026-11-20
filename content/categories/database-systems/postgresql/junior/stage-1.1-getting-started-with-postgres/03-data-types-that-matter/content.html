@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Types That Matter — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · getting started with postgres</span> → lesson 03</p>
+  <h1>Data Types That Matter</h1>
+  <p class="lede">Choosing the right column type is the cheapest correctness and performance win in Postgres, and a few popular choices cause quiet bugs.</p>
+
+  <h2><span class="num">§1</span>The Everyday Types</h2>
+
+  <p>Most schemas are built from a short list. Pick the most specific type that fits the data, because the type is also a constraint.</p>
+  <table>
+    <tr><th>Need</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Whole numbers</td><td><code>integer</code>, <code>bigint</code></td><td><code>integer</code> tops out near 2.1 billion; use <code>bigint</code> for IDs that may grow</td></tr>
+    <tr><td>Exact decimals</td><td><code>numeric(p,s)</code></td><td>Money, quantities, anything where rounding matters</td></tr>
+    <tr><td>Text</td><td><code>text</code></td><td>No length penalty versus <code>varchar(n)</code>; add a CHECK if you need a limit</td></tr>
+    <tr><td>True/false</td><td><code>boolean</code></td><td>Accepts <code>true</code>/<code>false</code>, <code>t</code>/<code>f</code>, <code>yes</code>/<code>no</code></td></tr>
+    <tr><td>Point in time</td><td><code>timestamptz</code></td><td>Stored as UTC, displayed in the session time zone</td></tr>
+    <tr><td>Calendar date</td><td><code>date</code></td><td>No time or zone</td></tr>
+    <tr><td>Unique ID</td><td><code>uuid</code></td><td>Random or time-ordered, generated in the database</td></tr>
+    <tr><td>Flexible documents</td><td><code>jsonb</code></td><td>Covered in Stage 2.2</td></tr>
+  </table>
+  <pre>SELECT 7 / 2, 7 / 2.0, 7::numeric / 2;      <span class="comment">-- 3, 3.5000..., 3.5000...</span>
+SELECT 0.1::float8 + 0.2::float8;            <span class="comment">-- 0.30000000000000004</span>
+SELECT 0.1::numeric + 0.2::numeric;          <span class="comment">-- 0.3</span></pre>
+
+  <h2><span class="num">§2</span>Time and UUIDs</h2>
+
+  <p>Use <code>timestamptz</code> for events. Despite the name, it does not store a zone: it stores an absolute instant and converts to the session's <code>TimeZone</code> on output. Plain <code>timestamp</code> (without time zone) stores whatever wall-clock value you hand it, which becomes ambiguous the moment two servers or users are in different zones.</p>
+  <pre>SET TimeZone = 'America/New_York';
+SELECT now();                                   <span class="comment">-- instant, shown in New York time</span>
+SELECT '2026-03-08 02:30'::timestamptz;         <span class="comment">-- interpreted in the session zone</span>
+SELECT now() AT TIME ZONE 'UTC';                <span class="comment">-- convert for display as a plain timestamp</span></pre>
+  <p>For <code>uuid</code>, <code>gen_random_uuid()</code> is built in and produces random version-4 values. PostgreSQL 18 adds <code>uuidv7()</code>, which produces time-ordered values that index better because new rows land near each other.</p>
+
+  <h2><span class="num">§3</span>Types That Cause Quiet Bugs</h2>
+
+  <ul>
+    <li><strong><code>float4</code> / <code>float8</code></strong> are binary floating point and cannot represent most decimals exactly. Never use them for money.</li>
+    <li><strong><code>money</code></strong> is locale-dependent and awkward; prefer <code>numeric</code> with an explicit scale.</li>
+    <li><strong><code>timestamp</code> without time zone</strong> hides zone errors until daylight saving time or a second region exposes them.</li>
+    <li><strong><code>char(n)</code></strong> pads with spaces and gains nothing over <code>text</code> in Postgres.</li>
+    <li><strong><code>serial</code></strong> is an older shorthand for an integer plus a sequence; Lesson 1.3.5 covers the modern identity column.</li>
+    <li><strong>Integer overflow</strong> on <code>integer</code> IDs is a real production outage, because changing the type later rewrites the table.</li>
+  </ul>
+  <pre>SELECT 2147483647 + 1;                       <span class="comment">-- ERROR: integer out of range</span>
+SELECT '2026-02-30'::date;                   <span class="comment">-- ERROR: date/time field value out of range</span></pre>
+  <p>Postgres rejects invalid values at the type level, which is exactly what you want.</p>
+
+  <div class="callout">
+    <span class="label">Rule of thumb</span>
+    <code>bigint</code> for keys, <code>numeric</code> for money, <code>text</code> for strings, <code>timestamptz</code> for instants. Deviate only when you can say why.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Storing prices in <code>float8</code></td><td>Totals drift by fractions of a cent and reports will not reconcile</td><td>Use <code>numeric(12,2)</code> or store integer minor units</td></tr>
+    <tr><td>Using <code>timestamp</code> for event times</td><td>Values mean different things in different zones, and daylight saving shifts them silently</td><td>Use <code>timestamptz</code> and convert at the edges</td></tr>
+    <tr><td>Choosing <code>integer</code> for an ID column on a growing table</td><td>Overflow after about 2.1 billion rows forces a painful table rewrite</td><td>Use <code>bigint</code> from the start</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run the <code>0.1 + 0.2</code> example with <code>float8</code> and with <code>numeric</code> and explain the difference.</li>
+      <li>Set the session time zone to two different zones and compare <code>SELECT now();</code> and <code>SELECT now() AT TIME ZONE 'UTC';</code>.</li>
+      <li>Generate five UUIDs with <code>gen_random_uuid()</code> and note their ordering; if you are on PostgreSQL 18, compare with <code>uuidv7()</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The type is a constraint: pick the most specific one that fits.</li>
+      <li>Use <code>numeric</code> for exact decimals and <code>timestamptz</code> for points in time.</li>
+      <li>Avoid <code>float</code> for money, <code>char(n)</code>, and plain <code>timestamp</code>; plan for ID growth with <code>bigint</code>.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Getting Started with Postgres — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

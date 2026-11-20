@@ -1,0 +1,5 @@
+{
+  "title": "Replacing Conditionals & Primitives",
+  "description": "Turning repeated switch statements into polymorphism, and bare strings and ints into small value types.",
+  "order": 3
+}

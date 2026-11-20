@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.3 — Advanced Language Features",
+  "description": "Pattern matching, exceptions, coroutines, and generics implementation strategies.",
+  "order": 3
+}

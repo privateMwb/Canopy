@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Testing & Quality",
+  "description": "Unit and integration tests, end-to-end tests, testing actions and APIs, type safety, and CI/CD.",
+  "order": 4
+}

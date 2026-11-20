@@ -1,0 +1,5 @@
+{
+  "title": "Performant Animation",
+  "description": "Compositor-only properties, will-change, and avoiding layout thrash.",
+  "order": 4
+}

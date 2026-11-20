@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sets — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · core data structures</span> → lesson 03</p>
+  <h1>Sets</h1>
+  <p class="lede">A set holds unique members with no order, and Redis can combine sets across keys with union, intersection, and difference.</p>
+
+  <h2><span class="num">§1</span>Uniqueness and Membership</h2>
+  <pre>SADD tags:post:7 "redis" "cache" "redis"   <span class="comment"># adds 2, the duplicate is ignored</span>
+SISMEMBER tags:post:7 "cache"              <span class="comment"># 1</span>
+SMEMBERS tags:post:7
+SCARD tags:post:7                          <span class="comment"># size</span>
+SREM tags:post:7 "cache"</pre>
+  <p>Adding, removing, and testing membership are constant time, no matter how large the set is.</p>
+  <h2><span class="num">§2</span>Set Algebra Across Keys</h2>
+  <pre>SADD likes:alice 1 2 3 4
+SADD likes:bob   3 4 5
+SINTER likes:alice likes:bob     <span class="comment"># {3, 4} common likes</span>
+SUNION likes:alice likes:bob     <span class="comment"># {1, 2, 3, 4, 5}</span>
+SDIFF  likes:alice likes:bob     <span class="comment"># {1, 2} only Alice</span>
+SINTERSTORE common likes:alice likes:bob</pre>
+  <p>This is how you build "friends in common," tag filters ("posts tagged both <code>redis</code> and <code>cache</code>"), and "who has not seen this yet."</p>
+  <h2><span class="num">§3</span>Random Picks</h2>
+  <p><code>SRANDMEMBER</code> returns random members without removing them, and <code>SPOP</code> removes and returns one. Both are useful for giveaways, sampling, and spreading work.</p>
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    <code>SMEMBERS</code>, <code>SINTER</code>, and <code>SUNION</code> return full results. On very large sets they block the server; use <code>SSCAN</code> to iterate, or <code>SINTERCARD</code> when you only need the count.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Calling <code>SMEMBERS</code> on a huge set</td><td>A long blocking call and a giant reply</td><td>Use <code>SSCAN</code> or <code>SCARD</code></td></tr>
+    <tr><td>Using a set when order matters</td><td>Members come back in no guaranteed order</td><td>Use a sorted set or list</td></tr>
+    <tr><td>Intersecting very large sets in a hot path</td><td>The command takes time proportional to the smallest set</td><td>Keep the smallest set first, or precompute with <code>SINTERSTORE</code></td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Model post tags with sets, then find all posts that have both of two chosen tags.</li>
+      <li>Use <code>SINTERCARD</code> to count common followers without returning them.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Sets guarantee uniqueness and give constant-time membership tests.</li>
+      <li><code>SINTER</code>, <code>SUNION</code>, and <code>SDIFF</code> combine sets across keys.</li>
+      <li>Iterate large sets with <code>SSCAN</code> rather than <code>SMEMBERS</code>.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Core Data Structures — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

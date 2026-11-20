@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cost &amp; Performance Trade-offs — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 02</p>
+  <h1>Cost &amp; Performance Trade-offs</h1>
+  <p class="lede">Serverless economics and scaling limits.</p>
+
+  <h2><span class="num">§1</span>Where the Money and the Limits Are</h2>
+
+  <p>Serverless and managed platforms change how you pay: you're billed for usage rather than for machines. That is a bargain for spiky or low traffic and can become expensive at scale. Pricing models and limits change frequently, so always check current published numbers before relying on a comparison.</p>
+
+  <table>
+    <tr><th>Cost driver</th><th>How it shows up</th><th>Typical levers</th></tr>
+    <tr><td>Function invocations and duration</td><td>Per request and per GB-second of compute</td><td>Cache responses, speed up code, avoid needless dynamic rendering</td></tr>
+    <tr><td>Bandwidth / data transfer</td><td>Per GB served, often the surprise line item</td><td>CDN caching, image optimization, compression, lighter pages</td></tr>
+    <tr><td>Image optimization</td><td>Per source image or transformation</td><td>Right-size originals, use a cheaper loader, cache aggressively</td></tr>
+    <tr><td>Database</td><td>Instance size, storage, connections, egress</td><td>Indexing, pooling, read replicas, archiving</td></tr>
+    <tr><td>Build minutes and previews</td><td>Per build; every PR is a build</td><td>Cache builds, skip unneeded ones</td></tr>
+    <tr><td>Observability</td><td>Per GB of logs and traces ingested</td><td>Sampling, log levels, retention policies</td></tr>
+    <tr><td>Per-seat and add-on fees</td><td>Team members, analytics, firewall, etc.</td><td>Audit what you actually use</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Serverless Economics</h2>
+
+  <p>A rough model helps. Suppose a route is invoked 20 million times a month and averages 200 ms at 1 GB of memory: that is about 4 million GB-seconds of compute. Compare that figure at current prices with the cost of a small always-on server or container that could handle the same load. Below some traffic level serverless is cheaper (you pay nothing while idle). Above it, steady high traffic often favours reserved capacity, because you're paying for idle waiting (for slow upstream calls, for example) at a premium.</p>
+
+  <pre><span class="comment">// Back-of-envelope: replace the numbers with real, current prices</span>
+const invocations = 20_000_000;
+const seconds = 0.2, gb = 1;
+const gbSeconds = invocations * seconds * gb;          <span class="comment">// 4,000,000 GB-s</span>
+const monthly = gbSeconds * PRICE_PER_GB_SECOND + invocations * PRICE_PER_INVOCATION;
+<span class="comment">// Compare with: container instance(s) + ops time + headroom for spikes</span></pre>
+
+  <p>Include the <strong>human cost</strong>. A server you operate costs engineering time, on-call, patching, and scaling work. A managed bill that's twice as high may still be cheaper than half an engineer.</p>
+
+  <h2><span class="num">§3</span>Limits That Shape Architecture</h2>
+
+  <ul>
+    <li><strong>Execution time and memory per function:</strong> long jobs need queues, workflows, or dedicated workers.</li>
+    <li><strong>Request and response size:</strong> large uploads should go direct to storage (lesson 2.2.4).</li>
+    <li><strong>Concurrency and connection limits:</strong> many instances can exhaust a database; use pooling.</li>
+    <li><strong>Cold starts and regional placement:</strong> influence latency (lesson 3.1.4).</li>
+    <li><strong>Platform lock-in:</strong> features that exist only on one platform raise the cost of leaving.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Performance as a Cost Lever</h2>
+
+  <p>Speed and cost usually improve together. A cached response costs almost nothing to serve, while a dynamic one costs compute, database load, and often bandwidth. Moving work from request time to build time, pushing more through the CDN, and trimming payloads reduce both latency and bills. Set <strong>budgets and alerts</strong> on spend, and watch for runaway usage, such as an unbounded loop of function invocations or a bot scraping an expensive route.</p>
+
+  <div class="callout">
+    <span class="label">Do the arithmetic early</span>
+    Teams are often surprised by their first big bill because nobody modelled it. A twenty-minute estimate with current pricing and your expected traffic, repeated each quarter, beats discovering the answer on an invoice.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Comparing platforms only by headline price</td><td>Bandwidth, add-ons, and engineering time dominate in practice</td><td>Model total cost of ownership, including operations</td></tr>
+    <tr><td>No spend alerts or limits</td><td>An abuse spike or bug creates a surprise bill</td><td>Set budgets, alerts, and rate limits on expensive routes</td></tr>
+    <tr><td>Assuming serverless is always cheaper (or always pricier)</td><td>The wrong platform for your traffic shape</td><td>Model your own usage against current prices</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Estimate monthly cost for an app with 5M requests, 200 ms average duration, and 500 GB of transfer on two different hosting models using current prices.</li>
+      <li>Find the three most expensive routes or assets in an app, and propose one change for each that reduces cost without hurting users.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Costs come from compute, bandwidth, data, builds, and observability, so model each against current prices.</li>
+      <li>Serverless suits spiky or low traffic; steady high load may favour reserved capacity, and operations time is a real cost.</li>
+      <li>Caching and lighter pages reduce both latency and spend; set budgets and alerts to catch surprises.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

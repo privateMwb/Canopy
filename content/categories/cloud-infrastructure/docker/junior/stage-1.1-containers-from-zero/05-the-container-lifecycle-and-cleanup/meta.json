@@ -1,0 +1,5 @@
+{
+  "title": "The Container Lifecycle & Cleanup",
+  "description": "Created, running, stopped, and removed, plus naming, restart behavior, and pruning.",
+  "order": 5
+}

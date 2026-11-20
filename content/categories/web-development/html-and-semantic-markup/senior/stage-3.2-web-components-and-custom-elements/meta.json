@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Web Components & Custom Elements",
+  "description": "Custom elements, shadow DOM, templates and slots, accessibility, and honest trade-offs.",
+  "order": 2
+}

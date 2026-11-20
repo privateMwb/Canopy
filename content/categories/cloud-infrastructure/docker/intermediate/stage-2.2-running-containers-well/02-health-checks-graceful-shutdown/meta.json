@@ -1,0 +1,5 @@
+{
+  "title": "Health Checks & Graceful Shutdown",
+  "description": "Signals, PID 1, and stopping without dropping requests.",
+  "order": 2
+}

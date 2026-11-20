@@ -1,0 +1,5 @@
+{
+  "title": "Pod Security & Admission Control",
+  "description": "Security standards, admission webhooks, and policy engines.",
+  "order": 2
+}

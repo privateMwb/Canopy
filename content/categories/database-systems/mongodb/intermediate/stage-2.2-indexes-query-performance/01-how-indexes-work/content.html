@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How Indexes Work — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · indexes &amp; query performance</span> → lesson 01</p>
+  <h1>How Indexes Work</h1>
+  <p class="lede">A MongoDB index is a B-tree of key values pointing back to documents, and understanding its structure explains both why reads get fast and what each index costs on writes.</p>
+
+  <h2><span class="num">§1</span>An Index Is a Sorted Structure</h2>
+  <p>An index stores the values of the indexed fields in <strong>sorted order</strong>, each with a pointer to its document. Because it is a B-tree, finding one value, or a range, takes a handful of steps rather than a pass over every document.</p>
+  <pre>db.users.createIndex({ age: 1 })
+<span class="comment">// index entries, sorted:  (18 -&gt; doc7) (21 -&gt; doc2) (21 -&gt; doc9) (30 -&gt; doc1) ...</span>
+db.users.find({ age: { $gte: 21, $lt: 30 } })    <span class="comment">// walk to 21, read until 30</span></pre>
+  <p>The same sorted order serves equality, range queries, and sorts on the indexed field. It cannot help a query that does not use the leading indexed field.</p>
+  <h2><span class="num">§2</span>Multikey Indexes</h2>
+  <p>When you index an array field, MongoDB creates one entry <strong>per element</strong>. This is called a <strong>multikey</strong> index.</p>
+  <pre><span class="comment">// { _id: 1, tags: ["db", "nosql"] }</span>
+db.posts.createIndex({ tags: 1 })
+<span class="comment">// entries: ("db" -&gt; 1) ("nosql" -&gt; 1)</span>
+db.posts.find({ tags: "nosql" })              <span class="comment">// uses the index</span></pre>
+  <p>A compound index may include at most one array field, since combining two arrays would produce a combinatorial number of entries.</p>
+  <h2><span class="num">§3</span>What an Index Costs</h2>
+  <ul>
+    <li><strong>Writes</strong>: every insert and delete updates every index on the collection, and an update touches the indexes of the fields it changes.</li>
+    <li><strong>Memory</strong>: indexes you use often should fit in RAM, or reads turn into disk reads.</li>
+    <li><strong>Disk</strong>: each index has its own storage.</li>
+  </ul>
+  <pre>db.users.stats().indexSizes            <span class="comment">// bytes per index</span>
+db.users.aggregate([{ $indexStats: {} }])   <span class="comment">// how often each index is used</span></pre>
+  <p><code>$indexStats</code> shows which indexes are never used, which are candidates for removal.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A collection with ten indexes pays ten times the index maintenance on every write. Each index must earn its place by serving a real query.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Adding an index for every query idea</td><td>Slow writes and memory pressure</td><td>Keep indexes tied to real queries and drop unused ones</td></tr>
+    <tr><td>Expecting an index on <code>a</code> to help a query on <code>b</code></td><td>The query scans the collection</td><td>Index the fields you actually filter on</td></tr>
+    <tr><td>Indexing a low-selectivity field alone (such as a boolean)</td><td>Little benefit, since half the collection still matches</td><td>Combine it into a compound index with a selective field</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create an index on a <code>tags</code> array, and use <code>explain</code> to show that a tag query uses it.</li>
+      <li>Use <code>$indexStats</code> on a test collection to identify an index that nothing queries.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>An index is a sorted B-tree of keys with pointers to documents.</li>
+      <li>Indexing an array creates an entry per element, called a multikey index.</li>
+      <li>Each index speeds reads and slows writes, so keep only the useful ones.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Indexes &amp; Query Performance — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Undefined Behavior in Depth — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced language &amp; safety</span> → lesson 01</p>
+  <h1>Undefined Behavior in Depth</h1>
+  <p class="lede">The optimizer assumes your program never invokes undefined behavior and builds on that assumption, so UB bugs can change code far from where they occur.</p>
+
+  <h2><span class="num">§1</span>UB as a Contract</h2>
+
+  <p>Undefined behavior is a promise from you to the compiler: "this will never happen." The compiler uses it to simplify code, and when the promise is broken, the generated code can do anything, including things that look unrelated to the bug, such as deleting a safety check or running a function that was never called.</p>
+
+  <pre>int f(int* p) {
+    int x = *p;                <span class="comment">// dereference implies p != nullptr</span>
+    if (p == nullptr) return -1;   <span class="comment">// compiler may delete this branch entirely</span>
+    return x;
+}</pre>
+
+  <p>The check is "dead" because if <code>p</code> were null, the earlier dereference would already be UB. This is an optimization, not a bug in the compiler.</p>
+
+  <h2><span class="num">§2</span>Signed Integer Overflow</h2>
+
+  <p>Signed overflow is UB, which lets the compiler assume <code>i + 1 &gt; i</code> and simplify loops and comparisons.</p>
+
+  <pre>bool alwaysTrue(int i) { return i + 1 &gt; i; }       <span class="comment">// folded to `return true`</span>
+for (int i = 0; i &lt;= n; ++i) { ... }               <span class="comment">// if n == INT_MAX: infinite loop, or assumed impossible</span></pre>
+
+  <p>Unsigned overflow is <strong>defined</strong> (wraps modulo 2^N). For checked arithmetic, test before the operation (<code>if (a &gt; INT_MAX - b)</code>), use <code>__builtin_add_overflow</code>, or C++26's <code>std::add_sat</code> and checked helpers. Build with <code>-fsanitize=signed-integer-overflow</code> to catch it in tests.</p>
+
+  <h2><span class="num">§3</span>Strict Aliasing</h2>
+
+  <p>The compiler may assume that pointers of unrelated types don't refer to the same object, so it can keep values in registers and reorder.</p>
+
+  <pre>float f{1.0f};
+int* ip = reinterpret_cast&lt;int*&gt;(&amp;f);
+int bits = *ip;                        <span class="comment">// UB: accessing a float through an int lvalue</span>
+
+int bits2;
+std::memcpy(&amp;bits2, &amp;f, sizeof bits2); <span class="comment">// OK: compiles to a single move</span>
+int bits3 = std::bit_cast&lt;int&gt;(f);     <span class="comment">// C++20: the clearest form</span></pre>
+
+  <p>The legal exceptions are accessing any object through <code>char</code>, <code>unsigned char</code>, or <code>std::byte</code>, and through a type that is the signed/unsigned variant of its own type. For type punning, use <code>memcpy</code> or <code>std::bit_cast</code>, which the optimizer handles efficiently.</p>
+
+  <h2><span class="num">§4</span>More Sources of UB</h2>
+
+  <ul>
+    <li>Out-of-bounds access, including one-past-the-end dereference.</li>
+    <li>Use of an object outside its lifetime, and use of uninitialized values (for most types).</li>
+    <li>Data races, and modifying a <code>const</code> object.</li>
+    <li>Shifting by negative or too-large amounts, and division by zero.</li>
+    <li>Missing <code>return</code> in a non-void function, which is UB for the caller, not just a warning.</li>
+    <li>Violating a function's contract on standard-library requirements (e.g., a comparator that is not a strict weak ordering in <code>std::sort</code>).</li>
+  </ul>
+
+  <h2><span class="num">§5</span>Living with UB</h2>
+
+  <p>Sanitizers (<code>-fsanitize=undefined,address</code>) catch many cases at run time. <code>-Wall -Wextra</code>, static analysis, and compile-time evaluation (<code>constexpr</code> rejects UB) catch others. Hardened library modes add bounds checks. The goal is not to memorize the list, but to treat every conversion, cast, and index as something that has preconditions.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Don't ask "what will the machine do?" Ask "is this allowed by the language?" Once UB occurs, reasoning from the machine model stops being valid, and the optimizer is entitled to the consequences.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Testing for overflow after it happens (<code>if (a + b &lt; a)</code> on signed ints)</td><td>The compiler may delete the check</td><td>Check before, or use overflow builtins</td></tr>
+    <tr><td>Using <code>reinterpret_cast</code> between unrelated object types to read bytes</td><td>Strict aliasing violation</td><td>Use <code>std::memcpy</code> or <code>std::bit_cast</code></td></tr>
+    <tr><td>Concluding "this UB is harmless on my compiler"</td><td>Next compiler version or flag may break it</td><td>Remove all UB; don't depend on observed behavior</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Compile <code>alwaysTrue</code> at <code>-O0</code> and <code>-O2</code> on Compiler Explorer and compare the output. Then rewrite it with defined behavior.</li>
+      <li>Write a float-to-bits function three ways: <code>reinterpret_cast</code>, <code>memcpy</code>, and <code>std::bit_cast</code>, and check that UBSan or the assembly agrees.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The optimizer assumes UB never happens, and checks that rely on UB may be removed.</li>
+      <li>Signed overflow and strict-aliasing violations are common, and have defined alternatives (<code>memcpy</code>, <code>bit_cast</code>, checked arithmetic).</li>
+      <li>Use sanitizers and compile-time evaluation to find UB, and never rely on "it works here."</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Language &amp; Safety — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

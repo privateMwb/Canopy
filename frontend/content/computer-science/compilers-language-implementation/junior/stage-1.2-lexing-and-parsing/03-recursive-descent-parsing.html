@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recursive Descent Parsing — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · lexing &amp; parsing</span> → lesson 03</p>
+  <h1>Recursive Descent Parsing</h1>
+  <p class="lede">Recursive descent turns each grammar rule into a function, so the parser's structure matches the grammar's structure line for line.</p>
+
+  <h2><span class="num">§1</span>One function per rule</h2>
+  <p>Recall the layered expression grammar from Stage 1.1. A <strong>recursive descent parser</strong> gives each rule a function. A rule that mentions another rule becomes a call to that rule's function.</p>
+  <pre>expr   = term   { ( "+" | "-" ) term } ;
+term   = factor { ( "*" | "/" ) factor } ;
+factor = NUMBER | "(" expr ")" ;</pre>
+  <p>becomes</p>
+  <pre>def expr():
+    left = term()
+    while check(PLUS) or check(MINUS):
+        op = advance()
+        right = term()
+        left = Binary(left, op, right)
+    return left
+
+def term():
+    left = factor()
+    while check(STAR) or check(SLASH):
+        op = advance()
+        right = factor()
+        left = Binary(left, op, right)
+    return left
+
+def factor():
+    if match(NUMBER): return Literal(previous().value)
+    if match(LEFT_PAREN):
+        e = expr()
+        expect(RIGHT_PAREN, "expected ')'")
+        return e
+    error("expected expression")</pre>
+  <p>The <code>while</code> loop plus <code>left = Binary(left, ...)</code> is what makes <code>1 - 2 - 3</code> group as <code>(1 - 2) - 3</code>.</p>
+
+  <h2><span class="num">§2</span>The four helpers</h2>
+  <p>Almost every parser is built from the same small helpers over the token list.</p>
+  <pre>def peek():     return tokens[pos]
+def advance():  pos += 1; return tokens[pos - 1]
+def check(t):   return peek().type == t
+def match(t):   <span class="comment"># consume only if it is the one we want</span>
+    if check(t): advance(); return true
+    return false
+def expect(t, msg):
+    if check(t): return advance()
+    error(peek(), msg)</pre>
+  <p><code>peek</code> is the lookahead. Deciding what to do from one token is called <strong>LL(1)</strong> parsing, and Twig's grammar is designed so that one token is enough almost everywhere.</p>
+
+  <h2><span class="num">§3</span>Statements and the top level</h2>
+  <p>Statements work the same way, with the first token choosing the rule.</p>
+  <pre>def statement():
+    if match(PRINT):  return print_stmt()
+    if match(IF):     return if_stmt()
+    if match(WHILE):  return while_stmt()
+    if match(LEFT_BRACE): return Block(block_body())
+    return expression_stmt()
+
+def if_stmt():
+    expect(LEFT_PAREN, "expected '(' after 'if'")
+    cond = expr()
+    expect(RIGHT_PAREN, "expected ')' after condition")
+    then = statement()
+    other = statement() if match(ELSE) else nil
+    return If(cond, then, other)
+
+def program():
+    stmts = []
+    while not check(EOF): stmts.append(declaration())
+    return stmts</pre>
+  <p>Because every rule is a function, the call stack is the parse. Nested parentheses mean nested calls.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    If you can write the grammar, you can write the parser. Keep the two in sync and the parser stays easy to read, test, and extend.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>left = term()</code> once instead of a loop</td><td>Only one operator is parsed; <code>1 + 2 + 3</code> leaves a stray token</td><td>Loop while the next token is an operator at this level</td></tr>
+    <tr><td>Making a rule call itself first, like <code>expr = expr + term</code></td><td>Infinite recursion, since no token is consumed before the recursive call</td><td>Rewrite left recursion as a loop</td></tr>
+    <tr><td>Forgetting to consume the closing token</td><td>The next rule sees <code>)</code> or <code>;</code> and reports a confusing error</td><td>Use <code>expect</code> for every delimiter</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add <code>while</code> statements to the sketch, including the parenthesised condition and a statement body.</li>
+      <li>Trace <code>1 - 2 - 3</code> through <code>expr</code>, <code>term</code>, and <code>factor</code>, writing out the <code>Binary</code> tree built at each step.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Each grammar rule becomes one function, and nested rules become nested calls.</li>
+      <li>Repetition in a rule becomes a loop that builds the tree to the left.</li>
+      <li><code>peek</code>, <code>advance</code>, <code>match</code>, and <code>expect</code> are enough to build the whole parser.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Lexing &amp; Parsing — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

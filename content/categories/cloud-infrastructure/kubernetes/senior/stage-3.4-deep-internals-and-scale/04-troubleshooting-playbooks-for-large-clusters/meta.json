@@ -1,0 +1,5 @@
+{
+  "title": "Troubleshooting Playbooks for Large Clusters",
+  "description": "A systematic way to find the cause of cluster-wide problems.",
+  "order": 4
+}

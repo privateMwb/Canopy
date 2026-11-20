@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 \u2014 Performance & Diagnostics",
+  "description": "Benchmarking, live-process tools, leak hunting, and async internals \u2014 finding and fixing performance problems with evidence.",
+  "order": 2
+}

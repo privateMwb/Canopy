@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enums, Optional &amp; Null Handling — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · errors, i/o &amp; build tools</span> → lesson 03</p>
+  <h1>Enums, Optional &amp; Null Handling</h1>
+  <p class="lede">Enums model a fixed set of values safely, and <code>Optional</code> makes "this might be absent" visible in a method's signature instead of waiting to crash with a <code>NullPointerException</code>.</p>
+
+  <h2><span class="num">§1</span>Enums</h2>
+  <p>An <code>enum</code> is a type with a fixed set of named instances. It beats strings and magic numbers because a typo is a compile error and a <code>switch</code> over it can be checked for completeness. Enums can have fields, constructors, and methods, and each constant can even override behavior.</p>
+  <pre>public enum Status { PENDING, ACTIVE, CLOSED }
+
+public enum Planet {
+    MERCURY(3.303e+23, 2.4397e6),
+    EARTH(5.976e+24, 6.37814e6);
+
+    private final double mass, radius;
+    Planet(double mass, double radius) { this.mass = mass; this.radius = radius; }
+    public double surfaceGravity() { return 6.67300E-11 * mass / (radius * radius); }
+}
+
+Status s = Status.valueOf("ACTIVE");        <span class="comment">// throws IllegalArgumentException if not found</span>
+s.name();                                   <span class="comment">// "ACTIVE"</span>
+s.ordinal();                                <span class="comment">// 1 (avoid persisting this: it changes if you reorder)</span>
+for (Status each : Status.values()) { }
+
+String label = switch (s) {
+    case PENDING -&gt; "waiting";
+    case ACTIVE -&gt; "running";
+    case CLOSED -&gt; "done";                  <span class="comment">// adding a new constant breaks this until handled</span>
+};</pre>
+  <p>Compare enums with <code>==</code>; there is exactly one instance of each constant. Use <code>EnumMap</code> and <code>EnumSet</code> for fast, compact collections keyed by enums.</p>
+
+  <h2><span class="num">§2</span>The Problem with null</h2>
+  <p><code>null</code> means "no object", and calling a method on it throws <code>NullPointerException</code>. The trouble is that nothing in a method's signature says whether <code>null</code> may come back. <code>Optional&lt;T&gt;</code> is a container that either holds a value or is empty, and it forces the caller to deal with absence.</p>
+  <pre>static Optional&lt;User&gt; findByEmail(String email) {
+    User u = db.get(email);                   <span class="comment">// may be null</span>
+    return Optional.ofNullable(u);            <span class="comment">// wraps null into an empty Optional</span>
+}
+
+Optional&lt;User&gt; found = findByEmail("ada@example.com");
+found.isPresent();                            <span class="comment">// true or false</span>
+String name = found.map(User::name).orElse("guest");          <span class="comment">// transform, with a default</span>
+User u = found.orElseThrow(() -&gt; new NoSuchElementException("no such user"));
+found.ifPresent(user -&gt; System.out.println(user.name()));
+String shout = found.map(User::name).filter(n -&gt; !n.isBlank()).map(String::toUpperCase).orElse("?");</pre>
+
+  <h2><span class="num">§3</span>Using Optional Well</h2>
+  <p><code>Optional</code> is designed for <strong>return types</strong> of methods that may legitimately find nothing. Avoid it elsewhere: not for fields, not for method parameters, and not inside collections (return an empty collection instead of <code>null</code> or <code>Optional&lt;List&gt;</code>). Avoid calling <code>get()</code> without checking; <code>orElseThrow()</code> says the same thing more honestly.</p>
+  <p>For the rest of your null handling, a few habits go a long way. Validate arguments at the boundary with <code>Objects.requireNonNull(x, "x")</code> to fail fast with a clear message. Return empty collections, never <code>null</code>. Put the literal first in comparisons (<code>"yes".equals(s)</code>). And use <code>Objects.equals(a, b)</code> when either side may be null.</p>
+  <pre>public Order(String id, List&lt;Item&gt; items) {
+    this.id = Objects.requireNonNull(id, "id");
+    this.items = List.copyOf(items);          <span class="comment">// also rejects null elements</span>
+}</pre>
+
+  <div class="callout">
+    <span class="label">Absence should be part of the type</span>
+    If a method can return nothing, say so with <code>Optional</code>. If it can't, never return <code>null</code>. Then a reader knows from the signature alone where to expect trouble.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>ordinal()</code> to store or compare enums</td><td>Reordering constants silently corrupts data</td><td>Store <code>name()</code> or an explicit code field</td></tr>
+    <tr><td>Calling <code>Optional.get()</code> blindly</td><td><code>NoSuchElementException</code>, just like a null crash</td><td>Use <code>orElse</code>, <code>orElseThrow</code>, or <code>ifPresent</code></td></tr>
+    <tr><td>Using <code>Optional</code> for fields and parameters</td><td>Awkward, and callers can still pass <code>null</code></td><td>Use it only as a return type</td></tr>
+    <tr><td>Returning <code>null</code> from a method returning a collection</td><td>Every caller needs a null check</td><td>Return an empty collection</td></tr>
+    <tr><td><code>Optional.of(maybeNull)</code></td><td><code>NullPointerException</code> right there</td><td>Use <code>Optional.ofNullable</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Model a <code>TrafficLight</code> enum with a <code>next()</code> method and a <code>durationSeconds</code> field, and use it in a switch expression.</li>
+      <li>Write <code>Optional&lt;Integer&gt; parseInt(String s)</code> that returns empty instead of throwing, then chain <code>map</code> and <code>orElse</code> on its result.</li>
+      <li>Replace one <code>null</code>-returning lookup in your own code with <code>Optional</code>, and update the callers.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Enums give a closed, type-safe set of values, compare with <code>==</code>, and work well in switch expressions.</li>
+      <li><code>Optional</code> makes absence explicit in return types; avoid it for fields, parameters, and collections.</li>
+      <li>Fail fast with <code>requireNonNull</code>, and return empty collections rather than <code>null</code>.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Errors, I/O &amp; Build Tools — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

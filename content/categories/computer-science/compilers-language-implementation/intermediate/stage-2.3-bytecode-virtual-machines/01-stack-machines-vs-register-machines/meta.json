@@ -1,0 +1,5 @@
+{
+  "title": "Stack Machines vs. Register Machines",
+  "description": "Two ways to design a VM, and what each does to code size and speed.",
+  "order": 1
+}

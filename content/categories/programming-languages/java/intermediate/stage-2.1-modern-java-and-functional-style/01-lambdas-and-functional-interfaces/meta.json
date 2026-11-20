@@ -1,0 +1,5 @@
+{
+  "title": "Lambdas & Functional Interfaces",
+  "description": "Function, Predicate, Supplier, method references, and capturing variables.",
+  "order": 1
+}

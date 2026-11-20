@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recursive CTEs &amp; Hierarchical Data — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · advanced sql &amp; data modeling</span> → lesson 02</p>
+  <h1>Recursive CTEs &amp; Hierarchical Data</h1>
+  <p class="lede">Recursive CTEs let a query repeatedly feed its own output back in, which is how SQL walks trees and graphs such as org charts and category hierarchies.</p>
+
+  <h2><span class="num">§1</span>Hierarchies in Tables</h2>
+  <p>The simplest way to store a tree is an <strong>adjacency list</strong>: each row points at its parent.</p>
+  <pre>CREATE TABLE categories (
+  id        INTEGER PRIMARY KEY,
+  name      TEXT NOT NULL,
+  parent_id INTEGER REFERENCES categories(id)       <span class="comment">-- NULL for the root</span>
+);</pre>
+  <p>It's easy to write and update, but a plain query can only follow <strong>one level</strong> at a time. "All descendants of Electronics" requires repeating the join to an unknown depth, which is what recursion is for.</p>
+
+  <h2><span class="num">§2</span>Anatomy of a Recursive CTE</h2>
+  <p>A recursive CTE has an <strong>anchor</strong> query (the starting rows) combined with <code>UNION ALL</code> to a <strong>recursive</strong> query that refers to the CTE itself. The database runs the recursive part repeatedly on the rows produced in the previous round until no new rows appear.</p>
+  <pre>WITH RECURSIVE subtree AS (
+  SELECT id, name, parent_id, 0 AS depth                  <span class="comment">-- anchor: the starting node</span>
+  FROM categories WHERE name = 'Electronics'
+  UNION ALL
+  SELECT c.id, c.name, c.parent_id, s.depth + 1           <span class="comment">-- recursive: children of what we have</span>
+  FROM categories c
+  JOIN subtree s ON c.parent_id = s.id
+)
+SELECT * FROM subtree ORDER BY depth, name;</pre>
+  <p>Walking <strong>up</strong> works the same way: start at a node and repeatedly join to its parent to get the full breadcrumb path.</p>
+
+  <h2><span class="num">§3</span>Paths, Cycles, and Limits</h2>
+  <p>Carry extra columns to build a path, and use it to detect cycles in graphs that might loop.</p>
+  <pre>WITH RECURSIVE walk AS (
+  SELECT id, name, name::text AS path, ARRAY[id] AS seen          <span class="comment">-- PostgreSQL syntax</span>
+  FROM categories WHERE parent_id IS NULL
+  UNION ALL
+  SELECT c.id, c.name, w.path || ' &gt; ' || c.name, w.seen || c.id
+  FROM categories c JOIN walk w ON c.parent_id = w.id
+  WHERE NOT c.id = ANY(w.seen)                                   <span class="comment">-- stop if already visited</span>
+)
+SELECT path FROM walk;
+<span class="comment">-- 'Electronics', 'Electronics &gt; Phones', 'Electronics &gt; Phones &gt; Accessories', ...</span></pre>
+  <p>Always ensure termination: either the data is genuinely acyclic, or you track visited nodes, or you cap <code>depth</code>.</p>
+
+  <h2><span class="num">§4</span>Other Ways to Model Trees</h2>
+  <table>
+    <tr><th>Model</th><th>Strength</th><th>Weakness</th></tr>
+    <tr><td>Adjacency list (<code>parent_id</code>)</td><td>Simple; cheap inserts and moves</td><td>Needs recursion for subtree queries</td></tr>
+    <tr><td>Materialized path (<code>'/1/4/9/'</code>)</td><td>Fast subtree via <code>LIKE '/1/4/%'</code></td><td>Moving a subtree rewrites many rows</td></tr>
+    <tr><td>Nested sets (<code>lft</code>, <code>rgt</code>)</td><td>Very fast subtree reads</td><td>Expensive writes</td></tr>
+    <tr><td>Closure table (all ancestor-descendant pairs)</td><td>Fast queries, easy moves</td><td>Extra table, more storage</td></tr>
+    <tr><td>PostgreSQL <code>ltree</code></td><td>Path queries with indexes</td><td>PostgreSQL-specific</td></tr>
+  </table>
+  <p>With recursive CTEs available, an adjacency list is the best starting point for most applications. Reach for closure tables when read performance on deep trees matters.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A recursive CTE is a loop expressed as a query: start with some rows, repeatedly derive new rows from the latest ones, stop when nothing new appears. Guarantee that ending, or the query never finishes.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No termination condition on cyclic data</td><td>The query runs forever or until a limit is hit</td><td>Track visited ids or cap depth</td></tr>
+    <tr><td>Forgetting <code>RECURSIVE</code> (PostgreSQL, MySQL) or the anchor/recursive split</td><td>Syntax error or unexpected results</td><td>Use <code>WITH RECURSIVE</code> with <code>UNION ALL</code> between anchor and step</td></tr>
+    <tr><td>Using <code>UNION</code> instead of <code>UNION ALL</code> in the recursive step</td><td>Needless de-duplication cost, and sometimes different results</td><td>Use <code>UNION ALL</code> unless you intentionally need dedupe</td></tr>
+    <tr><td>Choosing an exotic tree model up front</td><td>Complex writes for a tree that rarely needs fast reads</td><td>Start with an adjacency list; migrate if measurements demand</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create an <code>employees(id, name, manager_id)</code> table and write a recursive query listing everyone who reports (directly or indirectly) to a given manager, with their depth.</li>
+      <li>Write a query that returns the full path from a category up to its root (e.g. <code>Phones &gt; Electronics</code>) by walking the tree upward.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Adjacency lists store trees simply but need recursion for subtree queries.</li>
+      <li>A recursive CTE has an anchor query plus a recursive step joined by UNION ALL.</li>
+      <li>Guard against cycles with visited-tracking or a depth limit.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Advanced SQL &amp; Data Modeling — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

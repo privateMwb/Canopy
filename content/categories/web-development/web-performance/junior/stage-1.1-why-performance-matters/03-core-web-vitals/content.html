@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Core Web Vitals — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · why performance matters</span> → lesson 03</p>
+  <h1>Core Web Vitals</h1>
+  <p class="lede">Three field metrics describe whether a page loads quickly, responds promptly, and stays visually stable.</p>
+
+  <h2><span class="num">§1</span>The Three Metrics</h2>
+  <p><strong>Core Web Vitals</strong> are a small set of metrics, defined by Google and measured in real browsers, that focus on what users feel. Each has a threshold for 'good', judged at the <strong>75th percentile</strong> of real visits. That means three quarters of visits must meet the bar.</p>
+  <table>
+    <tr><th>Metric</th><th>Question it answers</th><th>Good</th><th>Poor</th></tr>
+    <tr><td><strong>LCP</strong>: Largest Contentful Paint</td><td>How soon is the main content visible?</td><td>≤ 2.5 s</td><td>&gt; 4 s</td></tr>
+    <tr><td><strong>INP</strong>: Interaction to Next Paint</td><td>How quickly does the page respond to input?</td><td>≤ 200 ms</td><td>&gt; 500 ms</td></tr>
+    <tr><td><strong>CLS</strong>: Cumulative Layout Shift</td><td>Does the page jump around?</td><td>≤ 0.1</td><td>&gt; 0.25</td></tr>
+  </table>
+  <p>INP replaced the older First Input Delay metric in 2024. FID only measured the delay before the first interaction. INP looks at the responsiveness of interactions across the whole visit.</p>
+
+  <h2><span class="num">§2</span>What Each One Measures</h2>
+  <p><strong>LCP</strong> times when the largest image or block of text in the viewport finishes rendering. It's a proxy for 'the page looks loaded'. Typical culprits are a slow server, a render-blocking resource, or a hero image that was discovered late.</p>
+  <p><strong>INP</strong> observes every click, tap, and key press, and measures the time from the input until the next frame is painted. The page reports roughly the worst interaction. It is poor when the main thread is busy with JavaScript and can't respond.</p>
+  <p><strong>CLS</strong> sums up unexpected movement of visible elements. A shift is bad if it happens without user input, such as an image loading without reserved space and pushing the text down just as you go to tap.</p>
+  <pre>import { onLCP, onINP, onCLS } from 'web-vitals';
+
+onLCP(m =&gt; console.log('LCP', m.value));   <span class="comment">// milliseconds</span>
+onINP(m =&gt; console.log('INP', m.value));   <span class="comment">// milliseconds</span>
+onCLS(m =&gt; console.log('CLS', m.value));   <span class="comment">// unitless score</span></pre>
+
+  <h2><span class="num">§3</span>Using the Vitals Well</h2>
+  <p>The vitals are a <strong>diagnostic starting point</strong>, not the whole of performance. They don't cover everything, such as total JavaScript cost or how a single-page app behaves across navigations, but they target the common ways pages feel bad.</p>
+  <ul>
+    <li>Pages are assessed on <strong>real-user</strong> data at the 75th percentile, so improving the typical visit isn't enough if a slow tail drags it down.</li>
+    <li>A fast LCP with a bad CLS is still a poor experience. Each metric covers a separate failure.</li>
+    <li>Other metrics, such as <strong>TTFB</strong> and <strong>FCP</strong>, help you diagnose why a vital is poor.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Remember the split</span>
+    LCP is about loading, INP is about responsiveness, and CLS is about stability. When one is poor, that tells you which kind of problem to hunt for.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Reporting the average instead of the 75th percentile</td><td>Hides the slow visits that drag the page below the bar</td><td>Look at the 75th percentile, and the full distribution</td></tr>
+    <tr><td>Optimizing the score instead of the experience</td><td>Tricks can hit the number and still feel slow</td><td>Verify improvements by watching real loads</td></tr>
+    <tr><td>Assuming FID is still the responsiveness metric</td><td>You track a retired measure</td><td>Use INP</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add the <code>web-vitals</code> library to a test page and log LCP, INP, and CLS. Interact with the page and watch the values change.</li>
+      <li>For each vital, name one thing on a page that would make it poor.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>LCP, INP, and CLS measure loading, responsiveness, and visual stability.</li>
+      <li>Thresholds are judged at the 75th percentile of real visits: 2.5 s, 200 ms, and 0.1.</li>
+      <li>The vitals point you toward a kind of problem, and other metrics help explain it.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Why Performance Matters — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

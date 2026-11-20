@@ -1,0 +1,5 @@
+{
+  "title": "Closures & Captured Variables",
+  "description": "Functions that remember the environment they were defined in, and the classic counter example.",
+  "order": 5
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Generational & Copying Garbage Collection",
+  "description": "Semispaces, the generational hypothesis, and write barriers.",
+  "order": 1
+}

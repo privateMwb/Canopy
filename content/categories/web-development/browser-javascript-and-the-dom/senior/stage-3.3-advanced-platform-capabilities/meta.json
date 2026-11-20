@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.3 — Advanced Platform Capabilities",
+  "description": "Service workers, PWAs, real-time transports, WebAssembly, and streams.",
+  "order": 3
+}

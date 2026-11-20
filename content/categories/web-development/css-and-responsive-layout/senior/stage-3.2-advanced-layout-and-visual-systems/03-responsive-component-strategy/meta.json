@@ -1,0 +1,5 @@
+{
+  "title": "Responsive Component Strategy",
+  "description": "Container, viewport, and preference queries working together.",
+  "order": 3
+}

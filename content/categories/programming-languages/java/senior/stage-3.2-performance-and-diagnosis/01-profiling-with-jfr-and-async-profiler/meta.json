@@ -1,0 +1,5 @@
+{
+  "title": "Profiling with JFR & async-profiler",
+  "description": "Low-overhead profiling of CPU, allocation, and lock contention in a live JVM.",
+  "order": 1
+}

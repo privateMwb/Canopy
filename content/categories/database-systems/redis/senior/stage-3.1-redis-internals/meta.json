@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Redis Internals",
+  "description": "The event loop, internal encodings, memory management, expiry and eviction mechanics, and latency analysis.",
+  "order": 1
+}

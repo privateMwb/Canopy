@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Speculation Rules &amp; Prerendering — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · browser & network internals</span> → lesson 05</p>
+  <h1>Speculation Rules &amp; Prerendering</h1>
+  <p class="lede">The fastest page load is one that already happened. Speculation rules let the browser fetch or fully render the next page before the user clicks.</p>
+
+  <h2><span class="num">§1</span>Prefetch and Prerender</h2>
+  <p>Two techniques anticipate the next navigation. <strong>Prefetch</strong> downloads the next page's HTML ahead of time, so the request itself is instant. <strong>Prerender</strong> goes further: the browser loads the page, runs its JavaScript, and renders it in a hidden state. When the user navigates, it is swapped in, often appearing <strong>instantly</strong>.</p>
+  <table>
+    <tr><th>Technique</th><th>Does</th><th>Saves</th><th>Cost</th></tr>
+    <tr><td><strong>Prefetch</strong></td><td>Fetches the document (and optionally its subresources)</td><td>Network time for the HTML</td><td>Bandwidth, low CPU</td></tr>
+    <tr><td><strong>Prerender</strong></td><td>Fetches, parses, executes, and renders the page</td><td>Nearly all load time</td><td>Bandwidth, CPU, and memory</td></tr>
+  </table>
+  <p>Both are guesses. If the user doesn't navigate there, the work is wasted, which is the central trade-off.</p>
+
+  <h2><span class="num">§2</span>Speculation Rules</h2>
+  <p>The <strong>Speculation Rules API</strong> replaces older <code>&lt;link rel="prefetch"&gt;</code> and <code>prerender</code> hints. You declare rules in JSON, and the browser decides when to act, based on the <strong>eagerness</strong> you choose.</p>
+  <pre>&lt;script type="speculationrules"&gt;
+{
+  "prerender": [{
+    "where": { "and": [
+      { "href_matches": "/products/*" },
+      { "not": { "selector_matches": "[rel~=nofollow]" } }
+    ]},
+    "eagerness": "moderate"
+  }],
+  "prefetch": [{
+    "urls": ["/pricing"],
+    "eagerness": "eager"
+  }]
+}
+&lt;/script&gt;</pre>
+  <table>
+    <tr><th>Eagerness</th><th>When the browser acts</th></tr>
+    <tr><td><code>immediate</code></td><td>As soon as the rules are seen</td></tr>
+    <tr><td><code>eager</code></td><td>Shortly after, on very light signals</td></tr>
+    <tr><td><code>moderate</code></td><td>Typically on hover (or pointer down on mobile)</td></tr>
+    <tr><td><code>conservative</code></td><td>On pointer or touch down, right before the click</td></tr>
+  </table>
+  <p>Browser support and exact behavior differ and are changing. Check current documentation, and treat it as a progressive enhancement: where it is unsupported, navigation simply behaves normally.</p>
+
+  <h2><span class="num">§3</span>Making Prerendering Safe</h2>
+  <p>A prerendered page runs your code <strong>before the user has actually visited it</strong>. That creates hazards you must design around.</p>
+  <ul>
+    <li><strong>Analytics:</strong> don't count a page view until the page is <strong>activated</strong>. Listen for the <code>prerenderingchange</code> event or check <code>document.prerendering</code>.</li>
+    <li><strong>Side effects:</strong> don't start timers, modals, autoplay media, or write to storage on load without checking.</li>
+    <li><strong>Personalized or stateful pages:</strong> avoid prerendering pages that change server-side state on load, such as logout or add-to-cart URLs.</li>
+    <li><strong>Cost:</strong> prerender only likely targets. Wasted prerenders burn user bandwidth, battery, and your server capacity.</li>
+    <li><strong>Same-site constraints:</strong> cross-origin prerendering is restricted, and credentials and cookies are handled carefully.</li>
+  </ul>
+  <pre>if (document.prerendering) {
+  document.addEventListener('prerenderingchange', startRealPageView, { once: true });
+} else {
+  startRealPageView();
+}</pre>
+  <p>Measure the effect: Chrome DevTools has an <strong>Application &gt; Speculative loads</strong> panel, and your real-user metrics will show activation-time LCP values near zero for prerendered navigations. Segment them, so they don't skew the rest of your analysis.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Speculation trades wasted work for instant navigations. Use it where prediction is reliable, such as a product list to a product page, and moderate eagerness keeps the waste low.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Prerendering with <code>immediate</code> for many links</td><td>Wasted bandwidth, CPU, and server load</td><td>Use <code>moderate</code> or <code>conservative</code> for broad rules</td></tr>
+    <tr><td>Counting a page view when the prerender loads</td><td>Analytics inflated by pages never seen</td><td>Wait for activation before tracking</td></tr>
+    <tr><td>Prerendering URLs with side effects</td><td>Actions run without the user's intent</td><td>Exclude them, and keep GET requests safe</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a speculation rule with <code>moderate</code> eagerness for links on a list page, and confirm in DevTools that a hover triggers a prerender.</li>
+      <li>Adjust one analytics call so it only fires after the prerendered page is activated.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Prefetch downloads the next page and prerender renders it ahead, so navigation can feel instant.</li>
+      <li>Speculation Rules declare targets and eagerness, and degrade gracefully where unsupported.</li>
+      <li>Guard against side effects and analytics during prerender, and keep wasted speculation low.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Browser &amp; Network Internals — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

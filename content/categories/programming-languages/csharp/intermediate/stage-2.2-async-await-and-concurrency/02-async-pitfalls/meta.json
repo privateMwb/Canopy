@@ -1,0 +1,5 @@
+{
+  "title": "Async Pitfalls",
+  "description": "Deadlocks from blocking on async, ConfigureAwait, and why async void is dangerous.",
+  "order": 2
+}

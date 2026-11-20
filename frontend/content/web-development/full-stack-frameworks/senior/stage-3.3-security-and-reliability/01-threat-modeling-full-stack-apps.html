@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Threat Modeling Full-Stack Apps — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · security &amp; reliability</span> → lesson 01</p>
+  <h1>Threat Modeling Full-Stack Apps</h1>
+  <p class="lede">Finding where the trust boundaries sit.</p>
+
+  <h2><span class="num">§1</span>Think Like the Attacker Before They Do</h2>
+
+  <p><strong>Threat modeling</strong> is a structured way of asking four questions: What are we building? What can go wrong? What will we do about it? Did we do a good enough job? Doing it on a whiteboard during design costs far less than discovering the answers in an incident.</p>
+
+  <h2><span class="num">§2</span>Map Assets and Trust Boundaries</h2>
+
+  <p>Start with a data-flow diagram: the actors, components, data stores, and the arrows between them. Then draw <strong>trust boundaries</strong> where data crosses from a less-trusted to a more-trusted zone. Bugs cluster at those lines, because that's where input must be validated and identity verified.</p>
+
+  <table>
+    <tr><th>Boundary in a full-stack app</th><th>What crosses it</th><th>Must be checked</th></tr>
+    <tr><td>Browser → server (requests, forms, Server Actions)</td><td>Any user-controlled input</td><td>Authentication, authorization, validation, CSRF</td></tr>
+    <tr><td>Third party → server (webhooks, OAuth callbacks)</td><td>Claims made by another system</td><td>Signature, <code>state</code>, replay protection</td></tr>
+    <tr><td>Server → database</td><td>Queries built from inputs</td><td>Parameterization, least-privilege credentials, tenant scoping</td></tr>
+    <tr><td>Server → third-party APIs</td><td>Secrets and user data</td><td>Secret handling, allowlisted destinations, timeouts</td></tr>
+    <tr><td>Client bundle ← server</td><td>Props, env variables, payloads</td><td>No secrets or excess data in what ships</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>Enumerate Threats with STRIDE</h2>
+
+  <table>
+    <tr><th>Threat</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td>Spoofing</td><td>Pretending to be someone</td><td>Stolen session cookie, forged webhook</td></tr>
+    <tr><td>Tampering</td><td>Modifying data</td><td>Changing an id or price in a request</td></tr>
+    <tr><td>Repudiation</td><td>Denying an action</td><td>No audit log of an admin deletion</td></tr>
+    <tr><td>Information disclosure</td><td>Leaking data</td><td>IDOR, verbose errors, secrets in the bundle</td></tr>
+    <tr><td>Denial of service</td><td>Exhausting resources</td><td>Unbounded queries, no rate limits</td></tr>
+    <tr><td>Elevation of privilege</td><td>Gaining unauthorised rights</td><td>Missing role check on a Server Action</td></tr>
+  </table>
+
+  <p>For each boundary, walk through STRIDE and note the plausible threats. Then rank by likelihood and impact, decide to <strong>mitigate, accept, transfer, or avoid</strong> each one, and write down why.</p>
+
+  <div class="callout">
+    <span class="label">Model the app you have</span>
+    A threat model is only useful if it matches reality. Update it when you add a payment provider, a file upload, a new tenant model, or an admin panel, because each adds assets and boundaries.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating threat modeling as a one-off document</td><td>It goes stale as the system changes</td><td>Revisit it for every significant feature</td></tr>
+    <tr><td>Focusing only on external attackers</td><td>Insider misuse and compromised dependencies go unconsidered</td><td>Include malicious users, insiders, and supply-chain risks</td></tr>
+    <tr><td>Listing threats without deciding what to do</td><td>A long list that nobody acts on</td><td>Assign each threat a mitigation or a documented acceptance</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Draw a data-flow diagram for an app you know, mark the trust boundaries, and list three STRIDE threats at its riskiest boundary.</li>
+      <li>For each threat, pick a mitigation and name the test or control that would show it works.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Threat modeling asks what we're building, what can go wrong, what we'll do, and whether it was enough.</li>
+      <li>Trust boundaries are where validation and authentication must happen.</li>
+      <li>Use STRIDE to enumerate threats, then prioritise and decide on mitigations explicitly.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Security &amp; Reliability — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

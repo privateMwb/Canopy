@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exceptions &amp; Non-Local Control Flow — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced language features</span> → lesson 02</p>
+  <h1>Exceptions &amp; Non-Local Control Flow</h1>
+  <p class="lede">Exceptions let an error jump out of many nested calls to a handler, and the compiler has to decide how to make that jump correct, with the happy path as cheap as possible.</p>
+
+  <h2><span class="num">§1</span>Non-local control flow</h2>
+  <p>A normal <code>return</code> goes back one frame. An exception can leave several frames at once, and run <strong>cleanup code</strong> (like closing a file) on the way.</p>
+  <pre><span class="comment">// hypothetical Twig extension</span>
+fn read_config(path) {
+  let f = open(path);
+  try {
+    return parse(f);          <span class="comment">// may throw</span>
+  } finally {
+    close(f);                  <span class="comment">// must run on every exit path</span>
+  }
+}</pre>
+  <p>Each frame between the <code>throw</code> and the matching <code>catch</code> must be <strong>unwound</strong>: its locals discarded, its cleanup actions run, then control moves one frame up, until a handler is found.</p>
+
+  <h2><span class="num">§2</span>Two implementation strategies</h2>
+  <p><strong>Setjmp-style (table of handlers at run time):</strong> entering a <code>try</code> pushes a handler record onto a handler stack; leaving it pops. A <code>throw</code> looks at the top handler and jumps there.</p>
+  <pre>try_begin:   push Handler(catch_label, saved_stack_depth, saved_frame)
+body...
+try_end:     pop Handler
+throw e:     h = handlers.top(); restore(h.frame, h.stack_depth); push(e); jump h.catch_label</pre>
+  <p>This is simple and fast to throw, but every <code>try</code> costs a push and pop even if nothing is ever thrown.</p>
+  <p><strong>Table-driven ("zero-cost"):</strong> the compiler emits no code on entry to a <code>try</code>. Instead it generates tables, keyed by instruction address, that say which handler covers each range of code and what cleanup each frame owns. A <code>throw</code> consults the tables, walks the stack frame by frame, and runs cleanups.</p>
+  <pre>exception table for read_config:
+  range [0x40, 0x68)  handler 0x80   cleanup: close(f)</pre>
+  <p>The happy path pays nothing. Throwing is expensive, since it needs table lookups and a stack walk, so this design suits languages where exceptions are for exceptional cases.</p>
+
+  <h2><span class="num">§3</span>Interaction with other features</h2>
+  <p>Exceptions touch everything else in the implementation.</p>
+  <ul>
+    <li><strong>Optimizations:</strong> any call can now exit early by exception, so moving code across a call needs care. The IR needs <strong>exceptional edges</strong> from calls to handlers, so the CFG (Stage 2.2) stays accurate.</li>
+    <li><strong>Cleanup:</strong> <code>finally</code> code has to be duplicated or entered from multiple paths: normal exit, return, break, and throw.</li>
+    <li><strong>Garbage collection:</strong> unwinding must keep roots correct, so frames being discarded aren't scanned as live.</li>
+    <li><strong>Resource safety:</strong> cleanup that itself throws needs a defined rule.</li>
+  </ul>
+  <pre><span class="comment"># IR with exceptional edges</span>
+ t = call f(x)  normal → B2   unwind → H1</pre>
+  <p>Many languages that skip exceptions use explicit result values (a value that is either a success or an error) to get the same expressiveness with ordinary control flow, trading convenience for visible, optimizable paths.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Exceptions are control flow the call graph doesn't show. Whatever strategy you pick, every stage from the optimizer to the garbage collector has to know that any call might not return normally.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting exceptional edges in the CFG</td><td>Optimizations move code past a call that might throw, changing behaviour</td><td>Model each call as having an unwind edge to the handler</td></tr>
+    <tr><td>Running <code>finally</code> only on normal exit</td><td>Resources leak on return, break, or throw</td><td>Route every exit path through the cleanup code</td></tr>
+    <tr><td>Using exceptions for ordinary control flow</td><td>Throwing is slow in table-driven implementations</td><td>Reserve exceptions for rare errors, and use results for expected ones</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write the handler-stack bytecode for a <code>try</code>/<code>catch</code> that wraps a call, showing what is pushed on entry, popped on exit, and restored on throw.</li>
+      <li>List what the optimizer must know about a call that can throw before it may reorder a store past that call.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Exceptions unwind several frames, running cleanup on each.</li>
+      <li>Runtime handler stacks are simple; table-driven designs make the happy path free but throwing costly.</li>
+      <li>Every stage of the compiler must treat a call as possibly exiting early.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Language Features — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

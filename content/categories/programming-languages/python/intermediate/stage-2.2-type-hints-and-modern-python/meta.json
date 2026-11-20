@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 \u2014 Type Hints & Modern Python",
+  "description": "Type hints, generics and protocols, type checkers, modern syntax, and boundary validation.",
+  "order": 2
+}

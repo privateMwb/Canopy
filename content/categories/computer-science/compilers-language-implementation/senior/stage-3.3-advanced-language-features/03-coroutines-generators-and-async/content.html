@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coroutines, Generators &amp; Async — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced language features</span> → lesson 03</p>
+  <h1>Coroutines, Generators &amp; Async</h1>
+  <p class="lede">Coroutines, generators, and async functions can pause and resume, which a compiler implements by turning the function into a state machine or by capturing its continuation.</p>
+
+  <h2><span class="num">§1</span>Suspendable functions</h2>
+  <p>Normal functions run to completion. A <strong>coroutine</strong> can <strong>yield</strong>, give control back to its caller, and later <strong>resume</strong> exactly where it left off, with all its locals intact.</p>
+  <pre><span class="comment">// hypothetical Twig extension</span>
+fn count_to(n) {
+  let i = 1;
+  while (i &lt;= n) {
+    yield i;
+    i = i + 1;
+  }
+}
+
+let g = count_to(3);
+print next(g);    <span class="comment">// 1</span>
+print next(g);    <span class="comment">// 2</span></pre>
+  <p>The same mechanism underlies <strong>generators</strong> (producing a sequence lazily), <strong>async/await</strong> (pausing while waiting for I/O), and cooperative multitasking.</p>
+
+  <h2><span class="num">§2</span>Compiling to a state machine</h2>
+  <p>One implementation strategy needs no special runtime support. The compiler rewrites the function into a <strong>state machine</strong>: an object holding all locals plus a <strong>state number</strong> saying where to resume.</p>
+  <pre>fn count_to(n) { ... }     becomes
+
+struct CountTo { state, n, i }
+
+def CountTo.resume(self):
+    match self.state:
+        0:  self.i = 1; goto loop_check
+        1:  self.i = self.i + 1; goto loop_check
+    loop_check:
+        if self.i &lt;= self.n:
+            self.state = 1
+            return Yielded(self.i)
+        return Done</pre>
+  <p>Locals that live across a <code>yield</code> move from the stack to the object, since the stack frame won't survive. Locals not live across any yield can stay on the stack. Liveness analysis from Stage 2.4 decides which. The transform is mechanical but intricate, especially with loops and <code>try</code> blocks that span yields.</p>
+
+  <h2><span class="num">§3</span>Continuations and async</h2>
+  <p>The other strategy is to give the runtime the ability to <strong>capture</strong> a function's execution state and restore it later.</p>
+  <ul>
+    <li><strong>Stackful coroutines:</strong> each coroutine gets its own stack, and switching changes the stack pointer. Flexible (any call depth can yield) but costs memory per coroutine.</li>
+    <li><strong>Stackless coroutines:</strong> the state machine approach. Cheap, but only the function itself can yield, not its callees.</li>
+  </ul>
+  <p><strong>Async/await</strong> is the same transformation applied to I/O. <code>await x</code> means 'suspend until x is ready, and let something else run meanwhile.'</p>
+  <pre>async fn fetch_both(a, b) {
+  let x = await get(a);       <span class="comment">// suspends here; scheduler runs other tasks</span>
+  let y = await get(b);
+  return x + y;
+}</pre>
+  <p>Each <code>await</code> becomes a state-machine state, and a scheduler (an event loop) resumes the machine when the awaited operation completes. This is how one thread can handle thousands of concurrent connections.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A suspended function is just data: its locals and where to resume. Whether you store that data in a generated object or a separate stack is the design choice.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Keeping a suspended function's locals on the real stack</td><td>The frame is gone when the function resumes, and locals read garbage</td><td>Move locals live across a yield into the state object</td></tr>
+    <tr><td>Forgetting <code>try</code>/<code>finally</code> across a yield</td><td>Cleanup runs too early or never</td><td>Treat the handler region as part of the saved state</td></tr>
+    <tr><td>Using stackful coroutines for tens of thousands of tasks</td><td>Stack memory dominates</td><td>Use stackless coroutines, or small growable stacks</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Transform the <code>count_to</code> generator into the state-machine form by hand, listing which locals move into the object.</li>
+      <li>Compare stackful and stackless coroutines for a web server handling 100,000 connections, and say which you'd pick and why.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Suspendable functions pause with their locals intact and resume where they stopped.</li>
+      <li>Stackless coroutines compile to state machines; stackful ones switch stacks.</li>
+      <li>Async/await is the same mechanism driven by an event loop.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Language Features — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

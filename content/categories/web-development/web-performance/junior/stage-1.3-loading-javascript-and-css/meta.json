@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Loading JavaScript & CSS",
+  "description": "Render-blocking resources, script loading, compression, unused code, and third parties.",
+  "order": 3
+}

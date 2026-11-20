@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lifting State Up — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · state &amp; events</span> → lesson 04</p>
+  <h1>Lifting State Up</h1>
+  <p class="lede">When two components need the same data, the data cannot live in either of them. It moves up to their closest common parent, which passes it down and receives changes back through functions.</p>
+
+  <h2><span class="num">§1</span>The Problem: Siblings Cannot Talk</h2>
+
+  <p>Data flows only downward, from parents to children through props. Two sibling components have no direct way to share state. If a filter box and a product list both need the search text, keeping a separate copy in each leaves them disagreeing.</p>
+
+  <pre><span class="comment">// broken idea: each component has its own copy of the query</span>
+function SearchBox() { const [query, setQuery] = useState(""); /* ... */ }
+function ProductList() { /* needs the query, but cannot see SearchBox's state */ }</pre>
+
+  <h2><span class="num">§2</span>The Solution: Lift It Up</h2>
+
+  <p>Find the <strong>closest common parent</strong> of the components that need the state and move the state there. Pass the value down as a prop, and pass a <strong>setter or callback</strong> down so children can request changes.</p>
+
+  <pre>function ProductPage({ products }) {
+  const [query, setQuery] = useState("");             <span class="comment">// state lives in the parent</span>
+
+  const visible = products.filter((p) =&gt;
+    p.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    &lt;&gt;
+      &lt;SearchBox query={query} onQueryChange={setQuery} /&gt;
+      &lt;ProductList items={visible} /&gt;
+      &lt;p&gt;{visible.length} of {products.length} shown&lt;/p&gt;
+    &lt;/&gt;
+  );
+}
+
+function SearchBox({ query, onQueryChange }) {
+  return &lt;input value={query} onChange={(e) =&gt; onQueryChange(e.target.value)} /&gt;;
+}
+
+function ProductList({ items }) {
+  return &lt;ul&gt;{items.map((p) =&gt; &lt;li key={p.id}&gt;{p.name}&lt;/li&gt;)}&lt;/ul&gt;;
+}</pre>
+
+  <p><code>SearchBox</code> is now a <strong>controlled component</strong>: it owns no state, and is told what to display and how to report changes. That makes it simple, reusable, and easy to test. The parent is the single source of truth.</p>
+
+  <h2><span class="num">§3</span>How Much to Lift</h2>
+
+  <p>Keep state as <strong>low</strong> in the tree as possible, and lift it only as far as needed. State in a parent re-renders that parent and all its children when it changes, and it makes more components depend on one another.</p>
+
+  <table>
+    <tr><th>Question</th><th>Answer</th></tr>
+    <tr><td>Does only one component use this state?</td><td>Keep it local in that component</td></tr>
+    <tr><td>Do siblings need it?</td><td>Lift to their common parent</td></tr>
+    <tr><td>Does a distant part of the tree need it?</td><td>Lift higher, or use context (a later lesson)</td></tr>
+    <tr><td>Can it be calculated from other state?</td><td>Do not store it; derive it during render</td></tr>
+  </table>
+
+  <ul>
+    <li>Name callback props <code>onSomething</code> and the receiving handlers <code>handleSomething</code>.</li>
+    <li>If you find yourself passing the same props through many layers (<strong>prop drilling</strong>), consider restructuring with <code>children</code>, or using context.</li>
+    <li>Lifted state should store the <strong>minimum</strong> data: store <code>selectedId</code>, not the whole selected object, so there is only one copy of the object.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Find the common parent</span>
+    Whenever two components need to agree, ask: what is their closest shared ancestor? Put the state there, pass it down, and pass a way to change it down too.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Duplicating the same state in two components</td><td>They drift out of sync</td><td>Keep one copy in the common parent</td></tr>
+    <tr><td>Lifting state higher than necessary</td><td>Unrelated components re-render and become coupled</td><td>Lift only to the closest common parent</td></tr>
+    <tr><td>Storing a copy of an object in state (<code>selectedItem</code>)</td><td>The copy goes stale when the original changes</td><td>Store the id and look up the item during render</td></tr>
+    <tr><td>Forgetting to pass the setter or callback down</td><td>Child cannot change anything</td><td>Pass an <code>onChange</code>-style prop</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a temperature converter with Celsius and Fahrenheit inputs that stay in sync, with state lifted into the parent.</li>
+      <li>Create an accordion where only one panel can be open at a time by lifting an <code>openId</code> into the parent.</li>
+      <li>Refactor a component holding its own search state so that a sibling can also read the query.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Components that share data get it from their closest common parent through props.</li>
+      <li>Children request changes by calling callback props from the parent.</li>
+      <li>Keep state as low as possible and store the minimum; derive the rest.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · State &amp; Events — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

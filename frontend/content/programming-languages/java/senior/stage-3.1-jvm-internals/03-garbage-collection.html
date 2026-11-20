@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Garbage Collection — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · jvm internals</span> → lesson 03</p>
+  <h1>Garbage Collection</h1>
+  <p class="lede">A garbage collector reclaims memory from unreachable objects automatically, and the different collectors trade throughput, pause time, and memory footprint against one another, so the right one depends on what your service values.</p>
+
+  <h2><span class="num">§1</span>Reachability</h2>
+  <p>An object is garbage if it can no longer be reached from a <strong>GC root</strong>: a local variable on a live thread, a static field, a JNI reference, or a few others. The collector traces from the roots through references and treats everything it didn't visit as free. This means <strong>cycles are not a problem</strong> (unlike with reference counting) and that a memory leak in Java isn't "forgetting to free" but <strong>holding a reference you no longer need</strong>, such as an entry in a static map or a listener that was never removed.</p>
+
+  <h2><span class="num">§2</span>The Generational Approach and Pauses</h2>
+  <p>Since most objects die young, collectors split the heap and collect the young generation often and cheaply (a <strong>minor</strong> or young collection), and the old generation less often. During some phases the collector must stop all application threads, a <strong>stop-the-world pause</strong>, because the object graph can't safely change while it's being examined. Collector design is largely about how to shrink and bound these pauses by doing more work <strong>concurrently</strong> alongside the application, at the cost of extra CPU and memory.</p>
+
+  <h2><span class="num">§3</span>The Collectors</h2>
+  <table>
+    <tr><th>Collector</th><th>Flag</th><th>Optimizes for</th><th>Notes</th></tr>
+    <tr><td><strong>Serial</strong></td><td><code>-XX:+UseSerialGC</code></td><td>Tiny footprint</td><td>Single-threaded; small heaps and tiny containers</td></tr>
+    <tr><td><strong>Parallel</strong></td><td><code>-XX:+UseParallelGC</code></td><td>Throughput</td><td>Multi-threaded stop-the-world; batch jobs</td></tr>
+    <tr><td><strong>G1</strong></td><td><code>-XX:+UseG1GC</code></td><td>Balance with a pause-time goal</td><td>The default on server-class machines since Java 9</td></tr>
+    <tr><td><strong>ZGC</strong></td><td><code>-XX:+UseZGC</code></td><td>Very low pauses at large heaps</td><td>Concurrent; pauses stay very short regardless of heap size</td></tr>
+    <tr><td><strong>Shenandoah</strong></td><td><code>-XX:+UseShenandoahGC</code></td><td>Low pauses</td><td>Concurrent compaction; available in many OpenJDK builds</td></tr>
+  </table>
+  <p><strong>G1</strong> divides the heap into equal-sized regions, collects the young regions with short pauses, runs concurrent marking for the old generation, and then reclaims the most garbage-filled regions in <strong>mixed collections</strong>. You give it a soft target with <code>-XX:MaxGCPauseMillis</code> (default 200 ms). It is a good general default. <strong>ZGC</strong> does nearly all its work, including moving objects, concurrently, so pauses are typically a millisecond or less and don't grow with heap size; it is <strong>generational</strong> by default in recent releases, which lowers its CPU and memory overhead. The price of low-pause collectors is some throughput and extra memory headroom. <strong>Shenandoah</strong> has a similar goal and approach. <strong>Parallel</strong> has the highest raw throughput when pauses don't matter, such as an overnight batch.</p>
+  <p>Note that <strong>allocation rate</strong> matters as much as heap size: a service allocating gigabytes per second will collect constantly no matter which collector is chosen, so reducing garbage (avoiding needless boxing, string churn, and temporary objects) is often the best "tuning".</p>
+
+  <h2><span class="num">§4</span>Reading GC Behavior</h2>
+  <p>Turn on unified logging and read it, rather than guessing.</p>
+  <pre>java -Xlog:gc*:file=gc.log:time,uptime,level,tags -Xmx4g -jar app.jar</pre>
+  <pre>[12.3s][info][gc] GC(41) Pause Young (Normal) (G1 Evacuation Pause) 2048M-&gt;412M(4096M) 14.2ms
+[58.1s][info][gc] GC(97) Pause Full (G1 Compaction Pause) 3980M-&gt;3901M(4096M) 2841.7ms</pre>
+  <p>Things to look for: the <strong>pause durations</strong> against your latency goals; the <strong>heap after collection</strong> staying flat over time (a rising floor suggests a leak or too small a heap); the <strong>frequency</strong> of collections; and any <strong>Full GC</strong> events, which in G1 indicate it couldn't keep up (an allocation failure, humongous allocations, or an undersized heap). Tools like GCViewer, GCeasy, or JFR's GC events help visualize this.</p>
+
+  <h2><span class="num">§5</span>Choosing and Tuning</h2>
+  <p>Start with the default (G1 in most cases) and set only the heap size. Move to ZGC or Shenandoah when pause times are a measured problem and you have the memory headroom, and to Parallel for throughput-oriented batch work. Change one flag at a time and measure against a realistic load, because most GC tuning flags are best left alone and the wrong ones make things worse.</p>
+
+  <div class="callout">
+    <span class="label">A Java memory leak is a reference you forgot</span>
+    The GC can't free what is still reachable. If the post-collection heap keeps rising, find what is holding the references, rather than adding heap.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Increasing <code>-Xmx</code> to fix a leak</td><td>It only delays the <code>OutOfMemoryError</code> and lengthens pauses</td><td>Find the retained objects with a heap dump</td></tr>
+    <tr><td>Calling <code>System.gc()</code></td><td>Forces an expensive, usually pointless full collection</td><td>Remove it (or disable with <code>-XX:+DisableExplicitGC</code>)</td></tr>
+    <tr><td>Copying a tuning-flag list from the internet</td><td>Settings tuned for other workloads can hurt yours</td><td>Start with defaults, and change one measured setting at a time</td></tr>
+    <tr><td>Optimizing for pause time when the service is throughput-bound</td><td>Lower throughput for no benefit</td><td>Match the collector to the actual goal</td></tr>
+    <tr><td>Ignoring allocation rate</td><td>Constant collections under any collector</td><td>Reduce garbage in the hot path</td></tr>
+    <tr><td>Reading GC logs only after an incident</td><td>No baseline to compare against</td><td>Keep GC logging on in production and know what normal looks like</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run the same allocation-heavy program under Serial, Parallel, G1, and ZGC with GC logging enabled, and compare pause times and total runtime.</li>
+      <li>Create a deliberate leak (an ever-growing static <code>List</code>), and watch the post-GC heap floor rise in the log.</li>
+      <li>Lower <code>-Xmx</code> until G1 reports Full GCs, and describe what the log says right before them.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Objects are collected when unreachable from GC roots, so a Java leak means holding unneeded references.</li>
+      <li>G1 is the balanced default, ZGC and Shenandoah minimize pauses, Parallel maximizes throughput, and Serial minimizes footprint.</li>
+      <li>Read GC logs for pause time, the post-collection heap trend, and Full GCs, and tune only against measurements.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · JVM Internals — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

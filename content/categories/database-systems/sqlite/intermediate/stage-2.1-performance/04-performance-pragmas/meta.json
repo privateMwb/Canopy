@@ -1,0 +1,5 @@
+{
+  "title": "Performance PRAGMAs",
+  "description": "cache_size, synchronous, journal_mode, and what each trades.",
+  "order": 4
+}

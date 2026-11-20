@@ -1,0 +1,5 @@
+{
+  "title": "Error Handling",
+  "description": "Exceptions vs. error codes, noexcept, and std::expected.",
+  "order": 3
+}

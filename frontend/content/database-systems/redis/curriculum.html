@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Redis Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / redis</p>
+    <h1>From your first key to Redis that holds up in production</h1>
+    <p class="lede">Three levels, twelve stages — data structures and common patterns first, then streams, caching strategy, and replication, built toward the internals and judgment to cluster, secure, and defend a Redis design.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've heard Redis is a cache" to "I can use its data structures and build caching, sessions, and rate limiting correctly."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Getting Started with Redis</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What Redis Is &amp; When to Use It</p><p class="lesson-desc">An in-memory data structure server, and the problems it is actually good at.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Installing Redis &amp; Using redis-cli</p><p class="lesson-desc">Running a server, the command line, and exploring keys.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Strings, Keys &amp; Expiration</p><p class="lesson-desc">GET, SET, TTLs, and the commands that touch every value.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Naming Keys &amp; Key Design</p><p class="lesson-desc">Namespaces, conventions, and keeping a keyspace understandable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Atomic Counters &amp; INCR</p><p class="lesson-desc">Why single commands are atomic and how that replaces a lot of locking.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a page-view counter, a URL shortener, and a temporary-token store using only strings, counters, and TTLs.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Core Data Structures</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Lists</p><p class="lesson-desc">Pushing, popping, and using lists as stacks, queues, and timelines.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Hashes</p><p class="lesson-desc">Storing objects as field-value maps and updating single fields.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Sets</p><p class="lesson-desc">Uniqueness, membership, and set algebra across keys.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Sorted Sets</p><p class="lesson-desc">Scores, ranges, and leaderboards that stay ordered automatically.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Choosing the Right Structure</p><p class="lesson-desc">Matching the data structure to the access pattern, and the cost of getting it wrong.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Model a leaderboard, a tag system, and a session store, each with the structure that fits, and explain why not the others.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Common Patterns</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Cache-Aside Caching</p><p class="lesson-desc">Reading through the cache, filling on a miss, and setting sensible TTLs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Sessions &amp; Rate Limiting</p><p class="lesson-desc">Storing login state and limiting requests per user or IP.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Pub/Sub Messaging</p><p class="lesson-desc">Publishing and subscribing, and what fire-and-forget implies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Leaderboards &amp; Counting at Scale</p><p class="lesson-desc">Ranking, top-N queries, and approximate counting.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Using Redis from Application Code</p><p class="lesson-desc">Client libraries, connection reuse, and serialization choices.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add caching, rate limiting, and a live notification feed to a small web app, and measure what each one saves.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Persistence &amp; Basic Operations</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">RDB Snapshots vs. AOF</p><p class="lesson-desc">The two persistence models and what each one can lose.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Memory Limits &amp; Eviction Policies</p><p class="lesson-desc">maxmemory, LRU and LFU, and what Redis does when it is full.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Configuration &amp; Basic Security</p><p class="lesson-desc">Binding, passwords, ACL users, and not exposing Redis to the internet.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Monitoring with INFO &amp; SLOWLOG</p><p class="lesson-desc">Reading the server's own metrics and finding slow commands.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Connections &amp; Pooling</p><p class="lesson-desc">Client limits, timeouts, and avoiding connection storms.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run a Redis instance with persistence, a memory limit, an ACL user, and a dashboard of its key metrics, then restart it and verify what survived.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "it works on my machine" to "I can design caches and queues that survive stampedes, failures, and restarts."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Beyond the Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Streams &amp; Consumer Groups</p><p class="lesson-desc">An append-only log with acknowledgements and multiple consumers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Transactions: MULTI, EXEC &amp; WATCH</p><p class="lesson-desc">Batching commands and optimistic locking without blocking.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Lua Scripting &amp; Functions</p><p class="lesson-desc">Atomic server-side logic and where it helps or hurts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Pipelining &amp; Batching</p><p class="lesson-desc">Cutting round trips and measuring the effect.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Bitmaps, HyperLogLog &amp; Geospatial</p><p class="lesson-desc">Compact structures for flags, unique counts, and location queries.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement an atomic inventory reservation using WATCH and then using Lua, and compare their behavior under contention.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Caching Done Right</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Invalidation Strategies</p><p class="lesson-desc">TTLs, explicit deletes, and event-driven invalidation, with the trade-off of each.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Cache Stampedes</p><p class="lesson-desc">What happens when a hot key expires, and how locking and early refresh prevent it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">TTL Design &amp; Jitter</p><p class="lesson-desc">Choosing lifetimes and spreading expirations so they don't all land at once.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Write-Through &amp; Write-Behind</p><p class="lesson-desc">Keeping cache and database in step, and what failure does to each.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Consistency with the Source of Truth</p><p class="lesson-desc">Stale reads, race conditions, and the guarantees a cache can honestly make.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a cached read path that survives a thundering herd, then prove with a load test that it did.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Redis as Infrastructure</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Job Queues &amp; Reliable Processing</p><p class="lesson-desc">Lists, streams, retries, and not losing work when a worker dies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Distributed Locks</p><p class="lesson-desc">Lock patterns, expiry, fencing, and why the simple versions are unsafe.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Rate Limiting Algorithms</p><p class="lesson-desc">Fixed window, sliding window, and token bucket, implemented correctly.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Pub/Sub vs. Streams</p><p class="lesson-desc">Delivery guarantees and choosing between them for a real feature.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">JSON, Search &amp; Other Modules</p><p class="lesson-desc">Document storage, secondary indexes, and what modules add.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a job queue with retries, a dead-letter path, and a rate limiter, and kill workers mid-job to show nothing is lost.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Persistence &amp; Replication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">AOF Rewrite &amp; fsync Policies</p><p class="lesson-desc">What each setting trades between speed and data loss.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">RDB, Forking &amp; Latency</p><p class="lesson-desc">How snapshots use fork and why they can cause latency spikes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Replication Basics</p><p class="lesson-desc">Asynchronous replicas, full and partial resync, and replication lag.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Sentinel &amp; Automatic Failover</p><p class="lesson-desc">Monitoring, electing a new primary, and client behavior during failover.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Backups &amp; Disaster Recovery</p><p class="lesson-desc">Copying data safely and restoring it under pressure.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Stand up a primary with replicas and Sentinel, kill the primary, and document exactly what was lost and how clients recovered.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I use Redis" to "I understand its internals, I can cluster and operate it, and I know when it shouldn't hold the data."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Redis Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Event Loop &amp; I/O Threads</p><p class="lesson-desc">Why Redis is mostly single-threaded and what that means for latency.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Encodings &amp; Data Structure Internals</p><p class="lesson-desc">Listpack, skiplists, and hash tables, and when Redis switches between them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Memory Management &amp; Fragmentation</p><p class="lesson-desc">Allocators, overhead per key, and finding where memory goes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Eviction &amp; Expiry Internals</p><p class="lesson-desc">How keys expire, how eviction samples, and the cost of big keys.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Latency Analysis</p><p class="lesson-desc">Slow commands, blocking operations, and measuring tail latency.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Profile a memory-hungry and a slow workload, explain each from the internals, and cut memory use measurably.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Scaling with Redis Cluster</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Hash Slots &amp; Cluster Topology</p><p class="lesson-desc">How the keyspace is split and routed.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Multi-Key Operations &amp; Hash Tags</p><p class="lesson-desc">What breaks across slots and how to design around it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Resharding &amp; Rebalancing</p><p class="lesson-desc">Moving slots live and what clients see.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Failure Detection &amp; Cluster Failover</p><p class="lesson-desc">Gossip, quorum, and when a cluster stops accepting writes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Cluster-Aware Clients</p><p class="lesson-desc">Redirections, topology refresh, and client-side routing.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a cluster for a workload with multi-key access, shard it, and show how it behaves when a node fails mid-reshard.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Production Operations</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Capacity Planning &amp; Memory Sizing</p><p class="lesson-desc">Estimating footprint, headroom, and growth.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Security Hardening</p><p class="lesson-desc">ACL design, TLS, network isolation, and dangerous commands.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Observability &amp; Alerting</p><p class="lesson-desc">The metrics that predict trouble before users notice it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Upgrades &amp; Rolling Changes</p><p class="lesson-desc">Version changes without downtime.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Managed vs. Self-Hosted</p><p class="lesson-desc">What a cloud service takes off your plate and what it hides.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write an operations runbook covering sizing, security, upgrades, and the incidents you most expect.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Design</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Cache or Database?</p><p class="lesson-desc">Durability, data loss on failover, and what you can safely keep only in Redis.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Failure Modes &amp; Consistency</p><p class="lesson-desc">What actually happens during partitions, restarts, and failover.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">The Redis Ecosystem &amp; Licensing</p><p class="lesson-desc">Valkey, alternatives like Memcached, and how licensing history affects the choice.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Architecture Patterns</p><p class="lesson-desc">Where Redis sits in real systems, and which patterns create hidden coupling.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">When Not to Use Redis</p><p class="lesson-desc">Honest limits and the cases where another store is the better answer.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design document for a real service using Redis: roles, durability, failure behavior, and the risks you accept, argued for a skeptical reviewer.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Caching appears at Junior as cache-aside, returns at Intermediate as stampedes and invalidation, and comes back at Senior as consistency and the decision about what Redis should hold at all. Persistence follows the same arc: snapshots and AOF, then rewrite and replication, then failure modes. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how the event loop or cluster gossip works is one skill; deciding whether Redis should be a cache, a queue, or a source of truth, and writing that down for a skeptical reviewer, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

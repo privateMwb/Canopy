@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Optimizing INP — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · rendering & interaction</span> → lesson 03</p>
+  <h1>Optimizing INP</h1>
+  <p class="lede">INP measures how fast the page responds to every interaction. It is almost always poor because the main thread is busy when the user clicks.</p>
+
+  <h2><span class="num">§1</span>The Three Parts of an Interaction</h2>
+  <p>INP takes the slow interactions of a visit, and reports roughly the worst, from the moment of input until the browser paints the next frame. Each interaction breaks into three phases.</p>
+  <table>
+    <tr><th>Phase</th><th>What it is</th><th>Common cause when long</th></tr>
+    <tr><td><strong>Input delay</strong></td><td>Waiting for the main thread to become free</td><td>A long task already running, such as a timer or a script</td></tr>
+    <tr><td><strong>Processing time</strong></td><td>Your event handlers running</td><td>Heavy handlers, synchronous work, big re-renders</td></tr>
+    <tr><td><strong>Presentation delay</strong></td><td>Handlers finish until the next frame paints</td><td>Large DOM updates, expensive layout and paint</td></tr>
+  </table>
+  <p>Good is 200 ms or less at the 75th percentile. Use <code>web-vitals</code> attribution to see which phase and which element hurt real users, and the Performance panel's <strong>Interactions</strong> track to reproduce it.</p>
+
+  <h2><span class="num">§2</span>Breaking Up Long Tasks</h2>
+  <p>The browser can't respond while a task runs, and any task over 50 ms is a long task. The core fix is to do less in one go, and <strong>yield</strong> to the browser so it can handle input and paint between chunks.</p>
+  <pre>function yieldToMain() {
+  if (globalThis.scheduler?.yield) return scheduler.yield();   <span class="comment">// resumes with priority</span>
+  return new Promise(resolve =&gt; setTimeout(resolve, 0));        <span class="comment">// older fallback</span>
+}
+
+async function processAll(items) {
+  let last = performance.now();
+  for (const item of items) {
+    handle(item);
+    if (performance.now() - last &gt; 40) {   <span class="comment">// stay under ~50ms per chunk</span>
+      await yieldToMain();
+      last = performance.now();
+    }
+  }
+}</pre>
+  <ul>
+    <li><strong>Do the essential visual update first</strong>, such as showing a spinner or toggling state, then yield and do the rest.</li>
+    <li><strong>Defer non-urgent work</strong>, like analytics, with <code>requestIdleCallback</code> or after a yield.</li>
+    <li><strong>Move heavy computation off the main thread</strong> into a Web Worker (next stage).</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Cheaper Handlers and Updates</h2>
+  <ul>
+    <li><strong>Avoid redundant work.</strong> Debounce input handlers that don't need to run on every keystroke, and throttle scroll handlers.</li>
+    <li><strong>Limit what re-renders.</strong> In a framework, update only the affected components, and memoize expensive computations.</li>
+    <li><strong>Reduce DOM size and complexity</strong>, since presentation delay grows with how much the browser must restyle and lay out.</li>
+    <li><strong>Don't block on third parties.</strong> Their scripts add long tasks that delay your handlers.</li>
+  </ul>
+  <pre>button.addEventListener('click', async () =&gt; {
+  button.disabled = true;           <span class="comment">// 1. instant visual feedback</span>
+  spinner.hidden = false;
+  await yieldToMain();              <span class="comment">// 2. let the browser paint it</span>
+  const result = heavyWork();       <span class="comment">// 3. then do the expensive part</span>
+  render(result);
+});</pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    INP is not about speed in general. It is about whether the main thread is free <strong>at the moment of interaction</strong>, so shorter tasks and earlier visual feedback are the levers.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Running a large loop in one synchronous task</td><td>The page freezes for the duration</td><td>Chunk it and yield between chunks</td></tr>
+    <tr><td>Doing all work before showing any feedback</td><td>The interaction looks unresponsive</td><td>Update the UI first, then continue</td></tr>
+    <tr><td>Optimizing handler code when input delay is the problem</td><td>The thread was busy before the handler even began</td><td>Check the phase breakdown first</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Record an interaction in the Performance panel and read the input delay, processing time, and presentation delay.</li>
+      <li>Break one long-running handler into chunks that yield, and show the long task disappear in a new trace.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>INP covers input delay, processing time, and presentation delay for the worst interactions.</li>
+      <li>Break long tasks, yield, show feedback first, and move heavy work off the main thread.</li>
+      <li>Diagnose the phase before choosing a fix.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Rendering &amp; Interaction — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Generics, Protocols & Structural Typing",
+  "description": "TypeVar, Protocol, and describing \"anything that quacks like this.\"",
+  "order": 2
+}

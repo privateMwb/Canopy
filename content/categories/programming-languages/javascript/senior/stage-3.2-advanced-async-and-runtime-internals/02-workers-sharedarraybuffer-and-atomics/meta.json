@@ -1,0 +1,5 @@
+{
+  "title": "Workers, SharedArrayBuffer & Atomics",
+  "description": "Real shared-memory parallelism in JavaScript, and what it costs.",
+  "order": 2
+}

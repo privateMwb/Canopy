@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Image Formats &amp; Compression — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · images, fonts & media</span> → lesson 01</p>
+  <h1>Image Formats &amp; Compression</h1>
+  <p class="lede">Images are usually the heaviest thing on a page. Choosing the right format and compressing it well is often the biggest single win.</p>
+
+  <h2><span class="num">§1</span>Choosing a Format</h2>
+  <p>There is no best format, only the best format for the content. <strong>Raster</strong> formats store pixels. <strong>Vector</strong> formats store shapes, and stay sharp at any size.</p>
+  <table>
+    <tr><th>Format</th><th>Best for</th><th>Notes</th></tr>
+    <tr><td><strong>JPEG</strong></td><td>Photos</td><td>Universal, lossy, no transparency</td></tr>
+    <tr><td><strong>PNG</strong></td><td>Sharp graphics needing lossless pixels or transparency</td><td>Large for photos</td></tr>
+    <tr><td><strong>WebP</strong></td><td>Photos and graphics</td><td>Typically smaller than JPEG and PNG; broad support</td></tr>
+    <tr><td><strong>AVIF</strong></td><td>Photos where size matters most</td><td>Often the smallest, slower to encode; wide support</td></tr>
+    <tr><td><strong>SVG</strong></td><td>Logos, icons, simple illustrations</td><td>Vector, tiny, scales perfectly, can be styled</td></tr>
+  </table>
+  <p>A sensible default today is <strong>AVIF or WebP with a JPEG fallback</strong> for photos, and <strong>SVG</strong> for anything that is genuinely a shape. Don't use PNG for photographs: it can be many times larger than the same image as a lossy format.</p>
+
+  <h2><span class="num">§2</span>Compression and Quality</h2>
+  <p><strong>Lossy</strong> compression discards detail the eye is unlikely to notice. <strong>Lossless</strong> compression keeps every pixel but saves less. For photos, lossy is the normal choice, and the quality setting is the lever.</p>
+  <ul>
+    <li>Quality around 70 to 85 is usually visually indistinguishable from 100 at a fraction of the size.</li>
+    <li>Compare images side by side at the <strong>size they are displayed</strong>. Artifacts you only see zoomed in don't matter to users.</li>
+    <li>Strip unneeded <strong>metadata</strong> (camera data, color profiles you don't use) to shave bytes.</li>
+  </ul>
+  <pre><span class="comment"># Convert and compress with common command-line tools</span>
+cwebp -q 80 hero.jpg -o hero.webp
+avifenc --min 20 --max 35 hero.jpg hero.avif
+svgo logo.svg -o logo.min.svg</pre>
+  <p>Build pipelines and image CDNs can do this automatically, resizing and converting on the fly. Whichever route you use, make it the default, not a manual step someone forgets.</p>
+
+  <h2><span class="num">§3</span>Serving Modern Formats Safely</h2>
+  <p>The <code>&lt;picture&gt;</code> element lets the browser pick the first format it supports, so old browsers still get an image.</p>
+  <pre>&lt;picture&gt;
+  &lt;source srcset="hero.avif" type="image/avif"&gt;
+  &lt;source srcset="hero.webp" type="image/webp"&gt;
+  &lt;img src="hero.jpg" width="1200" height="600" alt="A mountain at sunrise"&gt;
+&lt;/picture&gt;</pre>
+  <p>Always set <code>width</code> and <code>height</code> (or <code>aspect-ratio</code> in CSS) so the browser reserves space before the image arrives. This prevents layout shift, covered later in the course.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Format and quality settings change bytes far more than any code optimization. Check image weight first when a page is heavy.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using PNG for photographs</td><td>Files several times larger than needed</td><td>Use AVIF, WebP, or JPEG for photos</td></tr>
+    <tr><td>Saving everything at maximum quality</td><td>Wasted bytes with no visible gain</td><td>Test 70 to 85 and compare at display size</td></tr>
+    <tr><td>Serving AVIF or WebP with no fallback</td><td>Older browsers show a broken image</td><td>Use <code>&lt;picture&gt;</code> with a JPEG <code>&lt;img&gt;</code> fallback</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take one photo and export it as JPEG, WebP, and AVIF at similar visual quality. Record each file size.</li>
+      <li>Replace a logo PNG with an SVG and compare the size and sharpness on a high-density screen.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Use SVG for shapes, and AVIF or WebP with a JPEG fallback for photos.</li>
+      <li>Lossy quality around 70 to 85 usually looks the same at a much smaller size.</li>
+      <li><code>&lt;picture&gt;</code> serves modern formats safely, and width and height prevent layout shift.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Images, Fonts &amp; Media — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

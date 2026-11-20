@@ -1,0 +1,5 @@
+{
+  "title": "Kustomize & Environment Overlays",
+  "description": "Layering changes for dev, staging, and production.",
+  "order": 2
+}

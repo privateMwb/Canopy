@@ -1,0 +1,1 @@
+{"title": "Parameterized Queries & SQL Injection", "description": "How string-built SQL gets exploited, and why placeholders fix it.", "order": 2}

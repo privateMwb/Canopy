@@ -1,0 +1,5 @@
+{
+  "title": "Reliability & Incident Response on Kubernetes",
+  "description": "Common outages, diagnosis, and the postmortem habit.",
+  "order": 4
+}

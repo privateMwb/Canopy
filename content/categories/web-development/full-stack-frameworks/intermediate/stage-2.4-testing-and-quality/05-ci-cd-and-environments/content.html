@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CI/CD &amp; Environments — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · testing &amp; quality</span> → lesson 05</p>
+  <h1>CI/CD &amp; Environments</h1>
+  <p class="lede">Pipelines, staging, and safe releases.</p>
+
+  <h2><span class="num">§1</span>Automate the Safety Net</h2>
+
+  <p>Continuous integration (CI) runs checks on every change, so problems are caught by a machine in minutes rather than by users in production. Continuous delivery (CD) then promotes passing builds to environments automatically.</p>
+
+  <pre><span class="comment"># .github/workflows/ci.yml  (GitHub Actions)</span>
+name: CI
+on: [pull_request]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit        <span class="comment"># type check</span>
+      - run: npm test                <span class="comment"># unit + integration</span>
+      - run: npm run build
+      - run: npx playwright install --with-deps &amp;&amp; npx playwright test</pre>
+
+  <p>Order checks from fastest to slowest so failures surface early, and run independent jobs in parallel.</p>
+
+  <h2><span class="num">§2</span>Environments</h2>
+
+  <table>
+    <tr><th>Environment</th><th>Purpose</th><th>Data</th></tr>
+    <tr><td>Local</td><td>Development and quick feedback</td><td>Seeded or disposable</td></tr>
+    <tr><td>Preview</td><td>Per-PR review</td><td>Test data, never production</td></tr>
+    <tr><td>Staging</td><td>Production-like rehearsal</td><td>Anonymised or synthetic</td></tr>
+    <tr><td>Production</td><td>Real users</td><td>Real data, strict access</td></tr>
+  </table>
+
+  <p>Keep configuration per environment in variables, and keep environments as similar as possible so staging results mean something.</p>
+
+  <h2><span class="num">§3</span>Safe Releases</h2>
+
+  <ul>
+    <li><strong>Protected <code>main</code>:</strong> require passing checks and review before merge.</li>
+    <li><strong>Small, frequent releases:</strong> smaller diffs mean easier diagnosis and rollback.</li>
+    <li><strong>Feature flags:</strong> deploy code dark, then turn it on gradually, and off instantly if it misbehaves.</li>
+    <li><strong>Fast rollback:</strong> keep previous deployments available and practise promoting one.</li>
+    <li><strong>Migrations in two steps:</strong> make schema changes backwards compatible, so old and new code both work during the deploy (see lesson 3.2.3).</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Fast feedback beats thorough feedback</span>
+    A pipeline that takes 40 minutes gets bypassed. Keep the pull-request path quick (aim for minutes), and run slower or broader suites on merge or on a schedule.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Running checks only locally</td><td>Broken code reaches <code>main</code> when someone skips them</td><td>Enforce checks in CI with required status checks</td></tr>
+    <tr><td>Sharing one database across environments</td><td>Test runs corrupt staging or production data</td><td>Give each environment its own database and secrets</td></tr>
+    <tr><td>Deploying with no rollback plan</td><td>A bad release means a long outage while you improvise</td><td>Practise rollbacks and use feature flags for risky changes</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a CI workflow that runs lint, type check, tests, and build on every pull request.</li>
+      <li>Describe how you would roll back a bad deploy and how you would roll back a bad database migration, and compare the difficulty.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>CI runs lint, types, tests, and build on every change, ordered fast to slow.</li>
+      <li>Separate local, preview, staging, and production, each with its own data and secrets.</li>
+      <li>Release in small steps with protected branches, feature flags, and a practised rollback.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Testing &amp; Quality — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

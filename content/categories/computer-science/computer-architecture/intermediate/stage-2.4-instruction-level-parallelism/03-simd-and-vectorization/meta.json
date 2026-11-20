@@ -1,0 +1,1 @@
+{"title": "SIMD & Vectorization", "description": "One instruction on many data elements, and writing loops compilers can vectorize.", "order": 3}

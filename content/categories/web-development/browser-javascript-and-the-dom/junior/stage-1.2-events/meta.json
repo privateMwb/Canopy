@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Events",
+  "description": "Listeners, the event object, bubbling and delegation, input events, and forms.",
+  "order": 2
+}

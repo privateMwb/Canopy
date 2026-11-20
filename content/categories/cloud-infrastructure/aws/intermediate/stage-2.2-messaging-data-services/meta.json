@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Messaging & Data Services",
+  "description": "Queues and events, DynamoDB, caching, storage patterns, Aurora operations, and streaming.",
+  "order": 2
+}

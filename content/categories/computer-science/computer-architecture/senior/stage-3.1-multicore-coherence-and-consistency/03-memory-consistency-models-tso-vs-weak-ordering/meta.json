@@ -1,0 +1,1 @@
+{"title": "Memory Consistency Models: TSO vs. Weak Ordering", "description": "What reorderings the hardware allows, and why x86 and ARM differ.", "order": 3}

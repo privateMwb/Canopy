@@ -1,0 +1,5 @@
+{
+  "title": "span, string_view & Non-Owning Types",
+  "description": "Cheap views into data, and the lifetime rules that keep them safe.",
+  "order": 2
+}

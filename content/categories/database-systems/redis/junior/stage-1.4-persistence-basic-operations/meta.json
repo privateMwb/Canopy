@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.4 — Persistence & Basic Operations",
+  "description": "Persistence models, memory limits and eviction, basic security, monitoring, and connection handling.",
+  "order": 4
+}

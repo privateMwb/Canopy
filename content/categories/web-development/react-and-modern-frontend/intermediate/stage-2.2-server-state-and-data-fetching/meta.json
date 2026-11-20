@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Server State & Data Fetching",
+  "description": "Server state, TanStack Query, optimistic updates, pagination, and Suspense.",
+  "order": 2
+}

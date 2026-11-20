@@ -1,0 +1,5 @@
+{
+  "title": "Memory & Garbage Collection",
+  "description": "Leaks from event listeners, closures, and detached DOM.",
+  "order": 2
+}

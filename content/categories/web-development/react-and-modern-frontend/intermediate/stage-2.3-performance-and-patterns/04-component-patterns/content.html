@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Component Patterns — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · performance &amp; patterns</span> → lesson 04</p>
+  <h1>Component Patterns</h1>
+  <p class="lede">A handful of design patterns keep components flexible without piling on props. Composition is the foundation, and compound components and render props build on it for the hardest cases.</p>
+
+  <h2><span class="num">§1</span>Composition over Configuration</h2>
+
+  <p>The easiest way to make a component flexible is to let callers <strong>put things inside it</strong>. Instead of a prop for every variation, accept <code>children</code> or named slots (props that take JSX). The component controls the structure; the caller controls the content.</p>
+
+  <pre><span class="comment">// configuration: grows without end</span>
+&lt;Card title="A" subtitle="B" showIcon icon="star" footerText="C" footerLink="/c" hasBorder /&gt;
+
+<span class="comment">// composition: flexible, readable, nothing to remember</span>
+&lt;Card&gt;
+  &lt;Card.Header&gt;&lt;Star /&gt; A&lt;/Card.Header&gt;
+  &lt;Card.Body&gt;B&lt;/Card.Body&gt;
+  &lt;Card.Footer&gt;&lt;a href="/c"&gt;C&lt;/a&gt;&lt;/Card.Footer&gt;
+&lt;/Card&gt;
+
+<span class="comment">// slots as props when there are a few fixed regions</span>
+&lt;Layout sidebar={&lt;Nav /&gt;} header={&lt;Header /&gt;}&gt;
+  &lt;Page /&gt;
+&lt;/Layout&gt;</pre>
+
+  <p>A useful rule: if you are adding a boolean prop to toggle part of the output, or a prop that takes a string for something that could be JSX, consider composition instead.</p>
+
+  <h2><span class="num">§2</span>Compound Components</h2>
+
+  <p><strong>Compound components</strong> are a set of components that <strong>work together</strong> and share hidden state, like <code>&lt;select&gt;</code> and <code>&lt;option&gt;</code>. The parent owns the state and exposes it through context, and the children read it. The caller gets a flexible, declarative API.</p>
+
+  <pre>const TabsContext = createContext(null);
+
+function Tabs({ defaultValue, children }) {
+  const [value, setValue] = useState(defaultValue);
+  return (
+    &lt;TabsContext value={{ value, setValue }}&gt;
+      &lt;div className="tabs"&gt;{children}&lt;/div&gt;
+    &lt;/TabsContext&gt;
+  );
+}
+
+function Tab({ id, children }) {
+  const { value, setValue } = useContext(TabsContext);
+  return (
+    &lt;button role="tab" aria-selected={value === id} onClick={() =&gt; setValue(id)}&gt;
+      {children}
+    &lt;/button&gt;
+  );
+}
+
+function Panel({ id, children }) {
+  const { value } = useContext(TabsContext);
+  return value === id ? &lt;div role="tabpanel"&gt;{children}&lt;/div&gt; : null;
+}
+
+Tabs.Tab = Tab;
+Tabs.Panel = Panel;
+
+&lt;Tabs defaultValue="a"&gt;
+  &lt;Tabs.Tab id="a"&gt;Overview&lt;/Tabs.Tab&gt;
+  &lt;Tabs.Tab id="b"&gt;Details&lt;/Tabs.Tab&gt;
+  &lt;Tabs.Panel id="a"&gt;...&lt;/Tabs.Panel&gt;
+  &lt;Tabs.Panel id="b"&gt;...&lt;/Tabs.Panel&gt;
+&lt;/Tabs&gt;</pre>
+
+  <p>This pattern powers most good UI libraries (Radix, Reach, Headless UI). Add the accessibility behavior (roles, arrow-key navigation, focus) inside the components so that every user of them gets it for free.</p>
+
+  <h2><span class="num">§3</span>Render Props, Custom Hooks, and Controlled/Uncontrolled</h2>
+
+  <p>A <strong>render prop</strong> is a prop whose value is a function that returns JSX, letting the caller decide how to render data the component owns. Custom hooks replace most uses, but render props remain useful when the shared logic is tied to a <strong>piece of UI</strong>, such as a virtualized list's rows.</p>
+
+  <pre>function Mouse({ children }) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  return &lt;div onMouseMove={(e) =&gt; setPos({ x: e.clientX, y: e.clientY })}&gt;{children(pos)}&lt;/div&gt;;
+}
+&lt;Mouse&gt;{({ x, y }) =&gt; &lt;p&gt;{x}, {y}&lt;/p&gt;}&lt;/Mouse&gt;
+
+<span class="comment">// usually simpler as a hook</span>
+function useMouse() { /* ... */ return pos; }
+
+<span class="comment">// a component that supports both controlled and uncontrolled use</span>
+function Toggle({ on: controlled, defaultOn = false, onChange }) {
+  const [internal, setInternal] = useState(defaultOn);
+  const isControlled = controlled !== undefined;
+  const on = isControlled ? controlled : internal;
+
+  function toggle() {
+    if (!isControlled) setInternal(!on);
+    onChange?.(!on);
+  }
+  return &lt;button aria-pressed={on} onClick={toggle}&gt;{on ? "On" : "Off"}&lt;/button&gt;;
+}</pre>
+
+  <table>
+    <tr><th>Pattern</th><th>Use when</th></tr>
+    <tr><td>Composition (<code>children</code>, slots)</td><td>Default choice for flexible layout components</td></tr>
+    <tr><td>Compound components</td><td>Several parts share state (tabs, accordion, menu, dialog)</td></tr>
+    <tr><td>Custom hook</td><td>Share stateful logic with no UI attached</td></tr>
+    <tr><td>Render prop</td><td>Logic tied to UI the caller must customize</td></tr>
+    <tr><td>Controlled/uncontrolled</td><td>Reusable inputs and widgets that parents may want to drive</td></tr>
+  </table>
+
+  <ul>
+    <li>Avoid <strong>higher-order components</strong> and deep <strong>prop spreading</strong> in new code unless a library requires them; hooks and composition are clearer.</li>
+    <li>Use <strong><code>...rest</code></strong> props to forward attributes and <code>className</code> to the underlying element so wrappers do not block normal usage.</li>
+    <li>Do not build a mega-component with 20 props and nested option objects. Split it.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Give callers slots, not switches</span>
+    Every boolean prop that rearranges a component's insides is a sign it wants to be composed instead. Let the caller place content, and keep the component responsible for structure and behavior.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Adding a new prop for every variation</td><td>Components with dozens of props and tangled logic</td><td>Use <code>children</code>, slots, or compound components</td></tr>
+    <tr><td>Compound components without accessibility roles and keys</td><td>Looks right but unusable with a keyboard or screen reader</td><td>Build ARIA roles and keyboard handling into the parts</td></tr>
+    <tr><td>Using render props where a hook is simpler</td><td>Nested callbacks and hard-to-read JSX</td><td>Extract a custom hook</td></tr>
+    <tr><td>Not forwarding <code>className</code> and other props</td><td>Callers cannot style or extend the component</td><td>Accept and spread <code>...rest</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Refactor a component with five boolean props into a composed version using <code>children</code> and slots.</li>
+      <li>Build <code>Tabs</code>, <code>Tab</code>, and <code>Panel</code> compound components with context, and add <code>role</code> attributes.</li>
+      <li>Make an input component that works both controlled and uncontrolled.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Prefer composition: accept <code>children</code> and slots instead of many configuration props.</li>
+      <li>Compound components share state through context to give flexible, declarative APIs.</li>
+      <li>Hooks replace most render props; support controlled and uncontrolled use in reusable widgets.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Performance &amp; Patterns — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

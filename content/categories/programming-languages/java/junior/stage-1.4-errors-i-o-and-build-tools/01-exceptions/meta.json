@@ -1,0 +1,5 @@
+{
+  "title": "Exceptions",
+  "description": "Checked vs. unchecked, custom exceptions, and what to catch.",
+  "order": 1
+}

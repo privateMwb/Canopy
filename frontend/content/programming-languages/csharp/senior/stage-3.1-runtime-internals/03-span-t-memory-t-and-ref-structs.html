@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Span&lt;T&gt;, Memory&lt;T&gt; &amp; ref structs — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · runtime internals</span> → lesson 03</p>
+  <h1>Span&lt;T&gt;, Memory&lt;T&gt; &amp; ref structs</h1>
+  <p class="lede"><code>Span&lt;T&gt;</code> is a view over a contiguous region of memory, so you can slice and parse without copying or allocating.</p>
+
+  <h2><span class="num">§1</span>Slicing Without Allocating</h2>
+
+  <pre>string line = "2026-10-23,Ada,42";
+
+<span class="comment">// Allocating version: three new strings</span>
+var parts = line.Split(',');
+int age = int.Parse(parts[2]);
+
+<span class="comment">// Span version: no allocation at all</span>
+ReadOnlySpan&lt;char&gt; span = line.AsSpan();
+int c1 = span.IndexOf(',');
+ReadOnlySpan&lt;char&gt; rest = span[(c1 + 1)..];
+int c2 = rest.IndexOf(',');
+int age2 = int.Parse(rest[(c2 + 1)..]);       <span class="comment">// parse directly from a slice</span>
+
+Span&lt;int&gt; window = stackalloc int[16];        <span class="comment">// memory on the stack, no heap allocation</span>
+byte[] data = new byte[100];
+Span&lt;byte&gt; header = data.AsSpan(0, 4);        <span class="comment">// a view of the first 4 bytes: no copy</span>
+header[0] = 0xFF;                             <span class="comment">// writes through to data</span></pre>
+  <p>A <code>Span&lt;T&gt;</code> is a pointer plus a length. Slicing creates a new view over the <em>same</em> memory, so it costs nothing. It works over arrays, strings (read-only), stack memory, and native memory, and the BCL has span overloads for parsing, searching, and I/O (<code>int.Parse(ReadOnlySpan&lt;char&gt;)</code>, <code>Stream.Read(Span&lt;byte&gt;)</code>).</p>
+
+  <h2><span class="num">§2</span>ref structs and Their Rules</h2>
+
+  <p><code>Span&lt;T&gt;</code> is a <strong>ref struct</strong>, a type that can only live on the stack. That restriction is what makes it safe, because a span might point at stack memory that vanishes when the method returns. The compiler enforces the rules:</p>
+  <ul>
+    <li>It can't be a field of a normal class or struct, and can't be boxed.</li>
+    <li>It can't be used in <code>async</code> methods across an <code>await</code>, in iterators across a <code>yield</code>, or captured by a lambda.</li>
+    <li>A method can't return a span that points into a local stack buffer (<strong>escape analysis</strong> rejects it).</li>
+  </ul>
+  <pre><span class="comment">// Compile error: the span would outlive the memory it points to</span>
+Span&lt;int&gt; Bad() { Span&lt;int&gt; s = stackalloc int[4]; return s; }</pre>
+
+  <h2><span class="num">§3</span>Memory<T> and When to Use Which</h2>
+
+  <pre>async Task ProcessAsync(Stream input)
+{
+    Memory&lt;byte&gt; buffer = new byte[4096];       <span class="comment">// heap-friendly, can cross await</span>
+    int n = await input.ReadAsync(buffer);
+    Parse(buffer.Span[..n]);                    <span class="comment">// use .Span for synchronous work</span>
+}</pre>
+  <table>
+    <tr><th>Type</th><th>Lives on</th><th>Use it for</th></tr>
+    <tr><td><code>Span&lt;T&gt;</code> / <code>ReadOnlySpan&lt;T&gt;</code></td><td>Stack only</td><td>Synchronous parsing, slicing, hot paths</td></tr>
+    <tr><td><code>Memory&lt;T&gt;</code> / <code>ReadOnlyMemory&lt;T&gt;</code></td><td>Anywhere (a normal struct)</td><td>Async code, storing buffers in fields</td></tr>
+    <tr><td><code>stackalloc</code></td><td>Stack</td><td>Small, short-lived scratch buffers (keep them modest, a few KB)</td></tr>
+  </table>
+  <p>Use <code>Memory&lt;T&gt;</code> where a span can't be held (fields, async), and call <code>.Span</code> inside the method to do the synchronous work. Don't <code>stackalloc</code> large or unbounded sizes: stack space is small, and overflow crashes the process.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A span is a <em>window</em>, not a copy. Slicing is free because nothing moves, and the ref-struct rules exist so that the window can never outlive the memory behind it.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>stackalloc</code> with a size from user input</td><td>Stack overflow, which cannot be caught</td><td>Cap the size and fall back to <code>ArrayPool</code> above a threshold</td></tr>
+    <tr><td>Storing a <code>Span&lt;T&gt;</code> in a class field or across an <code>await</code></td><td>Compile error</td><td>Use <code>Memory&lt;T&gt;</code> and take <code>.Span</code> locally</td></tr>
+    <tr><td>Assuming a slice is a copy</td><td>Writes through the span change the original data</td><td>Call <code>ToArray()</code> when you need an independent copy</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Parse a CSV line of the form <code>name,age,score</code> into a struct using spans only, and verify with an allocation counter (<code>GC.GetAllocatedBytesForCurrentThread</code>) that it allocates nothing.</li>
+      <li>Write an async method that reads a stream in chunks into a <code>Memory&lt;byte&gt;</code> and processes each chunk with a span.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>Span&lt;T&gt;</code> slices and parses memory with zero allocation and zero copy.</li>
+      <li>As a ref struct, it stays on the stack: no fields, no <code>await</code> crossings, no escaping locals.</li>
+      <li>Use <code>Memory&lt;T&gt;</code> where spans can't go, and keep <code>stackalloc</code> small and bounded.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Runtime Internals — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

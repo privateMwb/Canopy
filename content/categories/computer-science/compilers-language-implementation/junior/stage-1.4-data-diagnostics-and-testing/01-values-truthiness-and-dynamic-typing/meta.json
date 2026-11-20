@@ -1,0 +1,5 @@
+{
+  "title": "Values, Truthiness & Dynamic Typing",
+  "description": "How an interpreter represents values at runtime, and the rules for equality and truthiness.",
+  "order": 1
+}

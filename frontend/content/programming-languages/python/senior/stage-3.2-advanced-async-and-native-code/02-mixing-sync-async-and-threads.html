@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mixing Sync, Async &amp; Threads — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · advanced async &amp; native code</span> → lesson 02</p>
+  <h1>Mixing Sync, Async &amp; Threads</h1>
+  <p class="lede">Real systems combine blocking libraries, async code, and threads, and the main hazard is stalling the event loop with a call that doesn't yield.</p>
+
+  <h2><span class="num">§1</span>Detecting Event-Loop Stalls</h2>
+
+  <p>Any synchronous call inside a coroutine, whether <code>time.sleep</code>, a <code>requests.get</code>, a big JSON parse, or a CPU loop, blocks every other task until it returns. Symptoms: latency spikes that affect unrelated requests. asyncio's debug mode reports slow callbacks.</p>
+
+  <pre>asyncio.run(main(), debug=True)           <span class="comment"># or env PYTHONASYNCIODEBUG=1</span>
+<span class="comment"># logs: "Executing &lt;Task ...&gt; took 0.512 seconds"</span></pre>
+
+  <pre>import time
+
+async def heartbeat():
+    while True:
+        t = time.perf_counter()
+        await asyncio.sleep(0.1)
+        lag = time.perf_counter() - t - 0.1
+        if lag &gt; 0.05:
+            log.warning("event loop lag: %.0f ms", lag * 1000)</pre>
+
+  <p>A lag monitor like this in a service tells you when something is blocking the loop.</p>
+
+  <h2><span class="num">§2</span>Calling Blocking Code from async</h2>
+
+  <p>Offload it to a thread, or a process for CPU-heavy work.</p>
+
+  <pre>import asyncio, hashlib
+
+def blocking_read(path):
+    with open(path, "rb") as f:
+        return f.read()
+
+async def handler(path):
+    data = await asyncio.to_thread(blocking_read, path)    <span class="comment"># runs in the default thread pool</span>
+    return len(data)
+
+from concurrent.futures import ProcessPoolExecutor
+pool = ProcessPoolExecutor()
+
+async def checksum_many(blobs):
+    loop = asyncio.get_running_loop()
+    return await asyncio.gather(*[
+        loop.run_in_executor(pool, hashlib.sha256, b) for b in blobs
+    ])</pre>
+
+  <p>Threads suit blocking I/O and C code that releases the GIL. For pure-Python CPU work on a standard build, use processes. The default thread pool is limited in size, so a flood of long <code>to_thread</code> calls queues up.</p>
+
+  <h2><span class="num">§3</span>Calling async from Sync</h2>
+
+  <p>A sync function can't <code>await</code>. At the outermost layer, start a loop with <code>asyncio.run(coro())</code>. You can't call <code>asyncio.run</code> from inside a running loop, so from a worker thread, hand the coroutine to the loop instead.</p>
+
+  <pre>def from_thread(loop, coro):
+    future = asyncio.run_coroutine_threadsafe(coro, loop)
+    return future.result(timeout=5)       <span class="comment"># blocks THIS thread, not the loop</span>
+
+<span class="comment"># loop = asyncio.get_running_loop() was captured in the async side earlier</span></pre>
+
+  <p>To notify the loop from another thread, use <code>loop.call_soon_threadsafe(...)</code>. Most asyncio objects, such as <code>Queue</code> and <code>Event</code>, are <strong>not</strong> thread-safe.</p>
+
+  <h2><span class="num">§4</span>Bridging Old and New Code</h2>
+
+  <ul>
+    <li>Keep the boundary narrow: one adapter layer converts between sync and async, instead of sprinkling <code>to_thread</code> everywhere.</li>
+    <li>Prefer a natively async library for hot paths, and a thread wrapper for rarely used legacy calls.</li>
+    <li>Never hold a threading lock across an <code>await</code>; another task on the same thread could try to acquire it and deadlock the loop. Use <code>asyncio.Lock</code> for coroutine mutual exclusion.</li>
+    <li>Avoid libraries that hide their own <code>asyncio.run()</code> or global loops.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    There is exactly one event loop thread, and its only job is to switch between ready tasks quickly. Anything slow, blocking, or CPU-heavy belongs elsewhere.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Calling a blocking function directly in <code>async def</code></td><td>The whole service freezes for the call's duration</td><td>Use <code>await asyncio.to_thread(...)</code> or an async library</td></tr>
+    <tr><td>Calling <code>asyncio.run()</code> inside a running loop</td><td><code>RuntimeError: asyncio.run() cannot be called from a running event loop</code></td><td><code>await</code> the coroutine, or use <code>run_coroutine_threadsafe</code> from other threads</td></tr>
+    <tr><td>Using <code>threading.Lock</code> around an <code>await</code></td><td>Deadlocks or unfair stalls</td><td>Use <code>asyncio.Lock</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a lag-monitor coroutine to a small server, then insert a <code>time.sleep(1)</code> and watch the warnings; fix it with <code>to_thread</code>.</li>
+      <li>Write a sync function that submits a coroutine to a loop running in another thread and waits for the result.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Blocking calls in coroutines stall every task; detect with debug mode or a lag monitor.</li>
+      <li>Offload blocking work with <code>to_thread</code> or an executor; use <code>run_coroutine_threadsafe</code> to go from threads into the loop.</li>
+      <li>Keep the sync/async boundary narrow and don't hold thread locks across <code>await</code>.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Advanced Async &amp; Native Code — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Sentinel & Automatic Failover",
+  "description": "Monitoring, electing a new primary, and client behavior during failover.",
+  "order": 4
+}

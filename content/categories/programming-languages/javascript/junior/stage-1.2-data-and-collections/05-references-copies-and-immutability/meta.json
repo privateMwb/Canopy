@@ -1,0 +1,5 @@
+{
+  "title": "References, Copies & Immutability",
+  "description": "Why assignment shares objects, shallow vs. deep copies, and structuredClone.",
+  "order": 5
+}

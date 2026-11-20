@@ -1,0 +1,5 @@
+{
+  "title": "Cluster Upgrades & Node Lifecycle",
+  "description": "Version skew, rolling node upgrades, and avoiding surprises.",
+  "order": 2
+}

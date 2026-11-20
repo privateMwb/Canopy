@@ -1,0 +1,5 @@
+{
+  "title": "Memory Limits & Eviction Policies",
+  "description": "maxmemory, LRU and LFU, and what Redis does when it is full.",
+  "order": 2
+}

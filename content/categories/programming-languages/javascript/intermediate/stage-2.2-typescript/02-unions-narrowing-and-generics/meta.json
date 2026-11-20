@@ -1,0 +1,5 @@
+{
+  "title": "Unions, Narrowing & Generics",
+  "description": "Modeling data precisely and letting the compiler follow your checks.",
+  "order": 2
+}

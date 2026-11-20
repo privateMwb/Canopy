@@ -1,0 +1,1 @@
+{"title": "Locking, Deadlocks & Lock Contention", "description": "Row and table locks, how deadlocks form, and how databases resolve them.", "order": 2}

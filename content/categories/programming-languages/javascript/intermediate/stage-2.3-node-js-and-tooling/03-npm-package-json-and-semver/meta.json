@@ -1,0 +1,5 @@
+{
+  "title": "npm, package.json & Semver",
+  "description": "Dependencies, lockfiles, scripts, and what a version range really permits.",
+  "order": 3
+}

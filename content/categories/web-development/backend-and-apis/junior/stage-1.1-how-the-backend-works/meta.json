@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — How the Backend Works",
+  "description": "HTTP, a first server, routing and middleware, request parsing, and manual testing.",
+  "order": 1
+}

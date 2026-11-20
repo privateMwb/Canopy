@@ -1,0 +1,1 @@
+{"title": "SSRF & Trusting User-Supplied URLs", "description": "Going past the OWASP list entry: redirects, DNS tricks, URL-parser disagreements, and cloud metadata endpoints.", "order": 3}

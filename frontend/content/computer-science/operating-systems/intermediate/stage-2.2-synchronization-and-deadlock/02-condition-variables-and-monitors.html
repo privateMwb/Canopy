@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Condition Variables &amp; Monitors — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · synchronization & deadlock</span> → lesson 02</p>
+  <h1>Condition Variables &amp; Monitors</h1>
+  <p class="lede">A condition variable lets a thread sleep until some shared state becomes true, and the rule that matters most is to always wait inside a loop.</p>
+
+  <h2><span class="num">§1</span>Waiting for a Condition</h2>
+  <p>A mutex protects data, but it can't wait for the data to change. If a consumer needs the queue to be non-empty, spinning on it wastes CPU. A <strong>condition variable</strong> pairs with a mutex: <code>pthread_cond_wait</code> atomically releases the mutex and sleeps, then reacquires the mutex before returning.</p>
+  <pre>pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t  c = PTHREAD_COND_INITIALIZER;
+int ready = 0;
+
+<span class="comment">// Waiter</span>
+pthread_mutex_lock(&amp;m);
+while (!ready)                     <span class="comment">// a loop, never a plain if</span>
+    pthread_cond_wait(&amp;c, &amp;m);     <span class="comment">// unlock, sleep, relock</span>
+<span class="comment">// ready is true and we hold the lock</span>
+pthread_mutex_unlock(&amp;m);
+
+<span class="comment">// Signaler</span>
+pthread_mutex_lock(&amp;m);
+ready = 1;
+pthread_cond_signal(&amp;c);           <span class="comment">// wake one waiter</span>
+pthread_mutex_unlock(&amp;m);</pre>
+
+  <h2><span class="num">§2</span>Why the <code>while</code> Loop</h2>
+  <p>Three things can wake a waiter with the condition still false. <strong>Spurious wakeups</strong> are allowed by the specification. Another thread may take the item first between the signal and the waiter reacquiring the lock. And with <code>broadcast</code>, several waiters wake for one item. Re-checking the condition in a loop makes all of these harmless.</p>
+  <pre><span class="comment">// Wrong: assumes the signal means the condition holds</span>
+if (queue_empty()) pthread_cond_wait(&amp;c, &amp;m);
+item = pop();                      <span class="comment">// may pop from an empty queue</span>
+
+<span class="comment">// Right</span>
+while (queue_empty()) pthread_cond_wait(&amp;c, &amp;m);
+item = pop();</pre>
+  <p>The condition lives in your shared state, such as <code>ready</code> above. The condition variable is only the mechanism for sleeping and waking; it holds no information itself.</p>
+
+  <h2><span class="num">§3</span>Signal vs. Broadcast, and Monitors</h2>
+  <p><code>signal</code> wakes one waiter, and <code>broadcast</code> wakes all. Use <code>broadcast</code> when different waiters wait for different conditions on one variable, or when the change might satisfy many of them.</p>
+  <p>A <strong>monitor</strong> bundles shared data, the lock that protects it, and the condition variables into one unit, with every operation running under the lock. Java's <code>synchronized</code> with <code>wait</code>/<code>notify</code> and Python's <code>threading.Condition</code> follow this pattern. In C you build one by hand with a struct.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha: lost wakeups</span>
+    If you signal before the waiter begins waiting and the waiter doesn't check the condition first, the wakeup is lost and the waiter sleeps forever. Checking shared state under the mutex before waiting prevents this.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>if</code> instead of <code>while</code> around <code>cond_wait</code></td><td>Proceeds on a spurious wakeup with the condition false</td><td>Always re-check the condition in a loop</td></tr>
+    <tr><td>Calling <code>cond_wait</code> without holding the mutex</td><td>Undefined behavior and race conditions</td><td>Hold the mutex before waiting; it releases it for you while asleep</td></tr>
+    <tr><td>Changing the shared state without the mutex</td><td>A waiter can miss the change and sleep forever</td><td>Update the condition's state while holding the same mutex the waiter uses</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Implement a thread-safe queue with a blocking <code>pop</code> that waits while the queue is empty.</li>
+      <li>Explain a scenario where replacing <code>while</code> with <code>if</code> produces a wrong result even without spurious wakeups.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A condition variable lets a thread sleep atomically while releasing its mutex.</li>
+      <li>Always wait in a <code>while</code> loop re-checking the condition.</li>
+      <li>The condition is your shared state; the variable is just the sleep and wake mechanism.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Synchronization & Deadlock — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

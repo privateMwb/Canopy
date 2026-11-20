@@ -1,0 +1,5 @@
+{
+  "title": "Jobs, CronJobs & DaemonSets",
+  "description": "Batch work, schedules, and one-pod-per-node workloads.",
+  "order": 3
+}

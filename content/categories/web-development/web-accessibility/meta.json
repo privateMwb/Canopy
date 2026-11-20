@@ -1,0 +1,7 @@
+{
+  "title": "Web Accessibility",
+  "description": "Keyboards, screen readers, and ARIA, for sites everyone can use.",
+  "order": 8,
+  "compileRoot": true,
+  "icon": "web_a11y"
+}

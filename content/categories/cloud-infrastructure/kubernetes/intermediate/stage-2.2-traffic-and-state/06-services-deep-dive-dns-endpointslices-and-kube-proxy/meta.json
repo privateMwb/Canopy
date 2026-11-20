@@ -1,0 +1,5 @@
+{
+  "title": "Services Deep Dive: DNS, EndpointSlices & kube-proxy",
+  "description": "How a service name becomes a pod address.",
+  "order": 6
+}

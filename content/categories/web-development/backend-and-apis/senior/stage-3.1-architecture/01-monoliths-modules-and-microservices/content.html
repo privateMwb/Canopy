@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Monoliths, Modules &amp; Microservices — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · architecture</span> → lesson 01</p>
+  <h1>Monoliths, Modules &amp; Microservices</h1>
+  <p class="lede">Choosing boundaries, and the cost of splitting.</p>
+
+  <h2><span class="num">§1</span>Boundaries Are the Real Decision</h2>
+
+  <p>"Monolith or microservices?" is usually the wrong first question. The question is <strong>where to draw boundaries</strong>, meaning which parts of the system can change, scale, fail, and be understood independently. A boundary can be enforced by folder conventions, by module APIs inside one process, or by a network between separately deployed services. Each step buys independence and charges you in complexity.</p>
+
+  <table>
+    <tr><th>Style</th><th>Shape</th><th>Strengths</th><th>Costs</th></tr>
+    <tr><td><strong>Monolith</strong></td><td>One deployable; code organized by technical layer</td><td>Simple to build, test, deploy, and debug; transactions are free</td><td>Boundaries erode; everything scales and deploys together</td></tr>
+    <tr><td><strong>Modular monolith</strong></td><td>One deployable; strictly separated modules with explicit public APIs</td><td>Most of the clarity of services with none of the network</td><td>Requires discipline (and tooling) to enforce boundaries</td></tr>
+    <tr><td><strong>Microservices</strong></td><td>Many independently deployed services, each owning its data</td><td>Independent deploys and scaling; team autonomy; fault isolation</td><td>Distributed-systems problems, operational overhead, harder debugging and testing</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>What Splitting Actually Costs</h2>
+
+  <p>A function call becomes a network call, and a network call can be slow, fail, time out, or succeed while the reply is lost. Splitting a monolith trades in-process certainty for all of the following:</p>
+
+  <ul>
+    <li><strong>No shared transaction.</strong> An operation spanning two services can no longer be one ACID transaction; you need sagas, compensation, and idempotency.</li>
+    <li><strong>Partial failure.</strong> Service A can be healthy while B is down, so every call needs timeouts, retries, and a plan for degradation.</li>
+    <li><strong>Operational load.</strong> Each service needs its own pipeline, monitoring, alerting, on-call knowledge, and security posture.</li>
+    <li><strong>Harder debugging and testing.</strong> One request now spans many logs and processes; reproducing a bug may require the whole constellation.</li>
+    <li><strong>Data consistency and queries.</strong> A join across services becomes API calls or replicated data.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Reasons That Justify a Split</h2>
+
+  <ul>
+    <li><strong>Team independence:</strong> many teams are blocked by each other's release cadence, and a clear domain boundary exists between them.</li>
+    <li><strong>Different scaling or resource profiles:</strong> an image-processing workload needs GPUs and bursts, while the API does not.</li>
+    <li><strong>Different reliability or compliance needs:</strong> payment handling that must be isolated and audited separately.</li>
+    <li><strong>Different technology needs</strong> that cannot reasonably co-exist in one runtime.</li>
+  </ul>
+
+  <p>Notice what is <em>not</em> on the list: "it's modern," "it will scale better someday," or "the code is messy." Messy code split across a network is still messy, plus distributed. The common failure is the <strong>distributed monolith</strong>: services that must be deployed together, share a database, or call each other synchronously in long chains, giving you every cost of both styles and the benefits of neither.</p>
+
+  <h2><span class="num">§4</span>Modules Inside One Process</h2>
+
+  <pre>src/
+  billing/
+    index.js          &lt;- the ONLY file other modules may import (the public API)
+    internal/         &lt;- everything else is private to the module
+      invoices.js
+      pricing.js
+  notes/
+    index.js
+    internal/
+  users/
+    index.js
+
+<span class="comment">// Enforce it, don't just hope: lint rule (e.g. eslint-plugin-boundaries / dependency-cruiser)</span>
+<span class="comment">// "no module may import from another module's internal/ folder"</span>
+<span class="comment">// Modules talk through their public API or through events, never through each other's tables.</span></pre>
+
+  <p>If modules cannot touch each other's tables, each already owns its data, and extracting one into a service later becomes a matter of replacing function calls with network calls at a boundary you have already proven.</p>
+
+  <h2><span class="num">§5</span>Evolving Safely</h2>
+
+  <ul>
+    <li><strong>Start modular, split on evidence.</strong> Extract when a specific pain (scaling, team contention, isolation) justifies the cost, and not before.</li>
+    <li><strong>Strangler fig migration:</strong> put a routing layer in front, move one capability at a time behind it into a new service, and retire the old code gradually.</li>
+    <li><strong>Own your data.</strong> A service that shares a database with another has not really been separated; integrate through APIs and events.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Conway's Law is a design tool</span>
+    Systems tend to mirror the communication structure of the organization that builds them. Choose boundaries that match how teams actually own work; a service owned by three teams has no owner. Align the architecture and the org chart deliberately, or the org chart will decide for you.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Splitting into services for fashion or "scale" that does not exist</td><td>Large operational cost with no measurable benefit</td><td>Define the specific problem a split solves, and prove it with data</td></tr>
+    <tr><td>Services sharing one database</td><td>Hidden coupling: schema changes break other teams and deploys must coordinate</td><td>Each service owns its data and exposes it through an API or events</td></tr>
+    <tr><td>Chains of synchronous calls between services</td><td>Latency adds up and one failure cascades</td><td>Reduce hops, use async messaging, and add timeouts and fallbacks</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take an existing codebase (or a sample) and sketch its modules. For each, write the public API it would expose and the tables it would own.</li>
+      <li>Identify one capability you believe should become a separate service, and write the three strongest reasons for and against, with evidence.</li>
+      <li>Add a lint rule or dependency-boundary check that fails CI if one module imports another's internals.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Boundaries matter more than deployment units; a well-structured modular monolith is a strong default.</li>
+      <li>Splitting into services trades in-process simplicity for network failure, eventual consistency, and operational load.</li>
+      <li>Split on evidence (team autonomy, scaling, isolation), keep data ownership clean, and avoid the distributed monolith.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Architecture — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

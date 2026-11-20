@@ -1,0 +1,5 @@
+{
+  "title": "Invalidation Strategies",
+  "description": "TTLs, explicit deletes, and event-driven invalidation, with the trade-off of each.",
+  "order": 1
+}

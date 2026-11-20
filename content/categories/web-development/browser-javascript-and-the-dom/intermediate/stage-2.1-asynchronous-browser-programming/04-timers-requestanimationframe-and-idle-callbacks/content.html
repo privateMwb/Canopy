@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timers, requestAnimationFrame &amp; Idle Callbacks — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · asynchronous browser programming</span> → lesson 04</p>
+  <h1>Timers, requestAnimationFrame &amp; Idle Callbacks</h1>
+  <p class="lede">The browser gives you several ways to schedule code. Choosing the right one decides whether animation is smooth, background work stays out of the way, and timers behave in background tabs.</p>
+
+  <h2><span class="num">§1</span>setTimeout and setInterval</h2>
+
+  <p><code>setTimeout(fn, ms)</code> runs <code>fn</code> once after <strong>at least</strong> <code>ms</code> milliseconds, and <code>setInterval</code> repeats. Both return an id for <code>clearTimeout</code>/<code>clearInterval</code>. The delay is a minimum, not a promise: if the main thread is busy, the callback waits.</p>
+
+  <pre>const id = setTimeout(() =&gt; console.log("later"), 1000);
+clearTimeout(id);
+
+let ticks = 0;
+const timer = setInterval(() =&gt; {
+  if (++ticks === 5) clearInterval(timer);
+}, 1000);
+
+<span class="comment">// timers in background tabs are throttled (often to once per second or less)</span></pre>
+
+  <p><code>setInterval</code> does not account for how long the callback takes, so overlapping or drifting runs are possible. A self-rescheduling <code>setTimeout</code> is safer for work that may take longer than the interval, and it lets you wait for async work to finish before scheduling the next run.</p>
+
+  <pre>async function poll() {
+  try { render(await getStatus()); }
+  finally { setTimeout(poll, 5000); }     <span class="comment">// next run only after this one is done</span>
+}
+poll();</pre>
+
+  <h2><span class="num">§2</span>requestAnimationFrame</h2>
+
+  <p><code>requestAnimationFrame(fn)</code> runs <code>fn</code> just <strong>before the next repaint</strong>, usually 60 times per second, and pauses automatically in background tabs. It is the right tool for anything visual: it is synchronized with the screen, so there is no wasted work and no tearing.</p>
+
+  <pre>let x = 0;
+let last = performance.now();
+
+function frame(now) {
+  const dt = (now - last) / 1000;      <span class="comment">// seconds since the last frame</span>
+  last = now;
+  x += 200 * dt;                       <span class="comment">// 200 px/second regardless of frame rate</span>
+  box.style.transform = `translateX(${x}px)`;
+  if (x &lt; 600) requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);</pre>
+
+  <p>Use the timestamp to compute movement from <strong>elapsed time</strong>, not from frame count, so animation runs at the same speed on a 60 Hz and a 144 Hz display. It is also the right place to batch DOM writes: read layout first, then write, once per frame, to avoid forcing repeated layout.</p>
+
+  <h2><span class="num">§3</span>requestIdleCallback and Scheduling Low-Priority Work</h2>
+
+  <p><code>requestIdleCallback(fn, { timeout })</code> runs <code>fn</code> when the browser has nothing more important to do, and tells you how much idle time remains. It suits low-priority work such as sending analytics, prefetching, or pre-computing data.</p>
+
+  <pre>function work(deadline) {
+  while (queue.length &amp;&amp; deadline.timeRemaining() &gt; 1) {
+    process(queue.shift());
+  }
+  if (queue.length) requestIdleCallback(work);   <span class="comment">// continue later</span>
+}
+requestIdleCallback(work, { timeout: 2000 });    <span class="comment">// run within 2s even if busy</span>
+
+<span class="comment">// fallback where unsupported (Safari)</span>
+const idle = window.requestIdleCallback ?? ((fn) =&gt; setTimeout(() =&gt; fn({ timeRemaining: () =&gt; 1 }), 1));</pre>
+
+  <table>
+    <tr><th>Tool</th><th>Use for</th></tr>
+    <tr><td><code>setTimeout</code></td><td>"After a delay", debouncing, polling</td></tr>
+    <tr><td><code>requestAnimationFrame</code></td><td>Visual updates and animation</td></tr>
+    <tr><td><code>requestIdleCallback</code></td><td>Low-priority background work</td></tr>
+    <tr><td><code>queueMicrotask</code></td><td>Run right after the current script, before rendering</td></tr>
+    <tr><td><code>scheduler.postTask</code></td><td>Prioritized tasks, where supported</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">Match the scheduler to the job</span>
+    Visual change belongs in <code>requestAnimationFrame</code>, urgent logic in microtasks or events, delayed work in <code>setTimeout</code>, and nice-to-have work in <code>requestIdleCallback</code>.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Animating with <code>setInterval(…, 16)</code></td><td>Janky, drifts from the display, runs in hidden tabs</td><td>Use <code>requestAnimationFrame</code> with elapsed time</td></tr>
+    <tr><td>Moving by a fixed amount per frame</td><td>Speed varies with the monitor's refresh rate</td><td>Multiply by the time delta</td></tr>
+    <tr><td>Not clearing timers on teardown</td><td>Callbacks run against removed elements</td><td>Store ids and call <code>clear*</code></td></tr>
+    <tr><td>Using <code>requestIdleCallback</code> without a fallback or timeout</td><td>May never run in a busy page or unsupported browser</td><td>Add <code>timeout</code> and a polyfill</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Animate a box across the screen with <code>requestAnimationFrame</code> using elapsed time, and verify speed stays constant when you throttle CPU in DevTools.</li>
+      <li>Replace a <code>setInterval</code> poller with a self-scheduling <code>setTimeout</code> that waits for each request to finish.</li>
+      <li>Defer a non-urgent task (such as sending analytics) to <code>requestIdleCallback</code> with a <code>timeout</code> fallback.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Timer delays are minimums; background tabs throttle them.</li>
+      <li>Use <code>requestAnimationFrame</code> for visuals, with timestamp-based movement.</li>
+      <li>Push low-priority work to idle time so it never competes with input and rendering.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Asynchronous Browser Programming — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

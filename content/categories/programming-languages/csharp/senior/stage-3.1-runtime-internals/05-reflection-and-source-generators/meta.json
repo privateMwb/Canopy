@@ -1,0 +1,5 @@
+{
+  "title": "Reflection & Source Generators",
+  "description": "Runtime inspection, its costs, and generating code at compile time instead.",
+  "order": 5
+}

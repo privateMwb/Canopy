@@ -1,0 +1,5 @@
+{
+  "title": "Exceptions & Non-Local Control Flow",
+  "description": "Unwinding the stack, running cleanup code, and the cost of the happy path.",
+  "order": 2
+}

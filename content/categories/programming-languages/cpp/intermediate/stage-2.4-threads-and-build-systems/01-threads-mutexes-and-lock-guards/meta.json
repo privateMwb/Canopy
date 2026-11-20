@@ -1,0 +1,5 @@
+{
+  "title": "Threads, Mutexes & Lock Guards",
+  "description": "std::thread, scoped locking, and avoiding data races.",
+  "order": 1
+}

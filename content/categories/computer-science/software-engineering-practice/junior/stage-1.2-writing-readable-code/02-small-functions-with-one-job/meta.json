@@ -1,0 +1,5 @@
+{
+  "title": "Small Functions with One Job",
+  "description": "Why long functions hide bugs, how to split by level of abstraction, and when a function is small enough.",
+  "order": 2
+}

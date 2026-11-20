@@ -1,0 +1,5 @@
+{
+  "title": "Implementing Generics: Monomorphization vs. Erasure",
+  "description": "Code size, speed, and separate-compilation tradeoffs for each strategy.",
+  "order": 4
+}

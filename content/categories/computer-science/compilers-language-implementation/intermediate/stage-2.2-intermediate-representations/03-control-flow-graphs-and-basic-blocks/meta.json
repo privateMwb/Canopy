@@ -1,0 +1,5 @@
+{
+  "title": "Control-Flow Graphs & Basic Blocks",
+  "description": "Splitting code into blocks, drawing edges for jumps, and why analyses want a graph.",
+  "order": 3
+}

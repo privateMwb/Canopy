@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Persistence with JDBC &amp; JPA — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · building services</span> → lesson 03</p>
+  <h1>Persistence with JDBC &amp; JPA</h1>
+  <p class="lede">JDBC is the low-level API every Java database library sits on, JPA maps objects to tables for you, and the convenience of JPA comes with traps such as the N+1 query problem that you need to be able to recognize.</p>
+
+  <h2><span class="num">§1</span>JDBC Underneath</h2>
+  <p>JDBC lets you send SQL and read rows. Everything else, including JPA, is built on it. Always use a <strong><code>PreparedStatement</code></strong> with parameters, never string concatenation, which prevents SQL injection and lets the database reuse plans.</p>
+  <pre>String sql = "SELECT id, title FROM book WHERE author = ? AND pages &gt; ?";
+try (Connection c = dataSource.getConnection();
+     PreparedStatement ps = c.prepareStatement(sql)) {
+    ps.setString(1, author);
+    ps.setInt(2, 100);
+    try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            System.out.println(rs.getLong("id") + " " + rs.getString("title"));
+        }
+    }
+}</pre>
+  <p>Connections are expensive, so applications borrow them from a <strong>connection pool</strong> (HikariCP is Spring Boot's default) and "closing" a pooled connection returns it to the pool. Always close connections, statements, and result sets, which try-with-resources does for you. Spring's <code>JdbcClient</code> and <code>JdbcTemplate</code> remove most of this boilerplate.</p>
+
+  <h2><span class="num">§2</span>JPA Entities and Repositories</h2>
+  <p>JPA (Jakarta Persistence, implemented by Hibernate) maps classes to tables. An <strong>entity</strong> is a class with an identity, and a <strong>repository</strong> gives you queries without writing SQL for the common cases.</p>
+  <pre>@Entity
+@Table(name = "book")
+class Book {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private Author author;
+    protected Book() { }                              <span class="comment">// JPA requires a no-argument constructor</span>
+    Book(String title, Author author) { this.title = title; this.author = author; }
+    <span class="comment">// getters...</span>
+}
+
+interface BookRepository extends JpaRepository&lt;Book, Long&gt; {
+    List&lt;Book&gt; findByTitleContainingIgnoreCase(String fragment);       <span class="comment">// query derived from the name</span>
+    @Query("select b from Book b where b.author.name = :name")
+    List&lt;Book&gt; byAuthor(@Param("name") String name);
+}</pre>
+  <p>Entities are <strong>managed</strong> within a transaction: load an entity, change a field, and Hibernate detects the change and issues an <code>UPDATE</code> at commit, with no explicit <code>save</code> needed. Outside a transaction, entities are <strong>detached</strong> and lazy fields can no longer be loaded (<code>LazyInitializationException</code>).</p>
+
+  <h2><span class="num">§3</span>Transactions</h2>
+  <p>A transaction groups statements so they succeed or fail together. In Spring, put <code>@Transactional</code> on <strong>service</strong> methods that perform one logical unit of work, not on controllers or repositories.</p>
+  <pre>@Service
+class TransferService {
+    @Transactional
+    public void transfer(long from, long to, long cents) {
+        Account a = accounts.findById(from).orElseThrow();
+        Account b = accounts.findById(to).orElseThrow();
+        a.withdraw(cents);
+        b.deposit(cents);                              <span class="comment">// both updates commit together, or both roll back</span>
+    }
+}</pre>
+  <p>By default, Spring rolls back on unchecked exceptions, not on checked ones. Keep transactions short: never call a slow remote service while holding one.</p>
+
+  <h2><span class="num">§4</span>The N+1 Query Problem</h2>
+  <p>This is the most common JPA performance bug. Loading a list of books issues <strong>one</strong> query; then touching each book's lazy <code>author</code> issues <strong>one more query per book</strong>.</p>
+  <pre>List&lt;Book&gt; books = bookRepo.findAll();                <span class="comment">// 1 query</span>
+for (Book b : books) {
+    System.out.println(b.getAuthor().getName());      <span class="comment">// N more queries, one per book</span>
+}</pre>
+  <p>With 1,000 books that is 1,001 round trips to the database. Fixes: fetch the association in the query with a <code>JOIN FETCH</code> or an entity graph, or select a DTO projection with only the columns you need.</p>
+  <pre>@Query("select b from Book b join fetch b.author")
+List&lt;Book&gt; findAllWithAuthors();                       <span class="comment">// 1 query</span></pre>
+  <p>Turn on SQL logging in development (<code>spring.jpa.show-sql=true</code> or Hibernate's statistics) and <strong>look at the SQL your code generates</strong>. If a page makes dozens of near-identical queries, you have found an N+1. Also remember that <code>FetchType.EAGER</code> doesn't solve it; it just moves the cost somewhere less visible.</p>
+
+  <div class="callout">
+    <span class="label">The ORM does not remove the database</span>
+    JPA writes the SQL but it is still your SQL: it runs in your transactions, against your indexes, with your query count. Check what it generates, especially for list screens.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Building SQL with string concatenation</td><td>SQL injection</td><td>Use <code>PreparedStatement</code> parameters or named parameters</td></tr>
+    <tr><td>Not closing connections</td><td>The pool is exhausted and the app hangs</td><td>Use try-with-resources, or let Spring manage them</td></tr>
+    <tr><td>Iterating lazy associations in a loop</td><td>N+1 queries</td><td>Use <code>JOIN FETCH</code>, an entity graph, or a projection</td></tr>
+    <tr><td>Accessing lazy fields after the transaction ends</td><td><code>LazyInitializationException</code></td><td>Fetch what you need inside the transaction, or return a DTO</td></tr>
+    <tr><td>Holding a transaction across a remote call</td><td>Long locks and a starved pool</td><td>Keep transactions short and local</td></tr>
+    <tr><td>Putting <code>@Transactional</code> on every method by habit</td><td>Hidden costs and unclear boundaries</td><td>Put it on service methods defining a unit of work</td></tr>
+    <tr><td>Relying on <code>ddl-auto=update</code> in production</td><td>Uncontrolled schema drift</td><td>Use migrations (Flyway or Liquibase)</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a JDBC query by hand with a <code>PreparedStatement</code>, then pass a malicious-looking string (<code>' OR '1'='1</code>) and confirm it is treated as data.</li>
+      <li>Create <code>Author</code> and <code>Book</code> entities, load 100 books, print their authors, and count the SQL statements. Then fix it with <code>JOIN FETCH</code> and count again.</li>
+      <li>Write a <code>@Transactional</code> method that updates two rows and then throws, and verify that neither update persists.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>JDBC with <code>PreparedStatement</code> and a pooled <code>DataSource</code> is the foundation; JPA adds object mapping on top.</li>
+      <li>Put <code>@Transactional</code> on service methods, keep transactions short, and understand managed vs. detached entities.</li>
+      <li>Always inspect the generated SQL, and fix N+1 queries with fetch joins, entity graphs, or projections.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Building Services — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

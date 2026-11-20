@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Database Security: Roles, Row-Level Security &amp; Encryption — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · operating databases in production</span> → lesson 04</p>
+  <h1>Database Security: Roles, Row-Level Security &amp; Encryption</h1>
+  <p class="lede">Database security is layered: limit who can connect and what each role can do, isolate tenants with row-level security, encrypt data in transit and at rest, and keep an audit trail.</p>
+
+  <h2><span class="num">§1</span>Authentication and Least Privilege</h2>
+  <p>Give each application, service, and person their own <strong>role</strong>, with only the permissions needed. The application should <strong>never</strong> connect as a superuser or as the table owner.</p>
+  <pre>CREATE ROLE app_rw LOGIN PASSWORD '...';                  <span class="comment">-- load from a secrets manager in practice</span>
+GRANT CONNECT ON DATABASE shop TO app_rw;
+GRANT USAGE ON SCHEMA public TO app_rw;
+GRANT SELECT, INSERT, UPDATE ON orders, customers TO app_rw;   <span class="comment">-- no DELETE, no DDL</span>
+
+CREATE ROLE analyst_ro LOGIN;
+GRANT SELECT ON orders_summary TO analyst_ro;               <span class="comment">-- a view that hides sensitive columns</span></pre>
+  <p>Other basics: separate roles for migrations (which need DDL rights) and runtime; rotate credentials; prefer certificate or cloud-IAM authentication to static passwords; and restrict the network so the database isn't reachable from the public internet (private subnets, firewall rules, <code>pg_hba.conf</code>).</p>
+
+  <h2><span class="num">§2</span>Row-Level Security</h2>
+  <p>In <strong>multi-tenant</strong> systems, a bug in one <code>WHERE</code> clause can leak one customer's data to another. <strong>Row-level security (RLS)</strong> moves the rule into the database, so every query is filtered automatically.</p>
+  <pre>ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON invoices
+  USING (tenant_id = current_setting('app.tenant_id')::int);
+
+<span class="comment">-- per request, the application sets the tenant for its session/transaction:</span>
+SET LOCAL app.tenant_id = '42';
+SELECT * FROM invoices;       <span class="comment">-- sees only tenant 42's rows, even with no WHERE clause</span></pre>
+  <p>RLS is a safety net, not a substitute for correct code: make sure table owners and superusers (who bypass policies by default) aren't used by the app, and remember policies add a small performance cost, so index <code>tenant_id</code>.</p>
+
+  <h2><span class="num">§3</span>Encryption</h2>
+  <ul>
+    <li><strong>In transit</strong>: require TLS between application and database (<code>sslmode=verify-full</code> in PostgreSQL clients), so credentials and data can't be read or altered on the network.</li>
+    <li><strong>At rest</strong>: disk or volume encryption (the cloud default for managed databases) protects against stolen disks and snapshots. It does <strong>not</strong> protect against a compromised application or database login, since the database decrypts for any authorized connection.</li>
+    <li><strong>Column-level / application-level encryption</strong> for especially sensitive fields (national IDs, health data): the database stores only ciphertext. The trade-off is that you can't search or index it normally.</li>
+    <li><strong>Key management</strong>: keep keys in a KMS/HSM, separate from the data, rotated and access-logged.</li>
+    <li><strong>Secrets</strong>: no credentials in code or images. Use a secrets manager.</li>
+  </ul>
+  <p>Also consider <strong>masking</strong> in non-production copies, so developers don't work with real personal data.</p>
+
+  <h2><span class="num">§4</span>Auditing and Detection</h2>
+  <p>Know who did what, and be able to prove it.</p>
+  <ul>
+    <li>Log connections, disconnections, failed logins, and DDL; use <strong>pgAudit</strong> (or the equivalent) for statement-level auditing of sensitive tables.</li>
+    <li>Ship logs to a separate, append-only system that a compromised database host can't alter.</li>
+    <li>Alert on anomalies: logins from new locations, spikes in rows read, privilege changes, access to sensitive tables outside business logic.</li>
+    <li>Keep an inventory of what personal data you store and where; compliance rules (GDPR, HIPAA, PCI DSS) often require retention limits, deletion on request, and access records.</li>
+    <li>Patch and upgrade the database regularly; old versions accumulate known vulnerabilities.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Assume some layer will fail: an application bug, a leaked credential, a misconfigured firewall. Least-privilege roles, row-level isolation, encryption, and auditing each limit what a single failure can expose.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>The application connects as a superuser or table owner</td><td>One SQL injection or leaked credential means total control</td><td>Use a restricted runtime role; keep DDL rights in a separate migration role</td></tr>
+    <tr><td>Exposing the database port to the internet</td><td>Constant scanning and brute-force attacks</td><td>Keep it on a private network behind firewalls or a VPN</td></tr>
+    <tr><td>Treating disk encryption as full protection</td><td>Doesn't stop an authorized-but-abused connection</td><td>Combine with least privilege, auditing, and column-level encryption for secrets</td></tr>
+    <tr><td>Copying production data into dev or test unmasked</td><td>Personal data in weakly protected environments</td><td>Mask or synthesize non-production data</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create read-only and read-write roles for an application, then verify with a test connection that the read-only role cannot modify data and the app role cannot drop tables.</li>
+      <li>Enable row-level security on a table with a <code>tenant_id</code>, set the tenant per transaction, and write a test proving tenant 1 can never read tenant 2's rows, even with <code>SELECT * FROM invoices</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Apply least privilege with separate roles for runtime, migrations, and analysts; keep the database off the public internet.</li>
+      <li>Row-level security enforces tenant isolation inside the database as a safety net.</li>
+      <li>Encrypt in transit and at rest, manage keys separately, and audit access.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Operating Databases in Production — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

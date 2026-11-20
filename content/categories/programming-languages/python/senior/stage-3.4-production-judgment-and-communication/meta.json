@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.4 \u2014 Production Judgment & Communication",
+  "description": "Services in production, debugging failures, upgrades and migrations, and when not to use Python.",
+  "order": 4
+}

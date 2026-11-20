@@ -1,0 +1,5 @@
+{
+  "title": "Main Thread, Long Tasks & INP",
+  "description": "Measuring responsiveness and breaking up work.",
+  "order": 3
+}

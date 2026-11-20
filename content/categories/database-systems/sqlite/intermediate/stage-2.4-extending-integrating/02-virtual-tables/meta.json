@@ -1,0 +1,5 @@
+{
+  "title": "Virtual Tables",
+  "description": "Exposing other data as tables, and how FTS and R-Tree use them.",
+  "order": 2
+}

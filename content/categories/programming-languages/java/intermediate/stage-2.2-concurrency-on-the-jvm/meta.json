@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 \u2014 Concurrency on the JVM",
+  "description": "Threads, executors, locks, java.util.concurrent, CompletableFuture, and virtual threads.",
+  "order": 2
+}

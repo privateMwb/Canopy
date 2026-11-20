@@ -1,0 +1,5 @@
+{
+  "title": "Why TypeScript & Basic Types",
+  "description": "What static types catch, what they don't, and how TS compiles away.",
+  "order": 1
+}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bundle Size &amp; Loading Performance — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · performance &amp; security</span> → lesson 02</p>
+  <h1>Bundle Size &amp; Loading Performance</h1>
+  <p class="lede">Every kilobyte of JavaScript costs download time and parse/execute time — so measure what users actually download and load the rest only when it's needed.</p>
+
+  <h2><span class="num">§1</span>Measure What Ships</h2>
+
+  <p>Start by seeing the bundle. Treemap tools (rollup-plugin-visualizer, source-map-explorer, webpack-bundle-analyzer) show what each dependency contributes. Look at *gzipped/brotli* transfer size for the network, and at total JavaScript for parse and execution cost on slow devices.</p>
+
+  <pre><span class="comment"># npx vite-bundle-visualizer</span>
+<span class="comment"># npx source-map-explorer dist/assets/*.js</span>
+<span class="comment"># npx esbuild src/main.js --bundle --minify --metafile=meta.json   # then upload meta.json to esbuild.github.io/analyze</span>
+
+<span class="comment"># Spot the usual suspects: moment (use date-fns/Temporal), full lodash, icon libraries imported wholesale,</span>
+<span class="comment"># polyfills you don't need for your browser targets, duplicate copies of one package at different versions</span>
+
+<span class="comment"># CI guard: fail the build when the budget is exceeded</span>
+<span class="comment"># bundlesize / size-limit: "limit": "170 KB"  (compressed JS for the initial route)</span></pre>
+
+  <h2><span class="num">§2</span>Code Splitting and Lazy Loading</h2>
+
+  <p>Split the bundle so the first page loads only what it needs. Dynamic <code>import()</code> is a split point: the bundler puts that module in its own chunk, fetched on demand. Split by <strong>route</strong> first, then by heavy features (charts, editors, maps) behind interactions.</p>
+
+  <pre><span class="comment">// Route-level split (React shown; the idea is framework-independent)</span>
+const Settings = lazy(() =&gt; import("./pages/Settings.jsx"));
+
+<span class="comment">// Feature-level split: load a 200 KB chart library only when needed</span>
+button.addEventListener("click", async () =&gt; {
+  const { renderChart } = await import("./chart.js");
+  renderChart(data);
+});
+
+<span class="comment">// Hint the browser to fetch likely-needed code ahead of time</span>
+<span class="comment">// &lt;link rel="modulepreload" href="/assets/settings.js"&gt;</span>
+<span class="comment">// &lt;link rel="prefetch" href="/assets/reports.js"&gt;      (low priority, for the next navigation)</span>
+
+<span class="comment">// Tree shake: named imports from ESM builds</span>
+import { format } from "date-fns";</pre>
+
+  <h2><span class="num">§3</span>Loading Strategy and Caching</h2>
+
+  <p>Cache aggressively what doesn't change. Content-hashed filenames (<code>app.3f9a1c.js</code>) can be cached for a year because a change creates a new URL, while the HTML that references them is revalidated each time. Compress with brotli. Serve third-party scripts <code>async</code> or <code>defer</code> and question each one — they're often the largest cost you didn't write.</p>
+
+  <pre># Response headers
+# /assets/app.3f9a1c.js  -&gt;  Cache-Control: public, max-age=31536000, immutable
+# /index.html            -&gt;  Cache-Control: no-cache          (always revalidate)
+# Content-Encoding: br
+
+&lt;script async src="https://analytics.example/a.js"&gt;&lt;/script&gt;   &lt;!-- never render-blocking --&gt;
+&lt;link rel="preconnect" href="https://api.example.com" crossorigin&gt;   &lt;!-- early connection setup --&gt;</pre>
+
+  <p>Measure on real conditions: throttle to "Fast 4G" and a 4x CPU slowdown, and track real-user LCP/INP over time so regressions are caught when they ship.</p>
+
+  <div class="callout">
+    <span class="label">Budget it</span>
+    A performance budget (for example, 170 KB of compressed JavaScript on the first route) turns "keep it small" from a wish into a check that fails the build.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Importing an entire utility or icon library for a few functions</td><td>Large unused code in the bundle</td><td>Use specific/ESM imports; check the analyzer</td></tr>
+    <tr><td>Caching <code>index.html</code> for a long time</td><td>Users keep loading old asset URLs and see broken or stale pages</td><td>Revalidate HTML; cache only hashed assets long-term</td></tr>
+    <tr><td>Adding third-party scripts without measuring</td><td>Hidden long tasks and blocked rendering</td><td>Load async/defer, audit regularly, remove what you don't need</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Analyze one of your bundles with a treemap, identify the three largest dependencies, and replace or lazy-load one of them.</li>
+      <li>Add <code>size-limit</code> or an equivalent to CI with a budget for your initial JavaScript and verify it fails when you exceed it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Analyze what ships; track compressed transfer size and total JS execution cost.</li>
+      <li>Split by route and by heavy feature using dynamic <code>import()</code>.</li>
+      <li>Cache hashed assets long-term, revalidate HTML, and enforce a size budget in CI.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Performance &amp; Security — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

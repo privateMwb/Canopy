@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Critical Rendering Path — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · optimizing loading</span> → lesson 01</p>
+  <h1>The Critical Rendering Path</h1>
+  <p class="lede">The critical rendering path is the sequence of work between receiving HTML and drawing the first pixels. Shortening it is how you get meaningful content on screen fast.</p>
+
+  <h2><span class="num">§1</span>The Path, Step by Step</h2>
+  <p>To show anything, the browser must complete a chain: parse HTML into the <strong>DOM</strong>, parse CSS into the <strong>CSSOM</strong>, combine them into a <strong>render tree</strong>, compute <strong>layout</strong>, and <strong>paint</strong>. Anything that delays one link delays first paint.</p>
+  <table>
+    <tr><th>Step</th><th>Needs</th><th>Can be delayed by</th></tr>
+    <tr><td>DOM construction</td><td>HTML bytes</td><td>Slow response, blocking scripts</td></tr>
+    <tr><td>CSSOM construction</td><td>All applicable CSS</td><td>Large or slow stylesheets</td></tr>
+    <tr><td>Render tree</td><td>DOM and CSSOM</td><td>Whichever finishes last</td></tr>
+    <tr><td>Layout and paint</td><td>Render tree</td><td>Heavy DOM, expensive styles</td></tr>
+  </table>
+  <p>CSS is <strong>render-blocking</strong> because painting before styles arrive would flash unstyled content. Scripts can be <strong>parser-blocking</strong>, and a script that reads styles must wait for the CSSOM first. These interactions create the chains that matter.</p>
+
+  <h2><span class="num">§2</span>Three Ways to Shorten It</h2>
+  <p>Think in three quantities: <strong>critical resources</strong> (how many block rendering), <strong>critical bytes</strong> (how big they are), and <strong>critical path length</strong> (how many round trips in sequence).</p>
+  <ol>
+    <li><strong>Send less critical data.</strong> Minify and compress CSS, and inline the above-the-fold rules so the first paint doesn't wait on a stylesheet request.</li>
+    <li><strong>Cut round trips.</strong> Avoid chains such as CSS importing more CSS (<code>@import</code>) or a stylesheet loading a font before text can render. Reference things directly in the HTML.</li>
+    <li><strong>Stop non-critical work blocking.</strong> Defer scripts, load below-the-fold CSS asynchronously, and keep large work out of the head.</li>
+  </ol>
+  <pre><span class="comment">/* Bad: a hidden chain. HTML -&gt; main.css -&gt; theme.css, in sequence */</span>
+@import url('theme.css');
+
+<span class="comment">&lt;!-- Better: both discovered in the HTML, fetched in parallel --&gt;</span>
+&lt;link rel="stylesheet" href="main.css"&gt;
+&lt;link rel="stylesheet" href="theme.css"&gt;</pre>
+
+  <h2><span class="num">§3</span>Getting First Content Out Early</h2>
+  <p>Besides shortening the path, deliver meaningful content <strong>early</strong>. A server can <strong>stream</strong> HTML, sending the head and the first part of the body while it is still working on the rest, so the browser starts discovering resources sooner.</p>
+  <ul>
+    <li>Flush the <code>&lt;head&gt;</code> early so the browser can start fetching CSS and fonts while the server builds the page.</li>
+    <li>Put critical content in the <strong>initial HTML</strong>. A page that is an empty <code>&lt;div id="root"&gt;</code> has nothing to paint until JavaScript downloads, runs, and fetches data.</li>
+    <li>Keep the first screen simple: fewer elements means a cheaper layout.</li>
+  </ul>
+  <pre>&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;Shop&lt;/title&gt;
+  &lt;style&gt;/* critical CSS for the first screen */&lt;/style&gt;
+  &lt;link rel="stylesheet" href="/rest.css" media="print" onload="this.media='all'"&gt;
+  &lt;script src="/app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;</pre>
+  <p>Measure the effect with <strong>First Contentful Paint</strong> and <strong>LCP</strong>, and use the Performance panel's trace to confirm that the number of sequential steps actually shrank.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Performance of the first paint is mostly about <strong>dependency chains</strong>. Count how many requests must finish, in order, before the browser can draw, and try to make that number small.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using CSS <code>@import</code></td><td>Creates a sequential chain that delays rendering</td><td>Use separate <code>&lt;link&gt;</code> tags, or bundle</td></tr>
+    <tr><td>Shipping an empty HTML shell for everything</td><td>Nothing to paint until JavaScript runs</td><td>Render critical content on the server or at build time</td></tr>
+    <tr><td>Inlining all CSS</td><td>Large HTML that can't be cached separately</td><td>Inline only the first screen's rules</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Open a trace of a page load. Count the requests that must complete, in order, before first paint.</li>
+      <li>Remove a CSS <code>@import</code> chain from a test page and measure FCP before and after.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The path runs DOM, CSSOM, render tree, layout, and paint, and CSS blocks rendering.</li>
+      <li>Shorten it with fewer critical resources, fewer critical bytes, and fewer sequential round trips.</li>
+      <li>Stream HTML early and put the first screen's content in the initial response.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Optimizing Loading — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

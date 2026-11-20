@@ -1,0 +1,5 @@
+{
+  "title": "async/await & Error Handling",
+  "description": "Cleaner async code and failures that don't break the page.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 \u2014 Move Semantics & Value Categories",
+  "description": "Value categories, move semantics, perfect forwarding, copy elision, and move-aware design.",
+  "order": 2
+}

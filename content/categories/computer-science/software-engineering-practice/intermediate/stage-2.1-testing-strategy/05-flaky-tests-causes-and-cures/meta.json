@@ -1,0 +1,5 @@
+{
+  "title": "Flaky Tests: Causes & Cures",
+  "description": "Shared state, timing, ordering, and randomness: finding the source, and deciding when to quarantine.",
+  "order": 5
+}

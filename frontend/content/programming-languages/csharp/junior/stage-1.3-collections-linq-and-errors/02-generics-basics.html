@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Generics Basics — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · collections, linq &amp; errors</span> → lesson 02</p>
+  <h1>Generics Basics</h1>
+  <p class="lede">Generics let you write one type or method that works safely with many types, with the compiler checking correctness and no casting at run time.</p>
+
+  <h2><span class="num">§1</span>Why Generics Exist</h2>
+
+  <p>Before generics, collections held <code>object</code>, so you cast on the way out and any mistake crashed at run time. Generics move that check to compile time and avoid boxing value types.</p>
+  <pre>var names = new List&lt;string&gt;();
+names.Add("Ada");
+<span class="comment">// names.Add(42);        // compile error: int is not string</span>
+string n = names[0];      <span class="comment">// no cast needed</span></pre>
+
+  <h2><span class="num">§2</span>Writing a Generic Type and Method</h2>
+
+  <pre>public class Stack&lt;T&gt;
+{
+    private readonly List&lt;T&gt; _items = new();
+    public void Push(T item) =&gt; _items.Add(item);
+    public T Pop()
+    {
+        if (_items.Count == 0) throw new InvalidOperationException("Empty");
+        var item = _items[^1];          <span class="comment">// index-from-end</span>
+        _items.RemoveAt(_items.Count - 1);
+        return item;
+    }
+    public int Count =&gt; _items.Count;
+}
+
+var s = new Stack&lt;int&gt;();
+s.Push(1);
+
+public static T Max&lt;T&gt;(T a, T b) where T : IComparable&lt;T&gt; =&gt;
+    a.CompareTo(b) &gt;= 0 ? a : b;
+
+var m = Max(3, 7);        <span class="comment">// type argument inferred: Max&lt;int&gt;</span></pre>
+  <p><code>T</code> is a placeholder filled in by the caller. The compiler usually <strong>infers</strong> type arguments for methods, as in <code>Max(3, 7)</code>. A <code>Stack&lt;int&gt;</code> and a <code>Stack&lt;string&gt;</code> are separate types at run time, and for value types the runtime generates specialized code, so there's no boxing.</p>
+
+  <h2><span class="num">§3</span>Constraints</h2>
+
+  <p>Inside a generic method the compiler only lets you do what every possible <code>T</code> supports, which is almost nothing. A <strong>constraint</strong> promises more:</p>
+  <pre>where T : class          <span class="comment">// reference type</span>
+where T : struct         <span class="comment">// non-nullable value type</span>
+where T : new()          <span class="comment">// has a public parameterless constructor</span>
+where T : IComparable&lt;T&gt; <span class="comment">// implements an interface</span>
+where T : Shape          <span class="comment">// derives from a base class</span></pre>
+  <p>In the <code>Max</code> example, without <code>IComparable&lt;T&gt;</code> the call to <code>CompareTo</code> wouldn't compile. Add constraints when the compiler asks for them, and no more.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Generics are a <em>compile-time</em> contract: "this works for any <code>T</code> that satisfies these constraints." If you find yourself casting inside a generic method, a constraint or a different design is usually missing.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>object</code> or <code>ArrayList</code> instead of generics</td><td>Casts, boxing, and run-time type errors</td><td>Use <code>List&lt;T&gt;</code> and your own generic types</td></tr>
+    <tr><td>Calling members on <code>T</code> without a constraint</td><td>Compile error: <code>T</code> doesn't contain that member</td><td>Add the right <code>where</code> clause</td></tr>
+    <tr><td>Over-generic code with many type parameters</td><td>Hard to read and use</td><td>Start with concrete types and generalize only when a second use appears</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a generic <code>Pair&lt;TFirst, TSecond&gt;</code> class with a <code>Swap()</code> method returning <code>Pair&lt;TSecond, TFirst&gt;</code>.</li>
+      <li>Write <code>static T? FirstOrNull&lt;T&gt;(IEnumerable&lt;T&gt; items, Func&lt;T,bool&gt; pred) where T : class</code> and test it with strings.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Generics give type safety with no casts and no boxing for value types.</li>
+      <li>The compiler infers method type arguments and checks them at compile time.</li>
+      <li>Constraints (<code>where</code>) say what a type parameter must support.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Collections, LINQ &amp; Errors — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

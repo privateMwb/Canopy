@@ -1,0 +1,5 @@
+{
+  "title": "Enums, Optional & Null Handling",
+  "description": "Modeling fixed sets, returning \"maybe\" values, and avoiding NullPointerException.",
+  "order": 3
+}

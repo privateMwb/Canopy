@@ -1,0 +1,1 @@
+{"title": "Caches, Coherence & False Sharing", "description": "How cache lines move between cores, and why two unrelated variables can slow each other down.", "order": 1}

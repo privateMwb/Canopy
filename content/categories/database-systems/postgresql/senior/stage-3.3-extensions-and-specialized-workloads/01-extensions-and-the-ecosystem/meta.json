@@ -1,0 +1,5 @@
+{
+  "title": "Extensions & the Ecosystem",
+  "description": "CREATE EXTENSION, trusted extensions, and evaluating third-party ones.",
+  "order": 1
+}

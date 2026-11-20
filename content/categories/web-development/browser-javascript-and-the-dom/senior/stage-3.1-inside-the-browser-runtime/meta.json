@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Inside the Browser Runtime",
+  "description": "The rendering pipeline, memory, long tasks and INP, module loading, and profiling.",
+  "order": 1
+}

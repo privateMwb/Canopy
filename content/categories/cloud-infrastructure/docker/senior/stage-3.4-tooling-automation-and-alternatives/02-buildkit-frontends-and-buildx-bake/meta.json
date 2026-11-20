@@ -1,0 +1,5 @@
+{
+  "title": "BuildKit Frontends & buildx bake",
+  "description": "Declarative, repeatable builds for many images and platforms.",
+  "order": 2
+}

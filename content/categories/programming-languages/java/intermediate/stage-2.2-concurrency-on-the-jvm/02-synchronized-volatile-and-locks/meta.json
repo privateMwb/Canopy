@@ -1,0 +1,5 @@
+{
+  "title": "synchronized, volatile & Locks",
+  "description": "Visibility, atomicity, ReentrantLock, and what each tool actually guarantees.",
+  "order": 2
+}

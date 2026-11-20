@@ -1,0 +1,5 @@
+{
+  "title": "Resilient Async Design",
+  "description": "Retries, idempotency, timeouts, and failure handling across unreliable calls.",
+  "order": 4
+}

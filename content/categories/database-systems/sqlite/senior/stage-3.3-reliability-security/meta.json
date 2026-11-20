@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.3 — Reliability & Security",
+  "description": "Corruption, backup strategy and restore testing, encryption, large-scale migrations, and observability.",
+  "order": 3
+}

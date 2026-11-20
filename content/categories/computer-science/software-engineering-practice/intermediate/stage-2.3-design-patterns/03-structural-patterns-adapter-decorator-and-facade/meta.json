@@ -1,0 +1,5 @@
+{
+  "title": "Structural Patterns: Adapter, Decorator & Facade",
+  "description": "Wrapping existing code to change its interface, add behavior, or hide a messy subsystem.",
+  "order": 3
+}

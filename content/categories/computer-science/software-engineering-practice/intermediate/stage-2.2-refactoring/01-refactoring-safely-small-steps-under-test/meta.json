@@ -1,0 +1,5 @@
+{
+  "title": "Refactoring Safely: Small Steps Under Test",
+  "description": "Behavior-preserving changes in tiny increments, and how to know the last step didn't break anything.",
+  "order": 1
+}

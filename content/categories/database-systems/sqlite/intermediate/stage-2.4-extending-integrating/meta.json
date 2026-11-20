@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Extending & Integrating",
+  "description": "User-defined functions, virtual tables, loadable extensions, ORMs, and testing with SQLite.",
+  "order": 4
+}

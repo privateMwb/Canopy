@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Structures &amp; Algorithms Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / data structures &amp; algorithms</p>
+    <h1>From arrays to algorithmic thinking</h1>
+    <p class="lede">Three levels, eleven stages — the structures and patterns that show up in almost every real system, built toward the kind of problem-solving fluency interviews and production code both actually test for.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I can write a loop" to "I can reason about which basic structure and technique actually fits a problem."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Core Data Structures</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Big O Notation</p><p class="lesson-desc">Measuring time and space complexity — the language every later lesson is written in.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Arrays &amp; Strings</p><p class="lesson-desc">Contiguous memory, indexing, and the operations that are cheap vs. expensive.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Linked Lists</p><p class="lesson-desc">Singly and doubly linked lists — pointers instead of indices.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Stacks &amp; Queues</p><p class="lesson-desc">LIFO and FIFO, and the real problems each naturally fits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Hash Tables</p><p class="lesson-desc">O(1) average lookup, how hashing works, and when it breaks down.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a hash table from scratch, including collision handling.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Foundational Algorithms</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Searching</p><p class="lesson-desc">Linear search vs. binary search, and the sorted-input assumption binary search depends on.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Basic Sorting</p><p class="lesson-desc">Bubble, insertion, and selection sort — simple, and why they don't scale.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Recursion</p><p class="lesson-desc">Base cases, recursive cases, and tracing a call stack by hand.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Two-Pointer Technique</p><p class="lesson-desc">Solving array/string problems with two indices moving through the data together.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Sliding Window</p><p class="lesson-desc">Tracking a moving subrange efficiently instead of recomputing from scratch.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Solve a set of array problems using two-pointer and sliding-window patterns, with Big O justified for each.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Problem-Solving Patterns</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Prefix Sums</p><p class="lesson-desc">Precomputing running totals to answer range-sum queries in O(1).</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Fast &amp; Slow Pointers</p><p class="lesson-desc">Cycle detection and the middle-of-a-list trick, one technique, two uses.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Frequency Counting</p><p class="lesson-desc">Hash maps as counters — anagrams, duplicates, and majority-element problems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Basic Greedy Problems</p><p class="lesson-desc">Making the locally-best choice at each step, and when that's actually optimal.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given five unseen problems, identify which pattern from Stage 1.3 applies to each, and justify why.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I know the basic structures" to "I can navigate trees, graphs, and the sorting/searching toolbox with real fluency."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Trees</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Binary Trees</p><p class="lesson-desc">Nodes, children, and the vocabulary (depth, height, leaf) every tree lesson builds on.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Binary Search Trees</p><p class="lesson-desc">Keeping a tree ordered, and what that ordering buys you.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Tree Traversals</p><p class="lesson-desc">In-order, pre-order, post-order, and BFS level-order — four ways to walk the same tree.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Balanced Trees</p><p class="lesson-desc">Why an unbalanced BST degrades to a linked list, and how AVL/Red-Black trees prevent it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Tries</p><p class="lesson-desc">A tree built for prefixes — autocomplete, dictionaries, and string search.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement BST insert/search/delete, and explain what breaks without the delete case's three scenarios.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Graphs</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Graph Representations</p><p class="lesson-desc">Adjacency lists vs. adjacency matrices, and the tradeoffs between them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">BFS &amp; DFS on Graphs</p><p class="lesson-desc">The same two traversal ideas from trees, generalized — and what cycles change.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Topological Sort</p><p class="lesson-desc">Ordering tasks with dependencies — when it's possible, and when a cycle makes it not.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Union-Find</p><p class="lesson-desc">Tracking connected components efficiently, with path compression and union by rank.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Dijkstra's Algorithm</p><p class="lesson-desc">Shortest paths in a weighted graph with no negative edges.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small course-scheduling system using topological sort, and detect invalid (cyclic) schedules.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Sorting &amp; Searching Deep Dive</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Merge Sort &amp; Quick Sort</p><p class="lesson-desc">Divide-and-conquer sorting, and why one is stable and the other usually isn't.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Heaps &amp; Priority Queues</p><p class="lesson-desc">Always-sorted access to the min or max, in O(log n) per operation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Binary Search on the Answer</p><p class="lesson-desc">Using binary search on a range of possible answers, not just a sorted array.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Counting &amp; Radix Sort</p><p class="lesson-desc">Sorting faster than O(n log n) — when the data lets you skip comparisons entirely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a dataset and a constraint, choose and justify the right sort or search strategy from this stage.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Intro to Dynamic Programming</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Memoization vs. Tabulation</p><p class="lesson-desc">Top-down recursion with caching vs. bottom-up iteration — two routes to the same DP table.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">1D Dynamic Programming</p><p class="lesson-desc">Fibonacci-style problems, and recognizing overlapping subproblems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">2D Dynamic Programming</p><p class="lesson-desc">Grid and string DP — edit distance, longest common subsequence.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Knapsack Patterns</p><p class="lesson-desc">0/1 knapsack and its variants — the template behind a huge class of DP problems.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Solve a 2D DP problem using both memoization and tabulation, and compare their space usage.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I can solve known problem types" to "I can design, optimize, and clearly explain solutions to problems I've never seen before."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Advanced Dynamic Programming</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">DP on Trees</p><p class="lesson-desc">Carrying state up and down a tree instead of a flat array.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">DP on Graphs</p><p class="lesson-desc">DP combined with graph traversal — shortest paths with constraints, DAG-based DP.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Bitmask DP</p><p class="lesson-desc">Using a bitmask as DP state to track subsets efficiently.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">DP Optimization Techniques</p><p class="lesson-desc">Rolling arrays, state compression, and cutting an O(n³) solution down.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take an exponential brute-force solution and optimize it into a polynomial DP, documenting each step.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Advanced Graph Algorithms</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Minimum Spanning Tree</p><p class="lesson-desc">Kruskal's and Prim's algorithms — connecting everything for the least total cost.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Bellman-Ford &amp; Floyd-Warshall</p><p class="lesson-desc">Shortest paths with negative edges, and all-pairs shortest paths.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Network Flow</p><p class="lesson-desc">Max flow / min cut, and the surprising range of problems it quietly solves.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Strongly Connected Components</p><p class="lesson-desc">Finding tightly-linked clusters in a directed graph.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Model a real-world routing problem as a graph and solve it with the appropriate algorithm from this stage.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Advanced Data Structures</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Segment Trees</p><p class="lesson-desc">Answering range queries and updates in O(log n), built for data that changes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Fenwick Trees (BIT)</p><p class="lesson-desc">A leaner alternative to segment trees for prefix-sum-style queries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Suffix Structures</p><p class="lesson-desc">Suffix arrays and suffix tries — fast substring search at scale.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Skip Lists</p><p class="lesson-desc">A probabilistic alternative to balanced trees, used in real systems like Redis.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a segment tree supporting both range queries and point updates, with complexity analysis.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Algorithmic Thinking &amp; Interviews</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Complexity Tradeoffs in System Design</p><p class="lesson-desc">Choosing a structure based on real constraints, not just "what's fastest."</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Approaching Novel Problems</p><p class="lesson-desc">A repeatable process for problems you've never seen before — clarify, brute force, optimize.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Mock Interview Technique</p><p class="lesson-desc">Thinking out loud, handling hints, and recovering from a wrong first approach.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Explaining Solutions Clearly</p><p class="lesson-desc">Communicating a solution's logic and complexity to someone who didn't watch you build it.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run a full mock interview on an unseen problem, narrating your process from clarification to working solution.</p></div></div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Dynamic programming shows up as early as Intermediate and gets revisited at Senior with real depth — revisiting a topic at a harder level is expected, not a sign you skipped something.</p>
+    <p><strong>Senior is about judgment and communication as much as technique.</strong> Knowing an algorithm and being able to explain why you'd use it are different skills, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

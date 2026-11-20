@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Suspense &amp; Error Boundaries — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · server state &amp; data fetching</span> → lesson 05</p>
+  <h1>Suspense &amp; Error Boundaries</h1>
+  <p class="lede">Instead of checking <code>isPending</code> and <code>isError</code> in every component, Suspense and error boundaries let you declare, once, what shows while something loads and what shows when it fails.</p>
+
+  <h2><span class="num">§1</span>Suspense: Declarative Loading</h2>
+
+  <p><code>&lt;Suspense fallback={...}&gt;</code> shows the fallback while any component <strong>inside it</strong> is waiting for something (lazy-loaded code, or data from a Suspense-enabled library). When ready, React swaps in the real content. The component that needs the data is written as if the data were already there.</p>
+
+  <pre>import { Suspense } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+function Profile({ id }) {
+  const { data: user } = useSuspenseQuery({            <span class="comment">// data is always defined here</span>
+    queryKey: ["user", id],
+    queryFn: () =&gt; getUser(id),
+  });
+  return &lt;h2&gt;{user.name}&lt;/h2&gt;;
+}
+
+function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Account&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;ProfileSkeleton /&gt;}&gt;
+        &lt;Profile id={42} /&gt;
+      &lt;/Suspense&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading orders...&lt;/p&gt;}&gt;
+        &lt;Orders /&gt;
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  );
+}</pre>
+
+  <p>Place boundaries around <strong>meaningful regions</strong>. Several small boundaries let different parts of the page appear as they become ready, while one large boundary shows a single spinner until everything is done. Use <strong>skeletons</strong> that match the final layout to reduce layout shift.</p>
+
+  <p>Beware <strong>waterfalls</strong>: if a component inside a boundary starts a fetch only after its parent finishes loading, requests run one after another. Start independent fetches in parallel (prefetch, loaders, or <code>useSuspenseQueries</code>).</p>
+
+  <h2><span class="num">§2</span>Error Boundaries</h2>
+
+  <p>An <strong>error boundary</strong> catches errors thrown while <strong>rendering</strong> its children and shows a fallback instead of crashing the whole app to a blank page. It is the failure counterpart of Suspense. You write one as a class (the only place classes are still required), or use the <code>react-error-boundary</code> package.</p>
+
+  <pre>import { ErrorBoundary } from "react-error-boundary";
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
+
+function Fallback({ error, resetErrorBoundary }) {
+  return (
+    &lt;div role="alert"&gt;
+      &lt;p&gt;Something went wrong loading this section.&lt;/p&gt;
+      &lt;pre&gt;{error.message}&lt;/pre&gt;
+      &lt;button onClick={resetErrorBoundary}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+function Section() {
+  return (
+    &lt;QueryErrorResetBoundary&gt;
+      {({ reset }) =&gt; (
+        &lt;ErrorBoundary FallbackComponent={Fallback} onReset={reset} onError={(e) =&gt; logError(e)}&gt;
+          &lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+            &lt;Orders /&gt;
+          &lt;/Suspense&gt;
+        &lt;/ErrorBoundary&gt;
+      )}
+    &lt;/QueryErrorResetBoundary&gt;
+  );
+}</pre>
+
+  <ul>
+    <li>Error boundaries catch errors in <strong>rendering, lifecycle, and constructors</strong> of descendants. They do <strong>not</strong> catch errors in event handlers, asynchronous code (timeouts, promises), or the boundary itself.</li>
+    <li>Handle errors in event handlers with <code>try/catch</code> and state; handle async failures with your data library.</li>
+    <li>Wrap the <strong>whole app</strong> in a top-level boundary as a last resort, and add <strong>local</strong> boundaries around risky or independent sections so one failure does not take down the page.</li>
+    <li><strong>Log</strong> errors to a monitoring service in <code>onError</code>, and offer a <strong>retry</strong> that resets the boundary (and any caches that need resetting).</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Putting Them Together</h2>
+
+  <p>The standard layout nests the two: an error boundary outside, a Suspense boundary inside. Loading is handled by Suspense, failure by the boundary, and the component in the middle only handles the success case.</p>
+
+  <table>
+    <tr><th>Question</th><th>Handled by</th></tr>
+    <tr><td>What shows while data or code loads?</td><td><code>&lt;Suspense fallback&gt;</code></td></tr>
+    <tr><td>What shows when rendering throws?</td><td><code>&lt;ErrorBoundary fallback&gt;</code></td></tr>
+    <tr><td>What does the component handle?</td><td>Only the success case</td></tr>
+    <tr><td>What about event-handler errors?</td><td><code>try/catch</code> + state</td></tr>
+  </table>
+
+  <pre><span class="comment">// lazy-loaded code uses the same mechanism</span>
+const Settings = lazy(() =&gt; import("./Settings"));
+
+&lt;ErrorBoundary FallbackComponent={Fallback}&gt;
+  &lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+    &lt;Settings /&gt;
+  &lt;/Suspense&gt;
+&lt;/ErrorBoundary&gt;
+
+<span class="comment">// transitions keep the old UI visible instead of showing the fallback on updates</span>
+const [isPending, startTransition] = useTransition();
+startTransition(() =&gt; setTab("orders"));</pre>
+
+  <p>Frameworks build on this model: Next.js <code>loading.js</code> and <code>error.js</code> files and React Router's route <code>errorElement</code> are Suspense and error boundaries placed per route for you.</p>
+
+  <div class="callout">
+    <span class="label">Loading and error as layout, not logic</span>
+    Move "what if it is not ready?" and "what if it fails?" out of every component and into a few boundaries around regions. The components inside become simpler, and the page degrades gracefully.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Expecting an error boundary to catch errors in click handlers or promises</td><td>The error escapes and nothing is shown</td><td>Use <code>try/catch</code> plus state, or the data library's error handling</td></tr>
+    <tr><td>One Suspense boundary around the entire page</td><td>One spinner blocks everything</td><td>Use several boundaries around independent regions</td></tr>
+    <tr><td>No error boundary at all</td><td>A single thrown error blanks the whole app</td><td>Add a top-level boundary and local ones for risky sections</td></tr>
+    <tr><td>Nested components each starting a fetch after the parent resolves</td><td>Request waterfalls and slow pages</td><td>Start independent requests in parallel, or prefetch</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Wrap two independent sections in separate Suspense boundaries with skeleton fallbacks and observe them appearing independently.</li>
+      <li>Add an error boundary with a "Try again" button that resets a failed query.</li>
+      <li>Throw an error inside an event handler and inside render, and confirm which one the boundary catches.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Suspense declares the loading UI for a region; components inside assume their data exists.</li>
+      <li>Error boundaries catch render-time failures and show a fallback; they do not catch handler or async errors.</li>
+      <li>Nest Suspense inside an error boundary, place both around meaningful regions, and watch for waterfalls.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Server State &amp; Data Fetching — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

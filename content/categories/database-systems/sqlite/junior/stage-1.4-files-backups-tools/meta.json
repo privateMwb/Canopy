@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.4 — Files, Backups & Tools",
+  "description": "The database file and its companions, safe backups, import and export, inspection tools, and foreign keys and pragmas.",
+  "order": 4
+}

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Debugging &amp; React DevTools — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · building a complete app</span> → lesson 05</p>
+  <h1>Debugging &amp; React DevTools</h1>
+  <p class="lede">Most React bugs are one of a small set of mistakes. The component tree in React DevTools, the console warnings, and a short checklist let you find them quickly instead of guessing.</p>
+
+  <h2><span class="num">§1</span>React DevTools</h2>
+
+  <p>Install the <strong>React Developer Tools</strong> browser extension. It adds two panels to your browser's DevTools: <strong>Components</strong> and <strong>Profiler</strong>.</p>
+
+  <ul>
+    <li><strong>Components</strong> shows the live component tree. Select a component to see its <strong>props</strong>, <strong>state</strong>, and <strong>hooks</strong>, and to <strong>edit</strong> them live to test how the UI reacts. Right-click and choose *Go to source* to jump to its code.</li>
+    <li>Use the search box to find a component by name, and the <strong>inspect</strong> icon to click an element on the page and select the component that rendered it.</li>
+    <li>Settings have <strong>Highlight updates when components render</strong>, which flashes components as they re-render. It shows immediately when something re-renders far more often than you expect.</li>
+    <li><strong>Profiler</strong> records interactions and shows, per render, which components rendered, how long each took, and (with "Record why each component rendered") why. You will use it heavily in the performance lessons.</li>
+  </ul>
+
+  <h2><span class="num">§2</span>The Common Errors</h2>
+
+  <table>
+    <tr><th>Message or symptom</th><th>Likely cause</th><th>Fix</th></tr>
+    <tr><td><code>Each child in a list should have a unique "key" prop</code></td><td>Missing or duplicate key in <code>map</code></td><td>Add a stable id as the key</td></tr>
+    <tr><td><code>Too many re-renders</code></td><td>A setter called directly during render (<code>onClick={setN(1)}</code>)</td><td>Pass a function: <code>onClick={() =&gt; setN(1)}</code></td></tr>
+    <tr><td><code>Cannot read properties of undefined</code></td><td>Data not loaded yet, or wrong shape</td><td>Handle loading; use optional chaining; check the data</td></tr>
+    <tr><td><code>Rendered more hooks than during the previous render</code></td><td>Hook inside a condition or after an early return</td><td>Move all hooks to the top</td></tr>
+    <tr><td><code>Objects are not valid as a React child</code></td><td>Rendering an object (<code>{user}</code>) instead of a field</td><td>Render <code>user.name</code>, or <code>JSON.stringify</code> to debug</td></tr>
+    <tr><td>Infinite effect loop</td><td>Effect sets state that is in its dependencies, or an object/array dependency created each render</td><td>Fix the dependencies; derive values instead</td></tr>
+    <tr><td>State does not update on screen</td><td>Mutated state instead of replacing it</td><td>Create a new object or array</td></tr>
+    <tr><td>Stale value inside a handler or effect</td><td>Closure captured an old render's value</td><td>Add the dependency; use an updater function</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>A Debugging Method</h2>
+
+  <ol>
+    <li><strong>Read the error message</strong> in full, including the component stack. It often names the file and line.</li>
+    <li><strong>Reproduce</strong> it reliably, and shrink the case: remove code until the bug disappears, then put back the last piece.</li>
+    <li><strong>Inspect the data</strong> in DevTools: are the props and state what you expect at the moment it goes wrong?</li>
+    <li><strong>Log or breakpoint</strong> at the first place the value is wrong, and work backward from there. A <code>debugger</code> statement, or a breakpoint in the Sources panel, shows the call stack and values.</li>
+    <li><strong>Check the Network panel</strong> for any data problem. Confirm the request URL, status, and the real response body.</li>
+    <li><strong>Change one thing at a time</strong>, and verify the result before moving on.</li>
+  </ol>
+
+  <pre>function Cart({ items }) {
+  console.log("Cart render", items);               <span class="comment">// quick look at what the component receives</span>
+  debugger;                                         <span class="comment">// pauses here when DevTools is open</span>
+
+  <span class="comment">// labeled objects are easier to read than bare values</span>
+  console.log({ itemsLength: items.length, first: items[0] });
+  return /* ... */;
+}</pre>
+
+  <ul>
+    <li>Remember <strong>StrictMode</strong> double-logs in development; that is not a bug.</li>
+    <li>Keep the <code>react-hooks</code> ESLint rules on: they catch many hook mistakes before you run the code.</li>
+    <li>Use <strong>error boundaries</strong> (covered later) so one broken component does not blank the whole page.</li>
+    <li>When asking for help, share a <strong>minimal reproduction</strong> (a CodeSandbox or StackBlitz), the exact error text, and what you expected.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Look at the data first</span>
+    Most "React bugs" are data bugs: the props, state, or API response is not what you assumed. Check the real values in DevTools before changing any code.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Guessing and changing several things at once</td><td>You cannot tell which change mattered</td><td>Change one thing and verify</td></tr>
+    <tr><td>Ignoring console warnings</td><td>They usually point at the bug you will hit later</td><td>Treat warnings as errors to fix</td></tr>
+    <tr><td>Debugging with only the page, never DevTools</td><td>Cannot see props, state, or re-renders</td><td>Use the Components and Profiler panels</td></tr>
+    <tr><td>Blaming StrictMode for double logs and removing it</td><td>You hide real impurity bugs</td><td>Fix the effect or render so it is safe to run twice</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Install React DevTools, select a component, and change a piece of its state live to see the UI update.</li>
+      <li>Turn on "Highlight updates" and find a component that re-renders on every keystroke elsewhere in the page.</li>
+      <li>Introduce three of the errors from the table on purpose, read each message, and fix it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>React DevTools lets you inspect and edit props and state, and see what re-renders.</li>
+      <li>A handful of errors account for most bugs: keys, hook rules, mutation, stale values, and missing data.</li>
+      <li>Debug systematically: read the message, reproduce, inspect the data, find the first wrong value, change one thing.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Building a Complete App — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

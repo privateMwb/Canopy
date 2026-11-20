@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Routing with React Router — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · building a complete app</span> → lesson 02</p>
+  <h1>Routing with React Router</h1>
+  <p class="lede">Real apps have several pages. React Router maps URLs to components, so the address bar, the Back button, and shared links all work in a single-page app.</p>
+
+  <h2><span class="num">§1</span>Setting Up Routes</h2>
+
+  <p>Install the router with <code>npm install react-router</code>. A router watches the URL and renders the component that matches. With the data router, you describe routes as objects and render them with <code>RouterProvider</code>.</p>
+
+  <pre>import { createBrowserRouter, RouterProvider } from "react-router";
+
+const router = createBrowserRouter([
+  { path: "/", element: &lt;Home /&gt; },
+  { path: "/movies", element: &lt;MovieList /&gt; },
+  { path: "/movies/:id", element: &lt;MovieDetail /&gt; },
+  { path: "*", element: &lt;NotFound /&gt; },                    <span class="comment">// anything else</span>
+]);
+
+export default function App() {
+  return &lt;RouterProvider router={router} /&gt;;
+}</pre>
+
+  <p>Use <code>&lt;Link&gt;</code> and <code>&lt;NavLink&gt;</code> for navigation instead of <code>&lt;a href&gt;</code>. They change the URL <strong>without a full page reload</strong>, so state and speed are preserved. <code>NavLink</code> also knows when it is the active page, which is handy for menus.</p>
+
+  <pre>import { Link, NavLink } from "react-router";
+
+&lt;Link to="/movies"&gt;All movies&lt;/Link&gt;
+&lt;NavLink to="/movies" className={({ isActive }) =&gt; (isActive ? "active" : "")}&gt;
+  Movies
+&lt;/NavLink&gt;</pre>
+
+  <h2><span class="num">§2</span>Params, Search Params, and Navigation</h2>
+
+  <p>A path segment that starts with a colon (<code>:id</code>) is a <strong>parameter</strong>. Read it with <code>useParams</code>. Use <strong>search params</strong> (<code>?q=dune&amp;page=2</code>) for optional state such as filters, which keeps it shareable and bookmarkable.</p>
+
+  <pre>import { useParams, useSearchParams, useNavigate } from "react-router";
+
+function MovieDetail() {
+  const { id } = useParams();                    <span class="comment">// "/movies/42" -&gt; id = "42" (a string)</span>
+  const navigate = useNavigate();
+
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Movie {id}&lt;/h1&gt;
+      &lt;button onClick={() =&gt; navigate(-1)}&gt;Back&lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+
+function MovieList() {
+  const [params, setParams] = useSearchParams();
+  const q = params.get("q") ?? "";
+
+  return (
+    &lt;input
+      value={q}
+      onChange={(e) =&gt; setParams({ q: e.target.value })}   <span class="comment">// updates the URL</span>
+    /&gt;
+  );
+}</pre>
+
+  <ul>
+    <li>Params are always <strong>strings</strong>: convert with <code>Number(id)</code> when you need a number.</li>
+    <li>Use <code>navigate("/path")</code> after an action (such as saving), and prefer <code>&lt;Link&gt;</code> for ordinary navigation.</li>
+    <li>Putting filter state in the URL means refresh, Back, and sharing a link all keep the same view.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Nested Routes and Layouts</h2>
+
+  <p>Routes can be <strong>nested</strong>. A parent route renders shared UI (a navbar, a sidebar) and an <code>&lt;Outlet /&gt;</code> where the matching child route appears. This avoids repeating layout in every page.</p>
+
+  <pre>import { Outlet } from "react-router";
+
+function Layout() {
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;NavLink to="/"&gt;Home&lt;/NavLink&gt;
+        &lt;NavLink to="/movies"&gt;Movies&lt;/NavLink&gt;
+      &lt;/nav&gt;
+      &lt;main&gt;&lt;Outlet /&gt;&lt;/main&gt;                       {/* the child route renders here */}
+    &lt;/&gt;
+  );
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: &lt;Layout /&gt;,
+    children: [
+      { index: true, element: &lt;Home /&gt; },            <span class="comment">// "/"</span>
+      { path: "movies", element: &lt;MovieList /&gt; },     <span class="comment">// "/movies"</span>
+      { path: "movies/:id", element: &lt;MovieDetail /&gt; },
+      { path: "*", element: &lt;NotFound /&gt; },
+    ],
+  },
+]);</pre>
+
+  <p>React Router also supports <strong>loaders</strong> (fetch data before rendering a route), <strong>actions</strong> (handle form submissions), and error elements per route. Those features, and framework mode with server rendering, are beyond this lesson, but the route object you just wrote is where they attach. When you deploy a single-page app, configure the host to serve <code>index.html</code> for unknown paths, or deep links will return 404.</p>
+
+  <div class="callout">
+    <span class="label">The URL is state</span>
+    Where the user is, and often what they are looking at (filters, tab, page), belongs in the URL. Routing gives you Back, refresh, and shareable links with almost no extra code.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>&lt;a href&gt;</code> for internal links</td><td>Full page reload; state is lost</td><td>Use <code>&lt;Link&gt;</code> or <code>&lt;NavLink&gt;</code></td></tr>
+    <tr><td>Treating <code>useParams()</code> values as numbers</td><td><code>"5" === 5</code> is false and <code>"5" + 1</code> is <code>"51"</code></td><td>Convert with <code>Number()</code></td></tr>
+    <tr><td>Forgetting a catch-all <code>*</code> route</td><td>Unknown URLs show a blank page</td><td>Add a NotFound route</td></tr>
+    <tr><td>Deploying without a fallback to <code>index.html</code></td><td>Refreshing <code>/movies/42</code> gives a 404</td><td>Configure the host to rewrite all paths to <code>index.html</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a three-page app (Home, List, Detail) with a shared layout using <code>&lt;Outlet /&gt;</code>.</li>
+      <li>Make a search box that stores its text in the URL with <code>useSearchParams</code> and restores it on refresh.</li>
+      <li>Add a NotFound page and highlight the active link in the navigation with <code>NavLink</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Routes map URLs to components; use <code>&lt;Link&gt;</code>/<code>NavLink</code> to navigate without reloading.</li>
+      <li>Read path params with <code>useParams</code> and keep shareable state in search params.</li>
+      <li>Nest routes with a layout and <code>&lt;Outlet /&gt;</code>, and add a catch-all route.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Building a Complete App — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

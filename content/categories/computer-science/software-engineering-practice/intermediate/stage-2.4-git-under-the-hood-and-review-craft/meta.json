@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Git Under the Hood & Review Craft",
+  "description": "How Git stores history, shaping branches with rebase, hunting regressions, reviewing well, and automating the nitpicks.",
+  "order": 4
+}

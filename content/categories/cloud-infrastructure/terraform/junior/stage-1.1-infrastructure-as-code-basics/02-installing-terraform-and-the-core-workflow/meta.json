@@ -1,0 +1,5 @@
+{
+  "title": "Installing Terraform & the Core Workflow",
+  "description": "init, plan, apply, and destroy.",
+  "order": 2
+}

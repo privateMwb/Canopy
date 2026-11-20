@@ -1,0 +1,5 @@
+{
+  "title": "End-to-End Tests with Playwright",
+  "description": "Driving a real browser in CI.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Coverage, Mutation Testing & What Metrics Can't Tell You",
+  "description": "What line coverage measures, what mutation testing adds, and why a high number can still miss the bug.",
+  "order": 6
+}

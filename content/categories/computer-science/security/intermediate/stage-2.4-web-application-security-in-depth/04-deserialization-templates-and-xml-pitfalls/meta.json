@@ -1,0 +1,1 @@
+{"title": "Deserialization, Templates & XML Pitfalls", "description": "Unsafe deserialization, server-side template injection, and XXE: what happens when a parser does more than you intended.", "order": 4}

@@ -1,0 +1,5 @@
+{
+  "title": "Encodings & Data Structure Internals",
+  "description": "Listpack, skiplists, and hash tables, and when Redis switches between them.",
+  "order": 2
+}

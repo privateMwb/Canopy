@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pure Functions, Immutability &amp; Side Effects — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · structuring programs</span> → lesson 05</p>
+  <h1>Pure Functions, Immutability &amp; Side Effects</h1>
+  <p class="lede">Code whose output depends only on its inputs, and that changes nothing else, is the easiest kind to test and understand, so it pays to build as much of your program as possible that way.</p>
+
+  <h2><span class="num">§1</span>What a Pure Function Is</h2>
+  <p>A <strong>pure function</strong> always returns the same output for the same input and has no <strong>side effects</strong>: it doesn't modify anything outside itself, read the clock, touch files, or print. Because it can't surprise you, you can understand it by reading it and test it with one line.</p>
+  <pre><span class="comment"># impure: result depends on hidden state, and it changes state</span>
+total = 0
+def add_to_total(x):
+    global total
+    total += x
+    return total
+
+<span class="comment"># pure: depends only on arguments</span>
+def add(a, b):
+    return a + b</pre>
+  <h2><span class="num">§2</span>Immutability</h2>
+  <p>Data that never changes after it's created removes a whole class of bugs. If nobody can modify an object, nobody can modify it by mistake from far away, and sharing it between parts of a program or threads is safe.</p>
+  <pre>from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Money:
+    amount: int
+    currency: str
+
+price = Money(500, "USD")
+<span class="comment"># price.amount = 1   # error: cannot assign</span>
+discounted = Money(price.amount - 50, price.currency)   <span class="comment"># make a new value</span></pre>
+  <h2><span class="num">§3</span>Push Side Effects to the Edges</h2>
+  <p>Real programs must read files, call networks, and print. The trick is to keep those effects at the <strong>edges</strong> and put the decisions in a pure core. The core is then easy to test with plain values; the thin shell around it does the I/O.</p>
+  <pre><span class="comment"># mixed: logic tangled with I/O, hard to test</span>
+def report():
+    rows = db.query("SELECT amount FROM sales")
+    total = sum(r[0] for r in rows)
+    print(f"Total: {total}")
+
+<span class="comment"># separated</span>
+def total_sales(amounts):            <span class="comment"># pure core: test with a list</span>
+    return sum(amounts)
+
+def report():                        <span class="comment"># thin shell: reads, calls, prints</span>
+    amounts = [r[0] for r in db.query("SELECT amount FROM sales")]
+    print(f"Total: {total_sales(amounts)}")</pre>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Most of the code you need to get right can be pure. Keep the impure parts small and boring, so the logic worth testing never needs a database or a clock.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Functions that quietly modify their arguments</td><td>Callers' data changes unexpectedly, causing distant bugs</td><td>Return a new value, or make the mutation obvious in the name</td></tr>
+    <tr><td>Hidden dependencies on time, randomness, or globals</td><td>Results differ per run and tests become flaky</td><td>Pass the time or random value in as an argument</td></tr>
+    <tr><td>Trying to make everything pure</td><td>Unnatural code that can't do any real work</td><td>Keep a pure core and accept side effects at the edges</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Pick a function with a side effect and split it into a pure calculation and a thin wrapper.</li>
+      <li>Replace a function that reads <code>datetime.now()</code> with one that takes the time as an argument.</li>
+      <li>Make one data class frozen and fix the code that tried to change it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Pure functions depend only on their inputs and change nothing else.</li>
+      <li>Immutable data cannot be changed by mistake from somewhere far away.</li>
+      <li>Keep side effects at the edges and logic in a pure core.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Structuring Programs — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

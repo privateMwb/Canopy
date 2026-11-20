@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Reliability Patterns",
+  "description": "Progressive delivery, config and secret rotation, multi-container pods, graceful shutdown, and cost visibility.",
+  "order": 4
+}

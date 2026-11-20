@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Design System Governance — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · accessibility at scale</span> → lesson 03</p>
+  <h1>Design System Governance</h1>
+  <p class="lede">A design system that was accessible at launch will not stay that way by itself. Governance is the set of rules, reviews, and tests that keep shared components accessible as they change, grow, and are adopted by new teams.</p>
+
+  <h2><span class="num">§1</span>Accessibility as an Entry Requirement</h2>
+  <p>Decide what a component must prove before it enters the system, and write that down as a gate. This avoids the common situation where an inaccessible component is shipped first and "fixed later".</p>
+  <table>
+    <tr><th>Gate</th><th>What a new component must show</th></tr>
+    <tr><td><strong>Semantics</strong></td><td>Native elements where possible, and ARIA that follows the Authoring Practices Guide</td></tr>
+    <tr><td><strong>Keyboard model</strong></td><td>Documented keys, tested with a keyboard</td></tr>
+    <tr><td><strong>Screen reader behavior</strong></td><td>Name, role, state, and announcements verified with at least two screen reader and browser pairs</td></tr>
+    <tr><td><strong>Visual</strong></td><td>Contrast, focus indicator, target size, zoom, and forced colors checked</td></tr>
+    <tr><td><strong>Automated tests</strong></td><td>axe checks for each state and variant</td></tr>
+    <tr><td><strong>Documentation</strong></td><td>Usage rules, do and don't examples, and accessibility notes</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Tokens, Versions, and Change</h2>
+  <p>Governance also covers the values the system provides. Color tokens are a good example: you can enforce contrast at build time, so an inaccessible pairing never reaches a product.</p>
+  <pre><span class="comment">scripts/check-contrast.js: fail the build if a token pair is below its threshold</span>
+const lum = (hex) =&gt; {
+  const [r, g, b] = [1, 3, 5]
+    .map((i) =&gt; parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) =&gt; (c &lt;= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+const ratio = (a, b) =&gt; {
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) =&gt; y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
+const tokens = { text: '#1C1F26', muted: '#595959', bg: '#FFFFFF', link: '#1D4ED8' };
+const pairs = [['text', 'bg', 4.5], ['muted', 'bg', 4.5], ['link', 'bg', 4.5]];
+
+let failed = false;
+for (const [fg, bgName, min] of pairs) {
+  const r = ratio(tokens[fg], tokens[bgName]);
+  if (r &lt; min) { console.error(fg + ' on ' + bgName + ' is ' + r.toFixed(2)); failed = true; }
+}
+process.exit(failed ? 1 : 0);</pre>
+  <ul>
+    <li><strong>Versioning:</strong> decide how accessibility changes are released. A fix that changes visible markup or keyboard behavior can break product tests, so communicate it in the changelog and use semantic versioning honestly.</li>
+    <li><strong>Deprecation:</strong> retire inaccessible components on a published timeline, and provide a migration path.</li>
+    <li><strong>Regression testing:</strong> run accessibility tests across all components on every change, including visual checks in dark mode and forced colors.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Contributions, Exceptions, and Community</h2>
+  <p>A system is used and changed by many teams, so set rules for how they take part.</p>
+  <ol>
+    <li><strong>Contribution model:</strong> teams may propose components, and the system team reviews them against the accessibility gate.</li>
+    <li><strong>Exception process:</strong> when a team needs to deviate, require a written rationale, an owner, a mitigation, and an <strong>expiry date</strong>, so exceptions do not become permanent.</li>
+    <li><strong>Audits:</strong> audit the system with assistive technology on a regular schedule, and publish the results.</li>
+    <li><strong>Community of practice:</strong> a channel and regular session where teams share patterns and questions.</li>
+  </ol>
+  <p>Finally, make adoption measurable. Know which products use which component versions, because an accessibility fix helps no one until teams upgrade.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Governance is what makes accessibility survive success. A system's popularity multiplies both good fixes and new bugs, so the review gates, tests, and upgrade paths matter as much as the components.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Accepting components that are "accessible later"</td><td>Inaccessible patterns spread to every adopter</td><td>Require accessibility evidence before a component ships</td></tr>
+    <tr><td>Allowing permanent exceptions</td><td>Temporary deviations become the new normal</td><td>Require owners and expiry dates, and review them regularly</td></tr>
+    <tr><td>Fixing the system but not tracking upgrades</td><td>Products keep running old, inaccessible versions</td><td>Track versions in use, and support migration</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write the accessibility gate for adding one new component to a system, with at least six checks.</li>
+      <li>Run the contrast script above against your own tokens, and note any pair that fails.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Set an accessibility gate for every new component: semantics, keyboard, screen reader behavior, visuals, tests, and documentation.</li>
+      <li>Enforce what you can automatically, such as token contrast at build time, and version and deprecate changes responsibly.</li>
+      <li>Manage exceptions with owners and expiry dates, audit regularly, and track adoption of fixes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Accessibility at Scale — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pod Security &amp; Admission Control — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · security &amp; multi-tenancy</span> → lesson 02</p>
+  <h1>Pod Security &amp; Admission Control</h1>
+  <p class="lede">Pod Security Standards define what a safe pod looks like, and admission control is where the cluster enforces rules before objects are stored.</p>
+
+  <h2><span class="num">§1</span>Pod Security Standards</h2>
+  <p>Three cumulative profiles describe pod hardening:</p>
+  <table>
+    <tr><th>Profile</th><th>Intent</th><th>Examples of what it blocks</th></tr>
+    <tr><td><code>privileged</code></td><td>Unrestricted</td><td>Nothing</td></tr>
+    <tr><td><code>baseline</code></td><td>Prevents known privilege escalations</td><td>Privileged containers, host namespaces, hostPath volumes, dangerous capabilities</td></tr>
+    <tr><td><code>restricted</code></td><td>Current hardening best practice</td><td>Running as root, privilege escalation, missing seccomp profile, non-dropped capabilities</td></tr>
+  </table>
+  <p><strong>Pod Security Admission</strong>, built into the API server since version 1.25 (replacing PodSecurityPolicy), enforces them per namespace through labels:</p>
+  <pre>kubectl label namespace shop \
+  pod-security.kubernetes.io/enforce=restricted \
+  pod-security.kubernetes.io/warn=restricted \
+  pod-security.kubernetes.io/audit=restricted</pre>
+  <p><code>enforce</code> rejects violating pods, <code>warn</code> shows a message to the user, and <code>audit</code> records the violation. A common rollout is <code>warn</code> and <code>audit</code> first, fix findings, then <code>enforce</code>.</p>
+  <h2><span class="num">§2</span>A Restricted-Compliant Pod</h2>
+  <pre>securityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+containers:
+  - name: app
+    image: myorg/app:1.0
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]</pre>
+  <p>Most violations come from images that run as root and from missing <code>drop: ALL</code>.</p>
+  <h2><span class="num">§3</span>Admission Control</h2>
+  <p>After authentication and authorization, a request goes through <strong>admission controllers</strong>: built-in plugins, then <strong>mutating</strong> webhooks (which can change the object, such as injecting a sidecar), then schema validation, then <strong>validating</strong> webhooks (which can only accept or reject).</p>
+  <p>Ways to add your own policy:</p>
+  <table>
+    <tr><th>Approach</th><th>Notes</th></tr>
+    <tr><td>ValidatingAdmissionPolicy</td><td>Built in and stable since 1.30; rules written in CEL, with no webhook to run</td></tr>
+    <tr><td>Kyverno</td><td>Policy engine whose policies are Kubernetes YAML; can validate, mutate, and generate resources</td></tr>
+    <tr><td>OPA Gatekeeper</td><td>Policies in Rego, with constraint templates</td></tr>
+    <tr><td>Custom webhook</td><td>Maximum flexibility, but you must run it reliably</td></tr>
+  </table>
+  <pre>apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: require-team-label
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["deployments"]
+  validations:
+    - expression: "has(object.metadata.labels) &amp;&amp; 'team' in object.metadata.labels"
+      message: "Deployments must have a 'team' label"</pre>
+  <p>A policy also needs a <code>ValidatingAdmissionPolicyBinding</code> to take effect.</p>
+  <h2><span class="num">§4</span>Webhook Risks</h2>
+  <p>A webhook sits in the request path of every matching API call. Set a short timeout, choose <code>failurePolicy</code> deliberately (<code>Fail</code> is safer but can block the cluster when the webhook is down, <code>Ignore</code> keeps working but skips the check), and <strong>exclude the webhook's own namespace and kube-system</strong> so it cannot lock itself out.</p>
+  <div class="callout">
+    <span class="label">Policy as guardrails, not gates</span>
+    Start in audit mode, publish exceptions with owners and expiry dates, and give developers clear error messages. Rules nobody can satisfy get bypassed.
+  </div>
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Enforcing <code>restricted</code> immediately</td><td>Many existing workloads fail to start</td><td>Roll out with <code>warn</code> and <code>audit</code> first</td></tr>
+    <tr><td>Webhook with <code>failurePolicy: Fail</code> and no HA</td><td>Webhook outage blocks all matching changes</td><td>Run multiple replicas, exclude system namespaces, set timeouts</td></tr>
+    <tr><td>Relying only on admission checks</td><td>Running pods created earlier are not re-evaluated</td><td>Scan existing workloads and use audit reports</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Label a test namespace with <code>enforce=restricted</code>, try to run <code>nginx</code> as root, and fix the manifest until it is accepted.</li>
+      <li>Write a ValidatingAdmissionPolicy that rejects containers without resource requests.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Pod Security Standards (privileged, baseline, restricted) are enforced per namespace through Pod Security Admission.</li>
+      <li>Admission runs mutating then validating checks before storage, with CEL policies, Kyverno, or Gatekeeper.</li>
+      <li>Webhooks are availability risks, so design their failure modes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Security &amp; Multi-Tenancy — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

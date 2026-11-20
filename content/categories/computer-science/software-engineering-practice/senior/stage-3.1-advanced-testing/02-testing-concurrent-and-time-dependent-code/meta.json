@@ -1,0 +1,5 @@
+{
+  "title": "Testing Concurrent & Time-Dependent Code",
+  "description": "Deterministic clocks, controlled schedulers, and strategies for races that appear once in a thousand runs.",
+  "order": 2
+}

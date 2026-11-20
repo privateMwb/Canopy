@@ -1,0 +1,5 @@
+{
+  "title": "Bitmaps, HyperLogLog & Geospatial",
+  "description": "Compact structures for flags, unique counts, and location queries.",
+  "order": 5
+}

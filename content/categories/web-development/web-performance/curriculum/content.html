@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web Performance Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style></head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / web-performance</p>
+    <h1>From a slow page to a site that feels instant</h1>
+    <p class="lede">Three levels, twelve stages — measurement, loading, rendering, and delivery, built toward the judgment to find what is slow, fix it, and keep it fast.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "my page feels slow" to "I can measure how fast a page is, explain the metrics, and fix the most common problems."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Why Performance Matters</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Speed, Users &amp; Business Outcomes</p><p class="lesson-desc">How performance affects conversion, retention, and trust.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">What Happens When You Load a Page</p><p class="lesson-desc">DNS, TCP, TLS, request, response, and render.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Core Web Vitals</p><p class="lesson-desc">LCP, INP, and CLS in plain language.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Lab Data vs. Field Data</p><p class="lesson-desc">Lighthouse vs. real users, and why both matter.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Your First Lighthouse Audit</p><p class="lesson-desc">Running and reading a report.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit a real site, explain each Core Web Vital, and list three fixes ranked by expected impact.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Images, Fonts &amp; Media</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Image Formats &amp; Compression</p><p class="lesson-desc">JPEG, WebP, AVIF, and SVG.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Responsive Images</p><p class="lesson-desc">srcset, sizes, and serving the right size.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Lazy Loading</p><p class="lesson-desc">Deferring offscreen images and iframes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Web Fonts Done Right</p><p class="lesson-desc">font-display, subsetting, and preloading.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Video &amp; Animation Costs</p><p class="lesson-desc">When video, GIFs, and animation hurt.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Cut an image-heavy page's transfer size by at least 60% without visible quality loss.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Loading JavaScript &amp; CSS</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Render-Blocking Resources</p><p class="lesson-desc">How CSS and JavaScript delay first paint.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">defer, async &amp; Modules</p><p class="lesson-desc">Loading scripts without blocking.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Minification, Compression &amp; Bundling</p><p class="lesson-desc">Gzip, Brotli, and smaller files.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Removing Unused Code</p><p class="lesson-desc">Finding dead JavaScript and CSS.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Third-Party Scripts</p><p class="lesson-desc">Measuring and containing analytics, chat widgets, and ads.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Fix every render-blocking resource on a sample page and show the before-and-after filmstrip.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Caching Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">HTTP Caching Headers</p><p class="lesson-desc">Cache-Control, ETag, and freshness.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Browser Cache vs. CDN Cache</p><p class="lesson-desc">Where each layer lives.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Static Asset Fingerprinting</p><p class="lesson-desc">Long cache lifetimes with safe updates.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Using a CDN</p><p class="lesson-desc">What it gives you, and how to set one up.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Measuring Cache Hits</p><p class="lesson-desc">Verifying that caching actually works.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Configure caching for a static site so repeat visits transfer almost nothing, and prove it in the network panel.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can fix obvious problems" to "I diagnose real bottlenecks with profiling and field data, and optimize loading, rendering, and interaction."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Measuring Properly</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">DevTools Performance Panel</p><p class="lesson-desc">Reading flame charts and the main thread.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">WebPageTest &amp; Waterfalls</p><p class="lesson-desc">Reading request waterfalls like a detective.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Real User Monitoring</p><p class="lesson-desc">Collecting field metrics with the web-vitals library.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Performance Budgets</p><p class="lesson-desc">Setting and enforcing limits in CI.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Statistics for Performance Data</p><p class="lesson-desc">Percentiles, noise, and not fooling yourself.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Set up real-user monitoring and a CI budget for a site, and produce a baseline report.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Optimizing Loading</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Critical Rendering Path</p><p class="lesson-desc">Getting the first meaningful content out fast.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Resource Hints &amp; Priorities</p><p class="lesson-desc">preload, preconnect, and fetchpriority.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Optimizing LCP</p><p class="lesson-desc">Finding the LCP element and speeding it up.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">HTTP/2, HTTP/3 &amp; Connection Costs</p><p class="lesson-desc">What the protocol upgrades change.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Server Response Time</p><p class="lesson-desc">TTFB, caching, and edge rendering.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Improve a page's LCP from poor to good, documenting each change's measured effect.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Rendering &amp; Interaction</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Layout, Paint &amp; Composite Costs</p><p class="lesson-desc">What triggers each stage.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Fixing CLS</p><p class="lesson-desc">Reserving space and avoiding layout shifts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Optimizing INP</p><p class="lesson-desc">Breaking up long tasks and yielding to the browser.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Animation Performance</p><p class="lesson-desc">Smooth motion with compositor-friendly properties.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Virtualization &amp; Large Lists</p><p class="lesson-desc">Rendering only what's visible.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a janky interface, fix its long tasks and layout shifts, and show INP and CLS improving in a trace.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — JavaScript &amp; Bundle Performance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Analyzing Bundles</p><p class="lesson-desc">Treemaps, and finding what's heavy.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Code Splitting &amp; Dynamic Imports</p><p class="lesson-desc">Shipping only what the page needs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Tree Shaking &amp; Dependency Choices</p><p class="lesson-desc">Smaller libraries and import discipline.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Web Workers &amp; Off-Main-Thread Work</p><p class="lesson-desc">Keeping the UI responsive.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Framework Performance Pitfalls</p><p class="lesson-desc">Hydration, re-renders, and state cost.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Cut a framework app's JavaScript payload by 40% and show the change in Time to Interactive.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I make pages fast" to "I design performance into systems, own budgets and culture, and can defend trade-offs with data."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Browser &amp; Network Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Browser's Loading Pipeline</p><p class="lesson-desc">The preload scanner, parser, and scheduler.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Networking Deep Dive</p><p class="lesson-desc">TCP slow start, TLS handshakes, QUIC, and head-of-line blocking.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Memory &amp; Garbage Collection</p><p class="lesson-desc">Leaks and long-lived pages.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">The Scheduler &amp; Task Prioritization</p><p class="lesson-desc">scheduler.postTask and yielding.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Speculation Rules &amp; Prerendering</p><p class="lesson-desc">Making navigations feel instant.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Explain, with traces, why two nearly identical pages load at very different speeds.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Architecture for Speed</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Rendering Strategy Trade-offs</p><p class="lesson-desc">SSR, SSG, ISR, streaming, and islands.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Edge Computing &amp; CDNs in Depth</p><p class="lesson-desc">Logic near users, and cache design.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Data Fetching Architecture</p><p class="lesson-desc">Waterfalls, batching, and prefetching.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Offline &amp; Service Worker Strategy</p><p class="lesson-desc">Caching strategies and update risks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Mobile &amp; Low-End Device Performance</p><p class="lesson-desc">Designing for slow CPUs and bad networks.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Redesign a slow page's architecture for a low-end phone on a 3G connection and prove the gain with real-device tests.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Performance at Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Performance Culture &amp; Ownership</p><p class="lesson-desc">Budgets, reviews, and making speed a habit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Continuous Performance Testing</p><p class="lesson-desc">Automated lab tests and regression alerts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Debugging Regressions</p><p class="lesson-desc">Bisecting, diffing traces, and finding the commit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Third-Party &amp; Tag Governance</p><p class="lesson-desc">Controlling what marketing and ads add.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Cost vs. Performance</p><p class="lesson-desc">Bandwidth, compute, and the economics of optimization.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a performance regression pipeline that blocks a deliberately slow change before it ships.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Prioritizing the Work</p><p class="lesson-desc">What to fix first when everything is slow.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Connecting Performance to Business Impact</p><p class="lesson-desc">Proving the value with experiments.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Performance vs. Accessibility vs. Features</p><p class="lesson-desc">Resolving competing goals.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Presenting Findings &amp; Roadmaps</p><p class="lesson-desc">Making the case to leadership.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a performance strategy and roadmap for a real product, argued for a skeptical executive.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Measurement arrives at Junior as a Lighthouse report, returns at Intermediate as traces, waterfalls, and real-user data, and comes back at Senior as budgets, regression pipelines, and performance culture. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how the browser prioritizes requests is one skill; deciding what to fix first when everything is slow, and proving the business value to leadership, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

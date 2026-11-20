@@ -1,0 +1,5 @@
+{
+  "title": "Dependency Injection & Middleware",
+  "description": "Service lifetimes, the request pipeline, and writing your own middleware.",
+  "order": 2
+}

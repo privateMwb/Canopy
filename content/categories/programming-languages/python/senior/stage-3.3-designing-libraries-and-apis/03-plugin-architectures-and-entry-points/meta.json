@@ -1,0 +1,5 @@
+{
+  "title": "Plugin Architectures & Entry Points",
+  "description": "Letting others extend your code without forking it.",
+  "order": 3
+}

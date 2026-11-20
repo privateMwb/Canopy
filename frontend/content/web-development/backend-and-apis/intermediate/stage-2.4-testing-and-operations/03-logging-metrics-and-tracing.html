@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Logging, Metrics &amp; Tracing — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · testing &amp; operations</span> → lesson 03</p>
+  <h1>Logging, Metrics &amp; Tracing</h1>
+  <p class="lede">Seeing inside a running service.</p>
+
+  <h2><span class="num">§1</span>Seeing Inside a Running Service</h2>
+
+  <p>In production you cannot attach a debugger. <strong>Observability</strong> is the ability to understand what a system is doing from the signals it emits. Three kinds of signal complement each other:</p>
+
+  <table>
+    <tr><th>Signal</th><th>Answers</th><th>Example</th></tr>
+    <tr><td><strong>Logs</strong></td><td>What happened, in detail, for one event?</td><td>"Payment 918 failed: card declined"</td></tr>
+    <tr><td><strong>Metrics</strong></td><td>How is the system behaving overall, over time?</td><td>Requests per second, error rate, p95 latency</td></tr>
+    <tr><td><strong>Traces</strong></td><td>Where did the time go in one request across services?</td><td>A 900 ms request: 20 ms API, 700 ms database, 150 ms payment call</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Structured Logging</h2>
+
+  <p>Free-text logs are hard to search at scale. <strong>Structured logs</strong> emit one JSON object per event with consistent fields, which log systems can filter and aggregate. Include a <strong>request id</strong> on every line so you can pull up everything that happened during one request.</p>
+
+  <pre>import pino from "pino";
+import { randomUUID } from "node:crypto";
+
+const logger = pino({ level: process.env.LOG_LEVEL ?? "info", redact: ["req.headers.authorization", "*.password"] });
+
+app.use((req, res, next) =&gt; {
+  req.id = req.get("x-request-id") ?? randomUUID();
+  req.log = logger.child({ requestId: req.id, userId: req.user?.id });
+  res.set("x-request-id", req.id);                   <span class="comment">// clients can quote this in bug reports</span>
+  const start = process.hrtime.bigint();
+  res.on("finish", () =&gt; {
+    req.log.info({
+      method: req.method, route: req.route?.path, status: res.statusCode,
+      durationMs: Number(process.hrtime.bigint() - start) / 1e6,
+    }, "request completed");
+  });
+  next();
+});
+
+<span class="comment">// {"level":30,"requestId":"3c1...","method":"POST","route":"/notes","status":201,"durationMs":12.4,"msg":"request completed"}</span></pre>
+
+  <ul>
+    <li><strong>Use levels deliberately:</strong> <code>error</code> for things needing attention, <code>warn</code> for odd but handled, <code>info</code> for key events, <code>debug</code> only when investigating.</li>
+    <li><strong>Redact secrets and personal data.</strong> Never log passwords, tokens, or full payment details.</li>
+    <li><strong>Write to stdout</strong> and let the platform collect and ship logs; do not manage log files in the app.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Metrics: The Four Numbers to Start With</h2>
+
+  <p>For any request-driven service, begin with the <strong>RED</strong> method: <strong>R</strong>ate (requests per second), <strong>E</strong>rrors (failed fraction), and <strong>D</strong>uration (latency distribution). Track latency as a <strong>histogram</strong> and read percentiles (p50, p95, p99) rather than averages, because averages hide the slow tail that real users feel.</p>
+
+  <pre>import client from "prom-client";
+client.collectDefaultMetrics();                      <span class="comment">// CPU, memory, event loop lag, GC...</span>
+
+const httpDuration = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Request duration",
+  labelNames: ["method", "route", "status"],
+  buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5],
+});
+
+<span class="comment">// in the finish handler:  httpDuration.labels(req.method, req.route?.path ?? "unmatched", res.statusCode).observe(seconds);</span>
+
+app.get("/metrics", async (req, res) =&gt; {            <span class="comment">// scraped by Prometheus (keep it off the public internet)</span>
+  res.type(client.register.contentType).send(await client.register.metrics());
+});</pre>
+
+  <p>Label with the <strong>route pattern</strong> (<code>/notes/:id</code>), never the raw URL or user id, because each distinct label value creates a new time series. Unbounded labels ("high cardinality") can overwhelm a metrics system.</p>
+
+  <h2><span class="num">§4</span>Tracing</h2>
+
+  <p>When one request touches several services, a <strong>trace</strong> records each step as a <em>span</em> with timing, linked by a trace id propagated in request headers (the W3C <code>traceparent</code> header). <strong>OpenTelemetry</strong> is the vendor-neutral standard: its Node SDK can auto-instrument HTTP, Express, and database clients, then export to Jaeger, Tempo, or a commercial backend. Put the trace id in your logs and you can jump from a slow trace straight to its log lines.</p>
+
+  <div class="callout">
+    <span class="label">Instrument before you need it</span>
+    The incident is the worst time to discover you cannot answer "what changed, and where is it slow?" Add request logging, RED metrics, and tracing early; they are cheap compared with a blind outage.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Plain-text, unstructured logs with no request id</td><td>Cannot correlate lines or filter reliably</td><td>Emit JSON with a request id on every line</td></tr>
+    <tr><td>Logging secrets or full request bodies</td><td>Credentials and personal data leak into log systems</td><td>Redact sensitive fields and log only what you need</td></tr>
+    <tr><td>Labeling metrics with user ids or raw URLs</td><td>Cardinality explosion crashes or bankrupts the metrics backend</td><td>Use bounded labels such as method, route pattern, and status</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a request-logging middleware that emits one structured line per request with a request id, status, and duration, and redacts the <code>Authorization</code> header.</li>
+      <li>Expose a <code>/metrics</code> endpoint with a latency histogram, generate load, and read the p95 from the data.</li>
+      <li>Add OpenTelemetry auto-instrumentation and view a trace of a request that hits the database.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Logs, metrics, and traces answer different questions; use all three together.</li>
+      <li>Emit structured JSON logs with request ids, and track rate, errors, and duration (RED) with histograms.</li>
+      <li>Keep metric labels bounded, redact secrets, and propagate trace ids across services.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Testing &amp; Operations — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

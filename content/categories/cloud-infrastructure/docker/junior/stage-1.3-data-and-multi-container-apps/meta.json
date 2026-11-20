@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Data & Multi-Container Apps",
+  "description": "Persisting data, connecting containers, and describing whole applications with Docker Compose.",
+  "order": 3
+}

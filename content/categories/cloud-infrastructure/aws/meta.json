@@ -1,0 +1,7 @@
+{
+  "title": "Amazon Web Services (AWS)",
+  "description": "Cloud fundamentals on the most widely used platform, from a safe first account to architecture, security, and cost.",
+  "order": 5,
+  "compileRoot": true,
+  "icon": "lang_aws"
+}

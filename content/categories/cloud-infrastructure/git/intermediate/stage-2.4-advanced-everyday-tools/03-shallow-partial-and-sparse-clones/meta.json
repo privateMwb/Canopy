@@ -1,0 +1,5 @@
+{
+  "title": "Shallow, Partial & Sparse Clones",
+  "description": "Working with huge repositories without downloading all of them.",
+  "order": 3
+}

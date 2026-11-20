@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Senior — Machine Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #7A2E3B; --accent-soft: #F2E3E5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F26; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F26; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin:0; background: var(--bg); color: var(--ink); font-family:'Inter',sans-serif; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 40px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 20px; }
+  .notice { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 0 0 40px; font-size: 14px; line-height: 1.6; color: var(--ink); }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 40px 0 14px; color: var(--ink); }
+  ul { padding-left: 20px; margin: 0 0 8px; }
+  li { font-size: 14.5px; line-height: 1.7; margin-bottom: 8px; color: var(--ink); }
+  li strong { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 30px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">library → computer science → machine learning → <span style="color:var(--accent)">senior</span></p>
+  <h1>Senior</h1>
+  <p class="lede">Architecture mastery, research, systems, leadership.</p>
+  <div class="notice">This is a compiled <strong>overview</strong> — stage and lesson titles with short descriptions, pulled straight from the curriculum. Full written lessons for this level haven't been built yet (the way Junior's Stage 1.1 has).</div>
+  <h2>3.1 — Deep Architecture Mastery</h2>
+<ul>
+<li><strong>Transformer Architecture</strong> — Multi-head attention, positional encoding, layer norm.</li>
+<li><strong>Distributed Training</strong> — Mixed precision, gradient accumulation, distributed training.</li>
+<li><strong>Generative Models</strong> — Generative models: diffusion and autoregressive generation.</li>
+<li><strong>Reinforcement Learning Fundamentals</strong> — Reinforcement learning fundamentals.</li>
+<li><strong>RLHF &amp; Preference Tuning</strong> — RLHF and preference tuning.</li>
+<li><strong>🏁 Checkpoint</strong> — Implement a transformer block from scratch and verify it trains.</li>
+</ul>
+<h2>3.2 — Research and Experimentation</h2>
+<ul>
+<li><strong>Reading Research Papers</strong> — Reading papers efficiently: abstract → figures → method → results.</li>
+<li><strong>Reproducing Research Results</strong> — Reproducing a paper's core result at a small scale.</li>
+<li><strong>Ablation Studies</strong> — Ablation studies.</li>
+<li><strong>Statistical Rigor in ML</strong> — Statistical rigor: significance, variance across runs, avoiding p-hacking.</li>
+<li><strong>🏁 Checkpoint</strong> — Reproduce a recent paper's key experiment and write up what did and didn't hold.</li>
+</ul>
+<h2>3.3 — Systems and Scale</h2>
+<ul>
+<li><strong>Model Compression</strong> — Quantization, pruning, distillation.</li>
+<li><strong>Retrieval-Augmented Generation (RAG)</strong> — Vector databases and retrieval-augmented generation (RAG).</li>
+<li><strong>Cost &amp; Latency Tradeoffs</strong> — Cost and latency tradeoffs in production systems.</li>
+<li><strong>Fault-Tolerant System Design</strong> — Fallbacks, guardrails, graceful degradation.</li>
+<li><strong>🏁 Checkpoint</strong> — Design a production system for a model with real latency/cost constraints.</li>
+</ul>
+<h2>3.4 — Technical Leadership</h2>
+<ul>
+<li><strong>Scoping ML Problems</strong> — Scoping problems: deciding if ML is the right tool at all.</li>
+<li><strong>Communicating Model Limitations</strong> — Communicating limitations and uncertainty to non-technical stakeholders.</li>
+<li><strong>Code &amp; Model Review</strong> — What to look for in code and model review.</li>
+<li><strong>Mentoring Engineers</strong> — Mentoring: finding why someone is stuck.</li>
+<li><strong>🏁 Checkpoint</strong> — Write a structured critique of a peer's, or your own past, ML project.</li>
+</ul>
+
+  <footer>
+    <p>Senior — overview compiled from the Machine Learning curriculum.</p>
+  </footer>
+</div>
+</body>
+</html>

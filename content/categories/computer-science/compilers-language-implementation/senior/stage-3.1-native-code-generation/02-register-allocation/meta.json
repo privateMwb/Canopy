@@ -1,0 +1,5 @@
+{
+  "title": "Register Allocation",
+  "description": "Live ranges, interference graphs, linear scan, and spilling to the stack.",
+  "order": 2
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OAuth 2.0 &amp; OpenID Connect — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · security</span> → lesson 03</p>
+  <h1>OAuth 2.0 &amp; OpenID Connect</h1>
+  <p class="lede">Delegated login and tokens done right.</p>
+
+  <h2><span class="num">§1</span>Delegated Login Without Sharing Passwords</h2>
+
+  <p>"Sign in with Google" and "Allow this app to read your calendar" are both <strong>OAuth 2.0</strong>. OAuth is an <em>authorization</em> framework: it lets a user grant an application limited access to their account at another service without handing over their password. <strong>OpenID Connect (OIDC)</strong> is a thin identity layer on top of OAuth that adds <em>authentication</em>: a standard way to learn <strong>who the user is</strong>.</p>
+
+  <h2><span class="num">§2</span>The Players</h2>
+
+  <table>
+    <tr><th>Role</th><th>Example</th></tr>
+    <tr><td>Resource owner</td><td>The user</td></tr>
+    <tr><td>Client</td><td>Your application</td></tr>
+    <tr><td>Authorization server</td><td>Google, GitHub, Auth0, Keycloak, Okta (issues tokens)</td></tr>
+    <tr><td>Resource server</td><td>The API that accepts access tokens (Google Calendar API, or yours)</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>Authorization Code Flow with PKCE</h2>
+
+  <p>This is the recommended flow for web apps, mobile apps, and single-page apps. Its key idea: the browser only ever carries a short-lived <em>code</em>, and your backend exchanges it for tokens over a direct, secure channel.</p>
+
+  <pre>1. Your app generates a random `state` and a PKCE `code_verifier`; sends only its hash (`code_challenge`).
+2. Redirect the user to the provider:
+   https://accounts.example.com/authorize?response_type=code&amp;client_id=APP_ID
+     &amp;redirect_uri=https://app.example.com/callback&amp;scope=openid%20email%20profile
+     &amp;state=abc123&amp;code_challenge=HASH&amp;code_challenge_method=S256
+3. The user logs in and consents at the provider (not on your site).
+4. Provider redirects back:  https://app.example.com/callback?code=XYZ&amp;state=abc123
+5. Your server checks `state` matches, then POSTs to the token endpoint:
+   code=XYZ + code_verifier (+ client_secret for confidential clients)
+6. Provider returns:  access_token, id_token (OIDC), and maybe refresh_token.</pre>
+
+  <ul>
+    <li><strong><code>state</code></strong> is a random value that you verify on return, which defeats CSRF against your callback.</li>
+    <li><strong>PKCE</strong> (Proof Key for Code Exchange) binds the code to the client that started the flow, so a stolen code is useless. It is now recommended for all clients, not just public ones.</li>
+    <li><strong>Exact redirect URI matching</strong> stops attackers redirecting the code to their own site.</li>
+    <li>Avoid the old <em>implicit</em> flow (tokens in the URL) and the <em>password</em> grant; current best practice has deprecated both.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>The Tokens</h2>
+
+  <table>
+    <tr><th>Token</th><th>Purpose</th><th>Who reads it</th></tr>
+    <tr><td><strong>Access token</strong></td><td>Proves permission to call an API, limited by <em>scopes</em> (<code>calendar.readonly</code>)</td><td>The resource server</td></tr>
+    <tr><td><strong>ID token</strong> (OIDC)</td><td>A signed JWT stating who the user is (<code>sub</code>, <code>email</code>, <code>iss</code>, <code>aud</code>, <code>exp</code>)</td><td>Your app, to log the user in</td></tr>
+    <tr><td><strong>Refresh token</strong></td><td>Gets new access tokens without re-prompting the user</td><td>Only the authorization server; store securely</td></tr>
+  </table>
+
+  <p>When you receive an ID token you must validate it: the signature (against the provider's published keys), that <code>iss</code> is the expected issuer, that <code>aud</code> is <em>your</em> client id, that it has not expired, and that the <code>nonce</code> matches if you sent one. Use a maintained library rather than writing this yourself.</p>
+
+  <pre>import * as client from "openid-client";
+
+const config = await client.discovery(new URL("https://accounts.example.com"), CLIENT_ID, CLIENT_SECRET);
+
+<span class="comment">// Start login: the library generates state, nonce, and PKCE parameters for you</span>
+const codeVerifier = client.randomPKCECodeVerifier();
+const authUrl = client.buildAuthorizationUrl(config, {
+  redirect_uri: REDIRECT_URI, scope: "openid email profile",
+  code_challenge: await client.calculatePKCECodeChallenge(codeVerifier), code_challenge_method: "S256",
+  state: client.randomState(),
+});
+<span class="comment">// ...store state + verifier in the user's session, redirect to authUrl...</span>
+<span class="comment">// In the callback: client.authorizationCodeGrant(config, currentUrl, { pkceCodeVerifier, expectedState })</span>
+<span class="comment">// then create or look up your OWN user keyed by (issuer, sub), and start your own session</span></pre>
+
+  <h2><span class="num">§5</span>Machine-to-Machine</h2>
+
+  <p>When no user is involved (a backend job calling another service), use the <strong>client credentials</strong> grant: the service authenticates with its own id and secret and receives a short-lived access token for specific scopes.</p>
+
+  <div class="callout">
+    <span class="label">OAuth is not authentication by itself</span>
+    An access token says "this bearer may do X", not "this user is Ada." For login, use OIDC and the validated ID token. Key your users on the stable <code>(issuer, sub)</code> pair, not on email, which can change or be reassigned.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using the implicit flow or skipping PKCE</td><td>Tokens or codes can be intercepted and replayed</td><td>Use authorization code with PKCE</td></tr>
+    <tr><td>Not verifying <code>state</code>, <code>aud</code>, or <code>iss</code></td><td>Login CSRF and token-substitution attacks</td><td>Use a certified library and validate every claim</td></tr>
+    <tr><td>Matching users by email alone</td><td>Account takeover when emails are reused or unverified</td><td>Link accounts on <code>(iss, sub)</code> and require verified email for linking</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add "Sign in with Google" or GitHub to a small app using a standard library, and log the claims you receive in the ID token.</li>
+      <li>Remove the <code>state</code> check in a throwaway copy and write down how an attacker could exploit it.</li>
+      <li>Draw the sequence diagram for authorization code with PKCE and label what the browser sees versus what only your server sees.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>OAuth 2.0 delegates access; OpenID Connect adds a validated ID token to establish who the user is.</li>
+      <li>Use the authorization code flow with PKCE, a verified state, and exact redirect URIs.</li>
+      <li>Rely on maintained libraries, validate tokens fully, and key users on issuer plus subject.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Security — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

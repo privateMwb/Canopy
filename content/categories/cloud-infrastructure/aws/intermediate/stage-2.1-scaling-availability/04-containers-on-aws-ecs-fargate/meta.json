@@ -1,0 +1,5 @@
+{
+  "title": "Containers on AWS: ECS & Fargate",
+  "description": "Running containers without managing servers, and where EKS fits.",
+  "order": 4
+}

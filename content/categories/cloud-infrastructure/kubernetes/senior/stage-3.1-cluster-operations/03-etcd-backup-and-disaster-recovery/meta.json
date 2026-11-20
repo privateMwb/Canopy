@@ -1,0 +1,5 @@
+{
+  "title": "etcd, Backup & Disaster Recovery",
+  "description": "What lives in etcd and how to restore a cluster.",
+  "order": 3
+}

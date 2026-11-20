@@ -1,0 +1,5 @@
+{
+  "title": "Property-Based Testing & Fuzzing",
+  "description": "Stating rules that must always hold, letting a tool hunt for counterexamples, and shrinking failures to a minimal case.",
+  "order": 1
+}

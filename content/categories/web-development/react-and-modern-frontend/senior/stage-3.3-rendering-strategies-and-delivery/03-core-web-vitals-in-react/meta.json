@@ -1,0 +1,5 @@
+{
+  "title": "Core Web Vitals in React",
+  "description": "Measuring and fixing LCP, INP, and CLS.",
+  "order": 3
+}

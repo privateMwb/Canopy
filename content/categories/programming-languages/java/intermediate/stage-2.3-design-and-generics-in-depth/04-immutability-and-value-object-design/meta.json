@@ -1,0 +1,5 @@
+{
+  "title": "Immutability & Value-Object Design",
+  "description": "Final fields, defensive copies, and safe sharing across threads.",
+  "order": 4
+}

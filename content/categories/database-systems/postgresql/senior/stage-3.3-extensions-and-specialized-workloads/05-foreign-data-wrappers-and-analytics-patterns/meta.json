@@ -1,0 +1,5 @@
+{
+  "title": "Foreign Data Wrappers & Analytics Patterns",
+  "description": "Querying other systems from Postgres and shaping data for reporting.",
+  "order": 5
+}

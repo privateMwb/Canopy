@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Configuration & Storage",
+  "description": "Configuration, secrets, probes, resource requests, persistent storage, debugging, and kubectl fluency.",
+  "order": 3
+}

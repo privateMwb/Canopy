@@ -1,0 +1,5 @@
+{
+  "title": "CORS Basics",
+  "description": "Why cross-origin requests fail, and what the headers mean.",
+  "order": 5
+}

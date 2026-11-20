@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Address Translation Hardware: TLBs &amp; Page Walks — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · dram & the memory system</span> → lesson 03</p>
+  <h1>Address Translation Hardware: TLBs &amp; Page Walks</h1>
+  <p class="lede">Every memory access starts with a virtual address, and the hardware that translates it, the TLB and the page walker, adds a hidden cost that large working sets expose.</p>
+
+  <h2><span class="num">§1</span>The TLB</h2>
+  <p>From the OS course: virtual addresses are translated to physical ones through page tables. Walking those tables on every access would multiply memory traffic, so the CPU caches recent translations in the <strong>translation lookaside buffer</strong> (TLB).</p>
+  <table>
+    <tr><th>Structure</th><th>Typical size</th><th>Covers (4 KiB pages)</th></tr>
+    <tr><td>L1 data TLB</td><td>About 64 entries</td><td>About 256 KiB</td></tr>
+    <tr><td>L2 (shared) TLB</td><td>About 1,500–2,000 entries</td><td>About 6–8 MiB</td></tr>
+    <tr><td>Page-walk caches</td><td>Small caches of upper page-table levels</td><td>Speeds up walks</td></tr>
+  </table>
+  <p>A TLB hit adds almost nothing. A miss triggers a <strong>page walk</strong>, performed by dedicated hardware on x86 and ARM, that follows up to four levels of page tables (five with larger address spaces). Each level is a memory reference, though the walker caches upper levels and the entries often sit in the L2 or L3 caches, so a typical walk costs tens of cycles. If the page-table entries themselves miss to DRAM, it can cost hundreds.</p>
+
+  <h2><span class="num">§2</span>Translation and the L1 Cache</h2>
+  <p>To keep L1 hits fast, caches must start looking up data in parallel with translation. A <strong>virtually indexed, physically tagged</strong> (VIPT) L1 uses address bits that don't change under translation, the page offset, for the index, so lookup and translation overlap. The constraint is that the index and offset bits must fit inside the page offset:</p>
+  <pre>L1 size = ways * page size
+
+x86:  8 ways * 4 KiB pages = 32 KiB      <span class="comment"># why L1 caches stayed at 32-48 KiB for years</span>
+<span class="comment"># A 128 KiB L1 with 16 KiB pages is 8 ways * 16 KiB. Larger pages allow larger fast L1 caches.</span></pre>
+  <p>This is a good example of hardware parts constraining each other: the page size, cache associativity, and L1 capacity are tied together.</p>
+
+  <h2><span class="num">§3</span>When the TLB Becomes the Bottleneck</h2>
+  <ul>
+    <li><strong>Large, sparse working sets</strong>, such as random access over many gigabytes, touch more pages than the TLB covers, so many accesses miss it</li>
+    <li><strong>Huge pages (2 MiB or 1 GiB)</strong> multiply reach: 1,536 entries × 2 MiB covers 3 GiB. The OS course covers how to enable them</li>
+    <li><strong>Context switches</strong> can flush TLB entries unless tagged with address-space IDs (PCID on x86)</li>
+    <li><strong>Virtualization</strong> makes walks costlier, since guest and host tables are both walked (nested paging)</li>
+  </ul>
+  <pre>perf stat -e dTLB-loads,dTLB-load-misses,iTLB-load-misses ./prog
+<span class="comment"># A high ratio of dTLB misses with a large working set suggests trying huge pages.</span>
+grep -i huge /proc/meminfo</pre>
+  <p>A useful sanity check is <strong>TLB reach versus working set</strong>. If a program's hot data spans far more pages than the TLB can hold, expect translation overhead, even when the data would fit in the cache.</p>
+
+  <div class="callout">
+    <span class="label">Connection to earlier lessons</span>
+    This is the hardware view of paging from the Operating Systems category. The OS builds the tables, and the TLB and page walker are the hardware that makes using them fast enough to leave on all the time.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Ignoring TLB misses in large random-access programs</td><td>Cache hit rates look fine, yet performance is poor</td><td>Check <code>dTLB-load-misses</code> and consider huge pages</td></tr>
+    <tr><td>Assuming a cache hit also avoids translation</td><td>Every access, even an L1 hit, needs a translation</td><td>Remember the TLB sits on the path of every memory access</td></tr>
+    <tr><td>Enabling huge pages without measuring</td><td>Memory bloat and compaction stalls can offset gains</td><td>Test on the real workload, and keep it optional per-process</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Compute the TLB reach of a 1,024-entry TLB with 4 KiB pages and with 2 MiB pages.</li>
+      <li>Use <code>perf stat</code> to compare TLB misses for sequential versus random access over 4 GiB, and explain the difference.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The TLB caches translations; a miss triggers a hardware page walk of up to four or five levels.</li>
+      <li>VIPT L1 caches tie L1 size to ways times page size.</li>
+      <li>Huge pages, PCID, and reducing page spread all reduce translation cost.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · DRAM & the Memory System — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

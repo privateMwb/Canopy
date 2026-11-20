@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Firestore Queries",
+  "description": "Filtering, ordering, paging, live listeners, data types, and composite indexes.",
+  "order": 2
+}

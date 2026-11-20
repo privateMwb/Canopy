@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Why Memory Is a Hierarchy — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · the memory hierarchy</span> → lesson 01</p>
+  <h1>Why Memory Is a Hierarchy</h1>
+  <p class="lede">Fast memory is small and expensive, big memory is slow and cheap, so computers layer several kinds, and the gaps between layers are enormous.</p>
+
+  <h2><span class="num">§1</span>The Speed and Size Tradeoff</h2>
+  <p>No single technology is fast, large, and cheap at once. Registers and caches use fast but bulky <strong>SRAM</strong> cells placed right next to the cores. Main memory uses denser, slower <strong>DRAM</strong>. Storage uses flash or magnetic disks. A computer stacks them so that the most-used data sits in the fastest layer.</p>
+  <table>
+    <tr><th>Level</th><th>Typical size</th><th>Typical latency</th><th>In CPU cycles at 3 GHz</th></tr>
+    <tr><td>Registers</td><td>Under 1 KiB</td><td>Under 1 ns</td><td>About 1</td></tr>
+    <tr><td>L1 cache</td><td>32–64 KiB per core</td><td>About 1 ns</td><td>3–5</td></tr>
+    <tr><td>L2 cache</td><td>256 KiB–2 MiB per core</td><td>3–4 ns</td><td>12–15</td></tr>
+    <tr><td>L3 cache</td><td>Several to tens of MiB, shared</td><td>10–20 ns</td><td>40–60</td></tr>
+    <tr><td>DRAM</td><td>Gigabytes</td><td>60–100 ns</td><td>200–300</td></tr>
+    <tr><td>NVMe SSD</td><td>Hundreds of GB to TB</td><td>20–100 µs</td><td>60,000–300,000</td></tr>
+    <tr><td>Hard disk</td><td>TB</td><td>5–10 ms</td><td>15–30 million</td></tr>
+  </table>
+  <p>These are rough figures for recent desktop and server hardware, and exact numbers vary by chip, but the ratios hold. Each step down is typically 3 to 100 times slower and larger.</p>
+
+  <h2><span class="num">§2</span>Making the Gap Feel Real</h2>
+  <p>Scale time so that one CPU cycle is one second. A register access takes a second, an L1 hit a few seconds, a DRAM access about four minutes, an SSD read under two days, and a hard-disk seek about nine months.</p>
+  <pre>1 cycle              =  1 second
+L1 hit    (4 cycles)  =  4 seconds
+DRAM      (240 cycles) =  4 minutes
+SSD read  (150,000)    =  1.7 days
+HDD seek  (24 million) =  9 months</pre>
+  <p>A CPU that waits on DRAM for every access would spend almost all its time idle. The hierarchy exists to hide this gap, and it works because programs reuse data, as the next lesson explains.</p>
+
+  <h2><span class="num">§3</span>Seeing Your Own Hierarchy</h2>
+  <pre>lscpu | grep -i -E 'cache|model name'      <span class="comment"># L1d, L1i, L2, L3 sizes</span>
+lscpu -C                                    <span class="comment"># cache details per level</span>
+getconf -a | grep -i CACHE                  <span class="comment"># line size, associativity</span>
+cat /sys/devices/system/cpu/cpu0/cache/index0/size</pre>
+  <p>Note that L1 is split into an <strong>instruction cache</strong> and a <strong>data cache</strong>, while L2 and L3 hold both. L1 and L2 are usually private to each core, and L3 is shared across the cores of a chip.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The memory hierarchy is the central fact of modern performance. Arithmetic is cheap; fetching the operands is what costs, and a program's speed is largely decided by which level its data lives in.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating all memory accesses as equal cost</td><td>Optimizing instruction count while ignoring cache misses</td><td>Count where data comes from, not only how much work is done</td></tr>
+    <tr><td>Mixing up size and speed rankings</td><td>Expecting a bigger cache to be faster</td><td>Bigger levels are slower; that is the tradeoff</td></tr>
+    <tr><td>Assuming DRAM speed has kept up with CPUs</td><td>Memory latency has improved far less than compute</td><td>Design for locality instead of hoping for faster RAM</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run <code>lscpu</code> and fill in a table of the cache sizes of your machine. Which are private to a core and which are shared?</li>
+      <li>Estimate how many cycles a 4 GHz CPU spends on a single 80 ns DRAM access.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Memory is layered because speed, size, and cost trade off against each other.</li>
+      <li>Each level is roughly 3 to 100 times slower and larger, and DRAM costs hundreds of cycles.</li>
+      <li>L1 is split into instruction and data caches, with L2 private and L3 usually shared.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · The Memory Hierarchy — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

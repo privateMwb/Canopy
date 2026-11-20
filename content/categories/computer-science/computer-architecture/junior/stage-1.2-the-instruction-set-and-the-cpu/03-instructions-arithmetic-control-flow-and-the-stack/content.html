@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Instructions: Arithmetic, Control Flow &amp; the Stack — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · the instruction set & the cpu</span> → lesson 03</p>
+  <h1>Instructions: Arithmetic, Control Flow &amp; the Stack</h1>
+  <p class="lede">A small set of instruction kinds, arithmetic, memory access, branches, and calls, is enough to express any program, and reading them is a skill that pays off throughout this course.</p>
+
+  <h2><span class="num">§1</span>Core Instructions</h2>
+  <table>
+    <tr><th>Kind</th><th>RISC-V examples</th><th>Meaning</th></tr>
+    <tr><td>Arithmetic</td><td><code>add</code>, <code>sub</code>, <code>addi</code></td><td>Register or immediate arithmetic</td></tr>
+    <tr><td>Logic and shifts</td><td><code>and</code>, <code>or</code>, <code>xor</code>, <code>slli</code>, <code>srli</code></td><td>Bitwise operations and shifts</td></tr>
+    <tr><td>Memory</td><td><code>lw</code>, <code>sw</code>, <code>lb</code>, <code>sb</code></td><td>Load and store words and bytes</td></tr>
+    <tr><td>Branches</td><td><code>beq</code>, <code>bne</code>, <code>blt</code>, <code>bge</code></td><td>Jump if a comparison holds</td></tr>
+    <tr><td>Jumps and calls</td><td><code>j</code>, <code>jal</code>, <code>jalr</code>, <code>ret</code></td><td>Unconditional jump, call, and return</td></tr>
+  </table>
+  <p>A shift left by 2 multiplies by 4, which is how an array index becomes a byte offset for 4-byte elements.</p>
+
+  <h2><span class="num">§2</span>A Loop in Assembly</h2>
+  <p>Here is a function that sums an array. The argument <code>a0</code> is the array address and <code>a1</code> the length, and the result returns in <code>a0</code>.</p>
+  <pre>sum:
+    li   t0, 0            <span class="comment"># total = 0</span>
+    li   t1, 0            <span class="comment"># i = 0</span>
+loop:
+    bge  t1, a1, done     <span class="comment"># if i &gt;= n, leave the loop</span>
+    slli t2, t1, 2        <span class="comment"># t2 = i * 4  (byte offset)</span>
+    add  t2, a0, t2       <span class="comment"># t2 = address of a[i]</span>
+    lw   t3, 0(t2)        <span class="comment"># t3 = a[i]</span>
+    add  t0, t0, t3       <span class="comment"># total += a[i]</span>
+    addi t1, t1, 1        <span class="comment"># i++</span>
+    j    loop
+done:
+    mv   a0, t0           <span class="comment"># return total</span>
+    ret</pre>
+  <p>This is the C loop <code>for (i = 0; i &lt; n; i++) total += a[i];</code>. A branch at the top tests the exit condition, and a jump at the bottom goes back. Seven instructions run each iteration.</p>
+
+  <h2><span class="num">§3</span>Calls and the Stack</h2>
+  <p>A function call stores the return address and jumps. <code>jal</code> writes the address of the next instruction into <code>ra</code> and jumps to the target, and <code>ret</code> jumps back to <code>ra</code>. A function that calls another one must save its own <code>ra</code> first, since the nested call overwrites it. The <strong>stack</strong> is a region of memory used for this, growing toward lower addresses, with <code>sp</code> pointing at its top.</p>
+  <pre>func:
+    addi sp, sp, -16      <span class="comment"># make room for 16 bytes of stack</span>
+    sw   ra, 12(sp)       <span class="comment"># save the return address</span>
+    sw   s0, 8(sp)        <span class="comment"># save a callee-saved register we will use</span>
+    <span class="comment"># ... body, may call other functions ...</span>
+    lw   s0, 8(sp)        <span class="comment"># restore</span>
+    lw   ra, 12(sp)
+    addi sp, sp, 16       <span class="comment"># release the stack space</span>
+    ret</pre>
+  <p>The calling convention, which registers carry arguments and which a function must preserve, is what lets separately compiled code work together. It's also the mechanism behind stack frames from the OS course, and the reason an overflowing local buffer can overwrite a saved return address.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    High-level constructs all reduce to a few patterns: loops are a compare and a branch, array access is a shift and an add, and function calls are save, jump, and restore.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting to save <code>ra</code> in a function that calls another</td><td>The function returns to the wrong place</td><td>Save and restore <code>ra</code> in non-leaf functions</td></tr>
+    <tr><td>Using a byte offset for an array index without scaling</td><td>Reading the wrong element, e.g. a[i] at offset i instead of 4i</td><td>Shift by log2(element size) before adding to the base</td></tr>
+    <tr><td>Not restoring the stack pointer</td><td>The stack drifts and eventually corrupts data</td><td>Match every <code>addi sp, sp, -N</code> with <code>addi sp, sp, N</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write RISC-V assembly for a function that finds the maximum of an int array.</li>
+      <li>Hand-trace the sum loop for the array {3, 5, 7}, showing t0, t1, and the branch decisions at each iteration.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Instructions fall into arithmetic, memory, branch, and jump/call families.</li>
+      <li>Array loops combine a compare-and-branch, a shifted index, a load, and an accumulate.</li>
+      <li>Calls save the return address, usually on the stack, and the convention says which registers must be preserved.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · The Instruction Set & the CPU — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

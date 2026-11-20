@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 \u2014 TypeScript",
+  "description": "Static types, unions and generics, derived types, and adopting strict TypeScript in real code.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Senior",
+  "description": "Internals, Redis Cluster, production operations, and judgment about when Redis should hold the data.",
+  "order": 3
+}

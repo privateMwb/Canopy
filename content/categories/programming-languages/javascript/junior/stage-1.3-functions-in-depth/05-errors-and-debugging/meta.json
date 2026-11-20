@@ -1,0 +1,5 @@
+{
+  "title": "Errors & Debugging",
+  "description": "try/catch, Error types, stack traces, and the browser DevTools debugger.",
+  "order": 5
+}

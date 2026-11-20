@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contract Testing — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · testing &amp; operations</span> → lesson 02</p>
+  <h1>Contract Testing</h1>
+  <p class="lede">Keeping clients and servers in agreement.</p>
+
+  <h2><span class="num">§1</span>The Problem: Two Teams, One Interface</h2>
+
+  <p>The <strong>provider</strong> (your API) and its <strong>consumers</strong> (a web app, a mobile app, another service) are developed separately. A provider team renames a field, all its own tests pass, and the consumer breaks in production. Catching that with full end-to-end tests means spinning up every service together: slow, flaky, and often impossible to run before a merge.</p>
+
+  <p>A <strong>contract test</strong> checks that the two sides agree on the interface, <em>without</em> running them together. Each side is tested in isolation against a shared, explicit description of the interaction.</p>
+
+  <h2><span class="num">§2</span>Consumer-Driven Contracts</h2>
+
+  <p>In the <strong>consumer-driven</strong> approach (popularized by the Pact framework), the consumer writes down exactly what it relies on: this request, and these parts of the response. That recording is the <em>contract</em>. The provider then replays every consumer's contract against its real implementation as part of its own build.</p>
+
+  <pre><span class="comment">// Consumer test: describes what the web app expects, runs against a Pact mock server</span>
+await provider
+  .given("note 7 exists")                            <span class="comment">// provider state</span>
+  .uponReceiving("a request for note 7")
+  .withRequest({ method: "GET", path: "/notes/7", headers: { Accept: "application/json" } })
+  .willRespondWith({
+    status: 200,
+    body: { id: like(7), title: like("SQL basics") },   <span class="comment">// like(): match on type, not exact value</span>
+  });
+
+await provider.executeTest(async mock =&gt; {
+  const note = await new NotesClient(mock.url).get(7);
+  expect(note.title).toBeDefined();
+});
+<span class="comment">// Running this test produces a pact file (the contract), which is published to a broker</span></pre>
+
+  <pre><span class="comment">// Provider verification: replays each consumer's pact against the real API</span>
+await new Verifier({
+  providerBaseUrl: "http://localhost:3000",
+  pactBroker: process.env.PACT_BROKER_URL,
+  provider: "notes-api",
+  stateHandlers: {
+    "note 7 exists": async () =&gt; { await seedNote({ id: 7, title: "SQL basics" }); },
+  },
+}).verifyProvider();</pre>
+
+  <ul>
+    <li><strong>Only what the consumer uses is in the contract,</strong> so the provider is free to change everything else. This is what makes safe evolution possible.</li>
+    <li><strong>Provider states</strong> ("note 7 exists") tell the provider how to set up data for each interaction.</li>
+    <li>A <strong>broker</strong> stores contracts and verification results, and a <code>can-i-deploy</code> check blocks a release that would break a consumer in the target environment.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Spec-Based Alternatives</h2>
+
+  <p>If you already maintain an OpenAPI description, you can get much of the value more simply: validate real responses against the spec in your integration tests, generate the consumer's client from the same spec, and run a <strong>breaking-change detector</strong> (such as oasdiff) in CI to compare the new spec to the last released one. This is a <em>provider-driven</em> contract: the provider publishes it and consumers conform.</p>
+
+  <table>
+    <tr><th>Approach</th><th>Strength</th><th>Cost</th></tr>
+    <tr><td>Consumer-driven (Pact)</td><td>Knows exactly who relies on what; supports many consumers; catches subtle breaks</td><td>Setup, broker, and cultural buy-in from consumer teams</td></tr>
+    <tr><td>OpenAPI + diff in CI</td><td>Cheap; reuses your spec as docs, validation, and client generation</td><td>Cannot tell which consumers use which fields; relies on the spec staying accurate</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">Contracts are a conversation</span>
+    The tooling matters less than the habit it enforces: a change to an interface is visible, checked automatically, and discussed with the people it affects before it reaches production.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Relying on end-to-end tests to catch interface drift</td><td>Slow, flaky, and run too late</td><td>Verify the contract independently on each side, in CI</td></tr>
+    <tr><td>Contracts that assert exact values everywhere</td><td>Brittle tests that fail on harmless changes</td><td>Match on types and structure, and only for fields the consumer uses</td></tr>
+    <tr><td>Letting the spec and the implementation diverge</td><td>The spec lies and the tests prove nothing</td><td>Validate real responses against the spec in tests</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take an endpoint with an OpenAPI spec and write an integration test that validates its real response against the response schema.</li>
+      <li>Run a diff tool between two versions of your spec and see which changes it flags as breaking.</li>
+      <li>Write a consumer contract for one endpoint, then rename a response field in the provider and watch the verification fail.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Contract tests verify that consumer and provider agree on the interface without running them together.</li>
+      <li>Consumer-driven contracts record exactly what consumers rely on; spec-based checks are a lighter alternative.</li>
+      <li>Run contract verification in CI so incompatible changes are caught before release.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Testing &amp; Operations — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

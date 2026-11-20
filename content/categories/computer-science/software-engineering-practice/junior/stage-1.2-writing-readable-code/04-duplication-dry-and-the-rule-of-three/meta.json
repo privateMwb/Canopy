@@ -1,0 +1,5 @@
+{
+  "title": "Duplication, DRY & the Rule of Three",
+  "description": "Telling real duplication from coincidental similarity, and why the wrong abstraction costs more than a copy.",
+  "order": 4
+}

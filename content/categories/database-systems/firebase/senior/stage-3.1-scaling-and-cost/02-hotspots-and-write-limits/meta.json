@@ -1,0 +1,5 @@
+{
+  "title": "Hotspots & Write Limits",
+  "description": "Sequential keys, index hotspots, and per-document write rates.",
+  "order": 2
+}

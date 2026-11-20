@@ -1,0 +1,5 @@
+{
+  "title": "Rendering Strategies",
+  "description": "Direct DOM updates, templates, and batching.",
+  "order": 5
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Index Internals: B-tree, GIN, GiST & BRIN",
+  "description": "What each index type stores and the workloads each one is built for.",
+  "order": 4
+}

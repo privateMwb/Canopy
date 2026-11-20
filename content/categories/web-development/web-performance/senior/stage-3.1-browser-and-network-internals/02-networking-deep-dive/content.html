@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Networking Deep Dive — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · browser & network internals</span> → lesson 02</p>
+  <h1>Networking Deep Dive</h1>
+  <p class="lede">Latency and bandwidth are not the same thing, and most page loads are limited by round trips. Understanding TCP, TLS, and QUIC explains why.</p>
+
+  <h2><span class="num">§1</span>Latency, Bandwidth, and Round Trips</h2>
+  <p><strong>Bandwidth</strong> is how much data per second the link can carry. <strong>Latency</strong> is how long a signal takes to cross it. Typical pages are made of many small requests, so they are dominated by <strong>round trips</strong>, and you can't buy your way out of the speed of light by buying more bandwidth.</p>
+  <table>
+    <tr><th>Step</th><th>Round trips (typical, HTTPS over TCP)</th></tr>
+    <tr><td>DNS lookup (uncached)</td><td>1 or more</td></tr>
+    <tr><td>TCP handshake</td><td>1</td></tr>
+    <tr><td>TLS 1.3 handshake</td><td>1 (0 with resumption and early data)</td></tr>
+    <tr><td>HTTP request and first byte</td><td>1</td></tr>
+  </table>
+  <p>On a link with 100 ms round-trip time, that is already 300 to 400 ms before the first byte of HTML. <strong>QUIC</strong>, the transport under HTTP/3, combines the transport and TLS handshakes, which cuts a round trip, and supports resumption for repeat visits.</p>
+
+  <h2><span class="num">§2</span>TCP Slow Start and Congestion Control</h2>
+  <p>A new TCP connection doesn't know how fast the path is, so it <strong>starts slow</strong>. It sends a small initial window of packets, typically around 10, then doubles per round trip until it detects loss or hits capacity. A 100 KB response over a fresh connection can therefore take several round trips just to ramp up.</p>
+  <pre><span class="comment"># Rough shape on a fresh connection, initial window ~10 packets (~14 KB):</span>
+<span class="comment"># RTT 1:  ~14 KB   RTT 2:  ~28 KB   RTT 3:  ~56 KB   RTT 4: ~112 KB ...</span>
+<span class="comment"># A 100 KB file needs about 4 round trips even on a fast link.</span></pre>
+  <ul>
+    <li>This is why the <strong>first ~14 KB</strong> of a response is special: it can arrive within the first window. Keeping critical HTML and inline CSS compact helps.</li>
+    <li><strong>Reusing a warm connection</strong> avoids the ramp-up cost, so fewer origins is better.</li>
+    <li>Loss triggers backoff. On mobile networks where loss is common, throughput can fall sharply.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Head-of-Line Blocking and QUIC</h2>
+  <p>TCP delivers bytes strictly in order. If one packet is lost, <strong>everything behind it waits</strong>, even data belonging to unrelated requests. HTTP/2 multiplexes many requests over one TCP connection, so a single lost packet can stall them all: head-of-line blocking moved down a layer.</p>
+  <p><strong>QUIC</strong> runs over UDP and implements streams itself. Loss on one stream blocks only that stream. It also supports <strong>connection migration</strong>, so a phone moving from wifi to cellular can keep its connection.</p>
+  <table>
+    <tr><th>Protocol stack</th><th>Setup</th><th>Loss on one stream</th></tr>
+    <tr><td>HTTP/1.1 over TCP + TLS</td><td>TCP and TLS handshakes</td><td>Blocks only that connection (but only one request each)</td></tr>
+    <tr><td>HTTP/2 over TCP + TLS</td><td>TCP and TLS handshakes</td><td>Stalls all streams on the connection</td></tr>
+    <tr><td>HTTP/3 over QUIC</td><td>Combined handshake</td><td>Stalls only the affected stream</td></tr>
+  </table>
+  <p>Practical consequences: use a CDN so connections terminate near users, enable HTTP/3, use <code>preconnect</code> for unavoidable third parties, and keep critical content small. Test on <strong>lossy, high-latency profiles</strong>, because that is where these differences show.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Think in round trips, not megabytes. Each avoidable handshake, redirect, or new origin costs a full round trip, which on mobile is a large fraction of your budget.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Buying more bandwidth to fix a slow page</td><td>The page is latency-bound, so little changes</td><td>Cut round trips: fewer origins, connection reuse, CDNs</td></tr>
+    <tr><td>Testing only on fast, low-loss networks</td><td>Hides the slow-start and loss behavior real users hit</td><td>Test with throttled, lossy profiles</td></tr>
+    <tr><td>Ignoring connection reuse</td><td>Each new connection pays handshakes and slow start</td><td>Consolidate origins and keep connections warm</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Compute the time to first byte for a fresh HTTPS connection at 120 ms RTT using the round-trip table. Then recompute for a resumed HTTP/3 connection.</li>
+      <li>Explain why a 100 KB file can take multiple round trips on a fast link.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Page loads are bound by round trips, which handshakes, redirects, and extra origins all add to.</li>
+      <li>TCP slow start means new connections ramp up gradually, and the first ~14 KB matters.</li>
+      <li>QUIC removes TCP-level head-of-line blocking and shortens setup, and it helps most on lossy links.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Browser &amp; Network Internals — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

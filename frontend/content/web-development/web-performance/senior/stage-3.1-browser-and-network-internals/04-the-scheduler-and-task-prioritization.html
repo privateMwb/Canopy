@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Scheduler &amp; Task Prioritization — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · browser & network internals</span> → lesson 04</p>
+  <h1>The Scheduler &amp; Task Prioritization</h1>
+  <p class="lede">The main thread runs one task at a time. Scheduling APIs let you decide what runs first, what can wait, and when to give control back so the page stays responsive.</p>
+
+  <h2><span class="num">§1</span>The Event Loop and Priorities</h2>
+  <p>The browser's main thread runs a loop: take a task, run it to completion, update rendering if it's time, repeat. A task can't be interrupted, so a long task blocks input and painting until it finishes. All work competes in a single queue, and the browser makes its own decisions about order, which treats user input as most urgent and background work as least.</p>
+  <table>
+    <tr><th>Priority</th><th>Examples</th></tr>
+    <tr><td>User-blocking</td><td>Responding to a click or keypress, updating visible state</td></tr>
+    <tr><td>User-visible</td><td>Rendering content the user is looking at, but not directly responding to</td></tr>
+    <tr><td>Background</td><td>Analytics, prefetching, cache warming, logging</td></tr>
+  </table>
+  <p>The problem is that your code has its own idea of importance, and a plain <code>setTimeout</code> doesn't express it. Scheduling APIs let you state your intent.</p>
+
+  <h2><span class="num">§2</span>scheduler.postTask and scheduler.yield</h2>
+  <pre><span class="comment">// Run background work at low priority so it never competes with input</span>
+scheduler.postTask(() =&gt; sendAnalytics(), { priority: 'background' });
+
+<span class="comment">// Important work, run soon</span>
+scheduler.postTask(() =&gt; updateVisibleList(), { priority: 'user-visible' });
+
+<span class="comment">// Cancel work that is no longer needed</span>
+const controller = new TaskController({ priority: 'background' });
+scheduler.postTask(buildIndex, { signal: controller.signal });
+controller.abort();</pre>
+  <p><code>scheduler.yield()</code> pauses your function and lets the browser handle pending input and rendering, then <strong>resumes your work with priority</strong>, ahead of other queued tasks. This makes chunking long work much more predictable than a bare <code>setTimeout</code>, which sends the continuation to the back of the queue.</p>
+  <pre>async function processInChunks(items) {
+  for (let i = 0; i &lt; items.length; i++) {
+    handle(items[i]);
+    if (i % 50 === 0) await scheduler.yield();   <span class="comment">// let input and paint run</span>
+  }
+}
+
+<span class="comment">// Feature-detect and fall back: </span>
+const yieldNow = globalThis.scheduler?.yield
+  ? () =&gt; scheduler.yield()
+  : () =&gt; new Promise(r =&gt; setTimeout(r, 0));</pre>
+
+  <h2><span class="num">§3</span>Putting It to Work</h2>
+  <ul>
+    <li><strong>Use <code>isInputPending()</code></strong> (where available) inside long loops to yield only when the user has actually tried to interact.</li>
+    <li><strong><code>requestIdleCallback</code></strong> runs work when the browser is idle. It is good for low-value work, but it can starve on busy pages, so give it a timeout for anything that must eventually run.</li>
+    <li><strong>Break work by priority:</strong> do the visible update first, then yield, then defer everything else.</li>
+    <li><strong>Coordinate third-party code.</strong> Their long tasks compete with yours, and wrapping or delaying their loading is part of scheduling.</li>
+    <li><strong>Measure with the Long Animation Frames API</strong> (<code>long-animation-frame</code> entries), which attributes slow frames to specific scripts.</li>
+  </ul>
+  <pre>new PerformanceObserver(list =&gt; {
+  for (const e of list.getEntries()) {
+    console.log('slow frame', Math.round(e.duration), 'ms', e.scripts.map(s =&gt; s.sourceURL));
+  }
+}).observe({ type: 'long-animation-frame', buffered: true });</pre>
+  <p>Support for these APIs varies between browsers, so feature-detect and always provide a fallback. Treat them as progressive enhancements to the same principle: keep tasks short and run the important ones first.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    <code>setTimeout(fn, 0)</code> doesn't mean 'right away'. It queues behind everything already waiting. <code>scheduler.yield()</code> is designed to resume your work sooner.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>setTimeout(0)</code> to yield in a long loop</td><td>Your continuation waits behind unrelated tasks</td><td>Use <code>scheduler.yield()</code> with a fallback</td></tr>
+    <tr><td>Running analytics at the same priority as UI updates</td><td>Background work delays input</td><td>Post it at <code>background</code> priority</td></tr>
+    <tr><td>Assuming scheduling APIs exist everywhere</td><td>Code breaks in browsers without them</td><td>Feature-detect and fall back</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Chunk a long loop using <code>scheduler.yield()</code> with a <code>setTimeout</code> fallback, and show the long task split in a trace.</li>
+      <li>Capture long animation frames in a page and identify the script responsible for the worst one.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The main thread runs tasks to completion, so priority and chunking decide responsiveness.</li>
+      <li><code>scheduler.postTask</code> expresses priority and <code>scheduler.yield</code> resumes work sooner than <code>setTimeout</code>.</li>
+      <li>Feature-detect, fall back, and use long-animation-frame data to find what blocks.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Browser &amp; Network Internals — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

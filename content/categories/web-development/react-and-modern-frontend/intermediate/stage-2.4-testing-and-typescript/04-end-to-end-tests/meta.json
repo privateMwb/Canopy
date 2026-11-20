@@ -1,0 +1,5 @@
+{
+  "title": "End-to-End Tests",
+  "description": "Playwright flows for critical paths.",
+  "order": 4
+}

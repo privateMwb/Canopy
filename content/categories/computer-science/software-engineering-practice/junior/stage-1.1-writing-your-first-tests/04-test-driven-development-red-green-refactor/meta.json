@@ -1,0 +1,5 @@
+{
+  "title": "Test-Driven Development: Red, Green, Refactor",
+  "description": "Write the failing test first, make it pass the simplest way, then clean up, and when the discipline is worth it.",
+  "order": 4
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Configuration, Logging & the Options Pattern",
+  "description": "Environment-based settings, structured logging, and typed options.",
+  "order": 4
+}

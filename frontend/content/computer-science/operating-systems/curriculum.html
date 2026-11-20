@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Operating Systems Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / operating systems</p>
+    <h1>From running a program to understanding the machine under it</h1>
+    <p class="lede">Three levels, twelve stages — how the OS manages processes, threads, and memory, built toward the judgment to design concurrent systems, diagnose them in production, and explain the tradeoffs.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I use programs" to "I can explain what the OS does for a running program, and write small C programs that create processes, threads, and memory safely."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Core OS Concepts</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What an Operating System Does</p><p class="lesson-desc">Resource management and abstraction — the OS as the layer between programs and hardware.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">User Mode, Kernel Mode &amp; System Calls</p><p class="lesson-desc">The privilege boundary, and how a program asks the kernel to do something on its behalf.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Kernel Structure &amp; the Boot Process</p><p class="lesson-desc">Monolithic vs. microkernel designs, and what happens between power-on and your first process.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Files &amp; File Descriptors</p><p class="lesson-desc">Why 'everything is a file' in Unix, and what stdin, stdout, and stderr really are.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run a small program under strace and explain, line by line, which system calls it made and why.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Processes</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What Is a Process</p><p class="lesson-desc">Address space, program counter, and the process control block (PCB).</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Process States &amp; Context Switching</p><p class="lesson-desc">New, ready, running, blocked — and what the OS saves and restores when it swaps processes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Creating Processes: fork, exec &amp; wait</p><p class="lesson-desc">How every Unix process is born, replaced, and reaped.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Signals &amp; Exit Status</p><p class="lesson-desc">Asynchronous notifications, handlers, zombies, and orphans.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Pipes &amp; Basic IPC</p><p class="lesson-desc">Connecting processes with pipes and redirecting their input and output.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a tiny shell in C that runs commands, supports | pipes, and reaps its children correctly.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Threads</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Threads vs. Processes</p><p class="lesson-desc">What threads share, what they keep private, and when each is the right tool.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Creating &amp; Joining Threads</p><p class="lesson-desc">The pthreads API — create, join, detach, and passing arguments safely.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Race Conditions</p><p class="lesson-desc">Why counter++ isn't atomic, and how to see a race happen on demand.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Mutexes &amp; Critical Sections</p><p class="lesson-desc">Locking shared data, choosing what a lock protects, and keeping critical sections small.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Threading Models</p><p class="lesson-desc">User-level vs. kernel-level threads and the many-to-one, one-to-one, and many-to-many mappings.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a multi-threaded counter that visibly races, then fix it two different ways and measure the cost.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Memory Fundamentals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Process Address Space Layout</p><p class="lesson-desc">Code, data, heap, stack, and where each kind of variable actually lives.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The Stack &amp; Function Calls</p><p class="lesson-desc">Stack frames, return addresses, and what happens on a call and a return.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Dynamic Allocation: malloc &amp; free</p><p class="lesson-desc">Requesting heap memory, ownership, and the rules for releasing it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Memory Bugs</p><p class="lesson-desc">Leaks, use-after-free, double free, and buffer overflows — how each one shows up.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Fragmentation &amp; Basic Allocation Strategies</p><p class="lesson-desc">Internal vs. external fragmentation, and first-fit, best-fit, and worst-fit placement.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a C program with five planted memory bugs, find and fix every one using Valgrind or AddressSanitizer.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I know what processes, threads, and memory are" to "I can reason about scheduling, synchronization, and virtual memory well enough to predict how a system behaves under load."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — CPU Scheduling</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Scheduling Goals &amp; Metrics</p><p class="lesson-desc">Turnaround, response time, throughput, and fairness — and why they pull against each other.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">FCFS, SJF &amp; Round Robin</p><p class="lesson-desc">The classic algorithms, worked by hand on a Gantt chart.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Priority Scheduling &amp; Multilevel Feedback Queues</p><p class="lesson-desc">Starvation, aging, and how MLFQ approximates SJF without knowing job lengths.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Linux Scheduling: CFS &amp; EEVDF</p><p class="lesson-desc">Virtual runtime, nice values, and how a production scheduler divides CPU time.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Multiprocessor Scheduling &amp; CPU Affinity</p><p class="lesson-desc">Per-core run queues, load balancing, and why migrating a thread has a cost.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a scheduler simulator and compare FCFS, RR, and MLFQ on the same workload using turnaround and response time.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Synchronization &amp; Deadlock</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Semaphores</p><p class="lesson-desc">Counting and binary semaphores, and using them for both mutual exclusion and signaling.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Condition Variables &amp; Monitors</p><p class="lesson-desc">Waiting for a condition safely — and why the wait goes in a loop.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Classic Synchronization Problems</p><p class="lesson-desc">Producer–consumer, readers–writers, and dining philosophers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Deadlock: Conditions, Prevention &amp; Detection</p><p class="lesson-desc">The four necessary conditions, lock ordering, and resource-allocation graphs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Spinlocks vs. Sleeping Locks</p><p class="lesson-desc">When busy-waiting beats blocking, and the cost of each on a multicore machine.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a bounded buffer with several producers and consumers using condition variables, with no deadlock and no lost wakeups.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Virtual Memory</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why Virtual Memory</p><p class="lesson-desc">Isolation, abstraction, and the illusion of a private, contiguous address space.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Paging &amp; Page Tables</p><p class="lesson-desc">Pages, frames, and translating a virtual address by hand.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Multi-Level Page Tables &amp; the TLB</p><p class="lesson-desc">Shrinking page tables, and caching translations to avoid a memory access per access.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Page Faults &amp; Demand Paging</p><p class="lesson-desc">Minor vs. major faults, lazy loading, and what the OS does when a page is missing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Page Replacement Algorithms</p><p class="lesson-desc">FIFO, LRU, Clock, and Belady's anomaly.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Copy-on-Write &amp; Shared Pages</p><p class="lesson-desc">How fork is cheap, and how pages are shared between processes safely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a simulator that translates addresses through a page table and TLB, handles faults, and compares replacement policies on one trace.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Allocators &amp; Mapped Memory</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How malloc Works</p><p class="lesson-desc">brk, mmap, arenas, and size classes underneath a single malloc call.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Allocator Designs: Free Lists, Buddy &amp; Slab</p><p class="lesson-desc">Splitting, coalescing, and picking a design for the allocation pattern.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">mmap &amp; Shared Memory</p><p class="lesson-desc">Memory-mapped files, anonymous mappings, and sharing memory between processes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Memory Management Across Languages</p><p class="lesson-desc">Manual, RAII, reference counting, and garbage collection — what each costs the OS and the program.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a free-list malloc with splitting and coalescing, and test it against a randomized allocation workload.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I understand how the mechanisms work" to "I can design concurrent and memory-heavy systems, diagnose them in production, and explain the tradeoffs clearly to others."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Advanced Concurrency</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Atomics &amp; Memory Ordering</p><p class="lesson-desc">Compare-and-swap, acquire/release semantics, and why the compiler and CPU reorder your code.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Lock-Free Data Structures &amp; the ABA Problem</p><p class="lesson-desc">Building a lock-free stack, and the failure modes that make lock-free hard.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Futexes &amp; How Locks Are Built</p><p class="lesson-desc">The fast path in user space, the slow path in the kernel, and how a mutex is actually implemented.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Thread Pools, Work Stealing &amp; Async I/O</p><p class="lesson-desc">Scheduling work across threads, and epoll and io_uring as alternatives to a thread per connection.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a lock-free MPSC queue or a work-stealing thread pool, and defend every memory-ordering choice in writing.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Memory Hierarchy &amp; Pressure</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Caches, Coherence &amp; False Sharing</p><p class="lesson-desc">How cache lines move between cores, and why two unrelated variables can slow each other down.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">NUMA &amp; Memory Placement</p><p class="lesson-desc">Local vs. remote memory, first-touch policy, and pinning threads next to their data.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Huge Pages &amp; TLB Reach</p><p class="lesson-desc">Trading fragmentation for fewer TLB misses, and when transparent huge pages help or hurt.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Overcommit, Swapping &amp; the OOM Killer</p><p class="lesson-desc">What happens when memory runs out, and how Linux chooses what to kill.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a slow, memory-heavy service, diagnose whether the cause is faults, NUMA, TLB misses, or swap — and prove it with measurements.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Isolation &amp; Virtualization</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Namespaces: What a Container Really Is</p><p class="lesson-desc">PID, mount, network, and user namespaces — isolation without a separate kernel.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">cgroups &amp; Resource Limits</p><p class="lesson-desc">CPU shares, CPU throttling, and memory limits — and why containers get OOM-killed.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Sandboxing &amp; Memory Protection</p><p class="lesson-desc">seccomp, capabilities, ASLR, NX, and stack canaries as layers of defense.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Virtualization &amp; Hypervisors</p><p class="lesson-desc">Trap-and-emulate, hardware virtualization, and nested page tables.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a minimal container by hand using namespaces and cgroups, then show what it can and cannot isolate.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Diagnosis &amp; Design Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Observing a Live System: strace, perf, /proc &amp; eBPF</p><p class="lesson-desc">Choosing the tool that answers your question without perturbing the system.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Diagnosing CPU, Memory &amp; Lock Contention</p><p class="lesson-desc">A systematic method for finding the bottleneck instead of guessing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Debugging Deadlocks, Leaks &amp; Crashes</p><p class="lesson-desc">Reading core dumps, thread dumps, and sanitizer reports for bugs you can't reproduce on demand.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Processes vs. Threads vs. Async: Design Tradeoffs</p><p class="lesson-desc">Choosing a concurrency model for a real workload and defending the choice.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write an incident-style post-mortem for a hang or memory blowup: symptoms, evidence, root cause, fix, and the design lesson.</p></div></div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Threads appear at Junior as a first taste, return at Intermediate with synchronization, and come back at Senior as atomics and lock-free design. Memory works the same way: layout, then virtual memory, then hardware effects. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about diagnosis and judgment as much as mechanism.</strong> Knowing how a page fault or a futex works and being able to find it in a misbehaving production system, then explain it, are different skills, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

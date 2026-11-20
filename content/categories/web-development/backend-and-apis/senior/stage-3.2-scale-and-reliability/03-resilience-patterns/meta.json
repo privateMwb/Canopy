@@ -1,0 +1,5 @@
+{
+  "title": "Resilience Patterns",
+  "description": "Timeouts, circuit breakers, bulkheads, and backpressure.",
+  "order": 3
+}

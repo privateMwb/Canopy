@@ -1,0 +1,5 @@
+{
+  "title": "Collectors & Optional in Depth",
+  "description": "groupingBy, partitioningBy, mapping, and composing Optionals without get().",
+  "order": 3
+}

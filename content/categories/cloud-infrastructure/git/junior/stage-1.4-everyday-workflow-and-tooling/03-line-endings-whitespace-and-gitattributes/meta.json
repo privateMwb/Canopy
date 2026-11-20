@@ -1,0 +1,5 @@
+{
+  "title": "Line Endings, Whitespace & .gitattributes",
+  "description": "Why files show as changed across operating systems and how to stop it.",
+  "order": 3
+}

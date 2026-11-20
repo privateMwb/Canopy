@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frameworks vs. the Platform — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 01</p>
+  <h1>Frameworks vs. the Platform</h1>
+  <p class="lede">Frameworks solve real problems, and the browser has quietly absorbed many of them. Choosing between them is a judgment about cost, team, and time horizon, not a loyalty test.</p>
+
+  <h2><span class="num">§1</span>What a Framework Actually Earns You</h2>
+
+  <p>Before deciding, name the <strong>specific problems</strong> a framework would solve for you. Most of the value falls into a few categories:</p>
+
+  <table>
+    <tr><th>Problem</th><th>What frameworks provide</th><th>What the platform offers now</th></tr>
+    <tr><td>Keeping UI in sync with state</td><td>Declarative rendering, efficient diffing, reactivity</td><td><code>&lt;template&gt;</code>, custom elements, manual rendering; no built-in reactivity</td></tr>
+    <tr><td>Component model and reuse</td><td>Components with props, slots, lifecycle</td><td>Custom elements, Shadow DOM, slots</td></tr>
+    <tr><td>Routing and navigation</td><td>Client routers, nested layouts, data loading</td><td>History API, Navigation API, View Transitions, multi-page navigation</td></tr>
+    <tr><td>Team conventions</td><td>A shared mental model, docs, ecosystem, hiring pool</td><td>Standards, but few conventions</td></tr>
+    <tr><td>Server rendering and data</td><td>SSR, streaming, code splitting, build integration</td><td>Streaming HTML, <code>fetch</code>; no built-in orchestration</td></tr>
+    <tr><td>Tooling and devtools</td><td>Dev servers, HMR, testing integrations, component devtools</td><td>DevTools and Vite-style tools</td></tr>
+  </table>
+
+  <p>The honest summary: frameworks are strongest at <strong>state-driven UI at scale with a team</strong>, and the platform has caught up substantially on <strong>components, routing, animation, forms, dialogs, and layout</strong>. A great deal of what once justified a framework is now a few lines of HTML, CSS, or platform JavaScript.</p>
+
+  <h2><span class="num">§2</span>What the Platform Gives You Now</h2>
+
+  <p>Many features that people once reached for libraries to get are built in. Knowing them lets you remove dependencies and write less code.</p>
+
+  <pre><span class="comment">&lt;!-- a modal with focus trapping, Esc to close, backdrop: no library --&gt;</span>
+&lt;dialog id="d"&gt;&lt;form method="dialog"&gt;&lt;p&gt;Delete this?&lt;/p&gt;&lt;button value="ok"&gt;Delete&lt;/button&gt;&lt;button value="cancel"&gt;Cancel&lt;/button&gt;&lt;/form&gt;&lt;/dialog&gt;
+
+<span class="comment">&lt;!-- disclosure, popovers, and form validation without JavaScript --&gt;</span>
+&lt;details&gt;&lt;summary&gt;More&lt;/summary&gt;...&lt;/details&gt;
+&lt;button popovertarget="menu"&gt;Menu&lt;/button&gt;&lt;div id="menu" popover&gt;...&lt;/div&gt;
+&lt;input type="email" required&gt;
+
+<span class="comment">// native dialog, animated page transitions, and container queries</span>
+d.showModal();
+document.startViewTransition(() =&gt; updateDOM());          <span class="comment">// cross-fade between states</span>
+<span class="comment">/* @container (min-width: 400px) { .card { display: grid; } } */</span>
+
+<span class="comment">// the platform's own components and reactivity primitives you can build on</span>
+customElements.define("x-counter", class extends HTMLElement { /* ... */ });
+const abort = new AbortController();                      <span class="comment">// cancellation and cleanup for listeners and fetch</span></pre>
+
+  <p>That said, the platform still has gaps: no declarative, reactive templating built in; no standard for server-rendered hydration; and ergonomics for large-scale state and data fetching are left to you. These are exactly the gaps frameworks fill.</p>
+
+  <h2><span class="num">§3</span>Making the Call</h2>
+
+  <p>A good decision weighs the <strong>costs of both sides</strong> against the specific situation, rather than defaulting to what is familiar or fashionable.</p>
+
+  <ul>
+    <li><strong>Complexity of the UI</strong>: a mostly static site with some interactivity needs little; a dense, stateful app (editors, dashboards, real-time collaboration) benefits greatly.</li>
+    <li><strong>Team</strong>: size, experience, and turnover matter. A framework is a shared language, and a convention that new hires may already know. A homegrown solution needs documentation and discipline.</li>
+    <li><strong>Lifespan</strong>: a campaign page that lives three months favors the lightest tools. A product maintained for a decade favors the choice with the strongest long-term support and the fewest sharp edges.</li>
+    <li><strong>Performance budget</strong>: frameworks add JavaScript to download, parse, and run. On low-end devices, that cost is real; measure it (and consider server rendering, islands, or lighter frameworks).</li>
+    <li><strong>Lock-in and churn</strong>: weigh upgrade costs, ecosystem health, and how hard migration would be. Platform features are the most durable code you can write.</li>
+    <li><strong>A middle path</strong>: use the platform by default, and add a small, focused library (or a lightweight framework) where the pain is demonstrable, without adopting a whole stack for one problem.</li>
+  </ul>
+
+  <p>Whatever you choose, write down <strong>why</strong>, including the alternatives you rejected and the conditions under which you would revisit the decision (the next lessons cover how). "Everyone uses it" and "frameworks are bloat" are both reasons that will not survive a thoughtful reviewer.</p>
+
+  <div class="callout">
+    <span class="label">Decide from the problem, not the tool</span>
+    Start by listing the concrete problems you have (state sync, routing, SSR, team onboarding). Then ask which solution addresses them at the lowest long-term cost. The answer is sometimes a framework, and sometimes a <code>&lt;dialog&gt;</code>.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Adopting a framework for a mostly static page</td><td>Large JavaScript cost with little benefit</td><td>Use HTML, CSS, and a little platform JavaScript</td></tr>
+    <tr><td>Rebuilding a framework by hand on a big team</td><td>Undocumented conventions and re-solved problems</td><td>Adopt an established framework and its conventions</td></tr>
+    <tr><td>Choosing by popularity or preference alone</td><td>Poor fit; costs discovered late</td><td>Evaluate against concrete requirements and constraints</td></tr>
+    <tr><td>Ignoring platform features that replace dependencies</td><td>Extra code and bundle size for no gain</td><td>Audit for built-ins like <code>dialog</code>, popovers, and view transitions</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>List five libraries in a project and, for each, decide whether a current platform feature could replace it, with evidence.</li>
+      <li>Rebuild one small interactive piece with plain platform APIs and with a framework; compare code size, bundle cost, and clarity.</li>
+      <li>Write a half-page recommendation for a hypothetical project (static marketing site vs. collaborative editor) with your reasoning.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Frameworks earn their cost in state-driven UI, conventions, and tooling at scale; the platform now covers a lot more than it used to.</li>
+      <li>Decide from concrete problems, team, lifespan, and performance budget, not preference.</li>
+      <li>Prefer the platform by default, add focused tools where pain is demonstrated, and record the reasoning.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

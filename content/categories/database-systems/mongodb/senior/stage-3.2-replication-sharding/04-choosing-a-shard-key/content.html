@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Choosing a Shard Key — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · replication &amp; sharding</span> → lesson 04</p>
+  <h1>Choosing a Shard Key</h1>
+  <p class="lede">The shard key controls distribution, query efficiency, and growth for a collection, and it is the hardest decision to reverse, so it deserves the most care.</p>
+
+  <h2><span class="num">§1</span>What Makes a Good Key</h2>
+  <p>Judge a candidate key on four properties.</p>
+  <table>
+    <tr><th>Property</th><th>Question</th><th>Bad example</th></tr>
+    <tr><td><strong>Cardinality</strong></td><td>Are there many distinct values?</td><td><code>status</code> (only a few values, so few chunks)</td></tr>
+    <tr><td><strong>Frequency</strong></td><td>Is any value very common?</td><td><code>country</code> where most users are in one country</td></tr>
+    <tr><td><strong>Monotonicity</strong></td><td>Does the value always increase?</td><td><code>_id</code> as an ObjectId, or a timestamp</td></tr>
+    <tr><td><strong>Query fit</strong></td><td>Do common queries include it?</td><td>A field no query filters on</td></tr>
+  </table>
+  <p>Low cardinality limits how many chunks can exist. High frequency of one value creates a <strong>jumbo chunk</strong> that cannot be split. A monotonically increasing key sends every new insert to the <strong>last chunk</strong>, so one shard takes all the writes.</p>
+  <h2><span class="num">§2</span>Hashed and Compound Keys</h2>
+  <p>A <strong>hashed</strong> key fixes monotonic writes by scattering inserts across shards, at the cost of efficient range queries on that field.</p>
+  <p>A <strong>compound</strong> key can combine properties: a field you query by plus one that adds cardinality.</p>
+  <pre>sh.shardCollection("shop.orders", { customerId: "hashed" })           <span class="comment">// even write spread</span>
+sh.shardCollection("shop.events", { tenantId: 1, deviceId: 1 })       <span class="comment">// targets by tenant, spreads within it</span>
+sh.shardCollection("logs.entries", { source: 1, ts: 1 })              <span class="comment">// group by source, then time</span></pre>
+  <p>Using <code>{ tenantId: 1, _id: 1 }</code> keeps a tenant's data together while giving every document a unique, high-cardinality tail.</p>
+  <h2><span class="num">§3</span>The Cost of a Wrong Choice</h2>
+  <p>A poor key causes <strong>hotspots</strong>, where one shard takes most of the load, and <strong>scatter-gather</strong> queries that touch every shard. Since MongoDB 5.0 you can reshard a collection, and from 4.4 you can refine a key by adding a suffix, but both are heavy operations on a live cluster. Pick carefully up front, and test the key against a realistic workload before production.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Start from your most frequent queries and writes. A good key appears in them, spreads writes evenly, and has plenty of distinct values.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Sharding on a timestamp or <code>ObjectId</code></td><td>All inserts land on one shard</td><td>Use a hashed key, or a compound key with a well-spread prefix</td></tr>
+    <tr><td>Low-cardinality key</td><td>Few chunks, uneven data, and jumbo chunks</td><td>Add a high-cardinality field to a compound key</td></tr>
+    <tr><td>A key no query uses</td><td>Every query is scatter-gather</td><td>Choose a key found in your main filters</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Evaluate <code>userId</code>, <code>createdAt</code>, <code>_id</code>, and <code>{ tenantId, _id }</code> for a multi-tenant events collection against the four properties.</li>
+      <li>Pick a shard key for a chat application and defend it against hotspots and scatter-gather queries.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Judge a key by cardinality, frequency, monotonicity, and fit with queries.</li>
+      <li>Monotonic keys create write hotspots, and hashed or compound keys spread them.</li>
+      <li>A wrong key is costly to fix, so test it against the real workload first.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Replication &amp; Sharding — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

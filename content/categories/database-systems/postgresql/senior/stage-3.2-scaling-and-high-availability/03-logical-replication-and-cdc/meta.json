@@ -1,0 +1,5 @@
+{
+  "title": "Logical Replication & CDC",
+  "description": "Replicating selected tables, zero-downtime moves, and change data capture.",
+  "order": 3
+}

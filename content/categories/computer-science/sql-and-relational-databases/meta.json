@@ -1,0 +1,6 @@
+{
+  "title": "SQL & Relational Databases",
+  "description": "SQL, indexes, and transactions, from your first SELECT to production.",
+  "order": 8,
+  "compileRoot": true
+}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build vs. Buy — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 02</p>
+  <h1>Build vs. Buy</h1>
+  <p class="lede">Evaluating services, frameworks, and platforms.</p>
+
+  <h2><span class="num">§1</span>A Decision With Long Tails</h2>
+
+  <p>Should we build our own authentication, queueing, search, or billing, or adopt a managed service, an open-source framework, or a vendor product? The choice shapes your costs, speed, risk, and team focus for years. Teams err in both directions: building what they should have bought (and maintaining it forever), or buying what is core to their advantage (and surrendering it).</p>
+
+  <h2><span class="num">§2</span>Start With Strategic Value</h2>
+
+  <p>Ask first: <strong>is this a differentiator for our business?</strong> Capabilities that customers choose you for deserve your best engineers and your control. Commodity capabilities (sending email, processing card payments, hosting, authentication for most products) rarely distinguish you, and others do them better and cheaper at scale.</p>
+
+  <table>
+    <tr><th>Question</th><th>Leans toward build</th><th>Leans toward buy</th></tr>
+    <tr><td>Is it core to our competitive advantage?</td><td>Yes</td><td>No, it is a commodity</td></tr>
+    <tr><td>Do we have unusual requirements that products do not meet?</td><td>Yes, and they are essential</td><td>No, standard needs</td></tr>
+    <tr><td>Do we have the expertise to build <em>and operate</em> it well?</td><td>Yes, and capacity</td><td>No, or it would divert from core work</td></tr>
+    <tr><td>Is time to market critical?</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Is it security- or compliance-sensitive in ways that specialists handle better?</td><td>No</td><td>Yes (payments, identity, regulated data)</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>Count the Whole Cost</h2>
+
+  <p>Building looks cheap because the first version is visible and the rest is hidden. Buying looks cheap because the license fee is visible and the rest is hidden. Compare <strong>total cost of ownership over several years</strong>:</p>
+
+  <ul>
+    <li><strong>Building:</strong> initial development, then maintenance, upgrades, security patches, on-call, scaling, documentation, onboarding new engineers, and the opportunity cost of what those engineers would have built instead. Software that is built is never finished.</li>
+    <li><strong>Buying:</strong> license or usage fees (and how they scale with growth), integration and migration effort, customization limits, training, vendor management, and the cost of eventually leaving.</li>
+    <li><strong>Open source</strong> is not free: it saves license fees but you still pay for operating, upgrading, patching, and understanding it, and projects can lose maintainers or change their licenses.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Evaluate Vendors and Frameworks Like a Risk Manager</h2>
+
+  <ul>
+    <li><strong>Lock-in:</strong> how hard is it to leave? Can you export all your data in usable formats? Does the integration spread vendor-specific concepts through your whole codebase? Put a thin adapter (the ports-and-adapters idea from stage 3.1) around the vendor.</li>
+    <li><strong>Reliability and security:</strong> their uptime history, SLAs and what compensation means in practice, certifications, how they handle incidents, and what data they hold.</li>
+    <li><strong>Viability:</strong> financial health, roadmap, community size, release cadence, and what happens if they are acquired or shut down.</li>
+    <li><strong>Fit and limits:</strong> rate limits, quotas, latency, regional availability, data residency, and customization ceilings. Prototype against your <em>hardest</em> requirement first.</li>
+    <li><strong>Pricing dynamics:</strong> how the bill grows with usage, price-change history, and where the cliffs are. A tool that costs $200 a month today may cost $200,000 at 100x scale.</li>
+  </ul>
+
+  <pre><span class="comment"># Lightweight decision record (ADR) for a build-vs-buy choice</span>
+Decision      Use a managed queue (SQS) instead of operating RabbitMQ ourselves.
+Context       Need durable job queues; 2 engineers; no queue expertise; target: ship in 6 weeks.
+Options       (A) Self-hosted RabbitMQ  (B) Managed SQS  (C) Postgres-backed queue
+Criteria      Time to ship, operational burden, cost at 10x volume, lock-in, features needed.
+Evaluation    A: full features, high ops load.  B: low ops, modest feature set, cheap at our scale.
+              C: no new infra, but limited throughput ceiling.
+Decision      B. Wrap behind our own Queue interface to keep migration possible.
+Revisit when  Volume exceeds 5k msgs/sec, or we need complex routing.
+Owner/date    Platform team, 2026-02-10</pre>
+
+  <h2><span class="num">§5</span>Hybrid and Reversible Choices</h2>
+
+  <p>It is rarely all or nothing. You can <strong>buy first and build later</strong> once you understand the problem and have scale that justifies it, which is often the best path to a good in-house version. You can <strong>build the core and buy the edges</strong>. And you can make decisions <strong>reversible</strong> with interfaces, data export, and incremental migration plans. Reversibility lowers the stakes: choose faster when the choice is cheap to undo, and slower when it is not.</p>
+
+  <div class="callout">
+    <span class="label">Beware the not-invented-here and shiny-object traps</span>
+    Engineers are drawn to building (it is interesting) and to adopting the newest tool (it is exciting). Neither is a business reason. Ask who will operate it at 3 a.m. in two years, and whether the work moves the product forward more than the alternative would.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Comparing only the visible cost (license fee or initial build)</td><td>Underestimating maintenance, operations, and exit costs</td><td>Compute total cost of ownership over three to five years</td></tr>
+    <tr><td>Spreading a vendor's SDK and concepts throughout the code</td><td>Switching vendors becomes a rewrite</td><td>Wrap vendors behind your own interface and own your data format</td></tr>
+    <tr><td>Building commodity infrastructure because it is interesting</td><td>Scarce engineers maintain things that do not differentiate</td><td>Reserve building for strategic differentiators</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Choose a capability in your system (search, email, feature flags, auth) and write a one-page ADR comparing build, buy, and a hybrid, with a revisit condition.</li>
+      <li>Take a vendor you rely on and answer: how would we leave, how long would it take, and what would we lose?</li>
+      <li>Estimate the three-year total cost of building a feature in-house, including maintenance and on-call, and compare it with the vendor price at 10x usage.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Build what differentiates you; buy commodities, unless your needs are unusual and you can operate it well.</li>
+      <li>Compare total cost of ownership, including maintenance, operations, scaling prices, and exit costs.</li>
+      <li>Reduce lock-in with adapters and data export, prefer reversible choices, and record decisions in an ADR.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

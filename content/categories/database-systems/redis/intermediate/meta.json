@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Streams, transactions, caching strategy, queues, locks, and replication that survives failure.",
+  "order": 2
+}

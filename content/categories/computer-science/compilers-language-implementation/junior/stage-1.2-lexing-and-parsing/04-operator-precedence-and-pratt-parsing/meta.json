@@ -1,0 +1,5 @@
+{
+  "title": "Operator Precedence & Pratt Parsing",
+  "description": "Binding power, associativity, and parsing expressions without a rule per precedence level.",
+  "order": 4
+}

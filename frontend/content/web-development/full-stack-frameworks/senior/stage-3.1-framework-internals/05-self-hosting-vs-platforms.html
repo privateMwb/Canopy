@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Self-Hosting vs. Platforms — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · framework internals</span> → lesson 05</p>
+  <h1>Self-Hosting vs. Platforms</h1>
+  <p class="lede">What a managed platform does that you would have to rebuild.</p>
+
+  <h2><span class="num">§1</span>What a Platform Does for You</h2>
+
+  <p><code>next start</code> runs your app on a single Node server. A managed platform such as Vercel does much more, and some framework features assume it. When you self-host you must supply the missing pieces yourself.</p>
+
+  <table>
+    <tr><th>Capability</th><th>On a managed platform</th><th>When self-hosting</th></tr>
+    <tr><td>Global CDN and static assets</td><td>Automatic</td><td>Put a CDN in front; configure cache headers</td></tr>
+    <tr><td>Serverless scaling</td><td>Per-request, scales to zero</td><td>Run and autoscale containers or VMs yourself</td></tr>
+    <tr><td>Shared data cache / ISR across instances</td><td>Built in</td><td>Configure a shared cache handler (Redis, object storage), or each instance caches separately</td></tr>
+    <tr><td>Image optimization</td><td>Managed and cached</td><td>Runs in your server; needs CPU and caching</td></tr>
+    <tr><td>Preview deployments</td><td>Per branch, automatic</td><td>Build your own pipeline</td></tr>
+    <tr><td>TLS, DDoS protection, WAF</td><td>Included</td><td>Add a proxy or provider (Cloudflare, load balancer)</td></tr>
+    <tr><td>Zero-downtime deploys and rollbacks</td><td>Immutable deployments</td><td>Blue/green or rolling deploys; keep old assets available</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Self-Hosting Patterns</h2>
+
+  <ul>
+    <li><strong>Container:</strong> build a Docker image (Next.js supports a <code>standalone</code> output that bundles only what's needed) and run it on a container platform or Kubernetes.</li>
+    <li><strong>Node process on a VM:</strong> simplest, with a process manager and reverse proxy; you handle scaling and updates.</li>
+    <li><strong>Static export:</strong> if the site needs no server features, export static files and host them anywhere, but you lose server rendering, actions, and route handlers.</li>
+    <li><strong>Other adapters:</strong> Cloudflare, Netlify, AWS, and others run the framework via adapters with differing feature support.</li>
+  </ul>
+
+  <pre><span class="comment"># next.config.ts → output: "standalone"</span>
+docker build -t acme-web .
+docker run -p 3000:3000 -e DATABASE_URL=... acme-web</pre>
+
+  <h2><span class="num">§3</span>Multi-Instance Gotchas</h2>
+
+  <p>The classic self-hosting bug is running several instances behind a load balancer, each with its own in-memory cache and local files. A revalidation reaches only one instance, so users see inconsistent content depending on which they hit. Fix this with a shared cache store, consistent build ids, and keeping prior deployment assets available during rollouts so open browser tabs don't request deleted chunks.</p>
+
+  <div class="callout">
+    <span class="label">It's a build-versus-buy decision</span>
+    Platforms charge for convenience, and self-hosting charges in engineering time and on-call burden. The right answer depends on traffic, team skill, compliance needs, and costs. Decide with numbers, as lesson 3.4.2 explores.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Running multiple instances with per-instance caches</td><td>Inconsistent content and invalidation misses</td><td>Use a shared cache handler</td></tr>
+    <tr><td>Deleting old build assets immediately on deploy</td><td>Users with open tabs hit 404s for old chunks</td><td>Keep previous assets for a grace period</td></tr>
+    <tr><td>Assuming every framework feature works on every host</td><td>Features break or silently degrade after migration</td><td>Check the adapter's supported-features list before choosing</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a Docker image of a Next.js app with standalone output and run it locally with environment variables.</li>
+      <li>List ten things Vercel provides that your container deployment would need, and note who would own each.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Managed platforms bundle CDN, scaling, caching, previews, and security that self-hosting must replace.</li>
+      <li>Multi-instance deployments need a shared cache and careful handling of old assets.</li>
+      <li>Choose between platform and self-hosting by weighing cost, control, and operational burden.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Framework Internals — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

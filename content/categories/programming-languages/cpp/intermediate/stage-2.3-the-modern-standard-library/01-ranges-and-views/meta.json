@@ -1,0 +1,5 @@
+{
+  "title": "Ranges & Views",
+  "description": "Composable, lazy pipelines that replace nested loops and temporaries.",
+  "order": 1
+}

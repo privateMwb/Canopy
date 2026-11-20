@@ -1,0 +1,5 @@
+{
+  "title": "Passwords & Hashing",
+  "description": "bcrypt and argon2, salts, and why not to roll your own.",
+  "order": 1
+}

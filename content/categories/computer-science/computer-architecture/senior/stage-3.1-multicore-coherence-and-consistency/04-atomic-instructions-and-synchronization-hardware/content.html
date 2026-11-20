@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atomic Instructions &amp; Synchronization Hardware — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · multicore, coherence & consistency</span> → lesson 04</p>
+  <h1>Atomic Instructions &amp; Synchronization Hardware</h1>
+  <p class="lede">Locks, counters, and lock-free structures all bottom out in a few special instructions that perform a read-modify-write on memory as one indivisible step.</p>
+
+  <h2><span class="num">§1</span>Atomic Read-Modify-Write</h2>
+  <p>An ordinary <code>x++</code> is a load, an add, and a store, and another core can intervene between them. Hardware provides <strong>atomic</strong> instructions that do the whole sequence as a single step, with respect to every other core.</p>
+  <table>
+    <tr><th>ISA</th><th>Atomic add / exchange</th><th>Compare-and-swap</th></tr>
+    <tr><td>x86-64</td><td><code>lock add</code>, <code>lock xadd</code>, <code>xchg</code></td><td><code>lock cmpxchg</code></td></tr>
+    <tr><td>ARM (v8.1 LSE)</td><td><code>ldadd</code>, <code>swp</code></td><td><code>cas</code></td></tr>
+    <tr><td>ARM (base v8)</td><td><code>ldxr</code> / <code>stxr</code> loop</td><td><code>ldxr</code> / <code>stxr</code> loop</td></tr>
+    <tr><td>RISC-V (A extension)</td><td><code>amoadd</code>, <code>amoswap</code></td><td><code>lr</code> / <code>sc</code> loop</td></tr>
+  </table>
+  <pre><span class="comment">// C11: one line, and the compiler picks the instruction</span>
+atomic_fetch_add(&amp;counter, 1);
+
+<span class="comment"># x86-64, typical output when the old value is unused:</span>
+lock add DWORD PTR counter[rip], 1
+
+<span class="comment"># AArch64 without LSE: a load-linked / store-conditional retry loop</span>
+.Lretry:
+    ldxr  w1, [x0]
+    add   w1, w1, 1
+    stxr  w2, w1, [x0]       <span class="comment"># w2 = 0 on success, 1 if the reservation was lost</span>
+    cbnz  w2, .Lretry</pre>
+  <p>On x86, atomic read-modify-write instructions also act as <strong>full memory barriers</strong>, which makes them simple to reason about but costly compared with plain stores.</p>
+
+  <h2><span class="num">§2</span>How the Hardware Does It</h2>
+  <p>The core must have the line in the Modified state and keep it from being stolen for the duration of the operation. On a read-modify-write, the cache <strong>locks the line</strong> briefly: it acquires exclusive ownership, performs the read, the modify, and the write, and only then answers other cores' requests for it.</p>
+  <ul>
+    <li><strong>Uncontended</strong> atomics are cheap, around 15 to 25 cycles on many x86 cores, because the line is already local</li>
+    <li><strong>Contended</strong> atomics cost a cache-to-cache transfer each, tens to hundreds of cycles, as in the ping-pong example</li>
+    <li><strong>LL/SC</strong> (load-linked/store-conditional, used by ARM and RISC-V) sets a <strong>reservation</strong> on a line, and the store succeeds only if nothing else wrote it in the meantime. It can fail spuriously, for instance if the line is evicted, so it is always used in a retry loop</li>
+    <li><strong>Compare-and-swap</strong> is the building block for lock-free algorithms, and has the ABA problem discussed in the OS category</li>
+  </ul>
+  <p>Atomics that need a whole-line lock are why a <strong>misaligned</strong> atomic crossing a cache-line boundary is expensive on x86: it needs a system-wide bus lock, and some platforms now flag or trap it.</p>
+
+  <h2><span class="num">§3</span>Building Locks on Top</h2>
+  <p>A simple spinlock repeatedly attempts an atomic exchange until it gets the old value 0.</p>
+  <pre>void lock(atomic_int *l) {
+    while (atomic_exchange_explicit(l, 1, memory_order_acquire)) {   <span class="comment">// try to set 1</span>
+        while (atomic_load_explicit(l, memory_order_relaxed))        <span class="comment">// spin on a cheap read</span>
+            __builtin_ia32_pause();                                   <span class="comment">// x86 'pause' hint</span>
+    }
+}
+void unlock(atomic_int *l) { atomic_store_explicit(l, 0, memory_order_release); }</pre>
+  <p>Spinning on a plain load rather than the exchange keeps the line in the Shared state while waiting, so waiting cores don't keep stealing it. The <code>pause</code> instruction tells the core it's in a spin loop, which saves power and avoids a costly pipeline flush when the lock is released. Under heavy contention, more scalable lock designs queue waiters, so each spins on its own cache line, such as ticket locks and MCS locks.</p>
+
+  <div class="callout">
+    <span class="label">Connection to earlier lessons</span>
+    These instructions are what the OS course's mutexes, futexes, and lock-free stacks rest on. Their cost is the coherence cost of this stage: an atomic is as fast as the cache line is close.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Spinning directly on an atomic exchange</td><td>The line bounces among all waiters</td><td>Spin on a read, and attempt the exchange only when it looks free</td></tr>
+    <tr><td>Using atomics on misaligned or line-straddling data</td><td>Severe slowdowns or traps</td><td>Align atomic variables to their size</td></tr>
+    <tr><td>Assuming LL/SC never fails spuriously</td><td>Code without a retry loop breaks</td><td>Always wrap LL/SC in a loop, keeping the code between them minimal</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Compile <code>atomic_fetch_add</code> for x86-64 and for AArch64 on Compiler Explorer, with and without LSE (<code>-march=armv8.1-a</code>), and compare the instructions.</li>
+      <li>Measure the cost of an uncontended <code>atomic_fetch_add</code> versus a plain <code>++</code>, and then with 4 threads contending.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Atomic read-modify-write instructions, like <code>lock xadd</code>, <code>ldadd</code>, and <code>amoadd</code>, perform one indivisible update.</li>
+      <li>They work by holding the cache line exclusively; contention turns them into cache-line transfers.</li>
+      <li>LL/SC and CAS are retry-based building blocks; spin locks should spin on reads, with a pause hint.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Multicore, Coherence & Consistency — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

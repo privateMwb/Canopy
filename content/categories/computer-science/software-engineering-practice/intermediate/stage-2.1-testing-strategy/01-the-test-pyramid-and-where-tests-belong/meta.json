@@ -1,0 +1,5 @@
+{
+  "title": "The Test Pyramid & Where Tests Belong",
+  "description": "Unit, integration, and end-to-end tests, their cost and speed tradeoffs, and the alternative shapes teams use.",
+  "order": 1
+}

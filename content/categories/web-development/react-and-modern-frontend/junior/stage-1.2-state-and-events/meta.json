@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — State & Events",
+  "description": "useState, events, controlled inputs, lifting state, and how rendering works.",
+  "order": 2
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Top-Down Microarchitecture Analysis — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · performance engineering & design judgment</span> → lesson 02</p>
+  <h1>Top-Down Microarchitecture Analysis</h1>
+  <p class="lede">Top-down analysis answers 'why is this program slow?' by classifying every pipeline slot as useful work or as one of a few kinds of loss, then drilling into the biggest loss.</p>
+
+  <h2><span class="num">§1</span>Pipeline Slots and Four Categories</h2>
+  <p>A core with issue width W has W <strong>slots</strong> in each cycle in which it could deliver a micro-op. The top-down method classifies every slot into one of four buckets.</p>
+  <table>
+    <tr><th>Category</th><th>Meaning</th><th>Typical cause</th></tr>
+    <tr><td>Retiring</td><td>The slot produced a micro-op that completed</td><td>Useful work (the ideal)</td></tr>
+    <tr><td>Bad speculation</td><td>The slot's work was thrown away, or time was lost recovering</td><td>Branch mispredictions, other pipeline flushes</td></tr>
+    <tr><td>Frontend bound</td><td>The front end couldn't deliver micro-ops, though the back end could take them</td><td>Instruction-cache misses, decode limits, large code</td></tr>
+    <tr><td>Backend bound</td><td>The back end couldn't accept new micro-ops</td><td>Waiting on data or execution units</td></tr>
+  </table>
+  <p>The percentages sum to 100%. A program with 70% backend bound has most of its slots lost to waiting, and the other 30% together can't account for a large win, so the next step is clear.</p>
+
+  <h2><span class="num">§2</span>Drilling Down</h2>
+  <p>Each category splits into sub-categories, so you go deeper only where the numbers are large.</p>
+  <pre>Backend bound
+ ├─ Memory bound   (stalls waiting on loads and stores)
+ │    ├─ L1 bound / L2 bound / L3 bound
+ │    ├─ DRAM bound   (latency and bandwidth)
+ │    └─ Store bound
+ └─ Core bound     (execution-unit pressure, long dependency chains, division)
+Frontend bound:  fetch latency (i-cache or ITLB misses)  vs.  fetch bandwidth (decode)
+Bad speculation: branch mispredicts  vs.  machine clears (such as memory-ordering flushes)</pre>
+  <p>On Intel CPUs and recent AMD and ARM cores, perf can compute these from hardware counters. Support depends on the CPU and perf version, and the counters are often unavailable inside virtual machines.</p>
+  <pre>perf stat -M TopdownL1 ./prog            <span class="comment"># level 1: retiring / bad spec / frontend / backend</span>
+perf stat --topdown -a -- sleep 5         <span class="comment"># system-wide, on supporting Intel CPUs</span>
+toplev.py -l2 ./prog                      <span class="comment"># pmu-tools: deeper levels and plain-language hints</span></pre>
+  <p>Typical output reads like a diagnosis:</p>
+  <pre>Retiring 22%   Bad speculation 3%   Frontend bound 5%   Backend bound 70%
+  -&gt; Memory bound 58%  (DRAM bound 41%, L3 bound 12%)   Core bound 12%
+<span class="comment"># Interpretation: the program is dominated by DRAM waits. Fix locality, layout, or prefetching.</span></pre>
+
+  <h2><span class="num">§3</span>A Disciplined Method</h2>
+  <ol>
+    <li><strong>Measure level 1</strong> on a representative run</li>
+    <li><strong>Pick the largest non-retiring category</strong> and drill into only that</li>
+    <li><strong>Form a hypothesis</strong> that explains the numbers, for example 'the hash table lookups miss to DRAM'</li>
+    <li><strong>Change one thing</strong> that tests it, such as a more compact layout or batched lookups</li>
+    <li><strong>Re-measure</strong> both the counters and the wall-clock time, and repeat</li>
+  </ol>
+  <p>Don't optimize a category that is small. A program with 4% bad speculation won't benefit from branch tuning, however clever it is. And judge by time first: a counter that improved while the wall-clock time did not is not progress.</p>
+  <p>High <strong>retiring</strong> isn't a guarantee of efficiency. It can mean the core is busy doing a lot of unnecessary work. In that case, the answer is fewer instructions: a better algorithm, vectorization, or removing redundant computation.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Top-down turns a mass of counters into a decision tree. It tells you which of front end, speculation, memory, or core is leaking cycles, so you work on the biggest leak first.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Chasing a small category</td><td>Little to gain even if fixed completely</td><td>Always start with the largest non-retiring bucket</td></tr>
+    <tr><td>Trusting counters over time</td><td>A counter can improve while the program gets no faster</td><td>Confirm every change with wall-clock measurements</td></tr>
+    <tr><td>Running the analysis on a toy input</td><td>Behavior differs from production data</td><td>Use realistic inputs and sizes</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run <code>perf stat -M TopdownL1</code> (or <code>toplev</code>) on two programs, one that streams a large array and one that does heavy computation on a small one, and compare the breakdowns.</li>
+      <li>Given Retiring 35%, Bad speculation 25%, Frontend 10%, Backend 30%, which bucket do you investigate first and what would you look for?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Top-down classifies slots into retiring, bad speculation, frontend bound, and backend bound.</li>
+      <li>Drill into the largest loss only, such as memory-bound split into L1, L2, L3, and DRAM.</li>
+      <li>Change one thing at a time, and confirm with wall-clock time.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Performance Engineering & Design Judgment — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

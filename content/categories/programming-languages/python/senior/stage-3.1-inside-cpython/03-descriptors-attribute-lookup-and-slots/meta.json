@@ -1,0 +1,5 @@
+{
+  "title": "Descriptors, Attribute Lookup & __slots__",
+  "description": "How obj.attr is resolved, how properties and methods really work, and what slots save.",
+  "order": 3
+}

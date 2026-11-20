@@ -1,0 +1,5 @@
+{
+  "title": "Storage Patterns: EFS & S3 Lifecycle",
+  "description": "Choosing the right storage and managing its cost over time.",
+  "order": 4
+}

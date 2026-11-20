@@ -1,0 +1,5 @@
+{
+  "title": "Subcollections vs. Top-Level Collections",
+  "description": "Query scope, collection group queries, and the trade-offs.",
+  "order": 2
+}

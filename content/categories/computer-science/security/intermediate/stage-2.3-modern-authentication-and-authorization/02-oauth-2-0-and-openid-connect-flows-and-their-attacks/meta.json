@@ -1,0 +1,1 @@
+{"title": "OAuth 2.0 & OpenID Connect: Flows and Their Attacks", "description": "The authorization code flow with PKCE in depth, ID tokens versus access tokens, and the redirect and token-leakage bugs that keep recurring.", "order": 2}

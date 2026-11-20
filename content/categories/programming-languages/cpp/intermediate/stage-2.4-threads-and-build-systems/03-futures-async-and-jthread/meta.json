@@ -1,0 +1,5 @@
+{
+  "title": "Futures, async & jthread",
+  "description": "Higher-level concurrency and cooperative cancellation with stop_token.",
+  "order": 3
+}

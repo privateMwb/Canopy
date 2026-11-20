@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WebSockets, SSE &amp; Real-Time Updates — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · advanced apis & protocol choice</span> → lesson 03</p>
+  <h1>WebSockets, SSE &amp; Real-Time Updates</h1>
+  <p class="lede">HTTP is request-driven, so pushing data to clients needs another pattern, and the choice among polling, server-sent events, and WebSockets depends on direction and scale.</p>
+
+  <h2><span class="num">§1</span>Four Ways to Get Updates</h2>
+  <table>
+    <tr><th>Technique</th><th>How it works</th><th>Direction</th><th>Notes</th></tr>
+    <tr><td>Polling</td><td>Client asks every N seconds</td><td>Client → server</td><td>Simple, but wasteful and delayed</td></tr>
+    <tr><td>Long polling</td><td>Request held open until data exists, then repeated</td><td>Server → client</td><td>Works anywhere; many round trips</td></tr>
+    <tr><td>Server-Sent Events (SSE)</td><td>One long HTTP response streaming <code>text/event-stream</code></td><td>Server → client only</td><td>Auto-reconnect, plain HTTP</td></tr>
+    <tr><td>WebSocket</td><td>Upgraded connection with framed messages both ways</td><td>Both</td><td>Full duplex, custom protocol</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>SSE and WebSocket Basics</h2>
+  <p><strong>SSE</strong> keeps one HTTP response open and streams lines of text events. Browsers reconnect automatically and can resume using the <code>Last-Event-ID</code> header, and it works through most proxies and with HTTP/2 multiplexing.</p>
+  <pre>GET /events HTTP/1.1
+Accept: text/event-stream
+
+HTTP/1.1 200 OK
+Content-Type: text/event-stream
+
+id: 42
+event: price
+data: {"symbol":"ACME","value":101.5}
+<span class="comment">(blank line ends one event)</span></pre>
+  <p>A <strong>WebSocket</strong> starts as an HTTP request asking to upgrade, then the same TCP connection switches to a message-framed protocol where either side can send at any time.</p>
+  <pre>GET /chat HTTP/1.1
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+<span class="comment"># From here on: binary/text frames, with ping/pong for liveness.</span></pre>
+
+  <h2><span class="num">§3</span>Operating Real-Time Connections</h2>
+  <p>Long-lived connections behave differently from request-response, and most problems surface in operation.</p>
+  <ul>
+    <li><strong>State:</strong> each connection is held by one server, so scaling needs a shared pub/sub layer to fan messages out to whichever node holds the recipient</li>
+    <li><strong>Idle timeouts:</strong> proxies and load balancers close quiet connections, so send heartbeats or pings regularly</li>
+    <li><strong>Reconnection storms:</strong> after an outage, every client reconnects at once; use exponential backoff with jitter</li>
+    <li><strong>Authentication:</strong> validate during the handshake, and again as tokens expire, since browsers can't set custom headers on WebSocket handshakes from JavaScript</li>
+    <li><strong>Backpressure:</strong> a slow client must not make the server buffer unlimited messages, so bound queues and drop or disconnect laggards</li>
+    <li><strong>Load balancing:</strong> long-lived connections make connection counts uneven; drain gracefully during deploys</li>
+  </ul>
+  <p>A practical rule: use <strong>SSE</strong> when the server only needs to push (dashboards, notifications, progress), <strong>WebSockets</strong> when the client also sends frequent messages (chat, collaboration, games), and plain <strong>polling</strong> when updates are infrequent and simplicity wins.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    Real-time connections hold server resources for their whole lifetime, so a deploy or crash disconnects everyone at once. Plan for graceful draining and jittered reconnects before you need them.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using WebSockets when SSE is enough</td><td>More complexity for one-way pushes</td><td>Choose SSE for server-to-client updates</td></tr>
+    <tr><td>No heartbeats on idle connections</td><td>Intermediaries silently drop them and clients don't notice</td><td>Send periodic pings and detect missed ones</td></tr>
+    <tr><td>Immediate reconnects after a failure</td><td>Thundering herd overloads the recovering server</td><td>Reconnect with exponential backoff and random jitter</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Implement an SSE endpoint that sends a counter every second, and consume it with <code>curl -N</code>.</li>
+      <li>Design how a chat service with 10 server nodes delivers a message to a recipient connected to a different node.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Polling, long polling, SSE, and WebSockets trade simplicity against direction and efficiency.</li>
+      <li>SSE is one-way over plain HTTP with automatic reconnection; WebSockets are full-duplex after an upgrade.</li>
+      <li>Operate them with heartbeats, backpressure, jittered reconnects, and a pub/sub layer for scaling.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Advanced APIs & Protocol Choice — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

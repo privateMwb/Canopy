@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — How CSS Is Computed & Rendered",
+  "description": "Style calculation, layout algorithms, stacking contexts, containment, and reading traces.",
+  "order": 1
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Performance & Patterns",
+  "description": "Rendering performance, the React Compiler, code splitting, component patterns, and accessibility.",
+  "order": 3
+}

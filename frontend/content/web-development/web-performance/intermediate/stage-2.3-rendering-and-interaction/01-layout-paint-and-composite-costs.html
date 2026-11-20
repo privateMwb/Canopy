@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Layout, Paint &amp; Composite Costs — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · rendering & interaction</span> → lesson 01</p>
+  <h1>Layout, Paint &amp; Composite Costs</h1>
+  <p class="lede">Every visual change pays for some mix of style, layout, paint, and composite. Knowing which one a change triggers tells you how expensive it is.</p>
+
+  <h2><span class="num">§1</span>The Rendering Pipeline</h2>
+  <p>After JavaScript changes something, the browser may need to redo several steps, in order. Later steps are cheaper, so the goal is to trigger as few and as late as possible.</p>
+  <table>
+    <tr><th>Stage</th><th>What it does</th><th>Relative cost</th></tr>
+    <tr><td><strong>Style</strong></td><td>Works out which CSS rules apply to each element</td><td>Low to medium</td></tr>
+    <tr><td><strong>Layout</strong></td><td>Computes size and position of every affected element</td><td>High, can cascade to the whole page</td></tr>
+    <tr><td><strong>Paint</strong></td><td>Fills in pixels: text, colors, borders, shadows</td><td>Medium to high</td></tr>
+    <tr><td><strong>Composite</strong></td><td>Combines layers on the GPU</td><td>Lowest</td></tr>
+  </table>
+  <p>Changing a property that affects geometry, such as <code>width</code>, <code>top</code>, <code>margin</code>, or <code>font-size</code>, triggers <strong>layout</strong>, then paint and composite. Changing only <code>color</code> or <code>background</code> skips layout but still paints. Changing <code>transform</code> or <code>opacity</code> on its own layer can skip both and go straight to composite.</p>
+
+  <h2><span class="num">§2</span>Layout Thrashing</h2>
+  <p>Layout is expensive, and it is easy to force it repeatedly. Reading a layout property such as <code>offsetHeight</code> forces the browser to calculate layout <strong>now</strong> if anything is pending. If you alternate reads and writes in a loop, you force layout on every iteration.</p>
+  <pre><span class="comment">// Bad: read, write, read, write... forces layout every iteration</span>
+for (const el of items) {
+  el.style.width = el.parentNode.offsetWidth / 2 + 'px';
+}
+
+<span class="comment">// Better: batch all reads first, then all writes</span>
+const widths = items.map(el =&gt; el.parentNode.offsetWidth);
+items.forEach((el, i) =&gt; { el.style.width = widths[i] / 2 + 'px'; });</pre>
+  <p>In DevTools, a purple <strong>Layout</strong> block that repeats many times inside one task, often with a warning about forced reflow, is the signature of thrashing.</p>
+
+  <h2><span class="num">§3</span>Reducing the Work</h2>
+  <ul>
+    <li><strong>Prefer <code>transform</code> and <code>opacity</code></strong> for movement and fades, since they can run on the compositor.</li>
+    <li><strong>Limit the scope of layout</strong> with CSS <code>contain: layout paint</code> or <code>content-visibility: auto</code> on large offscreen sections, so changes there don't affect the rest.</li>
+    <li><strong>Keep the DOM small.</strong> Layout and style cost grow with the number of elements.</li>
+    <li><strong>Avoid deep, complex selectors</strong> and huge numbers of rules touching many elements.</li>
+    <li><strong>Batch DOM updates</strong>, and write with <code>requestAnimationFrame</code> so changes happen once per frame.</li>
+  </ul>
+  <pre><span class="comment">/* Skip rendering work for sections far offscreen */</span>
+.article-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;   <span class="comment">/* reserve space so scroll bar doesn't jump */</span>
+}</pre>
+  <p>Use <strong>CSS Triggers</strong> style references, or the Performance panel itself, to see which stage a property touches. Verify in a trace rather than trusting a rule of thumb.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The cheapest frame is the one where only composite runs. Each step up the pipeline, composite to paint to layout, costs more, and layout can cascade across the page.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Reading layout properties inside a write loop</td><td>Forced layout on every iteration</td><td>Read everything first, then write</td></tr>
+    <tr><td>Animating <code>top</code>, <code>left</code>, or <code>width</code></td><td>Layout and paint on every frame</td><td>Animate <code>transform</code></td></tr>
+    <tr><td>Keeping tens of thousands of DOM nodes</td><td>Style and layout get expensive for any change</td><td>Virtualize, or use <code>content-visibility</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a loop that reads and writes layout alternately, then fix it by batching. Compare the traces.</li>
+      <li>Apply <code>content-visibility: auto</code> to long offscreen sections and measure the change in initial rendering time.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Style, layout, paint, and composite run in order and cost more the earlier they are.</li>
+      <li>Alternating layout reads and writes causes forced reflow, so batch reads then writes.</li>
+      <li>Prefer compositor-friendly properties, keep the DOM small, and use containment to limit scope.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Rendering &amp; Interaction — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Writing Architecture Decisions — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 04</p>
+  <h1>Writing Architecture Decisions</h1>
+  <p class="lede">Design docs and RFCs for full-stack systems.</p>
+
+  <h2><span class="num">§1</span>Why Write Decisions Down</h2>
+
+  <p>Architecture is mostly a series of trade-offs made with incomplete information. If the reasoning lives only in someone's head, future engineers either repeat old debates or undo good choices for forgotten reasons. An <strong>Architecture Decision Record (ADR)</strong> is a short document capturing one significant decision: the context, the options, the choice, and the consequences.</p>
+
+  <h2><span class="num">§2</span>A Practical ADR Template</h2>
+
+  <pre><span class="comment"># ADR-014: Host the app on a managed platform (not self-hosted containers)</span>
+
+Status:    Accepted (2026-03-10)    <span class="comment"># Proposed | Accepted | Superseded by ADR-0xx</span>
+Deciders:  Platform lead, Engineering manager
+
+<span class="comment">## Context</span>
+What forces are at play? Requirements, constraints, team size, deadlines, risks.
+
+<span class="comment">## Options considered</span>
+1. Managed platform: fast setup, usage-based cost, some vendor coupling
+2. Self-hosted containers: more control and cost predictability, more operations work
+3. ...
+
+<span class="comment">## Decision</span>
+We will use option 1, because ...
+
+<span class="comment">## Consequences</span>
+Positive: ...   Negative: ...   Risks and mitigations: ...
+Revisit when: monthly bill exceeds $X, or we need a region the platform lacks.</pre>
+
+  <p>Keep it to one or two pages. Store ADRs in the repository, next to the code, numbered and never deleted. A reversed decision gets a new ADR that supersedes the old one.</p>
+
+  <h2><span class="num">§3</span>Writing for a Skeptical Reader</h2>
+
+  <p>The most important reader is the person who disagrees. Write so that they can see their objections were understood and answered.</p>
+
+  <ul>
+    <li><strong>State the problem before the solution,</strong> and make sure the reader agrees it's a problem.</li>
+    <li><strong>Present real alternatives</strong> fairly, including the strongest argument for each. A straw-man option list destroys trust.</li>
+    <li><strong>Be explicit about trade-offs:</strong> what you're giving up, not only what you're gaining.</li>
+    <li><strong>Use evidence:</strong> measurements, prototypes, cost estimates, and incident history, rather than appeals to authority or fashion.</li>
+    <li><strong>Name the risks and the tripwires:</strong> the conditions under which the decision should be revisited.</li>
+    <li><strong>Separate facts, assumptions, and opinions,</strong> and label each.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>From Document to Decision</h2>
+
+  <p>Circulate a draft early (an RFC), invite review from the people affected, and set a deadline for comments. Disagreement is useful input, so record it, even if the decision goes the other way. 'Disagree and commit' works only when people feel heard. Finally, communicate the outcome beyond the review group, and link the ADR from the code and the runbooks it affects.</p>
+
+  <div class="callout">
+    <span class="label">The consequences section is the honest part</span>
+    Anyone can list reasons for the option they like. A strong ADR spells out what gets harder, what it will cost, and when the team should reconsider. That's what lets a skeptic trust the rest.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Writing the ADR after the decision, as justification</td><td>It reads as advocacy and hides the real alternatives</td><td>Draft it while deciding, and use it to think</td></tr>
+    <tr><td>Listing only options you'd already dismissed</td><td>Reviewers see through the straw men and distrust the conclusion</td><td>Include credible alternatives with their best arguments</td></tr>
+    <tr><td>No revisit conditions</td><td>A decision hardens into dogma after circumstances change</td><td>State the signals that should trigger a review</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write an ADR (one page) for choosing a framework and hosting model for a hypothetical product, including at least two credible alternatives and revisit conditions.</li>
+      <li>Have a colleague play a skeptical reviewer and list their objections. Revise the ADR to answer each one with evidence.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>ADRs capture context, options, decision, and consequences in a short, versioned document.</li>
+      <li>Write for the skeptic: fair alternatives, explicit trade-offs, and evidence rather than assertion.</li>
+      <li>Include revisit conditions, gather review early, and record the outcome where the code lives.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Installing Redis & Using redis-cli",
+  "description": "Running a server, the command line, and exploring keys.",
+  "order": 2
+}

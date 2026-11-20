@@ -1,0 +1,5 @@
+{
+  "title": "Domain-Driven Design: Bounded Contexts & Ubiquitous Language",
+  "description": "Modeling the business in code, drawing boundaries where words change meaning, and aggregates as units of consistency.",
+  "order": 2
+}

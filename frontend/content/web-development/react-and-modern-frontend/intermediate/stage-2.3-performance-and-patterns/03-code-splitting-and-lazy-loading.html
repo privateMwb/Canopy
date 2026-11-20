@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code Splitting &amp; Lazy Loading — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · performance &amp; patterns</span> → lesson 03</p>
+  <h1>Code Splitting &amp; Lazy Loading</h1>
+  <p class="lede">Every user downloads your whole bundle unless you split it. <code>React.lazy</code> and dynamic imports load code only when it is needed, which speeds up the first visit.</p>
+
+  <h2><span class="num">§1</span>lazy and Suspense</h2>
+
+  <p><code>lazy()</code> takes a function returning a dynamic <code>import()</code> and returns a component whose code is <strong>fetched the first time it renders</strong>. While it loads, the nearest <code>&lt;Suspense&gt;</code> boundary shows its fallback. Your bundler turns each dynamic import into a separate file (a <strong>chunk</strong>).</p>
+
+  <pre>import { lazy, Suspense } from "react";
+
+const Chart = lazy(() =&gt; import("./Chart"));          <span class="comment">// Chart must be a default export</span>
+
+function Dashboard() {
+  const [showChart, setShowChart] = useState(false);
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setShowChart(true)}&gt;Show chart&lt;/button&gt;
+      {showChart &amp;&amp; (
+        &lt;Suspense fallback={&lt;p&gt;Loading chart...&lt;/p&gt;}&gt;
+          &lt;Chart /&gt;
+        &lt;/Suspense&gt;
+      )}
+    &lt;/&gt;
+  );
+}</pre>
+
+  <p>For a named export, adapt it: <code>lazy(() =&gt; import("./charts").then((m) =&gt; ({ default: m.BarChart })))</code>. Define <code>lazy()</code> calls at the <strong>top level</strong> of a module, not inside components, or they are recreated each render and reload.</p>
+
+  <h2><span class="num">§2</span>Where to Split</h2>
+
+  <p>Split where the user <strong>will not need the code right away</strong>. The best candidates are large and conditional.</p>
+
+  <ul>
+    <li><strong>Routes</strong> (the biggest win): each page is its own chunk, loaded when the user navigates there.</li>
+    <li><strong>Heavy, rarely used features</strong>: rich text editors, charts, PDF viewers, maps, code highlighters.</li>
+    <li><strong>Modals and drawers</strong> that open on a click.</li>
+    <li><strong>Admin or role-specific areas</strong> that most users never open.</li>
+    <li><strong>Large libraries</strong> used in one place: import them dynamically instead of at the top of the file.</li>
+  </ul>
+
+  <pre><span class="comment">// route-level splitting with React Router</span>
+const router = createBrowserRouter([
+  { path: "/", element: &lt;Home /&gt; },
+  { path: "/reports", lazy: () =&gt; import("./routes/reports") },     <span class="comment">// router-native lazy route</span>
+  { path: "/settings", Component: lazy(() =&gt; import("./routes/Settings")) },
+]);
+
+<span class="comment">// a heavy library loaded only when needed</span>
+async function exportPdf(data) {
+  const { generatePdf } = await import("./pdf");                    <span class="comment">// separate chunk</span>
+  return generatePdf(data);
+}</pre>
+
+  <p>Do not split everything. Tiny components are not worth a network request, and too many chunks create <strong>waterfalls</strong> and loading flashes. Keep the above-the-fold content in the main bundle.</p>
+
+  <h2><span class="num">§3</span>Preloading and Measuring</h2>
+
+  <p>The cost of lazy loading is a delay the first time. You can hide it by <strong>preloading</strong> when the user signals intent: on hover, on focus, or after the main content is idle.</p>
+
+  <pre>const loadSettings = () =&gt; import("./routes/Settings");
+const Settings = lazy(loadSettings);
+
+&lt;Link to="/settings" onMouseEnter={loadSettings} onFocus={loadSettings}&gt;Settings&lt;/Link&gt;
+
+<span class="comment">// preload after the page is idle</span>
+requestIdleCallback(() =&gt; loadSettings());
+
+<span class="comment">// avoid a flash of fallback when switching between already-loaded views</span>
+const [isPending, startTransition] = useTransition();
+startTransition(() =&gt; navigate("/settings"));      <span class="comment">// keeps current UI until the chunk is ready</span></pre>
+
+  <ul>
+    <li><strong>Measure</strong> with a bundle analyzer (<code>rollup-plugin-visualizer</code> or <code>vite-bundle-visualizer</code>) before and after, so you know what actually moved.</li>
+    <li>Check the <strong>Network panel</strong> to confirm chunks load on demand, not at startup.</li>
+    <li>Pair lazy components with an <strong>error boundary</strong>: a chunk can fail to load (offline, new deploy), and the user needs a retry.</li>
+    <li>After a new deploy, an old tab may request chunk files that no longer exist; handle the failure by prompting a reload.</li>
+    <li>Use <strong>skeleton fallbacks</strong> that match the final layout to avoid layout shift.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Ship less on the first visit</span>
+    The fastest code is code the user never downloads. Split by route first, then split heavy features, and measure the result rather than trusting intuition.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Calling <code>lazy()</code> inside a component</td><td>Component remounts and reloads every render</td><td>Define <code>lazy</code> at module top level</td></tr>
+    <tr><td>Lazy loading a tiny component</td><td>A network request that costs more than it saves</td><td>Split only large or rarely used code</td></tr>
+    <tr><td>No error boundary around lazy components</td><td>A failed chunk load blanks the page</td><td>Wrap in an error boundary with a retry</td></tr>
+    <tr><td>Lazy loading the main above-the-fold content</td><td>Slower first paint with a spinner</td><td>Keep critical UI in the main bundle</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Convert each route of an app to a lazily loaded component, and confirm separate chunks in the build output.</li>
+      <li>Open the bundle analyzer, find the largest dependency, and move it behind a dynamic import.</li>
+      <li>Add preloading on link hover and measure how much faster the navigation feels with throttled network.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>lazy</code> plus <code>Suspense</code> loads components on demand; each dynamic import becomes a chunk.</li>
+      <li>Split routes first, then heavy, rarely used features; avoid over-splitting.</li>
+      <li>Preload on intent, handle chunk-load failures, and measure with a bundle analyzer.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Performance &amp; Patterns — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

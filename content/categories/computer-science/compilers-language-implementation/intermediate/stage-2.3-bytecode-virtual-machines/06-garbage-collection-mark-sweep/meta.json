@@ -1,0 +1,5 @@
+{
+  "title": "Garbage Collection: Mark-Sweep",
+  "description": "Heap objects, finding roots, and reclaiming memory nobody can reach.",
+  "order": 6
+}

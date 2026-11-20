@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Why Server State Is Different — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · server state &amp; data fetching</span> → lesson 01</p>
+  <h1>Why Server State Is Different</h1>
+  <p class="lede">Data that lives on a server behaves nothing like state that lives in a component. It is shared, it can change without you knowing, and it is always slightly out of date. Treating it as a cache, not as state, changes how you build.</p>
+
+  <h2><span class="num">§1</span>Client State vs. Server State</h2>
+
+  <p><strong>Client state</strong> is owned by the browser: whether a menu is open, what is typed in a field. You control it completely, and it is always current. <strong>Server state</strong> is <strong>owned by someone else</strong> and only borrowed: your component holds a <strong>snapshot</strong> of data that lives in a database, and the real thing can change at any moment.</p>
+
+  <table>
+    <tr><th></th><th>Client state</th><th>Server state</th></tr>
+    <tr><td>Owner</td><td>The app</td><td>A remote database</td></tr>
+    <tr><td>Always up to date?</td><td>Yes</td><td>No: it is a snapshot that goes stale</td></tr>
+    <tr><td>Access</td><td>Synchronous</td><td>Asynchronous: can be slow or fail</td></tr>
+    <tr><td>Shared with others?</td><td>Rarely</td><td>Often: other users and devices change it</td></tr>
+    <tr><td>Needs</td><td>Local updates</td><td>Caching, refetching, invalidation, retries</td></tr>
+  </table>
+
+  <p>When you put server data in <code>useState</code> and fetch it in <code>useEffect</code>, you take responsibility for all the problems in the right-hand column, and you will rediscover each of them as a bug.</p>
+
+  <h2><span class="num">§2</span>The Problems You Inherit</h2>
+
+  <ul>
+    <li><strong>Caching</strong>: if two components need <code>/api/user</code>, do you fetch twice? If the user returns to a page, do you show the old data instantly, or a spinner again?</li>
+    <li><strong>Staleness</strong>: how old can data be before it is wrong? When should it refresh: on a timer, when the window regains focus, when the network reconnects?</li>
+    <li><strong>Deduplication</strong>: ten components mounting at once should cause one request, not ten.</li>
+    <li><strong>Race conditions</strong>: out-of-order responses and cancelled requests.</li>
+    <li><strong>Background updates</strong>: show the cached data immediately and update it quietly (stale-while-revalidate).</li>
+    <li><strong>Invalidation</strong>: after the user changes something (a mutation), which cached data is now wrong and needs refetching?</li>
+    <li><strong>Retries and errors</strong>: transient failures should retry; permanent ones should show a useful message.</li>
+    <li><strong>Pagination, prefetching, and garbage collection</strong> of data no one is using any more.</li>
+  </ul>
+
+  <pre><span class="comment">// the hand-rolled version handles almost none of the above</span>
+function useUser(id) {
+  const [user, setUser] = useState(null);
+  useEffect(() =&gt; {
+    fetch(`/api/users/${id}`).then((r) =&gt; r.json()).then(setUser);
+  }, [id]);
+  return user;                                  <span class="comment">// no cache, no error state, no dedupe, race condition</span>
+}</pre>
+
+  <h2><span class="num">§3</span>A New Mental Model: A Cache with Keys</h2>
+
+  <p>The shift is to see server data as a <strong>cache</strong> that your UI <strong>subscribes to</strong>. Each piece of data is stored under a <strong>key</strong> (such as <code>["user", 42]</code>). Components ask for a key; a library returns the cached value (if any), fetches or refreshes it when necessary, and tells every subscriber when it changes.</p>
+
+  <pre><span class="comment">// the shape of the idea (a library does the work)</span>
+const { data, isPending, error, isFetching } = useQuery({
+  queryKey: ["user", id],                   <span class="comment">// identifies the data</span>
+  queryFn: () =&gt; getUser(id),               <span class="comment">// how to get it</span>
+  staleTime: 60_000,                        <span class="comment">// treat it as fresh for a minute</span>
+});</pre>
+
+  <ul>
+    <li><strong>Fresh</strong> data is served from cache without a request; <strong>stale</strong> data is served from cache <strong>and</strong> refetched in the background.</li>
+    <li>Your component no longer manages <code>loading</code> flags, effects, or cleanup; it <strong>declares</strong> which data it needs.</li>
+    <li>After a mutation, you <strong>invalidate</strong> the affected keys and the library refetches whatever is on screen.</li>
+    <li>Server state is not a replacement for client state: keep UI state (modals, form drafts) in components or a small client store.</li>
+  </ul>
+
+  <p>In the next lesson you will use TanStack Query, the most widely used library for this. Others (SWR, RTK Query, Apollo for GraphQL, and framework loaders) follow the same model.</p>
+
+  <div class="callout">
+    <span class="label">You are caching, whether you admit it or not</span>
+    Every <code>useState</code> holding fetched data is a hand-written cache with no invalidation strategy. Naming it a cache is the first step to managing it properly.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Copying fetched data into <code>useState</code> and treating it as local state</td><td>It goes stale and diverges from the server</td><td>Read it from a query cache and invalidate on change</td></tr>
+    <tr><td>Refetching on every mount with a spinner each time</td><td>Slow, flickering UI</td><td>Cache and show stale data while refreshing</td></tr>
+    <tr><td>Fetching the same endpoint independently in many components</td><td>Duplicate requests and inconsistent views</td><td>Share one cached query by key</td></tr>
+    <tr><td>Ignoring what happens after a mutation</td><td>The screen shows pre-change data</td><td>Invalidate or update the affected cache entries</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>List every data fetch in an app and, for each, write how fresh it must be and what should refresh it.</li>
+      <li>Open two components that fetch the same endpoint with raw effects and count the requests in the Network panel.</li>
+      <li>Describe in your own words what "stale" means and why showing stale data while refetching can be good UX.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Server state is borrowed, asynchronous, shared, and always potentially stale; client state is not.</li>
+      <li>Hand-rolling it means reimplementing caching, deduplication, invalidation, and retries.</li>
+      <li>Treat it as a keyed cache your UI subscribes to, and let a library manage freshness.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Server State &amp; Data Fetching — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

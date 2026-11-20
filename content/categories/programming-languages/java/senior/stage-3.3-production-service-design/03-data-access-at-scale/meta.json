@@ -1,0 +1,5 @@
+{
+  "title": "Data Access at Scale",
+  "description": "Connection pools, transaction boundaries, caching, and avoiding lock contention.",
+  "order": 3
+}

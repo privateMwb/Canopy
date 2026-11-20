@@ -1,0 +1,5 @@
+{
+  "title": "HashMap, HashSet & TreeMap",
+  "description": "How hashing makes lookups fast, ordering guarantees, and what breaks with a bad hashCode.",
+  "order": 2
+}

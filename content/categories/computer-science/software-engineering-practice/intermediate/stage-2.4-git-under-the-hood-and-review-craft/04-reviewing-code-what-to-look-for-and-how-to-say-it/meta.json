@@ -1,0 +1,5 @@
+{
+  "title": "Reviewing Code: What to Look For and How to Say It",
+  "description": "Design, correctness, tests, then readability, in that order, with comments that teach rather than judge.",
+  "order": 4
+}

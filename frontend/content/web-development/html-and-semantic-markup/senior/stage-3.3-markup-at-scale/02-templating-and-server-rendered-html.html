@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Templating &amp; Server-Rendered HTML — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · markup at scale</span> → lesson 02</p>
+  <h1>Templating &amp; Server-Rendered HTML</h1>
+  <p class="lede">Layouts, partials, and components keep server-rendered HTML DRY, but valid, escaped, accessible output is something you have to design in.</p>
+
+  <h2><span class="num">§1</span>Layouts and Partials</h2>
+
+  <p>A <strong>layout</strong> owns the document skeleton (doctype, head, landmarks) and a <strong>partial</strong> is a reusable fragment. Put the skeleton in one place so every page gets the same <code>lang</code>, viewport, and landmarks.</p>
+  <pre><span class="comment">&lt;!-- layouts/base.html (any templating language) --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="{{ page.lang | default: 'en' }}"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;{{ page.title }} | Canopy&lt;/title&gt;
+  {% block head %}{% endblock %}
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;a class="skip" href="#main"&gt;Skip to main content&lt;/a&gt;
+  {% include "partials/header.html" %}
+  &lt;main id="main"&gt;{% block content %}{% endblock %}&lt;/main&gt;
+  {% include "partials/footer.html" %}
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p>The syntax differs between engines (Nunjucks, Liquid, Jinja, ERB, Blade), but the structure is the same.</p>
+
+  <h2><span class="num">§2</span>Escaping by Default</h2>
+
+  <p>Choose a templating engine that <strong>escapes output by default</strong>, and make the unescaped path hard to reach. Escaping depends on *where* the value lands: HTML text, an attribute, a URL, or a script all need different treatment.</p>
+  <pre>&lt;p&gt;{{ comment.body }}&lt;/p&gt;                       <span class="comment">&lt;!-- HTML-escaped: safe --&gt;</span>
+&lt;a href="{{ url }}"&gt;...&lt;/a&gt;                      <span class="comment">&lt;!-- attribute context; validate URL scheme too --&gt;</span>
+&lt;div&gt;{{ comment.html | safe }}&lt;/div&gt;           <span class="comment">&lt;!-- DANGEROUS unless already sanitized --&gt;</span></pre>
+  <p>A value in an <code>href</code> also needs its <strong>scheme</strong> validated: <code>javascript:</code> URLs run code even when quotes are escaped properly.</p>
+
+  <h2><span class="num">§3</span>Keeping Output Valid and Accessible</h2>
+
+  <ul>
+    <li><strong>Unique IDs</strong> — generate IDs per instance (<code>field-{{ id }}</code>) so labels, <code>for</code>, and <code>aria-*</code> references don't collide when a partial is included many times.</li>
+    <li><strong>Heading levels</strong> — pass the level into reusable partials instead of hard-coding <code>&lt;h2&gt;</code>.</li>
+    <li><strong>Valid nesting</strong> — don't generate a <code>&lt;div&gt;</code> inside a <code>&lt;p&gt;</code> or a <code>&lt;li&gt;</code> outside a list when a conditional skips a wrapper.</li>
+    <li><strong>Validate the output</strong> — run the validator or linter on rendered pages in CI, not on templates.</li>
+  </ul>
+  <p>Streaming and partial rendering, discussed earlier, are friendly to server templates too: render the head and shell first, then the slower fragments.</p>
+
+  <div class="callout">
+    <span class="label">Lint the output, not the template</span>
+    Templates contain logic and placeholders that validators can't parse. Render representative pages and check the final HTML.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Turning off auto-escaping to "fix" display issues</td><td>Opens XSS holes</td><td>Fix the data, or sanitize rich content explicitly</td></tr>
+    <tr><td>Hard-coded IDs inside repeated partials</td><td>Duplicate IDs break labels and ARIA</td><td>Include a unique suffix per instance</td></tr>
+    <tr><td>Hard-coded heading levels in partials</td><td>Broken outline when reused in new contexts</td><td>Pass the heading level as a parameter</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a base layout with a skip link and landmarks, and two pages that extend it.</li>
+      <li>Create a form-field partial that generates a unique <code>id</code> and wires its label and error message together.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>One layout owns the skeleton, <code>lang</code>, and landmarks.</li>
+      <li>Escape by default, and validate URLs by scheme as well.</li>
+      <li>Parameterize IDs and heading levels, and validate rendered output in CI.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Markup at Scale — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Evaluating Expressions",
+  "description": "Walking the AST recursively, runtime values, and arithmetic, comparison, and logic.",
+  "order": 1
+}

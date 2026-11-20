@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 \u2014 Templates & Generic Programming",
+  "description": "Templates, deduction, concepts, variadic templates, and compile-time computation.",
+  "order": 1
+}

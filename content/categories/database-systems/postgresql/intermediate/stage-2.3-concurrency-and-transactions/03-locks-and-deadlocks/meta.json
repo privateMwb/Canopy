@@ -1,0 +1,5 @@
+{
+  "title": "Locks & Deadlocks",
+  "description": "Row and table locks, lock queues, and reading pg_locks when things hang.",
+  "order": 3
+}

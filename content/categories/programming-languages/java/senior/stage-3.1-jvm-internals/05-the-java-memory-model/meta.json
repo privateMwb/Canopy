@@ -1,0 +1,5 @@
+{
+  "title": "The Java Memory Model",
+  "description": "Happens-before, safe publication, and why unsynchronized code is wrong even when it works.",
+  "order": 5
+}

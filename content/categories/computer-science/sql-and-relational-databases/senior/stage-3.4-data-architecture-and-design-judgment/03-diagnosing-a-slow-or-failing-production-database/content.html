@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnosing a Slow or Failing Production Database — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · data architecture &amp; design judgment</span> → lesson 03</p>
+  <h1>Diagnosing a Slow or Failing Production Database</h1>
+  <p class="lede">Diagnosing a struggling production database is a method, not a hunch: establish what changed, find where time is going, and work from the symptoms inward to the cause.</p>
+
+  <h2><span class="num">§1</span>Start with Symptoms and Scope</h2>
+  <p>Before touching anything, answer: <strong>what exactly is wrong, since when, and how widely?</strong></p>
+  <ul>
+    <li>Is it all queries or specific ones? All users or some?</li>
+    <li>Latency, errors, or both? Did it start suddenly (a deploy, a config change, a traffic spike, a plan flip) or gradually (growth, bloat)?</li>
+    <li>What changed? Check deploys, migrations, feature flags, batch jobs, certificate or credential rotations, and cloud events.</li>
+  </ul>
+  <p>A timeline of changes lined up against the metric graphs solves a surprising share of incidents.</p>
+
+  <h2><span class="num">§2</span>A Layered Checklist</h2>
+  <p>Work from the outside in, ruling out one layer at a time.</p>
+  <ol>
+    <li><strong>Is the database reachable and healthy?</strong> Connections accepted? Errors? Failover happened? Disk full? Replicas lagging?</li>
+    <li><strong>Is it saturated?</strong> CPU, memory pressure (swapping), disk I/O wait, network. Saturation means everything is slow.</li>
+    <li><strong>Connections</strong>: are we at the limit, or is the pool exhausted with requests waiting?</li>
+    <li><strong>Locks and waiting</strong>: queries blocked, an <code>idle in transaction</code> session holding locks, a deadlock storm.</li>
+    <li><strong>The queries</strong>: which statements dominate total time? Did a plan change? Is a new query pattern in the mix?</li>
+    <li><strong>Data and storage</strong>: table/index bloat, missing or stale statistics, a huge table that crossed a threshold.</li>
+    <li><strong>The application</strong>: N+1 patterns, retry storms, a changed access pattern, a runaway job.</li>
+  </ol>
+  <pre><span class="comment">-- 1. What is running right now, and for how long?</span>
+SELECT pid, state, wait_event_type, wait_event, now() - query_start AS runtime, left(query, 70)
+FROM pg_stat_activity WHERE state &lt;&gt; 'idle' ORDER BY runtime DESC LIMIT 15;
+
+<span class="comment">-- 2. Who is blocked, and by whom?</span>
+SELECT pid, pg_blocking_pids(pid) AS blocked_by, left(query, 60)
+FROM pg_stat_activity WHERE cardinality(pg_blocking_pids(pid)) &gt; 0;
+
+<span class="comment">-- 3. Which queries cost the most in total?   (pg_stat_statements)</span></pre>
+
+  <h2><span class="num">§3</span>Common Patterns and Their Signatures</h2>
+  <table>
+    <tr><th>Symptom</th><th>Likely cause</th><th>First check</th></tr>
+    <tr><td>Sudden latency jump, no deploy</td><td>Plan flip from stale statistics, or a new heavy query</td><td><code>EXPLAIN</code> the top queries; <code>ANALYZE</code>; compare to earlier plans</td></tr>
+    <tr><td>Many queries "waiting"</td><td>Lock contention or a long transaction</td><td><code>pg_blocking_pids</code>; oldest transaction age</td></tr>
+    <tr><td>"Too many connections"</td><td>Slow queries holding connections, a leak, or a retry storm</td><td>Pool wait time; connections by state and client</td></tr>
+    <tr><td>Slow after restart, fine later</td><td>Cold cache</td><td>Cache hit ratio; warm the cache</td></tr>
+    <tr><td>Gradual degradation over weeks</td><td>Bloat, table growth past memory, missing index</td><td>Table/index sizes; autovacuum health; working set vs. RAM</td></tr>
+    <tr><td>High I/O wait</td><td>Scans reading from disk; checkpoint bursts; spilled sorts</td><td><code>EXPLAIN (ANALYZE, BUFFERS)</code>; temp file usage</td></tr>
+    <tr><td>Replica far behind</td><td>A big write burst, a long-running replica query, or an underpowered replica</td><td>Lag in bytes and time; replay conflicts</td></tr>
+    <tr><td>Disk filling fast</td><td>Runaway WAL (a stuck replication slot), bloat, or a log explosion</td><td>WAL directory size; replication slots; largest relations</td></tr>
+  </table>
+
+  <h2><span class="num">§4</span>Acting Safely and Learning from It</h2>
+  <ul>
+    <li><strong>Stabilize first, diagnose second</strong>: if a runaway query is hurting everyone, cancel it (<code>pg_cancel_backend</code>) and take the time to understand it afterwards. Prefer cancelling the <strong>query</strong> over killing the <strong>connection</strong>.</li>
+    <li><strong>Change one thing at a time</strong>, and note what you changed and when.</li>
+    <li><strong>Capture evidence</strong> (plans, stats, activity snapshots) before the system returns to normal, since transient problems vanish.</li>
+    <li><strong>Communicate</strong>: a clear status update to stakeholders is part of the job.</li>
+    <li><strong>Write a blameless postmortem</strong>: timeline, root cause, why it wasn't caught, and concrete fixes (alerts, tests, guardrails). The goal is that the same failure becomes impossible or loud next time.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The fastest diagnosis is a disciplined one: scope the problem, check each layer from the outside in, and let evidence (waits, plans, and timelines of change) lead you, not the first theory that sounds right.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Restarting the database as the first step</td><td>Clears evidence, empties the cache, and often doesn't fix the cause</td><td>Capture state first; restart only with a reason</td></tr>
+    <tr><td>Changing several things at once</td><td>Can't tell what helped or hurt</td><td>Make one change, observe, then proceed</td></tr>
+    <tr><td>Jumping to indexes for every slowdown</td><td>Wasted effort when the problem is locks, connections, or a plan flip</td><td>Check waits and saturation before tuning queries</td></tr>
+    <tr><td>No postmortem or follow-up</td><td>The same incident returns</td><td>Record root cause and add monitoring or guardrails</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Using a test database, create each of these problems: a long open transaction blocking an update, a missing index causing a slow query, and exhausted connections. For each, write down the exact signs you'd see in the diagnostic queries above.</li>
+      <li>Write a one-page runbook titled "The database is slow" with the first five checks in order, the query for each, and what a bad result looks like.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Scope the problem, then work outside-in: health, saturation, connections, locks, queries, data, application.</li>
+      <li>Learn the signatures of common failures: plan flips, contention, connection exhaustion, bloat, and cold caches.</li>
+      <li>Stabilize first, change one thing at a time, preserve evidence, and learn through blameless postmortems.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Data Architecture &amp; Design Judgment — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

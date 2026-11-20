@@ -1,0 +1,5 @@
+{
+  "title": "Configuration, Logging & Packaging",
+  "description": "Profiles, structured logs, and building a runnable jar or container image.",
+  "order": 5
+}

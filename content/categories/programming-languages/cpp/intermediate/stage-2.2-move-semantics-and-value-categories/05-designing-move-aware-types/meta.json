@@ -1,0 +1,5 @@
+{
+  "title": "Designing Move-Aware Types",
+  "description": "noexcept moves, strong guarantees, and making vector grow without copies.",
+  "order": 5
+}

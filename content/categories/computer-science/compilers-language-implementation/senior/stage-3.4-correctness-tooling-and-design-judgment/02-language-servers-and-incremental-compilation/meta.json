@@ -1,0 +1,5 @@
+{
+  "title": "Language Servers & Incremental Compilation",
+  "description": "Error-tolerant parsing, caching, and recomputing only what changed.",
+  "order": 2
+}

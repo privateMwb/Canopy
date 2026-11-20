@@ -1,0 +1,5 @@
+{
+  "title": "Pods & YAML Manifests",
+  "description": "The smallest unit, reading a manifest, and applying it.",
+  "order": 4
+}

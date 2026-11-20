@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 \u2014 Memory & Pointers",
+  "description": "Pointers, stack and heap, arrays, RAII, and catching undefined behavior with sanitizers.",
+  "order": 2
+}

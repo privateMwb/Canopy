@@ -1,0 +1,5 @@
+{
+  "title": "Entity Framework Core",
+  "description": "Models, migrations, queries, tracking, and recognizing the N+1 problem.",
+  "order": 3
+}

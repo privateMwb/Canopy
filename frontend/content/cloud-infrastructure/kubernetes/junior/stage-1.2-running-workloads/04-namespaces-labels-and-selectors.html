@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Namespaces, Labels &amp; Selectors — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · running workloads</span> → lesson 04</p>
+  <h1>Namespaces, Labels &amp; Selectors</h1>
+  <p class="lede">Namespaces divide a cluster into named areas, and labels and selectors are how every Kubernetes object finds and groups the others.</p>
+
+  <h2><span class="num">§1</span>Namespaces</h2>
+  <p>A <strong>namespace</strong> is a scope for names. Two teams can each have a Deployment called <code>web</code> if they live in different namespaces. Namespaces are also the unit for access rules and resource quotas, which later stages cover.</p>
+  <pre>kubectl get namespaces
+kubectl create namespace staging
+kubectl get pods -n staging
+kubectl config set-context --current --namespace=staging   <span class="comment"># change your default</span></pre>
+  <p>A fresh cluster has <code>default</code>, <code>kube-system</code> (cluster components), <code>kube-public</code>, and <code>kube-node-lease</code>. Put your own apps in dedicated namespaces rather than <code>default</code>.</p>
+  <p>You can also set <code>metadata.namespace</code> in a manifest, or pass <code>-n</code> on the command line. Some objects, such as Nodes and Namespaces themselves, are <strong>cluster-scoped</strong> and belong to no namespace.</p>
+  <div class="callout">
+    <span class="label">What namespaces are not</span>
+    A namespace is an organizing boundary, not a security boundary by default. Pods in different namespaces can still talk to each other unless you add network policies, and nothing limits resource use until you add quotas.
+  </div>
+  <h2><span class="num">§2</span>Labels</h2>
+  <p><strong>Labels</strong> are key-value pairs attached to objects in <code>metadata.labels</code>. They carry no meaning to Kubernetes itself; you invent them to describe your things.</p>
+  <pre>metadata:
+  labels:
+    app: web
+    tier: frontend
+    env: prod
+    version: v2</pre>
+  <p>A widely used convention is the <code>app.kubernetes.io/</code> family (<code>app.kubernetes.io/name</code>, <code>app.kubernetes.io/version</code>), which tools understand.</p>
+  <h2><span class="num">§3</span>Selectors</h2>
+  <p>A <strong>selector</strong> queries labels. Services, Deployments, and kubectl all use them.</p>
+  <pre>kubectl get pods -l app=web
+kubectl get pods -l 'env in (prod,staging)'
+kubectl get pods -l app=web,tier=frontend       <span class="comment"># comma means AND</span>
+kubectl label pod web-abc version=v3 --overwrite</pre>
+  <p>Equality selectors (<code>app=web</code>) and set-based ones (<code>env in (...)</code>, <code>!debug</code>) both work. In manifests, <code>matchLabels</code> is the equality form and <code>matchExpressions</code> the set form.</p>
+  <p>Labels are for selecting; <strong>annotations</strong> (<code>metadata.annotations</code>) are for non-identifying notes such as build info, contact details, or tool configuration, and cannot be used in selectors.</p>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Everything in the <code>default</code> namespace</td><td>Names collide and cleanup is hard</td><td>Use one namespace per app or team</td></tr>
+    <tr><td>Inconsistent label names (<code>App</code>, <code>app</code>, <code>application</code>)</td><td>Selectors silently match nothing</td><td>Agree on a label scheme and follow it</td></tr>
+    <tr><td>Treating namespaces as security</td><td>Cross-namespace traffic and access are still open</td><td>Add RBAC, network policies, and quotas</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create two namespaces, deploy the same app in both, and compare <code>kubectl get pods -A</code>.</li>
+      <li>Use <code>-l</code> to select only pods with <code>tier=frontend</code>, then relabel one pod and rerun the query.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Namespaces scope names, access, and quotas; they do not isolate by themselves.</li>
+      <li>Labels are free-form key-value tags; selectors query them.</li>
+      <li>Consistent labels are what let Services and Deployments find the right pods.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Running Workloads — Lesson 4 of 6</p>
+  </footer>
+</div>
+</body>
+</html>

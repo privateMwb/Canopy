@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — Getting Started with Postgres",
+  "description": "Installing Postgres, the object hierarchy, data types, constraints, and changing data.",
+  "order": 1
+}

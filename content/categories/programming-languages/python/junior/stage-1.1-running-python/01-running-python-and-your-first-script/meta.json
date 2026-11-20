@@ -1,0 +1,5 @@
+{
+  "title": "Running Python & Your First Script",
+  "description": "The interpreter, the REPL, and what actually happens when you run a .py file.",
+  "order": 1
+}

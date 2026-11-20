@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — Getting Started with Redis",
+  "description": "Running Redis, the redis-cli, strings and expiration, key naming, and atomic counters.",
+  "order": 1
+}

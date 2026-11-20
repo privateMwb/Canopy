@@ -1,0 +1,5 @@
+{
+  "title": "CI/CD Pipelines for Kubernetes",
+  "description": "Building, testing, and promoting images and manifests automatically.",
+  "order": 5
+}

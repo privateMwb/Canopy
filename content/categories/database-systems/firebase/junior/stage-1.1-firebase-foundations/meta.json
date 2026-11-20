@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — Firebase Foundations",
+  "description": "What Firebase is, projects and the CLI, connecting a web app, and the Firestore data model.",
+  "order": 1
+}

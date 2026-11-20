@@ -1,0 +1,5 @@
+{
+  "title": "Lock-Free Structures & Their Pitfalls",
+  "description": "CAS loops, the ABA problem, and when lock-free isn't worth it.",
+  "order": 2
+}

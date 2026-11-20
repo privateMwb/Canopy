@@ -1,0 +1,7 @@
+{
+  "title": "Backend & APIs",
+  "description": "HTTP servers, REST and GraphQL, auth, and databases.",
+  "order": 6,
+  "compileRoot": true,
+  "icon": "web_backend"
+}

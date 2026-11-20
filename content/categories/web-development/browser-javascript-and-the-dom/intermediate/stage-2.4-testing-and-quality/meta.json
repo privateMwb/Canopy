@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Testing & Quality",
+  "description": "Unit tests, DOM tests, end-to-end tests, linting and types, and error monitoring.",
+  "order": 4
+}

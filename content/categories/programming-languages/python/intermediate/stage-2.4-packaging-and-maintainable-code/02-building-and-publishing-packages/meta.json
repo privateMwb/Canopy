@@ -1,0 +1,5 @@
+{
+  "title": "Building & Publishing Packages",
+  "description": "Wheels, sdists, PyPI, and modern tooling like uv.",
+  "order": 2
+}

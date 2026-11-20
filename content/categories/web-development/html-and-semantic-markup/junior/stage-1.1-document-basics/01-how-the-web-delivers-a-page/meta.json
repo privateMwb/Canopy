@@ -1,0 +1,5 @@
+{
+  "title": "How the Web Delivers a Page",
+  "description": "The HTTP request, the HTML response, and what the browser does with it.",
+  "order": 1
+}

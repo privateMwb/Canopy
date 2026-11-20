@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>kubectl &amp; a Local Cluster — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · core concepts</span> → lesson 03</p>
+  <h1>kubectl &amp; a Local Cluster</h1>
+  <p class="lede">A local cluster on your laptop plus a handful of kubectl commands is enough to practice almost everything in the Junior level.</p>
+
+  <h2><span class="num">§1</span>Getting a Local Cluster</h2>
+  <p>You do not need cloud infrastructure to learn. Several tools run a real, small cluster on your machine:</p>
+  <table>
+    <tr><th>Tool</th><th>How it works</th><th>Good for</th></tr>
+    <tr><td>minikube</td><td>A VM or container holding a single-node cluster</td><td>Beginners; many built-in add-ons</td></tr>
+    <tr><td>kind</td><td>"Kubernetes in Docker": nodes are containers</td><td>Fast, throwaway clusters; CI; multi-node tests</td></tr>
+    <tr><td>k3d / k3s</td><td>A lightweight distribution, optionally in Docker</td><td>Low memory use</td></tr>
+    <tr><td>Docker Desktop</td><td>A built-in single-node cluster toggle</td><td>Zero extra install on Mac and Windows</td></tr>
+  </table>
+  <p>Any of them is fine. The examples here use <code>kind</code>:</p>
+  <pre>kind create cluster --name learn
+kubectl cluster-info --context kind-learn
+kubectl get nodes</pre>
+  <h2><span class="num">§2</span>kubectl: The Everyday Commands</h2>
+  <p><code>kubectl</code> is the command line client for the API server. It reads connection details and credentials from a <strong>kubeconfig</strong> file, normally <code>~/.kube/config</code>, which can hold several clusters and a <strong>current context</strong> (which cluster and user to use right now).</p>
+  <pre>kubectl config get-contexts          <span class="comment"># which clusters do I know about?</span>
+kubectl config current-context       <span class="comment"># which one am I pointed at?</span>
+kubectl get pods                     <span class="comment"># list pods in the current namespace</span>
+kubectl get pods -A                  <span class="comment"># all namespaces</span>
+kubectl describe pod &lt;name&gt;          <span class="comment"># details plus recent events</span>
+kubectl logs &lt;pod&gt;                   <span class="comment"># container output</span>
+kubectl exec -it &lt;pod&gt; -- sh         <span class="comment"># a shell inside the container</span>
+kubectl delete pod &lt;name&gt;</pre>
+  <p>The pattern is always <code>kubectl &lt;verb&gt; &lt;resource&gt; [name] [flags]</code>. Two verbs earn their keep: <strong>get</strong> for a quick list and <strong>describe</strong> for the story behind one object, including the Events section at the bottom where scheduling and startup problems show up.</p>
+  <h2><span class="num">§3</span>Try a Quick Pod</h2>
+  <pre>kubectl run hello --image=nginx
+kubectl get pods -w                  <span class="comment"># -w watches changes; Ctrl+C to stop</span>
+kubectl delete pod hello</pre>
+  <p><code>kubectl run</code> is handy for experiments, but later lessons replace it with manifest files, which is how real work is done.</p>
+  <div class="callout">
+    <span class="label">Check your context</span>
+    The most expensive kubectl mistake is running a command against the wrong cluster. Run <code>kubectl config current-context</code> before anything destructive, and consider a prompt that shows it.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting the namespace</td><td><code>get pods</code> returns nothing and you assume nothing runs</td><td>Use <code>-n &lt;namespace&gt;</code> or <code>-A</code> to look across all of them</td></tr>
+    <tr><td>Running commands against the wrong context</td><td>You delete or change something in a shared cluster</td><td>Check <code>current-context</code> first; name local clusters clearly</td></tr>
+    <tr><td>Using <code>kubectl run</code> for everything</td><td>Nothing is recorded, so it cannot be reproduced</td><td>Move to YAML manifests as soon as the experiment works</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a local cluster with your chosen tool and list its nodes.</li>
+      <li>Run an nginx pod, find its IP with <code>kubectl describe</code>, then delete it.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>kind, minikube, k3d, and Docker Desktop all give you a real local cluster.</li>
+      <li>kubectl follows <code>verb resource name</code>, and <code>get</code> plus <code>describe</code> answer most questions.</li>
+      <li>Always know which context and namespace a command will hit.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Core Concepts — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

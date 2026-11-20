@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Evolutionary Architecture: Fitness Functions &amp; Decision Records — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · architecture &amp; design at scale</span> → lesson 05</p>
+  <h1>Evolutionary Architecture: Fitness Functions &amp; Decision Records</h1>
+  <p class="lede">Architecture drifts unless something holds it in place. Fitness functions defend its intent automatically, and decision records explain why it looks the way it does.</p>
+
+  <h2><span class="num">§1</span>Why Architecture Erodes</h2>
+  <p>A clean design on a diagram degrades one shortcut at a time. Each pull request that reaches across a boundary seems reasonable alone. Reviews catch some of it, but reviewers forget the rules, and new people never learned them. Without active defense, the architecture on the wiki and the one in the code diverge.</p>
+  <p><strong>Evolutionary architecture</strong> accepts that systems change and designs so that they can, with automatic checks that guard what matters.</p>
+  <h2><span class="num">§2</span>Fitness Functions: Rules You Can Run</h2>
+  <p>A <strong>fitness function</strong> is an automated check that an architectural property still holds. It runs in CI like any test and fails the build when someone breaks a rule.</p>
+  <pre><span class="comment"># layering rule as a test: domain must not import infrastructure</span>
+def test_domain_does_not_depend_on_infrastructure():
+    for module in modules_under("shop/domain"):
+        imports = imported_modules(module)
+        assert not any(i.startswith(("shop.infrastructure", "flask", "sqlalchemy"))
+                       for i in imports), f"{module} breaks the dependency rule"</pre>
+  <ul>
+    <li><strong>Structure:</strong> no cycles; layer and package dependency rules (tools: ArchUnit, import-linter, dependency-cruiser)</li>
+    <li><strong>Performance:</strong> the checkout endpoint's p95 stays under 300 ms in a load test</li>
+    <li><strong>Size and complexity:</strong> no module above an agreed size or complexity score</li>
+    <li><strong>Security:</strong> no use of banned functions; all endpoints require authentication</li>
+  </ul>
+  <p>Start with the one or two rules that would hurt most to lose.</p>
+  <h2><span class="num">§3</span>Architecture Decision Records</h2>
+  <p>Six months on, nobody remembers why the team picked a message queue over direct calls, so someone reverses it, or defends it blindly. An <strong>ADR</strong> is a short, dated note stored in the repo that records a significant decision and its reasoning.</p>
+  <pre><span class="comment"># ADR 0007: Use an outbox table for publishing events</span>
+Status:   Accepted (2026-03-02)
+Context:  Orders must publish an event, and the DB write and the publish
+          must not diverge. Dual writes lost events twice in Q4.
+Decision: Write events to an outbox table in the same transaction;
+          a relay publishes them.
+Consequences:
+  + No lost events; simple to reason about.
+  - Extra table and relay process; events are slightly delayed.
+Alternatives considered: two-phase commit (too heavy), CDC (later).</pre>
+  <p>ADRs record <strong>context and trade-offs</strong>, not just the outcome. When circumstances change, write a new ADR that supersedes the old one instead of editing history.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Write the rules down as tests so they hold themselves, and write the reasons down as ADRs so people can tell when it is time to change them.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Architecture only on a diagram</td><td>The code drifts from the design with nobody noticing</td><td>Encode key rules as automated fitness functions in CI</td></tr>
+    <tr><td>ADRs that state only the decision</td><td>Later readers can't judge whether it still applies</td><td>Capture context, alternatives, and consequences</td></tr>
+    <tr><td>Too many rules, too early</td><td>Noisy build and constant exceptions</td><td>Guard only what is costly to lose and review them periodically</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write one fitness function that enforces a layering rule in your project.</li>
+      <li>Write an ADR for the last significant technical decision your team made.</li>
+      <li>List the three architectural rules whose loss would hurt most.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Fitness functions are automated architectural tests.</li>
+      <li>ADRs preserve context and trade-offs for future decisions.</li>
+      <li>Guard what matters most, and let rules and records evolve.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Architecture &amp; Design at Scale — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

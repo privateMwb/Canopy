@@ -1,0 +1,5 @@
+{
+  "title": "Shadow DOM & Encapsulation",
+  "description": "Scoped markup and styles, slots, and parts.",
+  "order": 2
+}

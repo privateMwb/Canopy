@@ -1,0 +1,5 @@
+{
+  "title": "Kubernetes & Helm Providers",
+  "description": "Managing cluster resources from Terraform, and where it gets awkward.",
+  "order": 3
+}

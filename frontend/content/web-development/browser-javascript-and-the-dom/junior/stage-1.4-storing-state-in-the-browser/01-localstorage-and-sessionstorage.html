@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>localStorage &amp; sessionStorage — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · storing state in the browser</span> → lesson 01</p>
+  <h1>localStorage &amp; sessionStorage</h1>
+  <p class="lede">Web Storage gives a page a simple place to keep small pieces of data between visits. It is easy to use, and it has limits worth understanding before you rely on it.</p>
+
+  <h2><span class="num">§1</span>The Storage API</h2>
+
+  <p><code>localStorage</code> keeps data <strong>until it is cleared</strong>, across tabs and browser restarts, for one origin. <code>sessionStorage</code> is the same API but its data lives only for that tab and is discarded when the tab closes. Both store <strong>strings</strong> as key-value pairs.</p>
+
+  <pre>localStorage.setItem("theme", "dark");
+localStorage.getItem("theme");        <span class="comment">// "dark"</span>
+localStorage.getItem("missing");      <span class="comment">// null</span>
+localStorage.removeItem("theme");
+localStorage.clear();                 <span class="comment">// removes everything for this origin</span>
+
+localStorage.length;
+localStorage.key(0);                  <span class="comment">// name of the first key</span></pre>
+
+  <p>Because values are always strings, <code>localStorage.setItem("count", 5)</code> stores <code>"5"</code>, and reading it back gives you a string. That is a source of bugs such as <code>"5" + 1 === "51"</code>.</p>
+
+  <h2><span class="num">§2</span>Storing Objects Safely</h2>
+
+  <p>To store anything other than a string, serialize it with JSON, and wrap parsing in <code>try/catch</code> because stored data can be missing, edited by the user, or written by an older version of your app.</p>
+
+  <pre>function save(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    console.warn("could not save", err);   <span class="comment">// quota exceeded or storage blocked</span>
+  }
+}
+
+function load(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw === null ? fallback : JSON.parse(raw);
+  } catch {
+    return fallback;                       <span class="comment">// corrupted or blocked</span>
+  }
+}
+
+save("settings", { theme: "dark", fontSize: 16 });
+const settings = load("settings", { theme: "light", fontSize: 14 });</pre>
+
+  <p>The <code>storage</code> event fires in <strong>other</strong> tabs of the same origin when storage changes, which is handy for keeping several tabs in sync, for example logging out everywhere.</p>
+
+  <pre>window.addEventListener("storage", (e) =&gt; {
+  if (e.key === "theme") applyTheme(e.newValue);
+});</pre>
+
+  <h2><span class="num">§3</span>Limits and What Not to Store</h2>
+
+  <ul>
+    <li><strong>Size:</strong> roughly 5 MB per origin, and exceeding it throws an error.</li>
+    <li><strong>Synchronous:</strong> reads and writes block the main thread, so avoid large values or many calls in hot paths.</li>
+    <li><strong>Strings only:</strong> no binary, no structured data without serialization.</li>
+    <li><strong>Not secure:</strong> any script on your page, including third-party scripts and XSS payloads, can read it, and the user can edit it. <strong>Never store passwords, session tokens, or secrets.</strong></li>
+    <li><strong>May be unavailable:</strong> private modes, blocked storage settings, and quota errors can all make it fail.</li>
+  </ul>
+
+  <p>Use it for preferences, drafts, and non-sensitive caches. For larger or structured data, IndexedDB (covered later) is the right tool, and for anything that must be trusted, keep it on the server.</p>
+
+  <div class="callout">
+    <span class="label">Treat storage as untrusted input</span>
+    Data you read from <code>localStorage</code> came from outside your current code: an old version, a user edit, or an attacker. Validate and fall back to defaults rather than assuming its shape.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Storing an object directly</td><td>Saved as <code>"[object Object]"</code></td><td>Use <code>JSON.stringify</code> and <code>JSON.parse</code></td></tr>
+    <tr><td>Calling <code>JSON.parse</code> without <code>try/catch</code></td><td>Corrupt data crashes startup</td><td>Wrap in <code>try/catch</code> and use a fallback</td></tr>
+    <tr><td>Storing auth tokens or secrets</td><td>Any script (including XSS) can steal them</td><td>Use <code>HttpOnly</code> cookies or keep secrets server-side</td></tr>
+    <tr><td>Treating numbers as numbers after reading</td><td><code>"5" + 1</code> becomes <code>"51"</code></td><td>Convert with <code>Number()</code> or store JSON</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Make a dark-mode toggle that remembers its setting across reloads using <code>localStorage</code>.</li>
+      <li>Write <code>load/save</code> helpers with JSON and fallbacks, then deliberately corrupt the stored value in DevTools and confirm the app still starts.</li>
+      <li>Open the same page in two tabs and use the <code>storage</code> event to update one when the other changes a value.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>localStorage</code> persists across sessions; <code>sessionStorage</code> lasts for one tab. Both hold only strings.</li>
+      <li>Serialize with JSON, guard parsing with <code>try/catch</code>, and handle quota errors.</li>
+      <li>Never store secrets in Web Storage; it is readable by every script on the page.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Storing State in the Browser — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

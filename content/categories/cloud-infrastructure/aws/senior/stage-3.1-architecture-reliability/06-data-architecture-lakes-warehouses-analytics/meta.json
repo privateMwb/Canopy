@@ -1,0 +1,5 @@
+{
+  "title": "Data Architecture: Lakes, Warehouses & Analytics",
+  "description": "S3, Glue, Athena, and Redshift, and when each fits.",
+  "order": 6
+}

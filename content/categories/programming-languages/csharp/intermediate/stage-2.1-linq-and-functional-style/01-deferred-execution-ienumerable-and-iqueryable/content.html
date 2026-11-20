@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deferred Execution, IEnumerable &amp; IQueryable — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · linq &amp; functional style</span> → lesson 01</p>
+  <h1>Deferred Execution, IEnumerable &amp; IQueryable</h1>
+  <p class="lede">A LINQ query is a description of work, not the work itself. Knowing exactly when it runs explains most surprising LINQ behavior, especially against a database.</p>
+
+  <h2><span class="num">§1</span>Queries Run When You Enumerate Them</h2>
+
+  <pre>var numbers = new List&lt;int&gt; { 1, 2, 3 };
+var query = numbers.Where(n =&gt; n &gt; 1);   <span class="comment">// nothing has run yet</span>
+
+numbers.Add(10);                          <span class="comment">// change the source</span>
+
+foreach (var n in query)                  <span class="comment">// runs now</span>
+    Console.Write(n + " ");               <span class="comment">// 2 3 10</span></pre>
+  <p><code>Where</code>, <code>Select</code>, <code>OrderBy</code>, and similar operators are <strong>deferred</strong>: they build a pipeline and return immediately. The work happens when something enumerates the result, through <code>foreach</code>, <code>ToList()</code>, <code>Count()</code>, <code>First()</code>, and so on. Operators that return a single value or a collection (<code>ToList</code>, <code>Sum</code>, <code>ToDictionary</code>) are <strong>immediate</strong>.</p>
+
+  <h2><span class="num">§2</span>Consequences</h2>
+
+  <pre>var query = orders.Where(o =&gt; ExpensiveCheck(o));
+
+int a = query.Count();      <span class="comment">// runs the whole pipeline</span>
+var list = query.ToList();  <span class="comment">// runs it AGAIN: ExpensiveCheck called twice per item</span>
+
+var snapshot = orders.Where(o =&gt; ExpensiveCheck(o)).ToList(); <span class="comment">// run once, reuse</span></pre>
+  <ul>
+    <li><strong>Repeated enumeration repeats the work</strong> (and any side effects). Materialize with <code>ToList()</code> when you'll use the result more than once.</li>
+    <li><strong>Changes to the source are visible</strong> to a query not yet run, as the first example shows.</li>
+    <li><strong>Exceptions surface late</strong>: an invalid element throws when you enumerate, not where you wrote the query.</li>
+    <li><strong>Streaming</strong>: <code>Where</code> and <code>Select</code> pass items through one at a time, so <code>First()</code> can stop early. <code>OrderBy</code> and <code>GroupBy</code> must read everything first.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>IEnumerable vs. IQueryable</h2>
+
+  <p><code>IEnumerable&lt;T&gt;</code> runs in your process, with lambdas compiled to delegates. <code>IQueryable&lt;T&gt;</code>, which Entity Framework returns, takes <strong>expression trees</strong> instead, so a provider can translate the query into SQL and run it in the database.</p>
+  <pre>IQueryable&lt;Order&gt; q = db.Orders.Where(o =&gt; o.Total &gt; 100);   <span class="comment">// becomes SQL WHERE</span>
+var page = q.OrderBy(o =&gt; o.Id).Take(20).ToList();              <span class="comment">// SQL runs here</span>
+
+<span class="comment">// Breaks translation: AsEnumerable() pulls every row into memory first</span>
+var bad = db.Orders.AsEnumerable().Where(o =&gt; o.Total &gt; 100).ToList();</pre>
+  <p>Keep the query as <code>IQueryable</code> for as long as you can so filtering, sorting, and paging happen in the database, and only call <code>ToList()</code> at the end. Returning <code>IQueryable</code> from a method leaks the database context to callers, so return a materialized list at the boundary.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A query variable holds a <em>recipe</em>, not results. Whenever behavior surprises you, ask: "when does this actually enumerate, and how many times?"
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Enumerating the same query repeatedly</td><td>Work and side effects repeat, and with a database, repeated queries</td><td>Call <code>ToList()</code> once and reuse the list</td></tr>
+    <tr><td><code>AsEnumerable()</code> or <code>ToList()</code> before filtering an EF query</td><td>Entire tables load into memory</td><td>Filter and page on the <code>IQueryable</code> first, materialize last</td></tr>
+    <tr><td>Using a lazy query after its data source is disposed</td><td><code>ObjectDisposedException</code> at enumeration time</td><td>Materialize inside the scope that owns the source</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a query with a <code>Select</code> that prints in its lambda, enumerate it twice, and count how many times the print runs. Then fix it with <code>ToList()</code>.</li>
+      <li>Using EF Core's <code>ToQueryString()</code> or logging, compare the SQL for a filter placed before and after <code>AsEnumerable()</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Deferred operators describe work; enumerating (or a terminal operator) runs it, every time.</li>
+      <li>Materialize with <code>ToList()</code> when you reuse results or need a snapshot.</li>
+      <li><code>IQueryable</code> is translated to SQL, so keep it that way until the final step.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · LINQ &amp; Functional Style — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

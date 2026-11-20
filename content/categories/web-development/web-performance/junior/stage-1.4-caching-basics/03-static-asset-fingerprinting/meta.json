@@ -1,0 +1,5 @@
+{
+  "title": "Static Asset Fingerprinting",
+  "description": "Long cache lifetimes with safe updates.",
+  "order": 3
+}

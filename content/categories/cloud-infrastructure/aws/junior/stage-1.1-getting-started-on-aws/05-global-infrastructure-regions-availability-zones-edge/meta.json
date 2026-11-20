@@ -1,0 +1,5 @@
+{
+  "title": "Global Infrastructure: Regions, Availability Zones & Edge",
+  "description": "How AWS is physically organized and why it matters for design.",
+  "order": 5
+}

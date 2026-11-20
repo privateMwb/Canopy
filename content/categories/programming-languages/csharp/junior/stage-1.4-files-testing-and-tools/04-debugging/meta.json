@@ -1,0 +1,5 @@
+{
+  "title": "Debugging",
+  "description": "Breakpoints, watches, conditional breakpoints, and reading exceptions in your IDE.",
+  "order": 4
+}

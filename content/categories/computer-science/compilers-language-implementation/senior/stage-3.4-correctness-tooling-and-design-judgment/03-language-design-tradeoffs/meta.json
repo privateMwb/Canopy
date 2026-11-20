@@ -1,0 +1,5 @@
+{
+  "title": "Language Design Tradeoffs",
+  "description": "Weighing a feature's cost to implement, to teach, and to the rest of the language.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "State Management Patterns",
+  "description": "A single source of truth, events, and one-way data flow.",
+  "order": 2
+}

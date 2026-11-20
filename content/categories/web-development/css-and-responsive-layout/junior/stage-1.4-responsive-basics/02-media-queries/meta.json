@@ -1,0 +1,5 @@
+{
+  "title": "Media Queries",
+  "description": "Breakpoints, min-width vs. max-width, and content-driven breakpoints.",
+  "order": 2
+}

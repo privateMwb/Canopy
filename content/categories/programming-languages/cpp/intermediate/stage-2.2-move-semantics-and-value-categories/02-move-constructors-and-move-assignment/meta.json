@@ -1,0 +1,5 @@
+{
+  "title": "Move Constructors & Move Assignment",
+  "description": "Transferring resources instead of copying them, and leaving the source valid.",
+  "order": 2
+}

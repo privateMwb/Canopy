@@ -1,0 +1,5 @@
+{
+  "title": "equals, hashCode, toString & Records",
+  "description": "The object contract, and records for immutable data carriers.",
+  "order": 5
+}

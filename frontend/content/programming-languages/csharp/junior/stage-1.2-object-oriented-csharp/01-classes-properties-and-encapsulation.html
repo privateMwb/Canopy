@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Classes, Properties &amp; Encapsulation — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · object-oriented c#</span> → lesson 01</p>
+  <h1>Classes, Properties &amp; Encapsulation</h1>
+  <p class="lede">A class bundles data with the behavior that protects it, and properties let you control exactly how that data is read and changed.</p>
+
+  <h2><span class="num">§1</span>A Class with Fields and a Constructor</h2>
+
+  <pre>public class BankAccount
+{
+    private decimal _balance;          <span class="comment">// field: private state</span>
+    public string Owner { get; }       <span class="comment">// property: read-only after construction</span>
+
+    public BankAccount(string owner, decimal opening = 0m)
+    {
+        Owner = owner;
+        _balance = opening;
+    }
+
+    public decimal Balance =&gt; _balance; <span class="comment">// read-only computed property</span>
+}</pre>
+  <p>Fields hold state and should almost always be <code>private</code>. The convention is a leading underscore for private fields. A <strong>constructor</strong> runs when you call <code>new</code> and must leave the object in a valid state.</p>
+
+  <h2><span class="num">§2</span>Properties</h2>
+
+  <p>A <strong>property</strong> looks like a field to callers but is really a pair of methods, so you can add validation or computation later without breaking any calling code.</p>
+  <pre>public class Product
+{
+    private decimal _price;
+    public decimal Price
+    {
+        get =&gt; _price;
+        set
+        {
+            if (value &lt; 0) throw new ArgumentOutOfRangeException(nameof(value));
+            _price = value;
+        }
+    }
+    public string Name { get; init; } = "";   <span class="comment">// set only during initialization</span>
+    public int Stock { get; private set; }     <span class="comment">// only this class can change it</span>
+}
+
+var p = new Product { Name = "Pen", Price = 1.5m };
+<span class="comment">// p.Name = "Ink";   // error: init-only</span></pre>
+  <p><strong>Auto-properties</strong> (<code>{ get; set; }</code>) generate the backing field for you. <code>init</code> allows assignment only in an object initializer or constructor, which makes it the right default for data that shouldn't change afterwards.</p>
+
+  <h2><span class="num">§3</span>Encapsulation in Practice</h2>
+
+  <p>Encapsulation means other code can't put your object into an invalid state. Expose behavior through methods that enforce rules, and keep the representation private.</p>
+  <pre>public void Withdraw(decimal amount)
+{
+    if (amount &lt;= 0) throw new ArgumentOutOfRangeException(nameof(amount));
+    if (amount &gt; _balance) throw new InvalidOperationException("Insufficient funds");
+    _balance -= amount;
+}</pre>
+  <table>
+    <tr><th>Modifier</th><th>Visible to</th></tr>
+    <tr><td><code>public</code></td><td>Any code</td></tr>
+    <tr><td><code>internal</code></td><td>The same assembly (project)</td></tr>
+    <tr><td><code>protected</code></td><td>This class and its subclasses</td></tr>
+    <tr><td><code>private</code></td><td>This class only (the default for members)</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Make members as private as they can be and data as immutable as it can be. A public setter is a promise that <em>any</em> value, set at <em>any</em> time, is valid, so offer it only when that's true.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Public fields instead of properties</td><td>You can't add validation later without breaking callers</td><td>Use properties, and <code>private</code> fields behind them</td></tr>
+    <tr><td><code>{ get; set; }</code> on everything</td><td>Objects can be changed into invalid states from anywhere</td><td>Prefer <code>init</code> or <code>private set</code> and expose methods for changes</td></tr>
+    <tr><td>A constructor that leaves required state unset</td><td>Half-initialized objects and null bugs</td><td>Take required values as parameters, or use <code>required</code> members</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a <code>Temperature</code> class with a <code>Celsius</code> property that rejects values below -273.15, plus a read-only <code>Fahrenheit</code> property.</li>
+      <li>Add a <code>Deposit</code> method to <code>BankAccount</code> and write down every invalid call you reject.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Fields are private state; properties are the controlled public surface.</li>
+      <li>Use <code>init</code> and <code>private set</code> to limit who can change data and when.</li>
+      <li>Encapsulation keeps invalid states unrepresentable, and methods are where rules are enforced.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Object-Oriented C# — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

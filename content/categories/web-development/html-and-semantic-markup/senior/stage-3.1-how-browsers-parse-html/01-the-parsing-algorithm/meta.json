@@ -1,0 +1,5 @@
+{
+  "title": "The Parsing Algorithm",
+  "description": "Tokenization, tree construction, and why invalid HTML still renders.",
+  "order": 1
+}

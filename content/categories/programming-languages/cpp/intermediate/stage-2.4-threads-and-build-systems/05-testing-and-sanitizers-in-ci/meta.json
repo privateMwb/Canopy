@@ -1,0 +1,5 @@
+{
+  "title": "Testing & Sanitizers in CI",
+  "description": "GoogleTest or Catch2, plus running ASan, UBSan, and TSan automatically.",
+  "order": 5
+}

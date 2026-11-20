@@ -1,0 +1,1 @@
+{"title": "Secrets & Credentials in Pipelines", "description": "Encrypted secrets, scoping, and why a pull request from a fork must not see them.", "order": 4}

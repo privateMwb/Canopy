@@ -1,0 +1,5 @@
+{
+  "title": "Type Hints Fundamentals",
+  "description": "Annotating functions, variables, and collections, and what hints do and don't do at runtime.",
+  "order": 1
+}

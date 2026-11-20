@@ -1,0 +1,5 @@
+{
+  "title": "Threads & the GIL",
+  "description": "What the Global Interpreter Lock allows, what it blocks, and where threads still help.",
+  "order": 1
+}

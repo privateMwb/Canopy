@@ -1,0 +1,5 @@
+{
+  "title": "Scanning: Characters to Tokens",
+  "description": "Token types, lexemes, and a hand-written scanner that walks the source one character at a time.",
+  "order": 1
+}

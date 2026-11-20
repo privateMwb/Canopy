@@ -1,0 +1,7 @@
+{
+  "title": "MongoDB",
+  "description": "Documents, aggregation, and sharding, from first query to scaled deployment.",
+  "order": 2,
+  "compileRoot": true,
+  "icon": "lang_mongodb"
+}

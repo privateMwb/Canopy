@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mmap &amp; Shared Memory — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · allocators & mapped memory</span> → lesson 03</p>
+  <h1>mmap &amp; Shared Memory</h1>
+  <p class="lede"><code>mmap</code> maps a file or a fresh region directly into your address space, and with the right flags, two processes can share the same memory.</p>
+
+  <h2><span class="num">§1</span>Mapping a File</h2>
+  <p><code>mmap</code> asks the kernel to map a file's contents into your address space. You then read and write the file as if it were an array, with no <code>read</code> or <code>write</code> calls. Pages are loaded on demand through the page-fault mechanism, and the kernel handles caching.</p>
+  <pre>#include &lt;sys/mman.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/stat.h&gt;
+
+int fd = open("data.bin", O_RDONLY);
+struct stat st;  fstat(fd, &amp;st);
+
+char *p = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+if (p == MAP_FAILED) { perror("mmap"); return 1; }
+
+char first = p[0];            <span class="comment">// triggers a page fault, loads that page</span>
+munmap(p, st.st_size);
+close(fd);                    <span class="comment">// the mapping stays valid after close</span></pre>
+  <p>For large files, this avoids copying data into a user buffer, and random access is natural. For small sequential reads, plain <code>read</code> is often as fast.</p>
+
+  <h2><span class="num">§2</span>Private vs. Shared Mappings</h2>
+  <table>
+    <tr><th>Flag</th><th>Writes</th><th>Visible to other processes?</th></tr>
+    <tr><td><code>MAP_PRIVATE</code></td><td>Copy-on-write; never go back to the file</td><td>No</td></tr>
+    <tr><td><code>MAP_SHARED</code></td><td>Written through to the file (and shared memory)</td><td>Yes</td></tr>
+    <tr><td><code>MAP_ANONYMOUS</code></td><td>Backed by zeroed memory, not a file</td><td>Only if shared via <code>fork</code></td></tr>
+  </table>
+  <p><code>malloc</code> for large blocks uses an anonymous private mapping, and shared libraries are mapped from files. Use <code>msync</code> to force changes in a shared file mapping to disk.</p>
+
+  <h2><span class="num">§3</span>Shared Memory Between Processes</h2>
+  <p>To share memory between unrelated processes, create a named shared-memory object with <code>shm_open</code>, size it, and map it with <code>MAP_SHARED</code>. Each process maps the same object and sees the same bytes.</p>
+  <pre>int fd = shm_open("/demo", O_CREAT | O_RDWR, 0600);
+ftruncate(fd, 4096);                      <span class="comment">// set the size</span>
+int *shared = mmap(NULL, 4096, PROT_READ | PROT_WRITE,
+                   MAP_SHARED, fd, 0);
+shared[0] = 42;                           <span class="comment">// another process mapping /demo sees 42</span>
+<span class="comment">// Cleanup: munmap(...); shm_unlink("/demo");</span></pre>
+  <p>Shared memory is the fastest IPC, since no copying occurs, but the kernel provides no synchronization. Processes need their own, such as semaphores or a mutex created with <code>PTHREAD_PROCESS_SHARED</code> inside the shared region.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    If the underlying file shrinks while it's mapped, touching pages past the new end raises <code>SIGBUS</code>. Mapped I/O errors, such as a failing disk, also appear as signals rather than error codes.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Sharing data in shared memory without synchronization</td><td>Races between processes corrupt the data</td><td>Use process-shared mutexes or semaphores</td></tr>
+    <tr><td>Putting pointers inside shared memory</td><td>Each process may map it at a different address</td><td>Store offsets from the base instead of raw pointers</td></tr>
+    <tr><td>Forgetting <code>shm_unlink</code></td><td>Named objects persist until reboot or removal</td><td>Unlink the name when no longer needed</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write two programs: one writes a counter into <code>shm_open</code> memory and another reads it. Add a semaphore so they don't race.</li>
+      <li>Compare the speed of reading a 1 GiB file with <code>read</code> into a buffer versus <code>mmap</code>, sequentially and randomly.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>mmap</code> maps files or anonymous memory into your address space, loaded lazily by page faults.</li>
+      <li><code>MAP_SHARED</code> makes writes visible to others; <code>MAP_PRIVATE</code> makes them copy-on-write.</li>
+      <li>Shared memory is fast but needs explicit synchronization and offset-based references.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Allocators & Mapped Memory — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

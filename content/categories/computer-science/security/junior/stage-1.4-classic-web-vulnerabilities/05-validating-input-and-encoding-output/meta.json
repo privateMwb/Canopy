@@ -1,0 +1,1 @@
+{"title": "Validating Input & Encoding Output", "description": "Allow-lists, context-aware output encoding, and why escaping at the right place beats filtering.", "order": 5}

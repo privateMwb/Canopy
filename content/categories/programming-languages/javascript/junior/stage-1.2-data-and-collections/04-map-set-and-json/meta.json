@@ -1,0 +1,5 @@
+{
+  "title": "Map, Set & JSON",
+  "description": "When a Map beats an object, what a Set gives you, and round-tripping data through JSON.",
+  "order": 4
+}

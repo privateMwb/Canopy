@@ -1,0 +1,6 @@
+{
+  "title": "Operating Systems",
+  "description": "Processes, threads, and memory, from fork() to page tables.",
+  "order": 3,
+  "compileRoot": true
+}

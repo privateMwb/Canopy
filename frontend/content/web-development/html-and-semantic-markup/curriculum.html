@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HTML &amp; Semantic Markup Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style></head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / html-and-semantic-markup</p>
+    <h1>From your first tag to markup that works for everyone</h1>
+    <p class="lede">Three levels, twelve stages — document structure, forms, media, and the interactive elements built into HTML, built toward markup that is semantic, accessible, and resilient.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've seen a page's source" to "I can write a well-structured, valid page with text, links, images, tables, and forms that works in any browser."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Document Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How the Web Delivers a Page</p><p class="lesson-desc">The HTTP request, the HTML response, and what the browser does with it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Anatomy of an HTML Document</p><p class="lesson-desc">doctype, html, head, body, plus the encoding and viewport meta tags.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Text &amp; Headings</p><p class="lesson-desc">Headings, paragraphs, lists, emphasis, and quotes, and building a clear outline.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Links &amp; URLs</p><p class="lesson-desc">Anchors, absolute vs. relative paths, fragments, and target and rel basics.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Editor, DevTools &amp; Validation</p><p class="lesson-desc">Inspecting the DOM, viewing source, and running the W3C validator.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Hand-write a personal profile page with a heading outline, lists, and links that passes the validator with zero errors.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Structure &amp; Semantics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Sectioning Elements</p><p class="lesson-desc">header, nav, main, article, section, aside, and footer, and when each one fits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Choosing the Right Element</p><p class="lesson-desc">Semantic vs. generic tags, and what each choice tells browsers and assistive tech.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Images &amp; Figures</p><p class="lesson-desc">img, alt text, figure and figcaption, and sizing images to avoid layout shift.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Tables for Tabular Data</p><p class="lesson-desc">caption, thead and tbody, th scope, and when not to use a table.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Audio, Video &amp; Embeds</p><p class="lesson-desc">audio, video, captions with track, and iframes with sensible defaults.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Mark up an article page with full semantic structure, a figure, and a data table, then explain why each tag was chosen over a div.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Forms &amp; Input</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Form Basics</p><p class="lesson-desc">form, action, method, and what actually happens on submit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Input Types &amp; Attributes</p><p class="lesson-desc">text, email, number, date, and the attributes that shape each one.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Labels &amp; Accessible Controls</p><p class="lesson-desc">label and for, fieldset and legend, and why a placeholder is not a label.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Built-in Validation</p><p class="lesson-desc">required, pattern, min and max, the Constraint Validation API, and custom messages.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Selects, Textareas &amp; Buttons</p><p class="lesson-desc">select and option groups, textarea, button types, and datalist.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a sign-up form with at least six input types, native validation, and labels that work with a screen reader.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Metadata &amp; Publishing</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The head Element</p><p class="lesson-desc">title, description, canonical, favicons, and what belongs in head.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Social &amp; Search Metadata</p><p class="lesson-desc">Open Graph, social cards, and descriptions that search engines show.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Language, Direction &amp; Encoding</p><p class="lesson-desc">lang, dir, UTF-8, and pages that work in more than one language.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">File Structure &amp; Naming</p><p class="lesson-desc">Folders, index.html, relative paths, and keeping a small site maintainable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Publishing a Static Site</p><p class="lesson-desc">Hosting on GitHub Pages or Netlify, and checking that it works live.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Publish a three-page personal site with consistent metadata and share it by URL.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can write a valid page" to "I write semantic, accessible, progressively enhanced markup and use the platform's built-in interactive elements before reaching for JavaScript."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Semantics in Depth</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Accessibility Tree &amp; Roles</p><p class="lesson-desc">How browsers turn markup into what assistive technology sees.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Landmarks &amp; the Document Outline</p><p class="lesson-desc">Landmark roles, skip links, and headings that work as navigation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Text-Level Semantics</p><p class="lesson-desc">time, abbr, code, mark, data, and the small elements most pages skip.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Microdata &amp; Structured Data</p><p class="lesson-desc">Schema.org and JSON-LD for search engines.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Reading the Spec</p><p class="lesson-desc">Using the HTML Living Standard and MDN to settle "can I use this tag?" questions.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a div-soup page and rewrite it semantically, then compare its accessibility tree before and after.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Native Interactivity</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">details, summary &amp; Disclosure</p><p class="lesson-desc">Native accordions without JavaScript.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">dialog &amp; Popover</p><p class="lesson-desc">Modal dialogs, the popover attribute, and the focus behavior you get for free.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Buttons, Links &amp; Menus</p><p class="lesson-desc">When to use a button vs. a link, and building navigation menus semantically.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Advanced Form Controls</p><p class="lesson-desc">range, color, file, progress, meter, output, and input modes for mobile keyboards.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Autofill &amp; Autocomplete</p><p class="lesson-desc">Helping browsers fill forms correctly and reducing effort for users.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build an FAQ page and a settings form using only native elements and attributes, with no custom JavaScript.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Media &amp; Responsive Content</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Responsive Images</p><p class="lesson-desc">srcset, sizes, and picture for art direction.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Modern Image Formats</p><p class="lesson-desc">WebP, AVIF, and SVG, and choosing a format by content.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Lazy Loading &amp; Priority Hints</p><p class="lesson-desc">loading="lazy", fetchpriority, and decoding hints.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Video, Captions &amp; Transcripts</p><p class="lesson-desc">Accessible media with tracks, controls, and poster images.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Inline SVG &amp; Icons</p><p class="lesson-desc">SVG in markup, accessible names, and icon strategies.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Make a media-rich gallery page that serves the right image size per device and passes a Lighthouse image audit.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Progressive Enhancement &amp; Quality</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Progressive Enhancement</p><p class="lesson-desc">Building a working baseline first, then layering behavior on top.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Validating &amp; Linting Markup</p><p class="lesson-desc">HTML validators, linters, and automated checks in CI.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Script Loading &amp; Resource Hints</p><p class="lesson-desc">defer, async, module, preload, and prefetch.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Feature Support &amp; Fallbacks</p><p class="lesson-desc">Can I Use, @supports, and graceful degradation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Markup Security Basics</p><p class="lesson-desc">rel=noopener, sandboxed iframes, and not trusting user-supplied HTML.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Ship a content page that works fully with JavaScript disabled, then add one enhancement layer without breaking the baseline.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I write good markup" to "I understand how browsers parse HTML, design markup systems for teams, and can defend choices on accessibility, performance, and long-term maintainability."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — How Browsers Parse HTML</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Parsing Algorithm</p><p class="lesson-desc">Tokenization, tree construction, and why invalid HTML still renders.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The DOM, CSSOM &amp; Render Tree</p><p class="lesson-desc">How the pieces combine into pixels.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Error Recovery &amp; Quirks Mode</p><p class="lesson-desc">Why browsers forgive mistakes, and how the doctype changes behavior.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Streaming HTML &amp; Early Flushing</p><p class="lesson-desc">Chunked responses and how parsing overlaps with downloading.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Parser-Blocking Resources</p><p class="lesson-desc">How scripts and styles delay rendering, and the spec behind it.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Trace a slow page through the browser's pipeline in DevTools and explain exactly which markup decisions delayed first paint.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Web Components &amp; Custom Elements</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Custom Elements</p><p class="lesson-desc">Defining your own tags with lifecycle callbacks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Shadow DOM &amp; Encapsulation</p><p class="lesson-desc">Scoped markup and styles, slots, and parts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Templates &amp; Slots</p><p class="lesson-desc">template, slot, and composing reusable markup.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Forms &amp; Accessibility in Components</p><p class="lesson-desc">Form-associated custom elements and keeping ARIA correct inside shadow trees.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">When Not to Use Web Components</p><p class="lesson-desc">Honest trade-offs against framework components.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small accessible component (tabs or a combobox) as a custom element and test it with a keyboard and a screen reader.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Markup at Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Design Systems &amp; Markup Contracts</p><p class="lesson-desc">Documenting patterns so every team writes the same HTML.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Templating &amp; Server-Rendered HTML</p><p class="lesson-desc">Layouts, partials, and keeping output valid.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Sanitizing &amp; Securing User HTML</p><p class="lesson-desc">XSS, allowlists, and the Sanitizer API.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Internationalization &amp; Right-to-Left</p><p class="lesson-desc">bdi, language tagging, and locale-aware markup.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Migrating Legacy Markup</p><p class="lesson-desc">Modernizing a large site without a rewrite.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a markup style guide and migration plan for a legacy site, with measurable accessibility and performance goals.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Standards, Judgment &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How HTML Evolves</p><p class="lesson-desc">WHATWG, the proposal process, and reading browser standards positions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Native vs. Custom</p><p class="lesson-desc">A decision framework for building an interaction natively or from scratch.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Auditing Real Pages</p><p class="lesson-desc">Evidence-based reviews with axe, Lighthouse, and manual testing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Explaining Trade-offs to Stakeholders</p><p class="lesson-desc">Making the case for semantics and quality to non-engineers.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit a real public page, rank the findings by user impact, and write a recommendation for a skeptical stakeholder.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Semantics arrive at Junior as the right tag for the job, return at Intermediate as the accessibility tree and native interactivity, and come back at Senior as parser behavior and markup contracts for whole teams. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how the parser recovers from bad markup is one skill; deciding when to use a native element, when to build a custom one, and defending that choice to a team is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

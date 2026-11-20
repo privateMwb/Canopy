@@ -1,0 +1,5 @@
+{
+  "title": "Linting, Formatting & CI",
+  "description": "ruff, a formatter, pre-commit hooks, and running it all on every push.",
+  "order": 5
+}

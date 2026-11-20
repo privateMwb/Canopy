@@ -1,0 +1,5 @@
+{
+  "title": "Indexes & Query Performance",
+  "description": "Reading query plans and fixing slow queries.",
+  "order": 1
+}

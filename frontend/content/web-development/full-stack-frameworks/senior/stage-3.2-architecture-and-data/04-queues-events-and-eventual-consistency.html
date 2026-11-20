@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Queues, Events &amp; Eventual Consistency — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · architecture &amp; data</span> → lesson 04</p>
+  <h1>Queues, Events &amp; Eventual Consistency</h1>
+  <p class="lede">Designing workflows that tolerate delay.</p>
+
+  <h2><span class="num">§1</span>Don't Do It All Inside the Request</h2>
+
+  <p>A checkout that charges a card, updates inventory, sends an email, and notifies a warehouse inside one request is slow and fragile: any step can fail after others succeeded. Asynchronous designs break the work into steps connected by <strong>queues and events</strong>, trading immediacy for resilience.</p>
+
+  <table>
+    <tr><th>Style</th><th>Example</th><th>Good for</th><th>Cost</th></tr>
+    <tr><td>Synchronous</td><td>Call the payment API, wait for the result</td><td>Steps whose result the user needs now</td><td>Latency and cascading failures</td></tr>
+    <tr><td>Queue (work)</td><td>Enqueue 'send receipt'; a worker does it</td><td>Tasks needing retries and rate control</td><td>Delay; need for monitoring</td></tr>
+    <tr><td>Event (pub/sub)</td><td>Publish <code>OrderPlaced</code>; many consumers react</td><td>Decoupling; adding consumers without changing the producer</td><td>Harder to trace the whole flow</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Eventual Consistency</h2>
+
+  <p>When data is updated through asynchronous steps, different parts of the system briefly disagree. The order is saved but the receipt hasn't been sent, or the search index lags the database. This is <strong>eventual consistency</strong>: given time and no new changes, everything converges. Your job is to design the UI and logic so the delay is acceptable and visible, for example showing 'Processing…' instead of pretending the work is complete.</p>
+
+  <h2><span class="num">§3</span>The Dual-Write Problem and the Outbox</h2>
+
+  <p>If you save to the database and then publish an event, a crash between the two leaves them inconsistent: data saved, event lost. The <strong>transactional outbox</strong> pattern fixes this by writing the event into an <code>outbox</code> table in the <strong>same transaction</strong> as the data. A separate process reads the outbox and publishes reliably.</p>
+
+  <pre>await db.$transaction(async (tx) =&gt; {
+  const order = await tx.order.create({ data });
+  await tx.outbox.create({
+    data: { type: "OrderPlaced", payload: { orderId: order.id }, idempotencyKey: order.id },
+  });
+});
+<span class="comment">// A relay job polls `outbox`, publishes to the queue, and marks rows as sent</span></pre>
+
+  <h2><span class="num">§4</span>Reliability Rules for Async Work</h2>
+
+  <ul>
+    <li><strong>At-least-once delivery</strong> is the realistic default, so every consumer must be <strong>idempotent</strong>.</li>
+    <li><strong>Retries with exponential backoff and jitter</strong>, and a limit on attempts.</li>
+    <li><strong>Dead-letter queue</strong> for messages that keep failing, so they can be inspected rather than lost or retried forever.</li>
+    <li><strong>Compensating actions (sagas)</strong> for multi-step workflows: if step 3 fails, run actions that undo steps 1 and 2.</li>
+    <li><strong>Visibility:</strong> metrics on queue depth, age of the oldest message, and failure rate, with alerts.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Exactly-once is mostly a myth</span>
+    Networks fail in ways that make exactly-once delivery impractical. The robust approach is at-least-once delivery combined with idempotent handlers, which gives exactly-once *effects*.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Saving to the database and then publishing an event separately</td><td>A crash between them loses the event</td><td>Use a transactional outbox</td></tr>
+    <tr><td>Non-idempotent consumers</td><td>Retries cause duplicate emails, charges, or records</td><td>Record processed ids and make operations safe to repeat</td></tr>
+    <tr><td>Retrying failed messages forever</td><td>A poison message blocks progress and burns resources</td><td>Cap retries and use a dead-letter queue</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Design an order-placement flow with a queue for email and inventory, showing where idempotency keys and the outbox are used.</li>
+      <li>Describe what the user sees at each step while eventual consistency is in play, and how the UI communicates it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Queues and events decouple work from the request, trading immediacy for resilience.</li>
+      <li>Eventual consistency is a design constraint to expose in the UI, not hide.</li>
+      <li>Use the outbox, idempotent consumers, bounded retries, and dead-letter queues for reliable async workflows.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Architecture &amp; Data — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

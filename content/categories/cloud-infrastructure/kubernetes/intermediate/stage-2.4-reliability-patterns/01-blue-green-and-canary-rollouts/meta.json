@@ -1,0 +1,5 @@
+{
+  "title": "Blue-Green & Canary Rollouts",
+  "description": "Releasing gradually and rolling back on evidence.",
+  "order": 1
+}

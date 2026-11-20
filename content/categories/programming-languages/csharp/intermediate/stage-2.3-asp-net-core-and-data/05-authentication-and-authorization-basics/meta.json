@@ -1,0 +1,5 @@
+{
+  "title": "Authentication & Authorization Basics",
+  "description": "JWT bearer tokens, policies, and protecting endpoints.",
+  "order": 5
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Segment Trees — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced data structures</span> → lesson 01</p>
+  <h1>Segment Trees</h1>
+  <p class="lede">Answering range queries and updates in O(log n), built specifically for data that changes.</p>
+
+  <h2><span class="num">§1</span>Why Prefix Sums Aren't Enough Here</h2>
+  <p>Prefix sums answer range-sum queries in O(1) — but only for a static array. If the array changes (an update), rebuilding the prefix sum array costs O(n) every time. A segment tree supports both range queries <em>and</em> updates in O(log n), handling the case prefix sums can't.</p>
+
+  <h2><span class="num">§2</span>The Structure</h2>
+  <p>A segment tree is a binary tree where each node represents a range of the array — the root covers the whole array, each node's two children split its range in half, and leaves represent individual elements. Each node stores an aggregate (sum, min, max — whatever the query needs) of its range.</p>
+
+  <h2><span class="num">§3</span>Building the Tree</h2>
+  <pre>def build(arr, tree, node, start, end):
+    if start == end:
+        tree[node] = arr[start]
+        return
+    mid = (start + end) // 2
+    build(arr, tree, 2 * node, start, mid)
+    build(arr, tree, 2 * node + 1, mid + 1, end)
+    tree[node] = tree[2 * node] + tree[2 * node + 1]</pre>
+  <p>Built recursively, bottom-up — each internal node's value is simply the combination of its two children, the same recursive "combine children" shape as tree DP.</p>
+
+  <h2><span class="num">§4</span>Range Query</h2>
+  <pre>def query(tree, node, start, end, l, r):   <span class="comment"># sum of arr[l..r]</span>
+    if r < start or end < l:
+        return 0                              <span class="comment"># completely outside range</span>
+    if l <= start and end <= r:
+        return tree[node]                     <span class="comment"># completely inside range</span>
+    mid = (start + end) // 2
+    return (query(tree, 2 * node, start, mid, l, r) +
+            query(tree, 2 * node + 1, mid + 1, end, l, r))</pre>
+  <p>A query touches at most O(log n) nodes — each level of the tree contributes a bounded number of relevant nodes, which is what gives the logarithmic time bound.</p>
+
+  <h2><span class="num">§5</span>Point Update</h2>
+  <pre>def update(tree, node, start, end, idx, value):
+    if start == end:
+        tree[node] = value
+        return
+    mid = (start + end) // 2
+    if idx <= mid:
+        update(tree, 2 * node, start, mid, idx, value)
+    else:
+        update(tree, 2 * node + 1, mid + 1, end, idx, value)
+    tree[node] = tree[2 * node] + tree[2 * node + 1]   <span class="comment"># recompute this node's aggregate</span></pre>
+  <p>Updating one element only touches the O(log n) nodes on the path from the root to that leaf — every ancestor's aggregate gets recomputed on the way back up.</p>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using a plain array/prefix sum when updates are frequent</td><td>O(n) per update defeats the point</td><td>Use a segment tree whenever both range queries AND updates are needed</td></tr>
+    <tr><td>Incorrect range overlap logic in the query function</td><td>Wrong aggregate returned</td><td>Carefully handle the three cases: no overlap, full overlap, partial overlap</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a segment tree by hand for <code>[1, 3, 5, 7, 9, 11]</code>, drawing out the tree structure.</li>
+      <li>Explain, in one or two sentences, why a segment tree query touches only O(log n) nodes.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Segment trees support both range queries and point updates in O(log n), unlike static prefix sums.</li>
+      <li>Each node represents a range; leaves are individual elements, internal nodes aggregate their children.</li>
+      <li>Both queries and updates touch only O(log n) nodes, following paths through the tree.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Data Structures — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

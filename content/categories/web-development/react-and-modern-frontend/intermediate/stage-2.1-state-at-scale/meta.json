@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — State at Scale",
+  "description": "Reducers, context, client state libraries, forms, and derived state.",
+  "order": 1
+}

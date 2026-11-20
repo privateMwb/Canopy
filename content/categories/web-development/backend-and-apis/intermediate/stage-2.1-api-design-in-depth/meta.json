@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — API Design in Depth",
+  "description": "Versioning, idempotency, GraphQL, realtime APIs, and gRPC.",
+  "order": 1
+}

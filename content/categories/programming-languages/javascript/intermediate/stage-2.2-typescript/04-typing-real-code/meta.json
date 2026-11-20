@@ -1,0 +1,5 @@
+{
+  "title": "Typing Real Code",
+  "description": "tsconfig, strict mode, third-party type definitions, and migrating a JS file at a time.",
+  "order": 4
+}

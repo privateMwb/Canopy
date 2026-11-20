@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 \u2014 Packaging & Maintainable Code",
+  "description": "Project layout, building and publishing, deeper testing, logging and CLIs, and CI.",
+  "order": 4
+}

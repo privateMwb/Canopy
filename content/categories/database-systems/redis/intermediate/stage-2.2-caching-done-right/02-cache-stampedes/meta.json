@@ -1,0 +1,5 @@
+{
+  "title": "Cache Stampedes",
+  "description": "What happens when a hot key expires, and how locking and early refresh prevent it.",
+  "order": 2
+}

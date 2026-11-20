@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Views, Sequences &amp; Identity Columns — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · designing schemas</span> → lesson 05</p>
+  <h1>Views, Sequences &amp; Identity Columns</h1>
+  <p class="lede">Views save reusable queries, and sequences and identity columns generate keys, with gaps that are expected and harmless.</p>
+
+  <h2><span class="num">§1</span>Views and Materialized Views</h2>
+
+  <p>A <strong>view</strong> is a stored query that behaves like a table. It stores no data; each time you select from it, Postgres runs the underlying query.</p>
+  <pre>CREATE VIEW active_customers AS
+SELECT c.id, c.email, count(o.id) AS orders
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+GROUP BY c.id, c.email;
+
+SELECT * FROM active_customers WHERE orders &gt; 5;</pre>
+  <p>Views hide complexity, give applications a stable shape, and let you grant access to a subset of columns. A <strong>materialized view</strong> stores the result physically and must be refreshed, trading freshness for speed.</p>
+  <pre>CREATE MATERIALIZED VIEW daily_sales AS
+SELECT date_trunc('day', placed_at) AS day, count(*) AS orders
+FROM orders GROUP BY 1;
+
+REFRESH MATERIALIZED VIEW daily_sales;                          <span class="comment">-- locks readers while it runs</span>
+REFRESH MATERIALIZED VIEW CONCURRENTLY daily_sales;             <span class="comment">-- needs a unique index</span></pre>
+
+  <h2><span class="num">§2</span>Sequences and Identity Columns</h2>
+
+  <p>A <strong>sequence</strong> is a counter object that hands out increasing numbers. An <strong>identity column</strong> attaches one to a column using the SQL standard syntax, and is the modern replacement for <code>serial</code>.</p>
+  <pre>CREATE TABLE books (
+    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title text NOT NULL
+);
+
+INSERT INTO books (title) VALUES ('Dune') RETURNING id;
+INSERT INTO books (id, title) VALUES (5, 'x');
+<span class="comment">-- ERROR: cannot insert a non-DEFAULT value into column "id"</span></pre>
+  <p><code>GENERATED ALWAYS</code> rejects manual values unless you add <code>OVERRIDING SYSTEM VALUE</code>; <code>GENERATED BY DEFAULT</code> allows them. Prefer <code>ALWAYS</code> so application code cannot collide with the counter. After a bulk load with explicit IDs, move the sequence forward with <code>SELECT setval(pg_get_serial_sequence('books','id'), (SELECT max(id) FROM books));</code>.</p>
+
+  <h2><span class="num">§3</span>Why There Are Gaps</h2>
+
+  <p>Sequences are <strong>not transactional</strong>. A value, once handed out, is never given back, even if the transaction rolls back or the insert fails. Postgres also hands out values to concurrent sessions in any order, and a crash can skip cached values. The result is gaps, and sometimes ordering that differs from commit order.</p>
+  <pre>BEGIN;
+INSERT INTO books (title) VALUES ('a');   <span class="comment">-- gets id 10</span>
+ROLLBACK;
+INSERT INTO books (title) VALUES ('b');   <span class="comment">-- gets id 11; 10 is a gap</span></pre>
+  <p>Keys exist to be unique, not gapless. If a legal requirement demands gapless numbering (invoice numbers in some jurisdictions), generate them in a separate, locked process rather than from a sequence, and accept the contention that costs.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Treat generated IDs as opaque unique labels. Never rely on them being consecutive, never reuse them, and never infer row counts or creation order from them.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Expecting ID sequences to have no gaps</td><td>Code that depends on consecutive numbers breaks after the first rollback</td><td>Treat IDs as opaque; use a separate counter for legally gapless numbers</td></tr>
+    <tr><td>Selecting from a slow view on every request</td><td>The full underlying query runs each time</td><td>Index the base tables, or use a materialized view with a refresh schedule</td></tr>
+    <tr><td>Bulk loading explicit IDs and forgetting the sequence</td><td>Later inserts collide with existing keys</td><td>Run <code>setval</code> to move the sequence past the maximum</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a view over a join and grant a role access to the view but not the base tables.</li>
+      <li>Insert rows, roll one back, and observe the gap in the identity sequence.</li>
+      <li>Create a materialized view and compare <code>REFRESH</code> with <code>REFRESH ... CONCURRENTLY</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A view is a saved query; a materialized view stores results and needs refreshing.</li>
+      <li>Use identity columns (<code>GENERATED ALWAYS AS IDENTITY</code>) instead of <code>serial</code> for new tables.</li>
+      <li>Sequences are non-transactional, so gaps are normal; never depend on consecutive IDs.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Designing Schemas — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

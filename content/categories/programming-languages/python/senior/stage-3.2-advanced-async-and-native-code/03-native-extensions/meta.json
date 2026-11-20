@@ -1,0 +1,5 @@
+{
+  "title": "Native Extensions",
+  "description": "ctypes, cffi, Cython, and Rust via PyO3 \u2014 choosing a boundary and paying its costs.",
+  "order": 3
+}

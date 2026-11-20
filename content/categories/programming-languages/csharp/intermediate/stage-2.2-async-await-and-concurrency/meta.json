@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 \u2014 async/await & Concurrency",
+  "description": "Tasks, cancellation, streaming, locks, and parallelism \u2014 writing concurrent code that is correct first and fast second.",
+  "order": 2
+}

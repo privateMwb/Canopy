@@ -1,0 +1,5 @@
+{
+  "title": "Allocators & Memory Resources",
+  "description": "Custom allocation, std::pmr, and avoiding the general-purpose heap on hot paths.",
+  "order": 2
+}

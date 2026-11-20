@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Profiling, LCP, INP and CLS fixes, and JavaScript bundle work.",
+  "order": 2
+}

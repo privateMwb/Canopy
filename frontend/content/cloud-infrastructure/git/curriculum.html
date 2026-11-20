@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Git &amp; Collaboration Workflows Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / git</p>
+    <h1>From your first commit to a Git workflow your whole team trusts</h1>
+    <p class="lede">Three levels, twelve stages — commits, branches, remotes, and daily tooling first, then rewriting history, team collaboration, and debugging with history, built toward the internals, release strategy, and governance to design how a whole organization uses Git.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I copy folders called final_v2" to "I can track, branch, and share changes confidently."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Your First Repository</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why Version Control &amp; How Git Thinks</p><p class="lesson-desc">Snapshots, commits, and the working tree, staging area, and repository.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Installing, Configuring &amp; Your First Commit</p><p class="lesson-desc">init, add, commit, and setting your identity.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Viewing History &amp; Changes</p><p class="lesson-desc">status, log, diff, and show for seeing what changed and why.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Ignoring Files &amp; Undoing Simple Mistakes</p><p class="lesson-desc">.gitignore, unstaging, restoring files, and amending the last commit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Writing Commit Messages That Help</p><p class="lesson-desc">Subject lines, bodies, and why small commits make history readable.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Start a repository for a small project, make a dozen meaningful commits with clear messages, ignore build output, and fix three deliberate mistakes without losing work.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Branching &amp; Merging</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Branches Are Just Pointers</p><p class="lesson-desc">Creating, switching, and what HEAD actually is.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Merging: Fast-Forward &amp; Three-Way</p><p class="lesson-desc">How merges combine history and when a merge commit appears.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Resolving Merge Conflicts</p><p class="lesson-desc">Reading conflict markers, choosing a resolution, and aborting safely.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Branch Naming, Cleanup &amp; Tags</p><p class="lesson-desc">Conventions, deleting merged branches, and marking releases.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Detached HEAD &amp; Moving Around History</p><p class="lesson-desc">Checking out commits and tags, relative references, and getting back safely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Create two branches that edit the same lines, merge them, resolve the conflict, tag the result as v1.0, and recover from a detached HEAD.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Working With Remotes</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Clone, Remotes &amp; Origin</p><p class="lesson-desc">What a remote is and how a local repository knows about one.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Push, Fetch &amp; Pull</p><p class="lesson-desc">Upstream tracking, and why fetch and pull are different.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Pull Requests &amp; Code Review</p><p class="lesson-desc">The basic hosted workflow and how to give and take review.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Authentication &amp; Keeping Secrets Out</p><p class="lesson-desc">SSH keys, tokens, and what to do if you commit a secret.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Repository Hygiene: README, License &amp; Project Files</p><p class="lesson-desc">The files that make a repository usable by other people.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Collaborate with a partner through a hosted repository: branch, push, open a pull request, review each other, and merge.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Everyday Workflow &amp; Tooling</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Terminal, Editor &amp; Graphical Tools</p><p class="lesson-desc">Using Git from the command line, an editor, and a visual client without getting lost.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Configuration, Aliases &amp; Dotfiles</p><p class="lesson-desc">System, global, and local config, and shortcuts that save keystrokes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Line Endings, Whitespace &amp; .gitattributes</p><p class="lesson-desc">Why files show as changed across operating systems and how to stop it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Troubleshooting Common Beginner Errors</p><p class="lesson-desc">Reading Git's messages and fixing the ten errors everyone hits.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Set up a clean machine for Git from scratch, then diagnose and fix five broken repositories using only status, log, and the documentation.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Rewriting History Safely</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Rebase vs. Merge</p><p class="lesson-desc">Replaying commits, linear history, and the rule about shared branches.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Interactive Rebase &amp; Squashing</p><p class="lesson-desc">Reordering, rewording, and combining commits before review.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Cherry-Pick, Revert &amp; Reset</p><p class="lesson-desc">Three ways to move or undo changes, and what each one leaves behind.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Reflog: The Safety Net</p><p class="lesson-desc">Recovering commits you thought were gone.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Amending, Splitting &amp; Reordering Commits</p><p class="lesson-desc">Turning one big commit into several and fixing old commits precisely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Turn a messy twelve-commit branch into three clean commits, then deliberately destroy it with a hard reset and recover it from the reflog.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Collaboration at Team Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Fork &amp; Pull Request Workflows</p><p class="lesson-desc">Contributing to a repository you do not own and keeping a fork in sync.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Writing Good Commits &amp; Pull Requests</p><p class="lesson-desc">Atomic commits, useful messages, and reviewable change sizes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Stash, Worktrees &amp; Context Switching</p><p class="lesson-desc">Handling interruptions without losing or mixing work.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Hooks, Linting &amp; Branch Protection</p><p class="lesson-desc">Automating checks locally and enforcing rules on the server.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Code Review at Scale</p><p class="lesson-desc">Code owners, stacked pull requests, and keeping reviews fast and useful.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Set up a repository with a pre-commit hook, a protected main branch, and required reviews, and demonstrate that a bad commit is blocked.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Debugging &amp; Inspecting History</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Blame &amp; Log Archaeology</p><p class="lesson-desc">Finding who changed a line and when a string appeared or vanished.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Bisect: Finding the Commit That Broke It</p><p class="lesson-desc">Binary search through history, including automated bisecting.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Submodules, Subtrees &amp; Large Files</p><p class="lesson-desc">Including other repositories and handling big binaries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Signing Commits &amp; Verifying Authors</p><p class="lesson-desc">Proving who made a commit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Diffs, Patches &amp; Email Workflows</p><p class="lesson-desc">diff, apply, format-patch, and am for sharing changes without a hosting site.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Given a repository with a hidden regression, find the breaking commit with bisect and explain the cause from its history.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Advanced Everyday Tools</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Merge Strategies &amp; Options</p><p class="lesson-desc">The ort strategy, ours and theirs, and strategy options for stubborn merges.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Recovering From a Bad Merge or Rebase</p><p class="lesson-desc">Undoing merges that went wrong, including after they were pushed.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Shallow, Partial &amp; Sparse Clones</p><p class="lesson-desc">Working with huge repositories without downloading all of them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Scripting With Git: Formats &amp; Plumbing Output</p><p class="lesson-desc">Porcelain output, format strings, and building small tools on top of Git.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a script that reports the stale branches, the largest files, and the top contributors of any repository using only Git commands.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Git Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Objects: Blobs, Trees, Commits &amp; Tags</p><p class="lesson-desc">The content-addressable store behind every commit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Refs, the Index &amp; Packfiles</p><p class="lesson-desc">Branches as files, the staging area as a data structure, and how storage is compacted.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">How Merge, Diff &amp; Rebase Actually Work</p><p class="lesson-desc">Merge bases, diff algorithms, and recorded conflict resolutions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Repository Health &amp; Recovery</p><p class="lesson-desc">fsck, garbage collection, and repairing or cleaning a damaged repository.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Transport: How Push and Fetch Really Work</p><p class="lesson-desc">Refspecs, the smart protocol, and what travels over the wire.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a commit by hand using only plumbing commands, then break and repair a repository's refs and objects.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Branching &amp; Release Strategy</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Trunk-Based Development vs. Git Flow</p><p class="lesson-desc">What each model optimizes for and where each one hurts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Feature Flags &amp; Release Branches</p><p class="lesson-desc">Separating deployment from release, and handling hotfixes and backports.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Monorepos vs. Polyrepos</p><p class="lesson-desc">The trade-offs, and the Git features that make big repositories workable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Versioning, Changelogs &amp; Release Automation</p><p class="lesson-desc">Semantic versions, tags, and automated releases.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Choose a branching and release model for a team of 12 shipping weekly and defend it against the two alternatives.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Scale, Security &amp; Governance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">CI/CD Integration &amp; Merge Queues</p><p class="lesson-desc">Status checks, required builds, and keeping main green under load.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Large Repositories &amp; Performance</p><p class="lesson-desc">Partial and shallow clones, commit graphs, and slow operations.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Repository Security &amp; Secret Response</p><p class="lesson-desc">Scanning, rotating, history rewriting, and supply-chain risks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Designing a Team Git Policy</p><p class="lesson-desc">Writing conventions people follow, and migrating a team to them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Access Control, Audits &amp; Compliance</p><p class="lesson-desc">Permissions, audit logs, and meeting regulatory requirements without slowing teams down.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a one-page Git policy for a real team, including branching, review, signing, secrets, and the exceptions you allow.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Migration &amp; Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Migrating From SVN, Perforce &amp; Mercurial</p><p class="lesson-desc">Converting history, mapping authors, and cutting over without losing trust.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Rewriting History at Scale</p><p class="lesson-desc">Splitting, merging, and cleaning repositories with filter-repo.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Alternatives &amp; the Wider Ecosystem</p><p class="lesson-desc">Jujutsu, Mercurial, Fossil, and Sapling, and what they teach about Git's design.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Teaching Git &amp; Building a Team Culture</p><p class="lesson-desc">Onboarding, shared habits, and reducing fear of the tool.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Plan the migration of a 10-year-old repository to a new structure, including the cutover, the rollback, and how you would train the team.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Undoing mistakes appears at Junior as restore and amend, returns at Intermediate as reset, revert, and the reflog, and comes back at Senior as repository recovery and rewriting history after a leaked secret. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing that a commit is a tree and a pointer is one skill; choosing trunk-based development or release branches for a team of twelve, and writing the policy so people actually follow it, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

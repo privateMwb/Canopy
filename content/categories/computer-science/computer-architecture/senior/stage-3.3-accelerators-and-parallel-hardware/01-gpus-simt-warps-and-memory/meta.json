@@ -1,0 +1,1 @@
+{"title": "GPUs: SIMT, Warps & Memory", "description": "Thousands of threads, how they execute in groups, and what makes a GPU kernel slow.", "order": 1}

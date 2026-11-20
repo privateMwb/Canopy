@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Framework Internals",
+  "description": "The build pipeline, the RSC payload, caching internals, edge vs. Node, and self-hosting.",
+  "order": 1
+}

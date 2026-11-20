@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Packaging & Delivery",
+  "description": "Helm, Kustomize, GitOps, observability, and CI/CD pipelines that deliver to a cluster.",
+  "order": 3
+}

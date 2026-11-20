@@ -1,0 +1,5 @@
+{
+  "title": "Iterators & yield",
+  "description": "Writing lazy sequences, and what the compiler generates for you.",
+  "order": 2
+}

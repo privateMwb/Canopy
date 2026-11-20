@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Core Services",
+  "description": "Servers, object storage, networking, identity, block storage, and traffic filtering: the building blocks of nearly every AWS system.",
+  "order": 2
+}

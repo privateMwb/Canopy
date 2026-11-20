@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Intermediate Representations",
+  "description": "Three-address code, control-flow graphs, and static single assignment.",
+  "order": 2
+}

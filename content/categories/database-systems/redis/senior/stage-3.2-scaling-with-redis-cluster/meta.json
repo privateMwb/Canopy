@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Scaling with Redis Cluster",
+  "description": "Hash slots, multi-key design, resharding, failure handling, and cluster-aware clients.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Modules, Imports & Packages",
+  "description": "How import finds code, the __name__ == \"__main__\" guard, and splitting a script into modules.",
+  "order": 3
+}

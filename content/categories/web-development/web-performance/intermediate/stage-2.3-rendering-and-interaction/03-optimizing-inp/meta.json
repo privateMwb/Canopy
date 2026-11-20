@@ -1,0 +1,5 @@
+{
+  "title": "Optimizing INP",
+  "description": "Breaking up long tasks and yielding to the browser.",
+  "order": 3
+}

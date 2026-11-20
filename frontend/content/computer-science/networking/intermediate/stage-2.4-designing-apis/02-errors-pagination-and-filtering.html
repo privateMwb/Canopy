@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Errors, Pagination &amp; Filtering — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · designing apis</span> → lesson 02</p>
+  <h1>Errors, Pagination &amp; Filtering</h1>
+  <p class="lede">Clients can only handle failures and large collections well if the API reports errors in a consistent shape and pages through data predictably.</p>
+
+  <h2><span class="num">§1</span>A Consistent Error Format</h2>
+  <p>Every error should use the right status code and the same body structure, so clients can handle errors generically. The standard for this is <strong>Problem Details</strong> (RFC 9457), with the media type <code>application/problem+json</code>.</p>
+  <pre>HTTP/1.1 422 Unprocessable Content
+Content-Type: application/problem+json
+
+{
+  "type": "https://api.example.com/errors/validation",
+  "title": "Validation failed",
+  "status": 422,
+  "detail": "One or more fields are invalid.",
+  "errors": [
+    {"field": "email", "message": "must be a valid address"},
+    {"field": "qty",   "message": "must be at least 1"}
+  ],
+  "request_id": "req_8f2a"
+}</pre>
+  <p>Use 400 for malformed requests, 422 for well-formed but invalid ones, 401 and 403 for authentication and authorization, 404 for missing resources, 409 for conflicts, and 429 for rate limits. Include a <code>request_id</code> that appears in your logs. Never leak stack traces or internal details.</p>
+
+  <h2><span class="num">§2</span>Pagination: Offset vs. Cursor</h2>
+  <p>Returning an entire large collection is slow and wasteful, so APIs split results into pages.</p>
+  <table>
+    <tr><th>Style</th><th>Request</th><th>Strength</th><th>Weakness</th></tr>
+    <tr><td>Offset</td><td><code>?limit=20&amp;offset=40</code></td><td>Simple; allows jumping to a page</td><td>Slow for deep offsets, and items shift if the data changes between requests, causing skips or duplicates</td></tr>
+    <tr><td>Cursor</td><td><code>?limit=20&amp;after=eyJpZCI6NDJ9</code></td><td>Stable and fast at any depth</td><td>No jumping to page N; cursor must be treated as opaque</td></tr>
+  </table>
+  <pre>GET /orders?limit=2 HTTP/1.1
+
+{
+  "items": [ {"id": 101, ...}, {"id": 100, ...} ],
+  "next_cursor": "eyJpZCI6MTAwfQ"       <span class="comment"># opaque: encodes 'after id 100'</span>
+}
+<span class="comment"># Next page: GET /orders?limit=2&amp;after=eyJpZCI6MTAwfQ</span></pre>
+  <p>Cap <code>limit</code> at a maximum, and always apply a stable sort order, or pages become inconsistent. Cursors work because the database can seek directly to 'after this key' using an index instead of counting rows to skip.</p>
+
+  <h2><span class="num">§3</span>Filtering and Sorting</h2>
+  <pre>GET /orders?status=shipped&amp;customer_id=7&amp;created_after=2026-01-01&amp;sort=-created_at</pre>
+  <ul>
+    <li>Use query parameters for filters, and a <code>sort</code> parameter, where a leading <code>-</code> means descending</li>
+    <li>Allow only a defined set of filter and sort fields, since arbitrary ones can force slow queries or expose data</li>
+    <li>Validate every parameter and return 400 for unknown or invalid values, rather than silently ignoring them</li>
+    <li>Index the fields you allow clients to filter and sort on</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Errors and pages are part of your API's contract just like success responses. Clients write code against their shape, so changing them later breaks users.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Returning 200 with an error object</td><td>Clients and monitoring treat failures as successes</td><td>Use real status codes with a consistent body</td></tr>
+    <tr><td>Offset pagination over fast-changing data</td><td>Missed or repeated items between pages</td><td>Use cursor pagination with a stable ordering</td></tr>
+    <tr><td>Unbounded <code>limit</code> or arbitrary filter fields</td><td>One request can overload the database</td><td>Cap page size and whitelist filterable fields</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Define an error format and write five example errors for a signup endpoint: invalid email, duplicate email, rate-limited, unauthorized, server error.</li>
+      <li>Implement cursor pagination over a table ordered by <code>(created_at, id)</code>, and describe how the cursor encodes the position.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Use correct status codes with a consistent body, ideally Problem Details.</li>
+      <li>Cursor pagination stays stable and fast; offset pagination is simpler but degrades and drifts.</li>
+      <li>Cap limits, whitelist filters, and validate parameters.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Designing APIs — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

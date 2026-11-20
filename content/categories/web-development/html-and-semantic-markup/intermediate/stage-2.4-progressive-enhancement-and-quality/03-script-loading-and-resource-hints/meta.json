@@ -1,0 +1,5 @@
+{
+  "title": "Script Loading & Resource Hints",
+  "description": "defer, async, module, preload, and prefetch.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Counters & Aggregations",
+  "description": "Aggregate queries, distributed counters, and when to precompute.",
+  "order": 3
+}

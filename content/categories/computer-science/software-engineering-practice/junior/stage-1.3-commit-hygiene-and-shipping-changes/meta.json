@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Commit Hygiene & Shipping Changes",
+  "description": "Atomic commits, useful messages, ignore files, tags and versions, and writing and receiving pull requests.",
+  "order": 3
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Upgrading .NET &amp; Migrating from .NET Framework — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · architecture &amp; judgment</span> → lesson 03</p>
+  <h1>Upgrading .NET &amp; Migrating from .NET Framework</h1>
+  <p class="lede">Most real .NET work happens in codebases that already exist. Upgrading safely is a project-management and risk problem as much as a technical one.</p>
+
+  <h2><span class="num">§1</span>Staying Current</h2>
+
+  <p>Modern .NET (the cross-platform successor to .NET Framework, versions 5 and later) ships a new major version every November. Even-numbered versions are <strong>LTS</strong> (long-term support, roughly three years), and odd-numbered ones are <strong>STS</strong> (standard-term support, shorter, check the current policy). Check Microsoft's support lifecycle page before planning, because dates change. Falling behind has a real cost: unsupported runtimes get no security patches.</p>
+  <ul>
+    <li><strong>Upgrade routinely, in small steps</strong>, ideally to each LTS and a quick pass over each release's breaking-change list, rather than every five years in one jump.</li>
+    <li>Change <code>TargetFramework</code>, restore and build, fix errors, run the tests, then read the <strong>breaking changes</strong> and <strong>behavior changes</strong> docs for each version crossed.</li>
+    <li>Update NuGet packages that must match the framework version, and check that third-party libraries support the new target.</li>
+    <li>The <code>dotnet-outdated</code> tool, <code>dotnet list package --outdated --vulnerable</code>, and Dependabot or Renovate keep dependencies visible.</li>
+    <li>Deploy to a canary or staging environment and watch counters and error rates before a full rollout; runtime behavior changes (GC, thread pool, serialization defaults) don't appear as compile errors.</li>
+  </ul>
+
+  <h2><span class="num">§2</span>Migrating from .NET Framework</h2>
+
+  <p>A legacy app may target .NET Framework 4.x (Windows-only, in-box with the OS). Moving to modern .NET brings cross-platform support, performance gains, side-by-side runtimes, and active development. The path depends on what the app uses:</p>
+  <table>
+    <tr><th>Component</th><th>Migration outlook</th></tr>
+    <tr><td>Class libraries</td><td>Usually easy: retarget to <code>netstandard2.0</code> or multi-target, then move to <code>net10.0</code></td></tr>
+    <tr><td>Console apps and services</td><td>Straightforward, then replace <code>ServiceBase</code> with the Worker Service / Generic Host</td></tr>
+    <tr><td>ASP.NET MVC / Web API (System.Web)</td><td>Significant: port to ASP.NET Core, which has a different pipeline and no <code>System.Web</code></td></tr>
+    <tr><td>WinForms and WPF</td><td>Supported on modern .NET (Windows only), often a smooth port</td></tr>
+    <tr><td>WCF servers, Web Forms, Windows Workflow</td><td>No direct equivalent: rewrite, or use community projects (CoreWCF) or keep them on Framework</td></tr>
+    <tr><td>Entity Framework 6</td><td>Runs on modern .NET, then migrate to EF Core separately if there's a reason</td></tr>
+  </table>
+  <p>Microsoft's <strong>.NET Upgrade Assistant</strong> and the <strong>API Portability Analyzer</strong> (<code>try-convert</code> is retired) report which APIs won't port and automate project-file conversion. Use them to size the work, not as a guarantee that conversion is complete.</p>
+
+  <h2><span class="num">§3</span>Managing the Risk</h2>
+
+  <ul>
+    <li><strong>Characterize before you change.</strong> Wrap untested legacy behavior in tests (golden-master or approval tests) so you can tell whether the port altered it.</li>
+    <li><strong>Move bottom-up.</strong> Convert shared libraries to <code>netstandard2.0</code> or multi-targeting first, because both old and new apps can consume them while the migration proceeds.</li>
+    <li><strong>Migrate incrementally with the strangler pattern</strong>: put a proxy such as YARP in front and move endpoints one at a time to the new app while the old one continues to serve the rest. Tools such as the <code>System.Web</code> adapters let shared code run in both.</li>
+    <li><strong>Pick a stopping point per component.</strong> Not everything has to move. A stable, rarely changed Framework component with a support plan may be better left alone than rewritten.</li>
+    <li><strong>Run both in production side by side</strong> and compare behavior, using shadow traffic if possible, before cutting over, with a tested rollback.</li>
+  </ul>
+  <p>Estimate in terms of <em>unknowns removed</em>: do a spike on the hardest component first, because that result decides whether the plan is realistic.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Upgrading is cheap when it is routine and expensive when it is postponed. The best migration strategy is making the next upgrade small.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Waiting until a runtime is out of support to upgrade</td><td>A forced big-bang migration under time pressure</td><td>Upgrade to each LTS and treat it as regular maintenance</td></tr>
+    <tr><td>Rewriting everything because migration is hard</td><td>Years of work, with feature parity as a moving target</td><td>Migrate incrementally with a strangler approach and keep shipping</td></tr>
+    <tr><td>Trusting a clean build as proof the port works</td><td>Behavior changes at run time (serialization, culture, GC, threading)</td><td>Use characterization tests and a canary deployment</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a small library targeting .NET Framework (or imagine one) and list what is needed to multi-target <code>netstandard2.0</code> and <code>net10.0</code>.</li>
+      <li>Draft a migration plan for a System.Web application: the order of components, the first spike, the rollback plan, and the criteria for stopping.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Upgrade regularly: LTS releases, small steps, and checks for breaking and behavior changes.</li>
+      <li>Migrating from .NET Framework depends on the component: libraries are easy, System.Web and WCF are hard.</li>
+      <li>Reduce risk with characterization tests, bottom-up conversion, the strangler pattern, and side-by-side canaries.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Architecture &amp; Judgment — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

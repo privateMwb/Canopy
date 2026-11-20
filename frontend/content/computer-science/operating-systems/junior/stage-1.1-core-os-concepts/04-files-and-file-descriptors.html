@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Files &amp; File Descriptors — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · core os concepts</span> → lesson 04</p>
+  <h1>Files &amp; File Descriptors</h1>
+  <p class="lede">In Unix, a file descriptor is a small integer that names an open file, pipe, socket, or device, and that single idea makes input and output uniform.</p>
+
+  <h2><span class="num">§1</span>Everything Is a File</h2>
+  <p>Unix gives files, terminals, pipes, sockets, and many devices the same interface: <code>open</code>, <code>read</code>, <code>write</code>, <code>close</code>. A program that reads bytes from a file can read bytes from a pipe or a network socket with the same code.</p>
+  <p>When you open something, the kernel creates an entry in an open-file table and returns a small non-negative integer, the <strong>file descriptor</strong> (fd). That integer is just an index into a per-process table; all real state lives in the kernel.</p>
+
+  <h2><span class="num">§2</span>The Three Standard Descriptors</h2>
+  <table>
+    <tr><th>fd</th><th>Name</th><th>Default target</th></tr>
+    <tr><td>0</td><td>stdin</td><td>Keyboard / terminal input</td></tr>
+    <tr><td>1</td><td>stdout</td><td>Terminal output</td></tr>
+    <tr><td>2</td><td>stderr</td><td>Terminal output (for errors)</td></tr>
+  </table>
+  <p>Every process starts with these three open, inherited from its parent. A new <code>open</code> returns the <strong>lowest unused</strong> descriptor, so the first file you open normally gets fd 3.</p>
+  <pre>#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+
+int main(void) {
+    int fd = open("data.txt", O_RDONLY);   <span class="comment">// likely returns 3</span>
+    if (fd &lt; 0) return 1;
+
+    char buf[128];
+    ssize_t n = read(fd, buf, sizeof buf);  <span class="comment">// bytes actually read</span>
+    write(1, buf, n);                       <span class="comment">// copy to stdout</span>
+    close(fd);                              <span class="comment">// always release it</span>
+    return 0;
+}</pre>
+
+  <h2><span class="num">§3</span>Redirection Is Just Swapping Descriptors</h2>
+  <p>When a shell runs <code>ls &gt; out.txt</code>, it opens <code>out.txt</code> and arranges for fd 1 to point at it before running <code>ls</code>. The <code>ls</code> program writes to fd 1 as usual and never knows the difference. The same trick connects programs with pipes, which you'll build in Stage 1.2.</p>
+  <pre>ls &gt; files.txt          <span class="comment"># stdout -&gt; file</span>
+ls nosuchdir 2&gt; err.txt <span class="comment"># stderr -&gt; file</span>
+sort &lt; files.txt        <span class="comment"># stdin  &lt;- file</span>
+ls 2&gt;&amp;1 | wc -l         <span class="comment"># stderr joined to stdout, then piped</span></pre>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    Descriptors are a finite resource, typically 1,024 per process by default. A long-running program that opens files without closing them eventually fails with <code>EMFILE: Too many open files</code>.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting to <code>close</code> a descriptor</td><td>Descriptor leak; eventually <code>open</code> fails</td><td>Close every fd you open, or wrap it in a cleanup path</td></tr>
+    <tr><td>Assuming <code>read</code> returns the full requested count</td><td>Truncated data and silent bugs</td><td><code>read</code> may return fewer bytes; loop until you have what you need or get 0 (end of file)</td></tr>
+    <tr><td>Writing errors to stdout</td><td>Error text lands in the data stream and pollutes pipes</td><td>Send diagnostics to fd 2 (<code>stderr</code>)</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a C program that copies one file to another using only <code>open</code>, <code>read</code>, <code>write</code>, and <code>close</code>.</li>
+      <li>In a shell, explain the difference between <code>cmd &gt; out 2&gt;&amp;1</code> and <code>cmd 2&gt;&amp;1 &gt; out</code>. Run both and compare.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A file descriptor is an integer index into a per-process table of kernel-managed open files.</li>
+      <li>Files, pipes, sockets, and terminals share one read/write interface.</li>
+      <li>Redirection works by changing what fds 0, 1, and 2 point to before the program runs.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Core OS Concepts — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

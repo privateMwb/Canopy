@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading EXPLAIN Plans — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · indexes &amp; query performance</span> → lesson 03</p>
+  <h1>Reading EXPLAIN Plans</h1>
+  <p class="lede"><code>EXPLAIN</code> shows the plan the database chose to run a query, and learning to read it is the single most useful performance skill.</p>
+
+  <h2><span class="num">§1</span>Asking for the Plan</h2>
+  <p><code>EXPLAIN</code> prints the plan without running the query. <code>EXPLAIN ANALYZE</code> <strong>runs</strong> it and adds real timings and row counts, so wrap data-changing statements in a transaction you roll back.</p>
+  <pre>EXPLAIN ANALYZE
+SELECT * FROM orders WHERE customer_id = 42 ORDER BY placed_at DESC LIMIT 10;
+
+ Limit  (cost=0.43..8.9 rows=10) (actual time=0.03..0.05 rows=10 loops=1)
+   -&gt;  Index Scan Backward using idx_orders_cust_date on orders
+         Index Cond: (customer_id = 42)
+ Planning Time: 0.15 ms
+ Execution Time: 0.08 ms</pre>
+  <p>Read a plan from the <strong>innermost, most-indented node outward</strong>: each node feeds its result to its parent. (SQLite uses <code>EXPLAIN QUERY PLAN</code>; MySQL uses <code>EXPLAIN</code> and <code>EXPLAIN ANALYZE</code> too.)</p>
+
+  <h2><span class="num">§2</span>Scan Types</h2>
+  <table>
+    <tr><th>Node</th><th>Meaning</th><th>Typical use</th></tr>
+    <tr><td>Seq Scan</td><td>Read every row of the table</td><td>Small tables, or most rows needed</td></tr>
+    <tr><td>Index Scan</td><td>Walk the index, then fetch rows from the table</td><td>Selective filters</td></tr>
+    <tr><td>Index Only Scan</td><td>Answer entirely from the index</td><td>Covering indexes</td></tr>
+    <tr><td>Bitmap Heap Scan</td><td>Collect matching locations, then read them in order</td><td>Moderately selective filters or combined indexes</td></tr>
+  </table>
+  <p>A <code>Seq Scan</code> isn't automatically bad. If you need 60% of the table, reading it sequentially beats jumping around via an index. It's a problem when you needed a handful of rows and read millions.</p>
+
+  <h2><span class="num">§3</span>Join Strategies</h2>
+  <ul>
+    <li><strong>Nested Loop</strong>: for each row on one side, look up matches on the other. Great when one side is small and the other is indexed.</li>
+    <li><strong>Hash Join</strong>: build a hash table of one side, probe it with the other. Good for large, unsorted inputs.</li>
+    <li><strong>Merge Join</strong>: walk two sorted inputs together. Efficient when both are already sorted (e.g. via indexes).</li>
+  </ul>
+  <p>You rarely choose; the planner does, based on row estimates. Your job is to notice when its choice is bad, and ask why.</p>
+
+  <h2><span class="num">§4</span>What to Look For</h2>
+  <ol>
+    <li><strong>Estimated vs. actual rows.</strong> <code>rows=10</code> estimated but <code>rows=500000</code> actual means the planner was misinformed (see Lesson 4), so it likely chose a poor plan.</li>
+    <li><strong>Where the time goes.</strong> <code>actual time</code> is per node: find the node with the largest share.</li>
+    <li><strong>Scans over large tables</strong> where you expected an index.</li>
+    <li><strong>Sorts that spill to disk</strong> (<code>Sort Method: external merge</code>), which signal memory pressure or a missing index to provide order.</li>
+    <li><strong><code>loops=N</code> with big N</strong>: a nested loop executing an expensive inner step many times.</li>
+  </ol>
+  <pre><span class="comment">-- Useful extra detail in PostgreSQL</span>
+EXPLAIN (ANALYZE, BUFFERS) SELECT ...;     <span class="comment">-- shows pages read from cache vs. disk</span></pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The plan tells you what the database actually did, not what you hoped it did. Always compare estimated rows to actual rows: large gaps are the clue to most bad plans.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Guessing at slow queries instead of reading the plan</td><td>Time spent adding indexes that aren't used</td><td>Run <code>EXPLAIN ANALYZE</code> first and find the expensive node</td></tr>
+    <tr><td>Running <code>EXPLAIN ANALYZE</code> on a destructive statement</td><td>It really executes the INSERT/UPDATE/DELETE</td><td>Wrap in <code>BEGIN</code> … <code>ROLLBACK</code></td></tr>
+    <tr><td>Testing on tiny development data</td><td>The planner picks different plans at scale</td><td>Test with production-sized data or a copy</td></tr>
+    <tr><td>Treating every Seq Scan as a bug</td><td>Pointless indexes on small or mostly-read tables</td><td>Judge by rows needed vs. rows read</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>On your million-row table, run <code>EXPLAIN ANALYZE</code> for a filter on an unindexed column, add an index, and run it again. Note the scan type, time, and rows read before and after.</li>
+      <li>Find a query where estimated rows and actual rows differ by 10× or more. Run <code>ANALYZE tablename;</code> and see whether the estimate improves.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>EXPLAIN</code> shows the chosen plan; <code>EXPLAIN ANALYZE</code> adds actual timings and row counts.</li>
+      <li>Know the scan and join node types, and read plans from the inside out.</li>
+      <li>Gaps between estimated and actual rows reveal planner misjudgments.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Indexes &amp; Query Performance — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

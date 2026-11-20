@@ -1,0 +1,5 @@
+{
+  "title": "Large-Scale Refactors: Strangler Fig & Branch by Abstraction",
+  "description": "Replacing a system while it runs: incremental migration, parallel runs, and keeping every commit shippable.",
+  "order": 1
+}

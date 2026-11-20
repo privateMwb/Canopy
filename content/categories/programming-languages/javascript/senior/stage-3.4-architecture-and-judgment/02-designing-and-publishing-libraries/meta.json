@@ -1,0 +1,5 @@
+{
+  "title": "Designing & Publishing Libraries",
+  "description": "Dual ESM/CommonJS packages, exports maps, and API stability.",
+  "order": 2
+}

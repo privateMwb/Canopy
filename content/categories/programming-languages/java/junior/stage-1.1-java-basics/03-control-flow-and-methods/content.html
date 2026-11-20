@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control Flow &amp; Methods — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · java basics</span> → lesson 03</p>
+  <h1>Control Flow &amp; Methods</h1>
+  <p class="lede">Conditionals, loops, and methods let a program make decisions and repeat work, and modern <code>switch</code> expressions make multi-way decisions far safer than the old statement form.</p>
+
+  <h2><span class="num">§1</span>Conditionals and Loops</h2>
+  <p><code>if</code>/<code>else</code>, <code>for</code>, <code>while</code>, and <code>do/while</code> behave as in most C-family languages. The condition must be a real <code>boolean</code>; Java will not treat <code>0</code> or <code>null</code> as false. The enhanced <code>for</code> loop walks any array or collection without an index.</p>
+  <pre>int score = 82;
+if (score &gt;= 90) {
+    System.out.println("A");
+} else if (score &gt;= 80) {
+    System.out.println("B");
+} else {
+    System.out.println("keep going");
+}
+
+for (int i = 0; i &lt; 3; i++) { System.out.println(i); }
+
+int[] nums = {4, 8, 15};
+for (int n : nums) { System.out.println(n); }    <span class="comment">// for-each</span>
+
+int tries = 0;
+while (tries &lt; 3) { tries++; }</pre>
+  <p><code>break</code> leaves the loop, <code>continue</code> skips to the next iteration. Always use braces, even for one-line bodies; leaving them out is how "goto fail"-style bugs happen.</p>
+
+  <h2><span class="num">§2</span>switch Expressions</h2>
+  <p>The old <code>switch</code> statement falls through to the next case unless you remember <code>break</code>. The modern <strong>switch expression</strong> uses <code>-&gt;</code>, has no fall-through, and produces a value. The compiler checks that every possible input is covered.</p>
+  <pre>enum Day { MON, TUE, SAT, SUN }
+
+String kind = switch (day) {
+    case SAT, SUN -&gt; "weekend";
+    case MON, TUE -&gt; "weekday";
+};                                  <span class="comment">// no default needed: all enum values covered</span>
+
+int len = switch (word) {
+    case "one" -&gt; 3;
+    case "three" -&gt; 5;
+    default -&gt; { 
+        System.out.println("unknown word");
+        yield -1;                   <span class="comment">// yield returns a value from a block</span>
+    }
+};</pre>
+
+  <h2><span class="num">§3</span>Methods</h2>
+  <p>A method has a return type, a name, parameters, and a body. Java is <strong>pass-by-value</strong>: the method gets a copy of each argument. For a reference, the copy is a copy of the pointer, so the method can change the object it points to, but it cannot make the caller's variable point somewhere else.</p>
+  <pre>static int max(int a, int b) { return a &gt; b ? a : b; }
+
+static void rename(StringBuilder sb) { sb.append("!"); }     <span class="comment">// mutates the shared object</span>
+static void reassign(StringBuilder sb) { sb = new StringBuilder("x"); }  <span class="comment">// caller unaffected</span>
+
+static int sum(int... values) {     <span class="comment">// varargs</span>
+    int t = 0;
+    for (int v : values) t += v;
+    return t;
+}</pre>
+  <p><strong>Overloading</strong> lets several methods share a name if their parameter lists differ; the compiler picks one at compile time based on the argument types.</p>
+
+  <div class="callout">
+    <span class="label">Pass-by-value, always</span>
+    Java never passes variables by reference. When you pass an object, you pass a copy of the pointer. Both pointers reach the same object, so mutations are visible, but reassigning the parameter is not.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>=</code> instead of <code>==</code> in a condition</td><td>Compile error for most types; a silent bug with <code>boolean</code></td><td>Compare with <code>==</code>, and keep conditions simple</td></tr>
+    <tr><td>Old-style <code>switch</code> without <code>break</code></td><td>Execution falls through into the next case</td><td>Use arrow-form cases, which never fall through</td></tr>
+    <tr><td>Off-by-one in a <code>for</code> loop bound</td><td><code>ArrayIndexOutOfBoundsException</code> or a missed element</td><td>Use <code>i &lt; arr.length</code>, or a for-each loop</td></tr>
+    <tr><td>Expecting a method to reassign the caller's variable</td><td>The caller's variable is unchanged</td><td>Return the new value and assign it at the call site</td></tr>
+    <tr><td>Skipping braces on <code>if</code> bodies</td><td>A second line looks guarded but isn't</td><td>Always write the braces</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write <code>static String fizzBuzz(int n)</code> returning <code>"Fizz"</code>, <code>"Buzz"</code>, <code>"FizzBuzz"</code>, or the number as a string, using a switch expression or if-chain. Print 1 to 30.</li>
+      <li>Write <code>static int sum(int... values)</code> and call it with zero, one, and many arguments.</li>
+      <li>Write two methods, one that appends to a <code>StringBuilder</code> and one that reassigns it, and explain the difference in what the caller sees.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Conditions must be <code>boolean</code>, and switch expressions with <code>-&gt;</code> avoid fall-through and can be checked for completeness.</li>
+      <li>Java is strictly pass-by-value; for objects the value is a reference.</li>
+      <li>Overloads are chosen at compile time from the declared argument types.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Java Basics — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

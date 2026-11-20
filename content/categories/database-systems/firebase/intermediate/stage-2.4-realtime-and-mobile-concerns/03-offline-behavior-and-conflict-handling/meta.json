@@ -1,0 +1,5 @@
+{
+  "title": "Offline Behavior & Conflict Handling",
+  "description": "Designing for flaky connections and concurrent edits.",
+  "order": 3
+}

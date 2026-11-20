@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Observability &amp; Performance of Containers — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · platform practice & judgment</span> → lesson 02</p>
+  <h1>Observability &amp; Performance of Containers</h1>
+  <p class="lede">Container metrics come from cgroups, and the signals that explain most production problems are CPU throttling, memory pressure, I/O waits, and restarts.</p>
+
+  <h2><span class="num">§1</span>What to Measure</h2>
+  <table>
+    <tr><th>Signal</th><th>Where it comes from</th><th>What it tells you</th></tr>
+    <tr><td>CPU usage</td><td><code>cpu.stat</code> <code>usage_usec</code></td><td>Work actually done</td></tr>
+    <tr><td>CPU throttling</td><td><code>cpu.stat</code> <code>nr_throttled</code>, <code>throttled_usec</code></td><td>Time the app was <strong>denied</strong> CPU by its quota</td></tr>
+    <tr><td>Memory working set</td><td><code>memory.current</code> minus inactive file cache</td><td>What would be hard to reclaim</td></tr>
+    <tr><td>OOM kills</td><td><code>memory.events</code> <code>oom_kill</code></td><td>Memory limit enforcement</td></tr>
+    <tr><td>Restarts and exits</td><td>Engine state and events</td><td>Crash loops and exit codes</td></tr>
+    <tr><td>Network and block I/O</td><td>Interface and <code>io.stat</code> counters</td><td>Saturation and slow storage</td></tr>
+  </table>
+  <pre>docker stats --no-stream
+cat /sys/fs/cgroup/system.slice/docker-&lt;id&gt;.scope/cpu.stat
+cat /sys/fs/cgroup/system.slice/docker-&lt;id&gt;.scope/memory.events</pre>
+  <p>Collectors such as <strong>cAdvisor</strong>, the Prometheus node exporter, and OpenTelemetry agents scrape these and expose them to dashboards. Pair infrastructure metrics with application metrics (latency, errors, saturation) and logs and traces.</p>
+  <h2><span class="num">§2</span>Throttling and Memory Pitfalls</h2>
+  <p><strong>CPU throttling</strong> causes latency spikes even when average CPU looks low: with a quota of 1 CPU, a multithreaded app can burn its whole 100 ms period budget in 20 ms of wall time on several cores, then stall for the remaining 80 ms. Watch the <strong>throttled period ratio</strong>, and consider raising or removing CPU limits for latency-sensitive services while keeping reservations or shares. <strong>Memory</strong> is hard-limited: working set approaching <code>memory.max</code> leads to reclaim, then OOM kills. Page cache counts against the limit but is reclaimable, so do not alarm on raw usage; alarm on working set and on <code>oom_kill</code> events. Runtimes with their own heaps (JVM, Go, Node) need limits tuned to the container so total process memory stays under the cgroup limit.</p>
+  <pre>dmesg -T | grep -i 'killed process'          <span class="comment"># host-side evidence of OOM kills</span>
+docker events --filter event=oom --since 1h</pre>
+  <h2><span class="num">§3</span>Noisy Neighbors and Fairness</h2>
+  <p>Containers on a host share CPU caches, memory bandwidth, disk, and network. One heavy batch job can slow a latency-critical service. Mitigate with <strong>CPU shares or pinning</strong> (<code>--cpuset-cpus</code>), <strong>I/O weights</strong>, per-container PID limits, separate hosts for critical and batch workloads, and by monitoring <strong>host-level</strong> saturation (load, pressure stall information in <code>/proc/pressure</code>) alongside container metrics.</p>
+  <div class="callout">
+    <span class="label">Averages hide the problem</span>
+    Mean CPU of 30% can coexist with severe throttling and bad p99 latency. Alert on throttling ratio, working-set-to-limit ratio, OOM kills, and restart counts, and always look at percentiles, not averages.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Setting tight CPU limits on latency-sensitive services</td><td>Throttling and slow tail latency</td><td>Raise or remove CPU limits, and use requests or shares</td></tr>
+    <tr><td>Alerting on raw memory usage including cache</td><td>False alarms</td><td>Alert on working set and OOM events</td></tr>
+    <tr><td>Watching only container metrics</td><td>Host contention goes unseen</td><td>Add host pressure and saturation metrics</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run a multi-threaded CPU load with <code>--cpus 1</code> and read <code>nr_throttled</code> from <code>cpu.stat</code> before and after.</li>
+      <li>Produce an OOM kill on purpose and find the evidence in <code>memory.events</code>, <code>docker events</code>, and <code>dmesg</code>.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Container metrics come from cgroup files; throttling and working set matter most.</li>
+      <li>Limits cause two failure modes: CPU throttling (slow) and OOM kills (dead).</li>
+      <li>Monitor host saturation to catch noisy neighbors.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Platform Practice & Judgment — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

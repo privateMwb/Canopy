@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Refactoring",
+  "description": "Safe small-step refactoring, the core moves, replacing conditionals and primitives, taming legacy code, and managing technical debt.",
+  "order": 2
+}

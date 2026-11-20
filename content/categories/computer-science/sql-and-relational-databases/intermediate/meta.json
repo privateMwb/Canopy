@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Indexes, query tuning, transactions, advanced SQL, and NoSQL options.",
+  "order": 2
+}

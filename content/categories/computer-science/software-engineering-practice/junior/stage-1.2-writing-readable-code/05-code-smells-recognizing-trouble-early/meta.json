@@ -1,0 +1,5 @@
+{
+  "title": "Code Smells: Recognizing Trouble Early",
+  "description": "Long parameter lists, feature envy, magic numbers, and the other signals that a design is straining.",
+  "order": 5
+}

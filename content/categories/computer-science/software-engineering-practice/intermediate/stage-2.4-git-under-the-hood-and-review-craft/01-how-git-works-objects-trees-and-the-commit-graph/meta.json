@@ -1,0 +1,5 @@
+{
+  "title": "How Git Works: Objects, Trees & the Commit Graph",
+  "description": "Blobs, trees, commits, and refs: why branches are cheap and what a hash actually identifies.",
+  "order": 1
+}

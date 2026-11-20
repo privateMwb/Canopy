@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 \u2014 Design & Generics in Depth",
+  "description": "Wildcards and erasure, SOLID, patterns in the JDK, and immutable value objects.",
+  "order": 3
+}

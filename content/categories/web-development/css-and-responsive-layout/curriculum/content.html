@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CSS &amp; Responsive Layout Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style></head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / css-and-responsive-layout</p>
+    <h1>From styling a page to layouts that adapt to anything</h1>
+    <p class="lede">Three levels, twelve stages — the cascade, the box model, Flexbox, Grid, and modern CSS, built toward interfaces that are responsive, maintainable, and fast to render.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I can change a color" to "I can style a complete page, control spacing and layout with Flexbox, and make it work on a phone."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Selectors &amp; the Cascade</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Adding CSS to a Page</p><p class="lesson-desc">link, style, and inline styles, and how the browser applies them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Selectors &amp; Specificity</p><p class="lesson-desc">Type, class, ID, attribute, and pseudo selectors, and which rule wins.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">The Cascade &amp; Inheritance</p><p class="lesson-desc">Origin, importance, order, and which properties inherit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Colors, Units &amp; Values</p><p class="lesson-desc">Hex, rgb, hsl, px vs. rem vs. %, and calc().</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">DevTools for CSS</p><p class="lesson-desc">Inspecting, toggling, and debugging styles live.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Style a plain article page with a type scale and color palette using only classes, then explain the specificity of every rule.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — The Box Model &amp; Typography</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Box Model</p><p class="lesson-desc">Content, padding, border, margin, and box-sizing: border-box.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Margin Collapsing &amp; Spacing</p><p class="lesson-desc">Why margins combine, and spacing strategies that avoid surprises.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Typography Basics</p><p class="lesson-desc">Font families, sizes, line height, weight, and web fonts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Backgrounds, Borders &amp; Shadows</p><p class="lesson-desc">Gradients, images, radius, and layered effects.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Display, Position &amp; Overflow</p><p class="lesson-desc">Block vs. inline, relative, absolute, and sticky, and handling overflow.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Recreate a card component closely from a design, using spacing tokens defined as custom properties.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Flexbox</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Flex Container Basics</p><p class="lesson-desc">display: flex, direction, wrapping, and the main vs. cross axis.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Alignment &amp; Distribution</p><p class="lesson-desc">justify-content, align-items, gap, and centering without hacks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Flex Items: Grow, Shrink &amp; Basis</p><p class="lesson-desc">How items size themselves along the main axis.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Common Flex Patterns</p><p class="lesson-desc">Navbars, card rows, sticky footers, and media objects.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Flexbox Pitfalls</p><p class="lesson-desc">min-width: auto, overflow, and why items sometimes won't shrink.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a responsive navbar and a card row with Flexbox that survive long text and missing images.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Responsive Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Viewport &amp; Mobile-First</p><p class="lesson-desc">The viewport meta tag and designing from small screens up.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Media Queries</p><p class="lesson-desc">Breakpoints, min-width vs. max-width, and content-driven breakpoints.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Fluid Layouts &amp; Relative Units</p><p class="lesson-desc">Percentages, vw and vh, clamp(), and letting content flow.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Responsive Media in CSS</p><p class="lesson-desc">object-fit, aspect-ratio, and max-width: 100%.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing on Real Devices</p><p class="lesson-desc">Device emulation, real phones, and common mobile bugs.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Make a three-section landing page that looks right from 320px to 1440px with no horizontal scroll.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can style a page" to "I build layouts with Grid and modern CSS, structure stylesheets that scale, and design components that adapt to their container."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — CSS Grid</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Grid Fundamentals</p><p class="lesson-desc">Rows, columns, tracks, fr units, and gap.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Placing Items &amp; Named Areas</p><p class="lesson-desc">Line numbers, spans, and grid-template-areas.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Auto-Placement &amp; Responsive Grids</p><p class="lesson-desc">auto-fit, auto-fill, minmax(), and grids with no media queries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Subgrid &amp; Alignment</p><p class="lesson-desc">Aligning nested content to a parent grid.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Grid vs. Flexbox</p><p class="lesson-desc">Choosing the right layout system for each job.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a magazine-style page layout with Grid that reflows from one to four columns without a single media query.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Modern CSS Features</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Custom Properties</p><p class="lesson-desc">Variables, scoping, fallbacks, and theming.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Logical Properties &amp; Writing Modes</p><p class="lesson-desc">Inline and block axes, margin-inline, and layouts for any writing direction.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Container Queries</p><p class="lesson-desc">Components that respond to their container instead of the viewport.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">:has(), :is() &amp; :where()</p><p class="lesson-desc">Selecting parents, grouping, and controlling specificity.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Cascade Layers &amp; @scope</p><p class="lesson-desc">Taming specificity with @layer and scoped rules.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a card component that adapts to its container, themes with custom properties, and has zero specificity conflicts.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Animation &amp; Interaction</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Transitions</p><p class="lesson-desc">Animating state changes with the right timing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Keyframe Animations</p><p class="lesson-desc">@keyframes, fill modes, and orchestrating sequences.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Transforms &amp; 3D</p><p class="lesson-desc">translate, scale, rotate, and perspective.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Performant Animation</p><p class="lesson-desc">Compositor-only properties, will-change, and avoiding layout thrash.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Scroll-Driven Animation &amp; View Transitions</p><p class="lesson-desc">Animating on scroll and between pages with the newer APIs.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add motion to a page that respects prefers-reduced-motion and holds 60fps in a performance trace.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Architecture &amp; Tooling</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Naming &amp; Organization</p><p class="lesson-desc">BEM, utility-first, and choosing a convention.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Utility-First CSS &amp; Tailwind</p><p class="lesson-desc">Strengths, costs, and when it fits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Preprocessors &amp; PostCSS</p><p class="lesson-desc">Sass, native nesting, and build steps.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Design Tokens &amp; Theming</p><p class="lesson-desc">Dark mode, density, and tokens shared across code and design.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Linting &amp; Visual Regression Testing</p><p class="lesson-desc">Stylelint and screenshot tests that catch regressions.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Refactor a messy stylesheet into a layered, tokenized system and prove with screenshots that nothing changed visually.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I write good CSS" to "I understand how browsers lay out and paint, design CSS architectures for large teams, and can defend CSS decisions on performance and maintainability."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — How CSS Is Computed &amp; Rendered</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">From Style Sheet to Pixels</p><p class="lesson-desc">Style calculation, layout, paint, and composite.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The Layout Algorithms</p><p class="lesson-desc">How block, inline, flex, and grid layout engines work.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Stacking Contexts &amp; Painting Order</p><p class="lesson-desc">Why z-index fails and how to reason about layers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Containment &amp; Rendering Performance</p><p class="lesson-desc">contain, content-visibility, and the cost of selectors.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Reading Performance Traces</p><p class="lesson-desc">Finding layout and paint bottlenecks in DevTools.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Diagnose a janky page from a trace, fix the layout thrash, and report the before-and-after frame times.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Advanced Layout &amp; Visual Systems</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Advanced Grid Patterns</p><p class="lesson-desc">Overlap, intrinsic sizing, and complex page layouts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Fluid Type &amp; Space Systems</p><p class="lesson-desc">clamp()-based scales and fluid design tokens.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Responsive Component Strategy</p><p class="lesson-desc">Container, viewport, and preference queries working together.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Complex Visual Effects</p><p class="lesson-desc">Masks, clip-path, filters, blend modes, and when they cost too much.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Print &amp; Alternate Media</p><p class="lesson-desc">Print stylesheets and paged media.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a responsive dashboard with a fluid system that is fully themeable and prints cleanly.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — CSS at Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Design System Architecture</p><p class="lesson-desc">Tokens, primitives, components, and governance.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Styling Strategies Compared</p><p class="lesson-desc">CSS Modules, CSS-in-JS, utility CSS, and native CSS trade-offs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Critical CSS &amp; Delivery</p><p class="lesson-desc">Inlining, splitting, and loading CSS without blocking render.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Cross-Browser Strategy</p><p class="lesson-desc">Support policies, progressive enhancement, and polyfills.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Migrating Large Stylesheets</p><p class="lesson-desc">Incremental refactors with measurable safety nets.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write an architecture proposal and migration plan for a 50,000-line stylesheet, with risks and rollback steps.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Accessibility in CSS</p><p class="lesson-desc">Focus styles, contrast, motion, forced colors, and zoom.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Evaluating New CSS Features</p><p class="lesson-desc">When to adopt, polyfill, or wait.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Reviewing CSS in Code Review</p><p class="lesson-desc">What to look for and what to leave alone.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Making the Case for Quality</p><p class="lesson-desc">Explaining CSS debt and design-system investment to stakeholders.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Review a real production stylesheet, rank its problems by user impact, and present a prioritized plan to a skeptical team.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Layout arrives at Junior as the box model and Flexbox, returns at Intermediate as Grid and container-aware components, and comes back at Senior as how the browser computes and paints it all. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how a layout algorithm resolves sizes is one skill; deciding how a 50,000-line stylesheet should be organized, and making that case to a team, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

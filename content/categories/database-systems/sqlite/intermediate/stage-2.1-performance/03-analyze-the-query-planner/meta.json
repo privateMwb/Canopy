@@ -1,0 +1,5 @@
+{
+  "title": "ANALYZE & the Query Planner",
+  "description": "Statistics, and helping the planner choose well.",
+  "order": 3
+}

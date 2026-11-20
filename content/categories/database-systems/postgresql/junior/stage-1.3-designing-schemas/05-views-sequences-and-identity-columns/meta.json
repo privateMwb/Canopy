@@ -1,0 +1,5 @@
+{
+  "title": "Views, Sequences & Identity Columns",
+  "description": "Reusable queries, generated keys, and why gaps in IDs are normal.",
+  "order": 5
+}

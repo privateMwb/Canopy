@@ -1,0 +1,5 @@
+{
+  "title": "Timers, requestAnimationFrame & Idle Callbacks",
+  "description": "Scheduling work without blocking the UI.",
+  "order": 4
+}

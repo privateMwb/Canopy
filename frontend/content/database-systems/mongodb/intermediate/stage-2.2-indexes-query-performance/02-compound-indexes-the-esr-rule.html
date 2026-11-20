@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compound Indexes &amp; the ESR Rule — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · indexes &amp; query performance</span> → lesson 02</p>
+  <h1>Compound Indexes &amp; the ESR Rule</h1>
+  <p class="lede">A compound index covers several fields in a defined order, and ordering those fields by Equality, then Sort, then Range makes one index serve most queries well.</p>
+
+  <h2><span class="num">§1</span>Compound Indexes and Prefixes</h2>
+  <p>A compound index sorts by the first field, then by the second within ties, and so on.</p>
+  <pre>db.orders.createIndex({ customerId: 1, status: 1, placedAt: -1 })</pre>
+  <p>It supports queries on any <strong>prefix</strong> of its fields: <code>customerId</code>; <code>customerId</code> and <code>status</code>; or all three. It does not efficiently support a query on <code>status</code> alone, because entries are not ordered by <code>status</code> globally.</p>
+  <h2><span class="num">§2</span>The ESR Rule</h2>
+  <p>Order the fields of a compound index in this sequence:</p>
+  <ol>
+    <li><strong>E</strong>quality fields first (exact matches).</li>
+    <li><strong>S</strong>ort fields next.</li>
+    <li><strong>R</strong>ange fields last (<code>$gt</code>, <code>$lt</code>, <code>$in</code> with many values).</li>
+  </ol>
+  <pre><span class="comment">// query: this customer's paid orders from 2026, newest first</span>
+db.orders.find({ customerId: 42, status: "paid", placedAt: { $gte: start } }).sort({ placedAt: -1 })
+db.orders.createIndex({ customerId: 1, status: 1, placedAt: -1 })     <span class="comment">// E, E, then S and R on one field</span></pre>
+  <p>Equality fields narrow the search to one section of the index. Sort fields after them return that section already ordered, so no in-memory sort is needed. Range fields last let the scan stop as soon as the range ends.</p>
+  <p>A query that sorts on one field and ranges on another:</p>
+  <pre>db.events.find({ userId: 7, score: { $gt: 50 } }).sort({ createdAt: -1 })
+db.events.createIndex({ userId: 1, createdAt: -1, score: 1 })        <span class="comment">// E, S, R</span></pre>
+  <h2><span class="num">§3</span>Sort Direction</h2>
+  <p>A compound index can serve a sort in the same direction as defined or exactly reversed. <code>{ a: 1, b: -1 }</code> serves <code>sort({ a: 1, b: -1 })</code> and <code>sort({ a: -1, b: 1 })</code>, but not <code>sort({ a: 1, b: 1 })</code>.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    One well-ordered compound index often replaces several single-field indexes. Single-field indexes are not combined effectively for a multi-field query plus sort.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Putting the range field before the sort field</td><td>MongoDB cannot return results in order and sorts in memory</td><td>Follow Equality, Sort, Range</td></tr>
+    <tr><td>Several single-field indexes for a multi-field query</td><td>One is picked, and the rest of the work is filtering</td><td>Build one compound index</td></tr>
+    <tr><td>Sorting in a direction the index cannot provide</td><td>An in-memory sort</td><td>Match the index directions or their exact reverse</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Design the index for "a user's unread notifications, newest first, with priority at least 3".</li>
+      <li>Create two versions of a compound index, one in ESR order and one not, and compare <code>explain</code> for a sort query.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A compound index supports queries on its leading prefixes.</li>
+      <li>Order fields Equality, Sort, Range.</li>
+      <li>One compound index in the right order beats several single-field indexes.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Indexes &amp; Query Performance — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

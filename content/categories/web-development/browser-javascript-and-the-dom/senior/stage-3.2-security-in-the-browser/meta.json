@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Security in the Browser",
+  "description": "Same-origin policy, XSS and Trusted Types, CSP, cookies and CSRF, and third-party scripts.",
+  "order": 2
+}

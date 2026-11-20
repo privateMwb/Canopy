@@ -1,0 +1,5 @@
+{
+  "title": "Strings & std::string_view",
+  "description": "Owning vs. non-owning text, and the dangling-view trap.",
+  "order": 4
+}

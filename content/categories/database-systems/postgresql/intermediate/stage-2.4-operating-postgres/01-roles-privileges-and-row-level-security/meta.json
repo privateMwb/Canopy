@@ -1,0 +1,5 @@
+{
+  "title": "Roles, Privileges & Row-Level Security",
+  "description": "GRANT, default privileges, and policies that filter rows per user.",
+  "order": 1
+}

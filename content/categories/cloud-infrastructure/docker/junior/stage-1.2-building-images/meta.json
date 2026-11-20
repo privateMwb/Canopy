@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Building Images",
+  "description": "Writing Dockerfiles, controlling the build context, and ordering layers so rebuilds are fast.",
+  "order": 2
+}

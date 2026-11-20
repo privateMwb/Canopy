@@ -1,0 +1,5 @@
+{
+  "title": "Observability",
+  "description": "Measuring slow queries and lock waits in an embedded engine.",
+  "order": 5
+}

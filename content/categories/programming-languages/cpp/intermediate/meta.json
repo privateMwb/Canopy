@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Generic, move-aware, modern C++ with templates and the full standard library.",
+  "order": 2
+}

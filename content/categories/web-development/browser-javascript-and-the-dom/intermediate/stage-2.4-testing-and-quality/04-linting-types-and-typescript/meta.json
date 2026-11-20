@@ -1,0 +1,5 @@
+{
+  "title": "Linting, Types & TypeScript",
+  "description": "ESLint, JSDoc types, and gradual typing.",
+  "order": 4
+}

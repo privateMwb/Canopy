@@ -1,0 +1,5 @@
+{
+  "title": "Fixing CLS",
+  "description": "Reserving space and avoiding layout shifts.",
+  "order": 2
+}

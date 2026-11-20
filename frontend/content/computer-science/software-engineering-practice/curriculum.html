@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Software Engineering Practice Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / software engineering practice</p>
+    <h1>From your first unit test to leading how a codebase evolves</h1>
+    <p class="lede">Three levels, twelve stages — testing, version control, and design, built toward the judgment to refactor safely, choose when a pattern helps, and explain tradeoffs to the people who live with the code.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "my code runs" to "I write a test before I trust a change, keep names and functions readable, make commits other people can review, and structure a small program with clear responsibilities."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Writing Your First Tests</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why We Test: Confidence, Regression &amp; Fast Feedback</p><p class="lesson-desc">What tests are really for, the cost of a bug found late, and why untested code gets harder to change.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Anatomy of a Unit Test: Arrange, Act, Assert</p><p class="lesson-desc">Structure a test so it fails for one reason, reads like a spec, and needs no hidden setup.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Choosing Cases: Boundaries &amp; Equivalence Classes</p><p class="lesson-desc">Picking the few inputs that catch most bugs: empty, one, many, off-by-one, and the edge of every range.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Test-Driven Development: Red, Green, Refactor</p><p class="lesson-desc">Write the failing test first, make it pass the simplest way, then clean up, and when the discipline is worth it.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a test suite for a function that parses and validates dates, with at least ten cases covering boundaries and bad input, then fix a planted bug using TDD.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Writing Readable Code</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Naming Things: Variables, Functions &amp; Types</p><p class="lesson-desc">Names that reveal intent, the cost of abbreviations and vague words, and renaming as the cheapest refactoring.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Small Functions with One Job</p><p class="lesson-desc">Why long functions hide bugs, how to split by level of abstraction, and when a function is small enough.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Comments: What to Say and What the Code Should</p><p class="lesson-desc">Comments that explain why rather than what, and the ones that quietly rot into lies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Duplication, DRY &amp; the Rule of Three</p><p class="lesson-desc">Telling real duplication from coincidental similarity, and why the wrong abstraction costs more than a copy.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Code Smells: Recognizing Trouble Early</p><p class="lesson-desc">Long parameter lists, feature envy, magic numbers, and the other signals that a design is straining.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a 120-line messy function, add tests that pin down its behavior, list its smells, then rewrite it into named, single-purpose pieces.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Commit Hygiene &amp; Shipping Changes</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Atomic Commits &amp; Messages Worth Reading</p><p class="lesson-desc">One logical change per commit, the shape of a good message, and why history is documentation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">.gitignore, Tags &amp; Semantic Versioning</p><p class="lesson-desc">What never belongs in a repo, marking releases with tags, and what MAJOR.MINOR.PATCH actually promises.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Writing a Pull Request Reviewers Can Finish</p><p class="lesson-desc">Small diffs, a description that gives context, and reviewing your own change before asking anyone else.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Receiving Review: Feedback Without Friction</p><p class="lesson-desc">Reading comments as information about the code, replying clearly, and knowing when to push back.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Split a 400-line change into a series of atomic commits with clear messages, then write the pull request description a reviewer would want.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Structuring Programs</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Abstraction &amp; Encapsulation</p><p class="lesson-desc">Hiding detail behind a small interface so callers depend on what a thing does, not how it does it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Composition over Inheritance</p><p class="lesson-desc">Why deep class hierarchies turn brittle, and how has-a relationships keep code flexible.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Coupling &amp; Cohesion</p><p class="lesson-desc">The two measures behind most design advice, and how to see them in a dependency diagram.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">The SOLID Principles as Rules of Thumb</p><p class="lesson-desc">Five guidelines for classes and modules, with each one followed and each one violated.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Pure Functions, Immutability &amp; Side Effects</p><p class="lesson-desc">Code that depends only on its inputs is easy to test and reason about; where to push the side effects instead.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a small order-processing module with a clear public interface, separate its pure logic from I/O, and justify every dependency you allowed.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I write tests and tidy code" to "I can design a test suite that earns trust, refactor with confidence, use design patterns where they help, and shape Git history and reviews so a team moves faster."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Testing Strategy</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Test Pyramid &amp; Where Tests Belong</p><p class="lesson-desc">Unit, integration, and end-to-end tests, their cost and speed tradeoffs, and the alternative shapes teams use.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Test Doubles: Stubs, Mocks, Fakes &amp; Spies</p><p class="lesson-desc">What each one replaces, how over-mocking couples tests to implementation, and when a fake beats a mock.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Designing for Testability: Dependency Injection &amp; Seams</p><p class="lesson-desc">Passing collaborators in rather than reaching for them, so clocks, files, and networks can be swapped in tests.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Integration &amp; Contract Tests</p><p class="lesson-desc">Testing against real databases and service boundaries, and keeping consumers and providers honest without full end-to-end runs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Flaky Tests: Causes &amp; Cures</p><p class="lesson-desc">Shared state, timing, ordering, and randomness: finding the source, and deciding when to quarantine.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Coverage, Mutation Testing &amp; What Metrics Can't Tell You</p><p class="lesson-desc">What line coverage measures, what mutation testing adds, and why a high number can still miss the bug.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design the test suite for a service with a database and an external API: choose what to test at each level, write a fake for the API, and cut a ten-minute suite to under two.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Refactoring</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Refactoring Safely: Small Steps Under Test</p><p class="lesson-desc">Behavior-preserving changes in tiny increments, and how to know the last step didn't break anything.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The Core Moves: Extract, Inline, Rename &amp; Move</p><p class="lesson-desc">The handful of mechanical refactorings behind most real cleanup, and when your IDE can do them for you.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Replacing Conditionals &amp; Primitives</p><p class="lesson-desc">Turning repeated switch statements into polymorphism, and bare strings and ints into small value types.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Characterization Tests &amp; Legacy Code</p><p class="lesson-desc">Pinning down what untested code actually does, finding seams, and making the first safe change.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Technical Debt: Recognizing and Tracking It</p><p class="lesson-desc">Deliberate versus accidental debt, the interest it charges, and keeping a record the team will actually use.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a legacy module with no tests, write characterization tests, then refactor it in at least five small committed steps, every one of them green.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Design Patterns</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Why Patterns Exist: A Shared Vocabulary</p><p class="lesson-desc">Where patterns came from, what problem each family solves, and why they are names for solutions, not templates.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Creational Patterns: Factory, Builder &amp; Singleton</p><p class="lesson-desc">Controlling how objects get made, and why Singleton so often becomes hidden global state.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Structural Patterns: Adapter, Decorator &amp; Facade</p><p class="lesson-desc">Wrapping existing code to change its interface, add behavior, or hide a messy subsystem.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Behavioral Patterns: Strategy, Observer &amp; Command</p><p class="lesson-desc">Swapping algorithms at runtime, notifying dependents of change, and turning actions into objects.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">State &amp; Template Method: Behavior That Varies by Context</p><p class="lesson-desc">Objects that change behavior as their state changes, and an algorithm skeleton whose steps subclasses fill in.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Over-Engineering: When Not to Use a Pattern</p><p class="lesson-desc">Spotting speculative generality and pattern fever, and the simpler language feature that already does the job.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Refactor a notification system with five hard-coded channels using the patterns that fit, and write a short note on one pattern you chose not to use and why.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Git Under the Hood &amp; Review Craft</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How Git Works: Objects, Trees &amp; the Commit Graph</p><p class="lesson-desc">Blobs, trees, commits, and refs: why branches are cheap and what a hash actually identifies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Shaping History: Interactive Rebase, Fixup &amp; Cherry-Pick</p><p class="lesson-desc">Reordering, squashing, and moving commits so a branch reviews well, and the rules for shared history.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Hunting Regressions: bisect, blame &amp; the Pickaxe</p><p class="lesson-desc">Binary-searching history for the commit that broke something, and tracing a line back to its reasons.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Reviewing Code: What to Look For and How to Say It</p><p class="lesson-desc">Design, correctness, tests, then readability, in that order, with comments that teach rather than judge.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Automating the Nitpicks: Hooks, Linters &amp; Formatters</p><p class="lesson-desc">Pre-commit hooks, formatters, and static checks that take style out of review so people can discuss design.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Use bisect to find a planted regression, rewrite the offending branch into a clean series, and review a teammate's pull request in writing.</p></div></div>
+    </div>
+
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I apply the practices" to "I can set the testing, architecture, and version-control approach for a team, steer large changes safely, and explain tradeoffs to the people who have to approve them."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Advanced Testing</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Property-Based Testing &amp; Fuzzing</p><p class="lesson-desc">Stating rules that must always hold, letting a tool hunt for counterexamples, and shrinking failures to a minimal case.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Testing Concurrent &amp; Time-Dependent Code</p><p class="lesson-desc">Deterministic clocks, controlled schedulers, and strategies for races that appear once in a thousand runs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Hermetic Tests &amp; Managing Test Data</p><p class="lesson-desc">Fixtures, factories, and containers that make every run independent, repeatable, and quick to set up.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Testing in Production: Canaries, Flags &amp; Observability</p><p class="lesson-desc">What no pre-release suite can cover, and how gradual rollout and monitoring act as the last layer of testing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Suite Health: Budgets, Ownership &amp; Test Culture</p><p class="lesson-desc">Treating the suite as a product: speed budgets, deleting low-value tests, and getting a team to care.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit a slow, untrusted test suite and write a plan with measurable targets, what to delete, what to add, and who owns what.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Architecture &amp; Design at Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Layered, Hexagonal &amp; Clean Architecture</p><p class="lesson-desc">Ports and adapters, the dependency rule, and keeping business logic free of frameworks and databases.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Domain-Driven Design: Bounded Contexts &amp; Ubiquitous Language</p><p class="lesson-desc">Modeling the business in code, drawing boundaries where words change meaning, and aggregates as units of consistency.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Stable Interfaces &amp; Backward Compatibility</p><p class="lesson-desc">Designing module and API boundaries that can evolve: versioning, deprecation, and Hyrum's law.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Dependencies &amp; the Cost of Coupling</p><p class="lesson-desc">Third-party libraries, internal packages, and dependency direction as long-term liabilities.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Evolutionary Architecture: Fitness Functions &amp; Decision Records</p><p class="lesson-desc">Automated checks that guard architectural intent, and ADRs that record why a choice was made.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Review a tangled codebase's dependency graph, propose a target architecture, and write two decision records for the choices hardest to reverse.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Version Control at Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Trunk-Based Development &amp; Feature Flags</p><p class="lesson-desc">Merging small and often behind flags, and why long-lived branches cost more than they appear.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Monorepo vs. Polyrepo</p><p class="lesson-desc">Atomic changes and shared tooling against build scale and ownership, and what large-repo tooling is for.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Release Management: Branching, Backports &amp; Hotfixes</p><p class="lesson-desc">Release branches, cherry-picked fixes, supporting several versions at once, and when to cut a release.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Conventional Commits, Changelogs &amp; Automated Releases</p><p class="lesson-desc">Structured messages that drive version bumps, changelogs, and publishing, tied back to semantic versioning.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Repository Surgery: Packfiles, filter-repo &amp; Recovery</p><p class="lesson-desc">Removing secrets and large files from history, repairing corruption, and what rewriting shared history costs.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Choose a branching and release strategy for a team of thirty shipping a library and a service, and write the workflow document, including hotfix and rollback paths.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Engineering Judgment &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Large-Scale Refactors: Strangler Fig &amp; Branch by Abstraction</p><p class="lesson-desc">Replacing a system while it runs: incremental migration, parallel runs, and keeping every commit shippable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Refactor or Rewrite: Deciding Under Uncertainty</p><p class="lesson-desc">Why rewrites usually take longer than planned, the cases where they are right, and how to measure before you decide.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Leading Code Review: Standards, Mentoring &amp; Culture</p><p class="lesson-desc">Setting expectations, keeping review latency low, and using review to grow engineers rather than gatekeep.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Writing Design Docs &amp; RFCs</p><p class="lesson-desc">Context, options, tradeoffs, and a recommendation, and getting useful feedback before anything is built.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Explaining Technical Tradeoffs to Non-Engineers</p><p class="lesson-desc">Turning debt, risk, and delay into costs and options a product or executive audience can decide on.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design doc proposing a legacy module's migration to a new architecture: options considered, migration plan, risks, and a one-page summary for leadership.</p></div></div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>This track builds on the others instead of repeating them.</strong> Commits, branches, merge versus rebase, pull requests, undoing mistakes, and running tests in a CI pipeline are taught in Linux &amp; DevOps; arrays, trees, and the structures underneath your code in Data Structures &amp; Algorithms; reviewing code for vulnerabilities in Security. This track picks each of them up where it left off: how Git actually stores history, how a team shapes it, what a test suite should contain, and how code is designed to be changed.</p>
+    <p><strong>Levels aren't strict walls.</strong> Code review appears at Junior as receiving feedback, returns at Intermediate as writing it, and comes back at Senior as setting a team's standards. Testing follows the same arc, from a single assertion to a suite strategy to testing in production. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as technique.</strong> Knowing how to refactor, and deciding whether this system deserves a refactor, a rewrite, or to be left alone, are different skills, and the last stage is built around explaining that decision to the people who have to approve it.</p>
+  </footer>
+
+</div>
+</body>
+</html>

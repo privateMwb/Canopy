@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NumPy Arrays & Vectorized Operations — Lesson 1.1.01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #2D6A6A; --accent-soft: #E7F0EF; --code-bg: #14171A; --code-ink: #E8E6DF;
+    --good: #2D6A6A; --bad: #7A2E3B;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15171C; --card: #1C1F26; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A;
+      --accent-soft: #1B2927; --code-bg: #0E1013;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C; --card: #1C1F26; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A;
+    --accent-soft: #1B2927; --code-bg: #0E1013;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1;
+    margin: 0 0 14px; letter-spacing: -0.01em;
+  }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+
+  h2 {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px;
+    margin: 44px 0 14px; color: var(--ink);
+  }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+
+  pre {
+    background: var(--code-bg); color: var(--code-ink); border-radius: 8px;
+    padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6;
+  }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code {
+    background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  }
+  .comment { color: #8A8F98; }
+
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6;
+  }
+  .callout .label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px;
+  }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+
+  .exercise {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 22px 24px; margin: 20px 0;
+  }
+  .exercise .label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px;
+  }
+  .exercise ol { margin-bottom: 0; }
+
+  .takeaways {
+    background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px;
+  }
+  .takeaways .label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px;
+  }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 40px 18px 72px; }
+    h1 { font-size: 29px; }
+    pre { font-size: 12px; padding: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="crumb">junior → <span class="accent">stage 1.1 · python data stack</span> → lesson 01</p>
+  <h1>NumPy Arrays & Vectorized Operations</h1>
+  <p class="lede">NumPy arrays and the operations that apply to a whole array at once — the foundation every later lesson builds on.</p>
+
+  <h2><span class="num">§1</span>Why This Matters</h2>
+  <p>Almost everything in machine learning is math performed on large grids of numbers: features, weights, predictions, gradients. Python's built-in <code>list</code> was never built for that kind of math. NumPy's <code>array</code> was. Learning to think in arrays instead of loops is the first real shift from "writing Python" to "writing ML code."</p>
+
+  <h2><span class="num">§2</span>Core Concept: Vectorization</h2>
+  <p>A regular Python loop processes one number at a time:</p>
+  <pre><span class="comment"># the loop version</span>
+prices = [10, 20, 30]
+doubled = []
+for p in prices:
+    doubled.append(p * 2)
+<span class="comment"># [20, 40, 60]</span></pre>
+  <p>A NumPy array applies the operation to <strong>every element at once</strong>, with no explicit loop:</p>
+  <pre>import numpy as np
+
+prices = np.array([10, 20, 30])
+doubled = prices * 2
+<span class="comment"># [20 40 60]</span></pre>
+  <p>This is called <strong>vectorization</strong>. NumPy runs the loop in compiled C code instead of interpreted Python — shorter to write, and significantly faster on real-sized data.</p>
+
+  <h2><span class="num">§3</span>Creating Arrays</h2>
+  <pre>np.array([1, 2, 3])        <span class="comment"># from a list</span>
+np.arange(5)                <span class="comment"># [0 1 2 3 4]</span>
+np.arange(1, 11)            <span class="comment"># [1 2 ... 10] — end is exclusive</span>
+np.zeros(4)                 <span class="comment"># [0. 0. 0. 0.]</span>
+np.ones(4)                  <span class="comment"># [1. 1. 1. 1.]</span>
+np.linspace(0, 1, 5)        <span class="comment"># 5 evenly spaced points, 0 to 1</span></pre>
+
+  <div class="callout">
+    <span class="label">Watch for</span>
+    <code>np.arange(1, 11)</code> gives 1 through 10, <strong>not</strong> 1 through 11. The end value is always exclusive — this causes off-by-one errors constantly.
+  </div>
+
+  <h2><span class="num">§4</span>Element-Wise Arithmetic</h2>
+  <pre>a = np.array([1, 2, 3])
+
+a + 5        <span class="comment"># [6 7 8]</span>
+a * 2        <span class="comment"># [2 4 6]</span>
+a ** 2       <span class="comment"># [1 4 9]</span>
+
+b = np.array([10, 20, 30])
+a + b        <span class="comment"># [11 22 33] — same-shape arrays combine element-by-element</span></pre>
+
+  <h2><span class="num">§5</span>Aggregate Functions</h2>
+  <p>Instead of looping to compute a sum or average, call a method directly on the array:</p>
+  <pre>nums = np.array([4, 8, 15, 16, 23, 42])
+
+nums.sum()     <span class="comment"># 108</span>
+nums.mean()    <span class="comment"># 18.0</span>
+nums.max()     <span class="comment"># 42</span>
+nums.std()     <span class="comment"># standard deviation</span></pre>
+
+  <h2><span class="num">§6</span>Boolean Masking</h2>
+  <p>Comparing an array to a value produces an array of <code>True</code>/<code>False</code>, a <strong>mask</strong>:</p>
+  <pre>nums > 15          <span class="comment"># [False False False True True True]</span>
+nums[nums > 15]    <span class="comment"># [16 23 42] — use the mask to filter</span></pre>
+  <p>This "build a mask, then index with it" pattern is one of the most common things you'll do in both NumPy and pandas. It replaces a loop with an <code>if</code> inside it:</p>
+  <pre><span class="comment"># the loop version, for comparison</span>
+result = []
+for n in nums:
+    if n > 15:
+        result.append(n)</pre>
+  <p>Combine conditions with <code>&amp;</code> and <code>|</code> — never Python's <code>and</code>/<code>or</code>, which don't work element-wise. Wrap each condition in its own parentheses:</p>
+  <pre>nums[(nums > 10) & (nums < 30)]    <span class="comment"># [15 16 23]</span></pre>
+
+  <h2><span class="num">§7</span>Worked Example</h2>
+  <p class="tight"><strong>Problem:</strong> given hourly temperatures (°F), find the average temperature on hours that were above freezing.</p>
+  <pre>temps = np.array([28, 35, 40, 31, 45, 29, 50])
+
+above_freezing = temps[temps > 32]
+<span class="comment"># [35 40 45 50]</span>
+
+average = above_freezing.mean()
+<span class="comment"># 42.5</span></pre>
+  <p>No loop, no manual counting — the mask filters, and <code>.mean()</code> does the math.</p>
+
+  <h2><span class="num">§8</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>and</code>/<code>or</code> on array conditions</td><td><code>ValueError: truth value ambiguous</code></td><td>Use <code>&amp;</code> / <code>|</code> with parentheses around each condition</td></tr>
+    <tr><td>Forgetting <code>arange</code>'s end is exclusive</td><td>Off-by-one errors</td><td><code>np.arange(1, 11)</code> for 1–10</td></tr>
+    <tr><td>Computing a mask but never applying it</td><td>The filter silently never happens</td><td>Always index with it: <code>arr[mask]</code></td></tr>
+    <tr><td>Mixing mismatched array shapes</td><td><code>ValueError: could not be broadcast</code></td><td>Keep shapes matched (Lesson 4 covers exceptions)</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create an array of the numbers 1 to 20 (inclusive).</li>
+      <li>Compute the square of every number.</li>
+      <li>Keep only the squares divisible by 3.</li>
+      <li>Print how many there are, and their sum.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>NumPy arrays apply operations to every element at once — no explicit loop.</li>
+      <li><code>np.arange(start, end)</code> excludes <code>end</code>.</li>
+      <li>Build a mask (<code>arr &gt; x</code>), then filter with it: <code>arr[mask]</code>.</li>
+      <li>Combine conditions with <code>&amp;</code> / <code>|</code>, each in parentheses — never <code>and</code>/<code>or</code>.</li>
+      <li>This pattern reappears constantly in pandas, starting next lesson.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Python Data Stack — Lesson 1 of 9</p>
+  </footer>
+
+</div>
+</body>
+</html>

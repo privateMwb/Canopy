@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Event Listeners — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · events</span> → lesson 01</p>
+  <h1>Event Listeners</h1>
+  <p class="lede">Pages become interactive when you react to things the user does. <code>addEventListener</code> is the one mechanism for that, and how you write and remove listeners affects both correctness and memory.</p>
+
+  <h2><span class="num">§1</span>addEventListener</h2>
+
+  <p>An <strong>event</strong> is a signal that something happened: a click, a key press, a finished download, a form submission. A <strong>listener</strong> is a function the browser calls when that event occurs on an element.</p>
+
+  <pre>const btn = document.querySelector("#save");
+
+function onSave(event) {
+  console.log("saved", event.type);
+}
+
+btn.addEventListener("click", onSave);   <span class="comment">// pass the function, do not call it</span></pre>
+
+  <p>You can add many listeners for the same event on the same element and they run in the order added. Passing <code>onSave()</code> instead of <code>onSave</code> calls the function immediately and registers its return value, which is one of the classic beginner mistakes.</p>
+
+  <p>You may also see <code>btn.onclick = fn</code> or an inline <code>onclick="..."</code> attribute. These work, but <code>onclick</code> allows only one handler and inline attributes mix behavior into markup, so prefer <code>addEventListener</code>.</p>
+
+  <h2><span class="num">§2</span>Handlers, this, and Arrow Functions</h2>
+
+  <p>A handler is just a function. Inside a regular function handler, <code>this</code> is the element the listener is attached to. Inside an arrow function, <code>this</code> is whatever it was where the arrow was written. Using <code>event.currentTarget</code> is clearer in both cases.</p>
+
+  <pre>btn.addEventListener("click", function (e) {
+  this.classList.toggle("on");               <span class="comment">// this === e.currentTarget</span>
+});
+
+btn.addEventListener("click", (e) =&gt; {
+  e.currentTarget.classList.toggle("on");    <span class="comment">// explicit and works everywhere</span>
+});</pre>
+
+  <p>Arrow functions are convenient but anonymous, which matters for the next section: you cannot remove a listener unless you still have a reference to the exact same function.</p>
+
+  <h2><span class="num">§3</span>Removing Listeners and Options</h2>
+
+  <p><code>removeEventListener</code> needs the same event type and the same function reference that you added. An inline arrow function creates a new function each time, so it cannot be removed later.</p>
+
+  <pre>btn.addEventListener("click", onSave);
+btn.removeEventListener("click", onSave);   <span class="comment">// works</span>
+
+btn.addEventListener("click", () =&gt; doIt());
+btn.removeEventListener("click", () =&gt; doIt());   <span class="comment">// does nothing: different function</span></pre>
+
+  <p>The third argument takes options. Two are especially useful: <code>once</code> removes the listener after it runs the first time, and <code>signal</code> lets you remove many listeners at once with an <code>AbortController</code>.</p>
+
+  <pre>btn.addEventListener("click", showWelcome, { once: true });
+
+const ctrl = new AbortController();
+window.addEventListener("resize", onResize, { signal: ctrl.signal });
+window.addEventListener("scroll", onScroll, { signal: ctrl.signal });
+
+ctrl.abort();   <span class="comment">// removes both listeners</span></pre>
+
+  <p>Remember to remove listeners you add to long-lived objects such as <code>window</code> or <code>document</code> when the part of the page that needed them goes away. Otherwise they keep running and keep their closed-over variables alive.</p>
+
+  <div class="callout">
+    <span class="label">Pass the function, do not call it</span>
+    <code>addEventListener("click", handler)</code> registers the function. <code>addEventListener("click", handler())</code> runs it right now and registers <code>undefined</code>. Look for the parentheses when a handler fires at page load.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Writing <code>addEventListener("click", doIt())</code></td><td><code>doIt</code> runs immediately; nothing happens on click</td><td>Pass <code>doIt</code> without parentheses</td></tr>
+    <tr><td>Removing with a new inline arrow function</td><td>The listener is never removed</td><td>Keep the function in a variable, or use an <code>AbortController</code> signal</td></tr>
+    <tr><td>Assigning <code>el.onclick = ...</code> twice</td><td>The second handler silently replaces the first</td><td>Use <code>addEventListener</code>, which stacks handlers</td></tr>
+    <tr><td>Adding listeners on <code>window</code> and never removing them</td><td>Handlers pile up and leak memory</td><td>Remove them, or abort via <code>signal</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a button that increments a counter shown on the page, using <code>addEventListener</code>.</li>
+      <li>Make a button that works only once using the <code>once</code> option, then reimplement it with <code>removeEventListener</code>.</li>
+      <li>Register three listeners with one <code>AbortController</code> and remove them all with a single call.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>addEventListener(type, fn)</code> is the standard way to respond to events; pass the function itself.</li>
+      <li>To remove a listener you need the same function reference, or use <code>once</code> or an <code>AbortSignal</code>.</li>
+      <li>Clean up listeners on long-lived targets so they do not accumulate.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Events — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

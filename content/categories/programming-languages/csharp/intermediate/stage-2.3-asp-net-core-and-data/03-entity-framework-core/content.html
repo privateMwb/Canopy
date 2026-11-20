@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Entity Framework Core — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · asp.net core &amp; data</span> → lesson 03</p>
+  <h1>Entity Framework Core</h1>
+  <p class="lede">EF Core maps C# classes to database tables and translates LINQ into SQL. Used well it removes boilerplate, used carelessly it generates slow queries.</p>
+
+  <h2><span class="num">§1</span>Models and the DbContext</h2>
+
+  <pre>public class Customer
+{
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public List&lt;Order&gt; Orders { get; set; } = new();
+}
+public class Order
+{
+    public int Id { get; set; }
+    public decimal Total { get; set; }
+    public int CustomerId { get; set; }          <span class="comment">// foreign key by convention</span>
+    public Customer Customer { get; set; } = null!;
+}
+
+public class ShopDb : DbContext
+{
+    public ShopDb(DbContextOptions&lt;ShopDb&gt; options) : base(options) { }
+    public DbSet&lt;Customer&gt; Customers =&gt; Set&lt;Customer&gt;();
+    public DbSet&lt;Order&gt; Orders =&gt; Set&lt;Order&gt;();
+
+    protected override void OnModelCreating(ModelBuilder b) =&gt;
+        b.Entity&lt;Customer&gt;().Property(c =&gt; c.Name).HasMaxLength(100);
+}</pre>
+  <p>A <code>DbSet&lt;T&gt;</code> represents a table. Conventions infer keys (<code>Id</code>) and relationships from property names, and <code>OnModelCreating</code> (or attributes) overrides them. A <code>DbContext</code> is a lightweight <strong>unit of work</strong> that should live for one request, which is why it's registered as scoped.</p>
+
+  <h2><span class="num">§2</span>Migrations and Queries</h2>
+
+  <pre>dotnet tool install --global dotnet-ef
+dotnet ef migrations add InitialCreate    <span class="comment">// generate a migration from model changes</span>
+dotnet ef database update                  <span class="comment">// apply it to the database</span></pre>
+  <pre>var big = await db.Orders
+    .Where(o =&gt; o.Total &gt; 100)
+    .OrderByDescending(o =&gt; o.Total)
+    .Take(20)
+    .Select(o =&gt; new OrderDto(o.Id, o.Customer.Name, o.Total))   <span class="comment">// only the columns you need</span>
+    .ToListAsync();
+
+db.Customers.Add(new Customer { Name = "Ada" });
+await db.SaveChangesAsync();                <span class="comment">// one transaction; INSERT/UPDATE/DELETE sent here</span>
+
+var c = await db.Customers.FirstAsync(x =&gt; x.Name == "Ada");
+c.Name = "Ada L.";                          <span class="comment">// change is detected</span>
+await db.SaveChangesAsync();</pre>
+  <p><strong>Migrations</strong> are versioned, reviewable C# files that evolve the schema. Commit them. Queries are <code>IQueryable</code>, so they translate to SQL when enumerated (<code>ToListAsync</code>, <code>FirstAsync</code>). <strong>Change tracking</strong> keeps the original values of loaded entities, so <code>SaveChangesAsync</code> knows what to write. For read-only queries, add <code>.AsNoTracking()</code> to skip that cost.</p>
+
+  <h2><span class="num">§3</span>Loading Related Data and the N+1 Problem</h2>
+
+  <pre><span class="comment">// N+1: one query for customers, then one per customer for its orders (lazy loading or a loop)</span>
+var customers = await db.Customers.ToListAsync();
+foreach (var c in customers)
+    Console.WriteLine(c.Orders.Count);          <span class="comment">// triggers a query each time with lazy loading</span>
+
+<span class="comment">// Fix 1: eager load</span>
+var fixed1 = await db.Customers.Include(c =&gt; c.Orders).ToListAsync();
+
+<span class="comment">// Fix 2 (often best): project exactly what you need in one query</span>
+var fixed2 = await db.Customers
+    .Select(c =&gt; new { c.Name, OrderCount = c.Orders.Count })
+    .ToListAsync();</pre>
+  <p>The <strong>N+1 problem</strong> is one query to get a list plus one extra query per item, which turns 100 rows into 101 round trips. Spot it by logging the SQL EF generates (<code>LogTo(Console.WriteLine)</code> or <code>ToQueryString()</code>) and seeing the same statement repeat. Fix it with <code>Include</code> or, better, a <code>Select</code> projection that returns only the columns required.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    EF Core writes SQL <em>for</em> you, so you still own what it writes. Log the generated SQL in development, count the queries per request, and treat a repeating query as a bug.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Loading whole entities when only a few columns are needed</td><td>More data transferred, plus change-tracking overhead</td><td>Project to a DTO with <code>Select</code>, and use <code>AsNoTracking</code> for reads</td></tr>
+    <tr><td>Looping and touching navigation properties (N+1)</td><td>Hundreds of round trips</td><td>Use <code>Include</code> or a projection to fetch in one query</td></tr>
+    <tr><td>Editing the database by hand while using migrations</td><td>The model, migration history, and database drift apart</td><td>Make every schema change through a migration</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a Customer/Order model with SQLite, add a migration, seed some data, and write a query returning each customer with their order count in one SQL statement.</li>
+      <li>Provoke an N+1 with a loop, log the SQL to count the statements, then fix it two ways.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A <code>DbContext</code> is a per-request unit of work; <code>DbSet</code>s map to tables; migrations evolve the schema.</li>
+      <li>LINQ on <code>IQueryable</code> becomes SQL, and <code>SaveChangesAsync</code> writes tracked changes in one transaction.</li>
+      <li>Watch for N+1: fetch related data with <code>Include</code> or projections, and verify with logged SQL.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · ASP.NET Core &amp; Data — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

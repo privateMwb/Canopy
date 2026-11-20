@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Styling Approaches — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · building a complete app</span> → lesson 03</p>
+  <h1>Styling Approaches</h1>
+  <p class="lede">React does not choose how you style, and there are good reasons to pick different approaches. Knowing what each trades away helps you choose one for a project and stick with it.</p>
+
+  <h2><span class="num">§1</span>Plain CSS and CSS Modules</h2>
+
+  <p>You can import a regular <code>.css</code> file into a component, but its class names are <strong>global</strong>: two files that both define <code>.title</code> will collide. <strong>CSS Modules</strong> solve this. A file named <code>Card.module.css</code> has its class names rewritten to be unique, and you import them as an object.</p>
+
+  <pre><span class="comment">/* Card.module.css */</span>
+.card { padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
+.title { font-size: 1.25rem; }
+.featured { border-color: gold; }
+
+<span class="comment">// Card.jsx</span>
+import styles from "./Card.module.css";
+
+function Card({ title, featured, children }) {
+  return (
+    &lt;section className={`${styles.card} ${featured ? styles.featured : ""}`}&gt;
+      &lt;h3 className={styles.title}&gt;{title}&lt;/h3&gt;
+      {children}
+    &lt;/section&gt;
+  );
+}</pre>
+
+  <p>CSS Modules give you real CSS, scoped automatically, with no runtime cost and no new syntax to learn. They work out of the box in Vite. A tiny helper such as <code>clsx</code> makes combining conditional class names tidier: <code>clsx(styles.card, featured &amp;&amp; styles.featured)</code>.</p>
+
+  <h2><span class="num">§2</span>Utility Classes and Component Libraries</h2>
+
+  <p><strong>Utility-first CSS</strong> (Tailwind CSS is the most popular) styles elements by composing small single-purpose classes directly in the markup. There is no naming and no separate file, and the build removes unused classes, so output stays small.</p>
+
+  <pre>function Badge({ children, tone = "info" }) {
+  const tones = {
+    info: "bg-blue-100 text-blue-800",
+    warn: "bg-amber-100 text-amber-800",
+  };
+  return (
+    &lt;span className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${tones[tone]}`}&gt;
+      {children}
+    &lt;/span&gt;
+  );
+}</pre>
+
+  <p>The markup gets busy, which is the usual complaint, and the answer is the same as everywhere else in React: extract a <strong>component</strong> (<code>Badge</code>) so the long class list lives in one place. <strong>Component libraries</strong> (Material UI, Chakra, Radix, shadcn/ui, and others) supply ready-made accessible components. They speed up building, but they also bring their own look, API, and bundle size, so weigh how much you will need to customize them.</p>
+
+  <h2><span class="num">§3</span>Choosing and Other Options</h2>
+
+  <table>
+    <tr><th>Approach</th><th>Strength</th><th>Cost</th></tr>
+    <tr><td>Plain CSS file</td><td>Simplest; no tooling</td><td>Global names; collisions grow with the app</td></tr>
+    <tr><td>CSS Modules</td><td>Scoped real CSS, zero runtime</td><td>Dynamic styles need CSS variables or class switching</td></tr>
+    <tr><td>Tailwind / utilities</td><td>Fast iteration, consistent design tokens</td><td>Verbose markup; a vocabulary to learn</td></tr>
+    <tr><td>Component library</td><td>Accessible components out of the box</td><td>Look and bundle size come with it; harder to deviate</td></tr>
+    <tr><td>CSS-in-JS (runtime)</td><td>Styles tied to props and components</td><td>Runtime cost; poor fit with server components</td></tr>
+  </table>
+
+  <pre><span class="comment">// dynamic values: pass them through CSS custom properties</span>
+&lt;div className={styles.bar} style={{ "--progress": `${percent}%` }} /&gt;
+
+<span class="comment">/* .bar { width: var(--progress); } */</span>
+
+<span class="comment">// inline styles are fine for one-off dynamic values, but cannot do :hover or media queries</span>
+&lt;div style={{ width: `${percent}%` }} /&gt;</pre>
+
+  <ul>
+    <li>Pick <strong>one</strong> primary approach per project; mixing four creates confusion.</li>
+    <li>Use <strong>CSS variables</strong> for colors, spacing, and fonts so themes (such as dark mode) are easy.</li>
+    <li>Style states with real CSS (<code>:hover</code>, <code>:focus-visible</code>, <code>[aria-expanded="true"]</code>) rather than JavaScript where you can.</li>
+    <li>Whatever you choose, keep focus outlines and sufficient color contrast: accessibility is not optional.</li>
+    <li>Runtime CSS-in-JS libraries (such as styled-components) are less common in new projects, partly because they do not mix well with server rendering.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Consistency beats cleverness</span>
+    The best styling approach is the one your team applies consistently. Choose, document the choice, and spend your attention on the design rather than on re-deciding.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Relying on global class names in a large app</td><td>Styles collide and break unrelated components</td><td>Use CSS Modules or utilities</td></tr>
+    <tr><td>Building everything with inline <code>style</code> objects</td><td>No hover, focus, or media queries; hard to maintain</td><td>Use classes; inline only for dynamic one-offs</td></tr>
+    <tr><td>Pulling in a big UI library for two components</td><td>Large bundle and a look you then fight</td><td>Build the small pieces, or use a headless library</td></tr>
+    <tr><td>Removing focus outlines for looks</td><td>Keyboard users cannot see where they are</td><td>Style <code>:focus-visible</code> instead of removing it</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Style one component with a CSS Module, including a conditional class built with <code>clsx</code>.</li>
+      <li>Rebuild the same component with Tailwind utility classes and compare readability and file count.</li>
+      <li>Add a dark theme by defining CSS variables on <code>:root</code> and overriding them under <code>[data-theme="dark"]</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>CSS Modules scope real CSS per component; utility CSS styles through small classes; libraries trade control for speed.</li>
+      <li>Use CSS variables for design tokens and pass dynamic values through custom properties.</li>
+      <li>Pick one approach, apply it consistently, and keep accessibility (focus, contrast) intact.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Building a Complete App — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

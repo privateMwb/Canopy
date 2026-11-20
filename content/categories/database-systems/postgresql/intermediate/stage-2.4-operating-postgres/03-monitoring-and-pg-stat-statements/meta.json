@@ -1,0 +1,5 @@
+{
+  "title": "Monitoring & pg_stat_statements",
+  "description": "Finding the slowest and most frequent queries, and logs worth reading.",
+  "order": 3
+}

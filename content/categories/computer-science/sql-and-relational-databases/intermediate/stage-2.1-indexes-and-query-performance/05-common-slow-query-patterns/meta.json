@@ -1,0 +1,1 @@
+{"title": "Common Slow-Query Patterns", "description": "N+1 queries, SELECT *, functions on indexed columns, and unbounded OFFSET.", "order": 5}

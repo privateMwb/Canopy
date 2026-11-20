@@ -1,0 +1,5 @@
+{
+  "title": "Web Workers",
+  "description": "Moving heavy work off the main thread.",
+  "order": 5
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Cache-Friendly Design & Data Layout",
+  "description": "Array of structs vs. struct of arrays, and why memory access dominates.",
+  "order": 1
+}

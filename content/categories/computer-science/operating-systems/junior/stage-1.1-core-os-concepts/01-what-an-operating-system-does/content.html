@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What an Operating System Does — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · core os concepts</span> → lesson 01</p>
+  <h1>What an Operating System Does</h1>
+  <p class="lede">An OS does two jobs at once: it shares one machine fairly among many programs, and it hides hardware behind clean abstractions.</p>
+
+  <h2><span class="num">§1</span>The OS as a Resource Manager</h2>
+  <p>A computer has a small number of expensive resources: CPU time, memory, storage, and devices. Dozens of programs want them at the same time. The operating system decides who gets what, for how long, and stops anyone from taking more than their share.</p>
+  <table>
+    <tr><th>Resource</th><th>What the OS hands out</th><th>Abstraction programs see</th></tr>
+    <tr><td>CPU</td><td>Slices of time on each core</td><td>A process that seems to run continuously</td></tr>
+    <tr><td>Memory</td><td>Pieces of physical RAM</td><td>A private address space</td></tr>
+    <tr><td>Storage</td><td>Blocks on a disk</td><td>Files and directories</td></tr>
+    <tr><td>Devices</td><td>Exclusive or shared access</td><td>Device files and system calls</td></tr>
+  </table>
+  <p>The right-hand column is the important one. Programs never touch the disk controller or physical RAM directly; they use the abstraction, and the OS does the messy translation underneath.</p>
+
+  <h2><span class="num">§2</span>The OS as an Abstraction Layer</h2>
+  <p>Without an OS, every program would need its own disk driver, its own memory layout, and its own way of sharing the CPU. Abstractions let you write <code>fopen</code> once and have it work on an SSD, a network drive, or a USB stick.</p>
+  <pre># Same program, any storage hardware
+cat notes.txt
+
+<span class="comment"># What the program asked for: "give me the bytes of this file"</span>
+<span class="comment"># What the OS did: find the inode, locate disk blocks, check permissions,</span>
+<span class="comment"># talk to the driver, copy bytes into the program's memory</span></pre>
+  <p>Three words recur through the whole OS field: <strong>virtualization</strong> (each program sees its own CPU and memory), <strong>concurrency</strong> (many things in progress at once), and <strong>persistence</strong> (data that survives power loss). This course follows the first two most closely.</p>
+
+  <h2><span class="num">§3</span>What Lives Where</h2>
+  <p>The <strong>kernel</strong> is the always-running core of the OS. It runs with full hardware privileges, owns all memory, and responds to requests from programs and from hardware. Everything else, including your shell, your editor, and system daemons, is an ordinary user program that happens to ship with the system.</p>
+  <ul>
+    <li><strong>Kernel:</strong> scheduler, memory manager, drivers, file systems, network stack</li>
+    <li><strong>System libraries:</strong> such as libc, which wraps kernel requests in friendly functions</li>
+    <li><strong>User programs:</strong> shells, browsers, your own code</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The OS is not a program you run; it is the program that runs your programs. Every later lesson, from scheduling to paging, is one resource being shared and one abstraction being maintained.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating the OS as just a GUI and apps</td><td>You can't explain why programs crash independently or why one can't read another's memory</td><td>Think of the OS as the kernel plus the services it provides, with or without a graphical shell</td></tr>
+    <tr><td>Calling libc functions system calls</td><td>Confusing a library wrapper with the actual privileged crossing into the kernel</td><td><code>printf</code> is a library function; the <code>write</code> it eventually triggers is the system call</td></tr>
+    <tr><td>Assuming programs see real hardware</td><td>Surprise when two processes use the same address and don't collide</td><td>Remember that addresses, CPUs, and files are all abstractions the OS presents</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>For each resource in the table, name one thing that would go wrong if programs accessed it directly with no OS in between.</li>
+      <li>Pick three programs you ran today. Which parts of each were doing OS-provided work (files, memory, networking)?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The OS manages shared resources and presents abstractions over them.</li>
+      <li>The kernel is the privileged core; everything else is a user program, even if it ships with the OS.</li>
+      <li>Virtualization, concurrency, and persistence are the three themes behind almost every OS feature.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Core OS Concepts — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

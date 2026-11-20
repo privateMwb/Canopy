@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Benchmarking with JMH — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · performance &amp; diagnosis</span> → lesson 02</p>
+  <h1>Benchmarking with JMH</h1>
+  <p class="lede">Hand-rolled timing loops give wrong answers on the JVM because of warmup, JIT optimization, and dead-code elimination, and JMH exists to handle these traps so a microbenchmark means something.</p>
+
+  <h2><span class="num">§1</span>Why Naive Timing Lies</h2>
+  <p>The obvious benchmark is a loop wrapped in <code>System.nanoTime()</code>. It misleads for several reasons covered in earlier lessons.</p>
+  <pre>long start = System.nanoTime();
+for (int i = 0; i &lt; 1_000_000; i++) { compute(i); }
+long elapsed = System.nanoTime() - start;                 <span class="comment">// what did this actually measure?</span></pre>
+  <ul>
+    <li><strong>Warmup</strong>: the first iterations run in the interpreter and C1 code, so you measure startup, not steady state.</li>
+    <li><strong>Dead-code elimination</strong>: if the result of <code>compute(i)</code> is never used, the JIT may delete the call, and you time an empty loop.</li>
+    <li><strong>Constant folding</strong>: if the inputs are constants, the JIT can compute the answer at compile time.</li>
+    <li><strong>Loop optimizations and on-stack replacement</strong>: code in a long <code>main</code> loop is compiled differently than normal method calls.</li>
+    <li><strong>Noise</strong>: GC, other processes, CPU frequency scaling, and a single run give no idea of variance.</li>
+  </ul>
+  <p>You can end up "proving" that a clearly slower approach is faster, or reporting a 0.3 ns operation that isn't real.</p>
+
+  <h2><span class="num">§2</span>JMH Basics</h2>
+  <p><strong>JMH</strong> (the Java Microbenchmark Harness, from the OpenJDK project) forks a fresh JVM, runs warmup iterations, then measurement iterations, and reports statistics. You write a benchmark class with annotations and run it through the JMH build setup (the Maven archetype or Gradle plugin).</p>
+  <pre>@State(Scope.Benchmark)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@Warmup(iterations = 5, time = 1)
+@Measurement(iterations = 5, time = 1)
+@Fork(2)
+public class ConcatBenchmark {
+    @Param({"10", "1000"})
+    int size;
+
+    String[] parts;
+
+    @Setup
+    public void setup() {
+        parts = new String[size];
+        Arrays.fill(parts, "abc");
+    }
+
+    @Benchmark
+    public String stringBuilder() {
+        StringBuilder sb = new StringBuilder();
+        for (String p : parts) sb.append(p);
+        return sb.toString();                          <span class="comment">// returning the value prevents dead-code elimination</span>
+    }
+
+    @Benchmark
+    public void plusOperator(Blackhole bh) {
+        String s = "";
+        for (String p : parts) s += p;
+        bh.consume(s);                                 <span class="comment">// a Blackhole consumes values without cost or elimination</span>
+    }
+}</pre>
+  <p>Run it with <code>java -jar target/benchmarks.jar</code> (or <code>-prof gc</code> to include allocation rates, <code>-prof async</code> to attach a profiler). The output reports a score with an <strong>error margin</strong>, for example <code>120.3 ± 4.1 ns/op</code>, for every <code>@Param</code> combination.</p>
+
+  <h2><span class="num">§3</span>Key Concepts</h2>
+  <ul>
+    <li><strong><code>@State</code></strong> objects hold benchmark inputs; set up data in <code>@Setup</code> so setup cost isn't measured, and keep inputs non-constant (read from fields, not literals).</li>
+    <li><strong>Return values or use a <code>Blackhole</code></strong> so the JIT can't discard the work.</li>
+    <li><strong><code>@Fork</code></strong> runs the benchmark in separate JVMs, because JIT decisions in one run can influence another, so forks reveal run-to-run variation.</li>
+    <li><strong>Modes</strong>: <code>Throughput</code> (operations per second), <code>AverageTime</code>, <code>SampleTime</code> (a distribution, useful for percentiles), and <code>SingleShotTime</code> (cold start).</li>
+    <li><strong><code>-prof gc</code></strong> shows allocation per operation, which often explains the difference between two implementations.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Interpreting Results</h2>
+  <p>Look at the error margin: if two results overlap within their errors, you can't claim one is faster. Check that the benchmark measures what you think by viewing it with a profiler. And remember what a microbenchmark can't tell you: it measures an isolated piece in a warm, quiet JVM with hot caches, so a 20 percent gain in a microbenchmark can vanish when the code runs inside a real service where the bottleneck is a database or lock. Use JMH to choose between two implementations of something that is genuinely hot, and <strong>end-to-end load tests</strong> to determine whether it matters.</p>
+
+  <div class="callout">
+    <span class="label">A benchmark is a model, not the system</span>
+    JMH can tell you which of two small pieces of code is faster in isolation. Whether that difference shows up in your service is a separate question that only a profile or load test of the real system can answer.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Timing a loop with <code>System.nanoTime()</code></td><td>Measures warmup, not steady state</td><td>Use JMH with warmup and measurement iterations</td></tr>
+    <tr><td>Not using or returning the result</td><td>The JIT eliminates the computation entirely</td><td>Return the value, or pass it to a <code>Blackhole</code></td></tr>
+    <tr><td>Hardcoding constant inputs</td><td>Constant folding computes the result at compile time</td><td>Read inputs from <code>@State</code> fields</td></tr>
+    <tr><td>Running with a single fork and few iterations</td><td>No idea of variance or JIT run-to-run effects</td><td>Use multiple forks and iterations</td></tr>
+    <tr><td>Comparing results that overlap within error</td><td>Claiming a difference that isn't real</td><td>Compare the score plus error margins</td></tr>
+    <tr><td>Benchmarking on a busy laptop</td><td>Noisy, irreproducible numbers</td><td>Use a quiet, dedicated machine, and a consistent power state</td></tr>
+    <tr><td>Generalizing from a microbenchmark to the whole service</td><td>The real bottleneck is elsewhere</td><td>Confirm with profiling and load tests</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a naive <code>nanoTime</code> loop for two ways of summing a list, then reproduce the comparison in JMH, and explain any disagreement.</li>
+      <li>Add <code>@Param</code> for list sizes of 100, 10,000, and 1,000,000 and see whether the faster approach changes with size.</li>
+      <li>Run with <code>-prof gc</code> and explain the difference in bytes allocated per operation between two implementations.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Naive timing ignores warmup, dead-code elimination, constant folding, and noise, and so lies.</li>
+      <li>JMH handles forks, warmup, measurement, and statistics; use <code>@State</code>, return values or <code>Blackhole</code>, and read error margins.</li>
+      <li>Microbenchmarks compare small pieces in isolation, and only profiling and load tests show whether a change matters in the real system.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Performance &amp; Diagnosis — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

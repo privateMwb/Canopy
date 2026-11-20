@@ -1,0 +1,5 @@
+{
+  "title": "Profiling a Live Process",
+  "description": "py-spy, memory profilers, and flame graphs without restarting production.",
+  "order": 4
+}

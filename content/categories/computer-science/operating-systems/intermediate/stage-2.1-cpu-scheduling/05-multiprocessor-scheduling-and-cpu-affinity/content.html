@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multiprocessor Scheduling &amp; CPU Affinity — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · cpu scheduling</span> → lesson 05</p>
+  <h1>Multiprocessor Scheduling &amp; CPU Affinity</h1>
+  <p class="lede">With many cores, the scheduler must keep all of them busy while also keeping each thread near the cache that already holds its data.</p>
+
+  <h2><span class="num">§1</span>Per-Core Run Queues</h2>
+  <p>One shared run queue is simple, but every core must lock it, and it becomes a bottleneck. Modern kernels give each core its own queue, so a core usually schedules from its own work without contention.</p>
+  <pre><span class="comment"># See which CPU each thread last ran on (psr column)</span>
+ps -eLo pid,tid,psr,comm | head
+<span class="comment"># Count CPUs</span>
+nproc</pre>
+  <p>The cost is imbalance: one core's queue may be long while another sits idle.</p>
+
+  <h2><span class="num">§2</span>Load Balancing and Cache Affinity</h2>
+  <p>To fix imbalance, the scheduler migrates tasks between cores, either idle cores pulling work or busy cores pushing it. But a migrated task loses its <strong>cache affinity</strong>: the data it had warmed in the old core's L1 and L2 caches is not there, and the first accesses are slow.</p>
+  <table>
+    <tr><th>Goal</th><th>Pushes toward</th><th>Cost if overdone</th></tr>
+    <tr><td>Even load</td><td>Migrating tasks</td><td>Cold caches</td></tr>
+    <tr><td>Cache warmth</td><td>Keeping tasks put</td><td>Idle cores while others are busy</td></tr>
+  </table>
+  <p>Schedulers prefer to migrate between cores that share cache, such as hyperthreads or cores in one cluster, before crossing to a separate socket.</p>
+
+  <h2><span class="num">§3</span>Pinning with Affinity</h2>
+  <p>You can restrict a task to specific CPUs. This can improve cache behavior and predictability, or isolate noisy work.</p>
+  <pre>taskset -c 2,3 ./server          <span class="comment"># run only on CPUs 2 and 3</span>
+taskset -cp 4242                 <span class="comment"># show a running process's allowed CPUs</span>
+
+<span class="comment">// In C: sched_setaffinity(0, sizeof set, &amp;set);</span></pre>
+  <p>Pinning is a blunt tool. A pinned task can't escape a busy core, so use it only when measurements show a benefit.</p>
+
+  <div class="callout">
+    <span class="label">Connection to later lessons</span>
+    On machines with multiple memory nodes, where a thread runs also determines how far its memory is. Stage 3.2 covers NUMA and why pinning threads next to their data matters.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Pinning threads by default</td><td>Pinned work waits while other cores sit idle</td><td>Measure first; pin only when it helps</td></tr>
+    <tr><td>Assuming more cores always finish faster</td><td>Lock contention and migration overhead can dominate</td><td>Check the scaling of the workload, not just the core count</td></tr>
+    <tr><td>Ignoring cache sharing when placing tasks</td><td>Cross-socket migration is much more expensive</td><td>Prefer placement that keeps related threads on cores sharing a cache</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run a CPU-bound program with and without <code>taskset -c 0</code>. Check the <code>psr</code> column over time to see whether it migrates.</li>
+      <li>Describe a workload where pinning threads to cores helps, and one where it hurts.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Per-core run queues avoid contention but require load balancing.</li>
+      <li>Migrating a task discards its warm cache, so balance and affinity pull in opposite directions.</li>
+      <li>CPU pinning helps only when measured; it removes the scheduler's flexibility.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · CPU Scheduling — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

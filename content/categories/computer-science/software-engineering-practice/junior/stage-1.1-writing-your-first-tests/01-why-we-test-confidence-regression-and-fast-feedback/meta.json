@@ -1,0 +1,5 @@
+{
+  "title": "Why We Test: Confidence, Regression & Fast Feedback",
+  "description": "What tests are really for, the cost of a bug found late, and why untested code gets harder to change.",
+  "order": 1
+}

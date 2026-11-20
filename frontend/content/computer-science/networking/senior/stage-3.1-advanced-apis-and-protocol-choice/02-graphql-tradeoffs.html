@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GraphQL Tradeoffs — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · advanced apis & protocol choice</span> → lesson 02</p>
+  <h1>GraphQL Tradeoffs</h1>
+  <p class="lede">GraphQL lets the client ask for exactly the fields it needs in one request, which shifts complexity from the client to the server.</p>
+
+  <h2><span class="num">§1</span>What It Offers</h2>
+  <p>A GraphQL API usually exposes a single endpoint and a typed schema. The client sends a <strong>query</strong> describing the shape of the data it wants, and the server returns exactly that shape.</p>
+  <pre>POST /graphql
+{
+  "query": "query { user(id: 7) { name orders(first: 2) { id total } } }"
+}
+
+{ "data": { "user": { "name": "Ada",
+    "orders": [ {"id": 101, "total": 40}, {"id": 100, "total": 15} ] } } }</pre>
+  <p>This addresses two REST pain points. <strong>Over-fetching</strong> returns more fields than the client needs, and <strong>under-fetching</strong> forces several round trips to assemble one screen. Mobile apps on slow networks benefit from getting a tailored response in one trip. The schema is introspectable, which powers explorers and generated types.</p>
+
+  <h2><span class="num">§2</span>The Costs</h2>
+  <table>
+    <tr><th>Concern</th><th>Why it's harder than REST</th></tr>
+    <tr><td>N+1 queries</td><td>A naive resolver for each order's customer fires one database query per order; needs batching (such as the DataLoader pattern)</td></tr>
+    <tr><td>HTTP caching</td><td>Everything is a POST to one URL, so CDNs and browsers can't cache by URL; needs persisted queries or application-level caching</td></tr>
+    <tr><td>Unbounded queries</td><td>A client can request deeply nested or enormous data; needs depth, complexity, and cost limits</td></tr>
+    <tr><td>Authorization</td><td>Permissions must be enforced per field and per object, not per endpoint</td></tr>
+    <tr><td>Monitoring</td><td>Every request is <code>POST /graphql</code> with status 200, even on errors, so generic dashboards see nothing</td></tr>
+  </table>
+  <p>GraphQL returns HTTP 200 even when part of a query fails, with an <code>errors</code> array in the body, so error rates must be derived from the response content, and not the status code.</p>
+
+  <h2><span class="num">§3</span>When to Choose It</h2>
+  <ul>
+    <li><strong>Good fit:</strong> many different clients (web, iOS, Android) with differing data needs; deeply connected data; a frontend team that iterates faster than the backend</li>
+    <li><strong>Poor fit:</strong> simple CRUD with few clients; public APIs where caching and rate limiting by URL matter; file transfers; teams without capacity to build the safeguards above</li>
+  </ul>
+  <pre><span class="comment"># Persisted queries: clients send a hash, the server maps it to an approved query.</span>
+GET /graphql?id=sha256:ab12...&amp;variables={"id":7}
+<span class="comment"># Restores GET semantics, enables CDN caching, and blocks arbitrary queries.</span></pre>
+  <p>Neither style is universally better. REST makes the server's work predictable, and GraphQL makes the client's data needs flexible. Choose by who your clients are and who bears the complexity.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    GraphQL doesn't remove complexity; it moves it from the client's many round trips to the server's resolver, caching, and security logic. Adopt it when that trade is worth it for your clients.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Exposing GraphQL without query depth or cost limits</td><td>One crafted query can take the service down</td><td>Enforce depth and complexity limits, timeouts, and pagination</td></tr>
+    <tr><td>Resolving each child field with a separate database query</td><td>N+1 queries cripple performance</td><td>Batch and cache lookups with a DataLoader-style layer</td></tr>
+    <tr><td>Relying on HTTP status for error monitoring</td><td>Errors hide behind 200 responses</td><td>Track the <code>errors</code> array and per-operation metrics</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take one REST screen that needs three endpoints and express it as a single GraphQL query. What does the server need to implement?</li>
+      <li>Describe how an N+1 problem appears in resolvers for <code>orders { customer { name } }</code>, and how batching fixes it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>GraphQL lets clients select exactly the fields they need in one request.</li>
+      <li>Its costs are N+1 queries, weak HTTP caching, unbounded query risk, and per-field authorization.</li>
+      <li>Choose it for varied clients and connected data, not as a default.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Advanced APIs & Protocol Choice — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

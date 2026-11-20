@@ -1,0 +1,5 @@
+{
+  "title": "Exceptions & IDisposable",
+  "description": "try/catch/finally, using statements, and releasing resources reliably.",
+  "order": 4
+}

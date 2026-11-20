@@ -1,0 +1,5 @@
+{
+  "title": "count, for_each & Lifecycle Rules",
+  "description": "Creating many resources and controlling replacement and deletion.",
+  "order": 3
+}

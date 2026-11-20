@@ -1,0 +1,5 @@
+{
+  "title": "Blast Radius, Layering & Dependencies Between Stacks",
+  "description": "Limiting the damage of one bad apply.",
+  "order": 2
+}

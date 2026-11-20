@@ -1,0 +1,5 @@
+{
+  "title": "Security in React Apps",
+  "description": "XSS, dependency risks, and safe patterns.",
+  "order": 5
+}

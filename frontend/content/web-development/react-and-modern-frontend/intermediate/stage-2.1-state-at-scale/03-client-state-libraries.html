@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Client State Libraries — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · state at scale</span> → lesson 03</p>
+  <h1>Client State Libraries</h1>
+  <p class="lede">Some state is shared widely and changes often: a shopping cart, UI panels, editor settings. Libraries like Zustand and Redux Toolkit manage that state outside components and let each component subscribe to only what it needs.</p>
+
+  <h2><span class="num">§1</span>What They Add Over Context</h2>
+
+  <p>A client-state library keeps state in a <strong>store</strong> outside the React tree. Components read it through a hook with a <strong>selector</strong>, and React re-renders a component only when <strong>its selected slice</strong> changes. Updates are written as plain functions you can call from anywhere, including outside components.</p>
+
+  <table>
+    <tr><th>Need</th><th>Context + useState</th><th>State library</th></tr>
+    <tr><td>Read one field without re-rendering on others</td><td>No (all consumers re-render)</td><td>Yes, via selectors</td></tr>
+    <tr><td>Update from outside React (an event listener, a WebSocket)</td><td>Awkward</td><td>Easy: call the store</td></tr>
+    <tr><td>DevTools, time travel, middleware, persistence</td><td>Build yourself</td><td>Often built in</td></tr>
+    <tr><td>Small, local, or infrequent state</td><td>Perfect</td><td>Overkill</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Zustand: Minimal and Direct</h2>
+
+  <p><strong>Zustand</strong> is a tiny store with almost no boilerplate. You define state and actions together in one function, and consume them with a hook.</p>
+
+  <pre>import { create } from "zustand";
+
+const useCart = create((set, get) =&gt; ({
+  items: [],
+  add: (product) =&gt;
+    set((s) =&gt; {
+      const existing = s.items.find((i) =&gt; i.id === product.id);
+      return existing
+        ? { items: s.items.map((i) =&gt; (i.id === product.id ? { ...i, qty: i.qty + 1 } : i)) }
+        : { items: [...s.items, { ...product, qty: 1 }] };
+    }),
+  remove: (id) =&gt; set((s) =&gt; ({ items: s.items.filter((i) =&gt; i.id !== id) })),
+  total: () =&gt; get().items.reduce((sum, i) =&gt; sum + i.price * i.qty, 0),
+}));
+
+function CartBadge() {
+  const count = useCart((s) =&gt; s.items.length);        <span class="comment">// re-renders only when this changes</span>
+  return &lt;span&gt;{count}&lt;/span&gt;;
+}
+
+function AddButton({ product }) {
+  const add = useCart((s) =&gt; s.add);                    <span class="comment">// functions are stable</span>
+  return &lt;button onClick={() =&gt; add(product)}&gt;Add&lt;/button&gt;;
+}</pre>
+
+  <p>Always pass a <strong>selector</strong>. Calling <code>useCart()</code> with no selector subscribes to the whole store, and the component re-renders on every change. To select several values, use <code>useShallow</code> from <code>zustand/react/shallow</code> so a new object with equal fields does not trigger a render.</p>
+
+  <h2><span class="num">§3</span>Redux Toolkit: Structure for Big Teams</h2>
+
+  <p><strong>Redux Toolkit (RTK)</strong> is the modern, official way to use Redux. It reduces the old boilerplate with <code>createSlice</code>, which generates actions and a reducer together, and lets you write "mutating" code that Immer turns into immutable updates behind the scenes.</p>
+
+  <pre>import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { Provider, useSelector, useDispatch } from "react-redux";
+
+const cartSlice = createSlice({
+  name: "cart",
+  initialState: { items: [] },
+  reducers: {
+    added(state, action) {                              <span class="comment">// Immer: this "mutation" is safe</span>
+      const item = state.items.find((i) =&gt; i.id === action.payload.id);
+      if (item) item.qty += 1;
+      else state.items.push({ ...action.payload, qty: 1 });
+    },
+    removed(state, action) {
+      state.items = state.items.filter((i) =&gt; i.id !== action.payload);
+    },
+  },
+});
+
+export const { added, removed } = cartSlice.actions;
+export const store = configureStore({ reducer: { cart: cartSlice.reducer } });
+
+function CartBadge() {
+  const count = useSelector((s) =&gt; s.cart.items.length);
+  return &lt;span&gt;{count}&lt;/span&gt;;
+}
+<span class="comment">// &lt;Provider store={store}&gt;&lt;App /&gt;&lt;/Provider&gt;</span></pre>
+
+  <p>RTK gives you strict conventions, excellent DevTools (every action is logged and replayable), middleware, and <strong>RTK Query</strong> for server data. That structure pays off in large codebases with many contributors, and costs ceremony in small ones.</p>
+
+  <h2><span class="num">§4</span>Choosing</h2>
+
+  <ul>
+    <li><strong>Start without a library.</strong> <code>useState</code>, <code>useReducer</code>, lifted state, and a little context cover most apps.</li>
+    <li><strong>Server data does not belong here.</strong> Use TanStack Query (next stage); it removes most of what people used global stores for.</li>
+    <li>Reach for a library when the same <strong>client</strong> state is needed by distant components, changes often, or must be updated from outside React.</li>
+    <li><strong>Zustand</strong> for small-to-medium apps and quick wins; <strong>Redux Toolkit</strong> when you want strict structure, strong tooling, and team conventions.</li>
+    <li>Keep stores <strong>small and domain-focused</strong> (a cart store, a UI store) rather than one global blob.</li>
+    <li>Do not put form field state, or state used by only one component, in a global store.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Server data is not client state</span>
+    Most state that people put in Redux is really a cache of server data. Move that to a query library first, and you may find you need very little global client state at all.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Subscribing to the whole store without a selector</td><td>Component re-renders on every store change</td><td>Select only what you need</td></tr>
+    <tr><td>Putting server responses in a client store</td><td>You reimplement caching, staleness, and refetching badly</td><td>Use TanStack Query or RTK Query</td></tr>
+    <tr><td>Mutating state in Zustand <code>set</code></td><td>No re-render; subtle bugs</td><td>Return new objects (or use the <code>immer</code> middleware)</td></tr>
+    <tr><td>Adding a state library to a small app out of habit</td><td>Extra concepts and bundle for nothing</td><td>Start with local state and add a library when pain appears</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a cart store in Zustand with add, remove, and a derived total, and prove with logs that a badge re-renders only when the count changes.</li>
+      <li>Rebuild the same cart with Redux Toolkit and compare the amount of code and the DevTools experience.</li>
+      <li>List the pieces of state in an app you know and classify each as local, shared client, or server state.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>State libraries store state outside React and let components subscribe to slices with selectors.</li>
+      <li>Zustand is minimal; Redux Toolkit adds structure, tooling, and conventions for larger teams.</li>
+      <li>Reach for them only for widely shared client state; keep server data in a query library.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · State at Scale — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "pgvector & Similarity Search",
+  "description": "Embeddings, vector indexes, and the trade-off between recall and speed.",
+  "order": 4
+}

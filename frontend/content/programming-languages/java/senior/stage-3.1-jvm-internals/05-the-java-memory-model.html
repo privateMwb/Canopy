@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Java Memory Model — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · jvm internals</span> → lesson 05</p>
+  <h1>The Java Memory Model</h1>
+  <p class="lede">The Java Memory Model defines when one thread's writes are guaranteed to be visible to another, and code that ignores it can appear correct for years and then break on a different CPU or JVM.</p>
+
+  <h2><span class="num">§1</span>Why Threads Disagree</h2>
+  <p>Modern hardware and compilers reorder operations and keep values in per-core caches and registers. A single thread never notices, because the result looks as if it ran in order (<strong>as-if-serial</strong>), but another thread observing the same variables can see writes in a different order or not at all.</p>
+  <pre>class Flag {
+    boolean ready = false;
+    int value = 0;
+
+    void writer() { value = 42; ready = true; }        <span class="comment">// thread A</span>
+    void reader() {                                     <span class="comment">// thread B</span>
+        while (!ready) { }                              <span class="comment">// may spin forever: no guarantee ready is ever seen</span>
+        System.out.println(value);                      <span class="comment">// may even print 0 if the writes are reordered</span>
+    }
+}</pre>
+  <p>Both outcomes are legal under the model, because nothing establishes an ordering between the threads.</p>
+
+  <h2><span class="num">§2</span>Happens-Before</h2>
+  <p>The JMM's central concept is the <strong>happens-before</strong> relation. If action A happens-before action B, then A's effects are guaranteed visible to B (and ordered before it). Without a happens-before edge between a write and a read of the same variable, you have a <strong>data race</strong> and the result is undefined in practice. The edges that Java guarantees:</p>
+  <ul>
+    <li><strong>Program order</strong>: within one thread, each action happens-before later actions in that thread.</li>
+    <li><strong>Monitor lock</strong>: unlocking a monitor (leaving <code>synchronized</code>) happens-before every later lock of the same monitor.</li>
+    <li><strong>volatile</strong>: a write to a volatile field happens-before every later read of that same field.</li>
+    <li><strong>Thread start and join</strong>: <code>Thread.start()</code> happens-before everything in the started thread; everything in a thread happens-before another thread's successful <code>join()</code> on it.</li>
+    <li><strong>Executors and concurrent collections</strong>: submitting a task happens-before it runs; putting an element into a concurrent queue or map happens-before another thread retrieves it; <code>Future.get()</code> sees the task's writes.</li>
+    <li><strong>final fields</strong>: after a constructor finishes, other threads see the correct values of <code>final</code> fields, if the object didn't leak during construction.</li>
+    <li><strong>Transitivity</strong>: if A happens-before B and B happens-before C, then A happens-before C.</li>
+  </ul>
+  <p>That transitivity is what makes the fix to the broken example work: make <code>ready</code> volatile, and the write to <code>value</code> (before the volatile write) is visible to any thread that sees <code>ready == true</code>.</p>
+  <pre>volatile boolean ready = false;
+void writer() { value = 42; ready = true; }            <span class="comment">// volatile write publishes the earlier write too</span>
+void reader() { while (!ready) { } System.out.println(value); }   <span class="comment">// guaranteed to print 42</span></pre>
+
+  <h2><span class="num">§3</span>Safe Publication</h2>
+  <p>Making an object reachable by another thread is <strong>publishing</strong> it, and it's only safe if there is a happens-before edge between the construction and the reading thread. Safe ways: store it in a <code>volatile</code> field or <code>AtomicReference</code>, hand it over through a concurrent collection or queue, guard both sides with the same lock, initialize it in a static initializer, or make all its fields <code>final</code>. Publishing through a plain field is <strong>unsafe</strong>: another thread may see the reference but stale or default field values.</p>
+  <pre>class Holder {
+    private static Helper helper;                       <span class="comment">// BROKEN double-checked locking</span>
+    static Helper get() {
+        if (helper == null) {
+            synchronized (Holder.class) { if (helper == null) helper = new Helper(); }
+        }
+        return helper;                                   <span class="comment">// a thread may see a half-constructed Helper</span>
+    }
+}
+<span class="comment">// Fix: declare the field volatile, or use the initialization-on-demand holder idiom:</span>
+class Holder2 {
+    private static class Lazy { static final Helper INSTANCE = new Helper(); }
+    static Helper get() { return Lazy.INSTANCE; }       <span class="comment">// class initialization is thread-safe</span>
+}</pre>
+
+  <h2><span class="num">§4</span>Why "It Works On My Machine" Isn't Evidence</h2>
+  <p>Races are timing-dependent. x86 processors are relatively strict, so some racy code appears to work there and then fails on ARM, or only after the JIT compiles a hot loop and hoists a read out of it (making the <code>while (!ready)</code> loop truly infinite). Testing can't prove the absence of a race; only reasoning about happens-before can. Also, non-volatile <code>long</code> and <code>double</code> writes are not guaranteed atomic by the specification in theory (a "torn" write), though modern 64-bit JVMs do in practice. Compound actions such as <code>count++</code> are never atomic, with or without <code>volatile</code>.</p>
+  <p>The practical rules are short. Prefer immutability and thread confinement. Use the <code>java.util.concurrent</code> building blocks, which come with documented happens-before guarantees. When you must share mutable state, guard <strong>every</strong> access with the same lock or use <code>volatile</code> or atomics with a clear reason. And if you find yourself reasoning about reorderings, step back and use a higher-level construct.</p>
+
+  <div class="callout">
+    <span class="label">Synchronize both sides</span>
+    A lock or a volatile only helps if the reader participates too. Protecting the write but not the read, or using different locks for each, creates no happens-before edge at all.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Spinning on a non-volatile flag</td><td>The loop may never see the update after JIT optimization</td><td>Make the flag <code>volatile</code>, or use proper signaling</td></tr>
+    <tr><td>Publishing an object through a plain field</td><td>Other threads can see default or stale field values</td><td>Use <code>volatile</code>, a lock, a concurrent collection, or <code>final</code> fields</td></tr>
+    <tr><td>Double-checked locking without <code>volatile</code></td><td>A thread can see a partly constructed object</td><td>Add <code>volatile</code>, or use the holder idiom</td></tr>
+    <tr><td>Letting <code>this</code> escape in a constructor</td><td>Another thread sees an object before it is fully built</td><td>Don't register listeners or start threads in constructors</td></tr>
+    <tr><td>Testing for races by running code a few times</td><td>Races are rare and hardware-dependent</td><td>Reason about happens-before and use well-tested constructs</td></tr>
+    <tr><td>Assuming <code>volatile</code> makes <code>x++</code> safe</td><td>Lost updates</td><td>Use <code>AtomicInteger</code>, or a lock</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write the broken <code>ready</code>/<code>value</code> example, run the reader in a loop long enough for the JIT to compile it, and try to observe a hang. Then fix it with <code>volatile</code>.</li>
+      <li>Explain, using the happens-before rules, why <code>ExecutorService.submit</code> followed by <code>Future.get()</code> safely transfers a task's results.</li>
+      <li>Replace a double-checked locking singleton with the holder idiom, and explain why it is safe without explicit synchronization.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Without a happens-before edge between a write and a read, another thread may see stale, partial, or reordered state.</li>
+      <li>Locks, <code>volatile</code>, thread start/join, concurrent collections, executors, and <code>final</code> fields create happens-before edges.</li>
+      <li>Publish objects safely, prefer immutability, and don't treat "it works in testing" as proof of correctness.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · JVM Internals — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

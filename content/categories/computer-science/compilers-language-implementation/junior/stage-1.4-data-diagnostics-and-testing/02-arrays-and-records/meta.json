@@ -1,0 +1,5 @@
+{
+  "title": "Arrays & Records",
+  "description": "Adding compound data to the language, from parsing the syntax to indexing and field access at runtime.",
+  "order": 2
+}

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reconciliation &amp; Keys — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · inside react</span> → lesson 02</p>
+  <h1>Reconciliation &amp; Keys</h1>
+  <p class="lede">When state changes, React compares the new tree of elements with the previous one and applies the smallest set of changes. The rules for that comparison decide whether state is preserved or destroyed, which is why keys and component identity matter far beyond lists.</p>
+
+  <h2><span class="num">§1</span>The Diffing Heuristics</h2>
+
+  <p>A general tree diff is far too slow (cubic in the number of nodes), so React uses two <strong>heuristics</strong> that make it linear and work for almost all UIs:</p>
+
+  <ol>
+    <li><strong>Elements of different types produce different trees.</strong> If the element type at a position changes (<code>&lt;div&gt;</code> to <code>&lt;span&gt;</code>, or <code>&lt;A&gt;</code> to <code>&lt;B&gt;</code>), React tears down the old subtree and builds a new one, <strong>destroying all state</strong> inside.</li>
+    <li><strong>Keys hint which children are stable across renders.</strong> Among siblings, React matches elements by key (then by position) to decide what to move, update, create, or delete.</li>
+  </ol>
+
+  <p>When the type at a position is the <strong>same</strong>, React keeps the existing instance (and its state and DOM node) and only updates the changed props and attributes, then recurses into children.</p>
+
+  <pre><span class="comment">// same type at the same position: state is PRESERVED</span>
+{isEditing ? &lt;Form mode="edit" /&gt; : &lt;Form mode="view" /&gt;}
+
+<span class="comment">// different type at the same position: subtree is destroyed and recreated, state LOST</span>
+{isEditing ? &lt;EditForm /&gt; : &lt;ViewForm /&gt;}
+
+<span class="comment">// a component's identity is its position in the tree plus its type (and key)</span></pre>
+
+  <h2><span class="num">§2</span>Keys Control Identity</h2>
+
+  <p>A <strong>key</strong> is part of an element's identity. If the key changes, React treats it as a <strong>different</strong> element: it unmounts the old one and mounts a new one. If the key is the same, React updates in place and preserves state, even if the item moved.</p>
+
+  <pre><span class="comment">// list: stable ids let React move rows instead of rewriting them</span>
+{items.map((item) =&gt; &lt;Row key={item.id} item={item} /&gt;)}
+
+<span class="comment">// index keys: reordering reuses the wrong instances, so inputs and state stick to positions</span>
+{items.map((item, i) =&gt; &lt;Row key={i} item={item} /&gt;)}
+
+<span class="comment">// the reset trick: change the key to deliberately reset a component's state</span>
+&lt;Chat key={contactId} contactId={contactId} /&gt;      <span class="comment">// switching contacts remounts Chat with fresh state</span>
+
+<span class="comment">// a component defined inside another has a NEW type every render: remounted each time</span>
+function Parent() {
+  function Child() { return &lt;input /&gt;; }             <span class="comment">// new function identity every render</span>
+  return &lt;Child /&gt;;                                   <span class="comment">// input loses focus and state on each keystroke</span>
+}</pre>
+
+  <p>That last example is a classic bug. Because <code>Child</code> is created anew in each render of <code>Parent</code>, React sees a <strong>different type</strong> at that position every time, tears down the old subtree, and builds a new one. Always define components at module level.</p>
+
+  <h2><span class="num">§3</span>Lists, Moves, and Practical Consequences</h2>
+
+  <p>For a keyed list, React builds a map from key to existing child, then walks the new children: matched keys update, new keys mount, and missing keys unmount. Reordering is a <strong>move</strong>, not a rewrite, but React cannot detect a move for unkeyed items, and index keys make a reordered list look like content changes at fixed positions.</p>
+
+  <table>
+    <tr><th>You do this</th><th>React does</th><th>Result</th></tr>
+    <tr><td>Prepend an item, keys are ids</td><td>Mount one new row, keep the rest</td><td>Efficient, state intact</td></tr>
+    <tr><td>Prepend an item, keys are indexes</td><td>Update every row's props, mount one at the end</td><td>Slow, and row state misaligns</td></tr>
+    <tr><td>Swap <code>&lt;div&gt;</code> for <code>&lt;section&gt;</code> as a wrapper</td><td>Unmount the whole subtree</td><td>All child state lost</td></tr>
+    <tr><td>Change <code>key</code> on a component</td><td>Unmount and remount it</td><td>Fresh state (a useful reset)</td></tr>
+    <tr><td>Render <code>{cond &amp;&amp; &lt;A /&gt;}</code> vs <code>{cond ? &lt;A /&gt; : null}</code></td><td>Same: position stays reserved</td><td>State preserved while rendered</td></tr>
+  </table>
+
+  <ul>
+    <li><strong>Keys must be stable and unique among siblings</strong>, never random per render, or every item remounts.</li>
+    <li><strong>Keep wrappers consistent</strong> across conditional branches if you want to preserve inner state.</li>
+    <li>Use <strong>key to reset</strong> a form or profile when its subject changes, instead of syncing with effects.</li>
+    <li>Reconciliation <strong>compares output</strong>, not code: re-rendering a component with the same output makes no DOM change.</li>
+    <li>Large lists cost reconciliation work on every update; <strong>virtualize</strong> them and avoid unnecessary parent re-renders.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Identity decides state</span>
+    State belongs to a component instance, and an instance is identified by its type, its position, and its key. Change any of the three and the state is gone; keep them and it survives.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Defining a component inside another component</td><td>New type each render: remounts, lost focus and state</td><td>Define components at module scope</td></tr>
+    <tr><td>Using array index as key in reorderable lists</td><td>State and DOM stick to positions, not items</td><td>Use stable ids from the data</td></tr>
+    <tr><td>Swapping wrapper element types in a conditional</td><td>Entire subtree unmounts and state resets</td><td>Keep the wrapper stable, or accept the reset deliberately</td></tr>
+    <tr><td>Syncing state to a changing prop with an effect</td><td>Flicker and stale intermediate renders</td><td>Use <code>key={prop}</code> to remount with fresh state</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Reproduce the nested-component bug (an input losing focus each keystroke) and fix it by moving the component out.</li>
+      <li>Build a list of text inputs, reorder it with index keys and then id keys, and explain the difference.</li>
+      <li>Replace an effect that resets a form on a prop change with a <code>key</code>, and verify the behavior is identical.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>React diffs in linear time using two rules: different type means different tree, and keys identify stable children.</li>
+      <li>A component's state lives with its identity: type, position, and key.</li>
+      <li>Use stable keys, define components at module level, and use <code>key</code> as an intentional reset.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Inside React — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

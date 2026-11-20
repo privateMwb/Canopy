@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Distributed Systems Pitfalls — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · scale &amp; reliability</span> → lesson 04</p>
+  <h1>Distributed Systems Pitfalls</h1>
+  <p class="lede">Clocks, partial failure, and consistency trade-offs.</p>
+
+  <h2><span class="num">§1</span>The Network Is Not a Function Call</h2>
+
+  <p>Distributed systems fail in ways single programs do not. The classic "fallacies of distributed computing" are assumptions that seem true and are not: the network is reliable, latency is zero, bandwidth is infinite, the network is secure, topology does not change, there is one administrator, transport cost is zero, and the network is homogeneous. Almost every outage in this area traces back to forgetting one of them.</p>
+
+  <h2><span class="num">§2</span>Partial Failure and Ambiguity</h2>
+
+  <p>In one process, a call either returns or throws. Across a network there is a third outcome: <strong>you do not know</strong>. You send a request and hear nothing. The server may have crashed before processing it, processed it and crashed before replying, or the reply may be delayed or lost. From the caller, all of these look identical. Consequences:</p>
+
+  <ul>
+    <li>A <strong>timeout is not a failure</strong>; it is an <em>unknown</em>. The operation may still happen.</li>
+    <li>You cannot get "exactly once" delivery end to end. You get <em>at-most-once</em> (do not retry; may be lost) or <em>at-least-once</em> (retry; may duplicate). Practical systems pair at-least-once delivery with <strong>idempotent</strong> handlers, which achieves exactly-once <em>effect</em>.</li>
+    <li>Failure detection is only a guess: a slow node is indistinguishable from a dead one, so detectors use timeouts and can be wrong in either direction.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Clocks Lie</h2>
+
+  <p>Every machine has its own clock, and they disagree (clock <strong>skew</strong>), jump when synced (NTP can step time backward), and drift. Bugs follow whenever code assumes clocks agree:</p>
+
+  <ul>
+    <li><strong>Do not order events across machines by timestamp.</strong> "Last write wins" by wall-clock time silently discards the newer write when its server's clock runs slow.</li>
+    <li><strong>Measure durations with a monotonic clock</strong> (<code>performance.now()</code>, <code>process.hrtime</code>), never by subtracting two wall-clock times.</li>
+    <li><strong>Use logical ordering where order matters:</strong> version numbers, sequence numbers, or vector/Lamport clocks, or let a single database assign order.</li>
+    <li><strong>Treat leases and token expiry carefully.</strong> A process that believes it holds a lease may have paused (garbage collection, VM migration) past its expiry.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Consistency Trade-offs</h2>
+
+  <p>When data is replicated and the network can partition, you must choose between <strong>consistency</strong> (every read sees the latest write) and <strong>availability</strong> (every request gets a response). This is the <strong>CAP theorem</strong>: during a partition, you cannot have both. Even without a partition there is a latency-versus-consistency trade-off (PACELC). In practice this is a spectrum, and different data in the same product deserves different choices:</p>
+
+  <table>
+    <tr><th>Model</th><th>Guarantee</th><th>Typical use</th></tr>
+    <tr><td><strong>Strong / linearizable</strong></td><td>Reads always see the latest committed write</td><td>Account balances, inventory reservations, unique usernames</td></tr>
+    <tr><td><strong>Read-your-writes / session</strong></td><td>You see your own changes</td><td>User profile edits</td></tr>
+    <tr><td><strong>Eventual</strong></td><td>Replicas converge given time</td><td>Like counts, feeds, caches, search indexes</td></tr>
+  </table>
+
+  <h2><span class="num">§5</span>Split Brain and Fencing</h2>
+
+  <p>If a cluster loses contact between two halves, both may believe they are the leader and both accept writes: <strong>split brain</strong>, which corrupts data. Safe leader election uses a <strong>majority quorum</strong> (a minority side cannot make progress) via consensus systems such as etcd, ZooKeeper, or Raft-based stores, and uses <strong>fencing tokens</strong> so that a delayed old leader is rejected.</p>
+
+  <pre><span class="comment">// A lock service hands out a monotonically increasing token with every grant.</span>
+<span class="comment">// The storage layer rejects any write carrying a token older than one it has already seen.</span>
+
+lease = lockService.acquire("report-job")      <span class="comment">// -&gt; { token: 34 }</span>
+<span class="comment">// ...process pauses for 30 s (GC, VM freeze); the lease expires; another node gets token 35...</span>
+storage.write(data, { fencingToken: lease.token })
+<span class="comment">// storage has seen 35, so token 34 is rejected: the zombie cannot corrupt state</span></pre>
+
+  <h2><span class="num">§6</span>Practical Defenses</h2>
+
+  <ul>
+    <li><strong>Make operations idempotent</strong> and carry request ids end to end.</li>
+    <li><strong>Prefer asynchronous, durable messaging</strong> over long chains of synchronous calls.</li>
+    <li><strong>Avoid distributed transactions;</strong> use sagas with compensation, or keep related data in one database.</li>
+    <li><strong>Let one component own each fact</strong> (a single writer per piece of data) and replicate it for reads.</li>
+    <li><strong>Use proven coordination tools</strong> (a database, etcd, a managed lock service) rather than writing your own consensus.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The three questions</span>
+    For any cross-service operation, ask: (1) what happens if the request is lost, (2) what happens if it succeeds but the reply is lost, and (3) what happens if it is delivered twice? A design that has an answer to all three is most of the way to correct.
+  </div>
+
+  <h2><span class="num">§7</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Ordering events across servers by wall-clock timestamps</td><td>Newer data is overwritten by older data with a faster clock</td><td>Use version numbers, sequences, or a single ordering authority</td></tr>
+    <tr><td>Treating a timeout as a definite failure</td><td>Operations execute anyway; retries duplicate them</td><td>Make operations idempotent and check state before assuming</td></tr>
+    <tr><td>Writing your own leader election or locking from scratch</td><td>Subtle split-brain and lease bugs</td><td>Use a consensus-backed service and fencing tokens</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>For "transfer money between accounts in two services", walk through the three questions above and design idempotency and compensation to answer each.</li>
+      <li>Show how last-write-wins by timestamp can lose an update when one server's clock is five seconds behind, using a small simulation.</li>
+      <li>Classify five pieces of data in a product (such as inventory, likes, profile, balance, search index) by the consistency each really needs.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Across a network, a timeout means unknown, so design for retries, duplicates, and loss with idempotent operations.</li>
+      <li>Never trust clocks for ordering across machines; use monotonic clocks for durations and logical versions for order.</li>
+      <li>Choose consistency per piece of data, use consensus systems and fencing for leadership, and avoid inventing your own.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Scale &amp; Reliability — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

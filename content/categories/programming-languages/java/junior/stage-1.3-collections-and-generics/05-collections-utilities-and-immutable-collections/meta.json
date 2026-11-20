@@ -1,0 +1,5 @@
+{
+  "title": "Collections Utilities & Immutable Collections",
+  "description": "Collections methods, List.of, and defensive copying.",
+  "order": 5
+}

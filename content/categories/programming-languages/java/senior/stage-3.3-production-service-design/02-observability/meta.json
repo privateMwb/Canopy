@@ -1,0 +1,5 @@
+{
+  "title": "Observability",
+  "description": "Metrics, distributed tracing, and structured logging with OpenTelemetry.",
+  "order": 2
+}

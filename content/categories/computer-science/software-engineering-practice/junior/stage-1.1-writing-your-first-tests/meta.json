@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.1 — Writing Your First Tests",
+  "description": "Why we test, how a unit test is built, choosing cases at the boundaries, and test-driven development.",
+  "order": 1
+}

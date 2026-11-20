@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.2 — Core Data Structures",
+  "description": "Lists, hashes, sets, sorted sets, and choosing the structure that fits the access pattern.",
+  "order": 2
+}

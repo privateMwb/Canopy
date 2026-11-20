@@ -1,0 +1,5 @@
+{
+  "title": "Upgrading Python & Migrating Large Codebases",
+  "description": "Moving versions, adopting types gradually, and managing risk across a big repo.",
+  "order": 3
+}

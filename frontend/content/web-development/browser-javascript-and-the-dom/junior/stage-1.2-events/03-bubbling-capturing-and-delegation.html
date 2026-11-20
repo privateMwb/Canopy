@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bubbling, Capturing &amp; Delegation — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · events</span> → lesson 03</p>
+  <h1>Bubbling, Capturing &amp; Delegation</h1>
+  <p class="lede">Events do not stay on the element where they happen: they travel through the tree. Once you understand that path, one well-placed listener can handle hundreds of elements, including ones that do not exist yet.</p>
+
+  <h2><span class="num">§1</span>The Three Phases</h2>
+
+  <p>When you click an element, the browser dispatches the event along the path from the top of the document down to the target and back up again, in three phases:</p>
+
+  <ol>
+    <li><strong>Capturing</strong>: from <code>window</code> down through each ancestor to the target.</li>
+    <li><strong>Target</strong>: the event arrives at the element itself.</li>
+    <li><strong>Bubbling</strong>: back up through the ancestors to <code>window</code>.</li>
+  </ol>
+
+  <p>By default, listeners run during the <strong>bubbling</strong> phase. That is why a click on a button inside a <code>&lt;div&gt;</code> also triggers a click listener on the <code>&lt;div&gt;</code>, then on <code>&lt;body&gt;</code>, then on <code>document</code>.</p>
+
+  <pre>outer.addEventListener("click", () =&gt; console.log("outer (bubble)"));
+inner.addEventListener("click", () =&gt; console.log("inner (bubble)"));
+outer.addEventListener("click", () =&gt; console.log("outer (capture)"), true);
+
+<span class="comment">// click inner -&gt; outer (capture), inner (bubble), outer (bubble)</span></pre>
+
+  <p>Passing <code>true</code> or <code>{ capture: true }</code> registers the listener for the capturing phase instead. You rarely need this, but it is useful for intercepting an event before the target sees it. Note that a few events, such as <code>focus</code> and <code>blur</code>, do not bubble.</p>
+
+  <h2><span class="num">§2</span>Event Delegation</h2>
+
+  <p>Because events bubble, you can attach <strong>one</strong> listener to a parent and decide inside it which child was the target. This is <strong>event delegation</strong>, and it has two big advantages: far fewer listeners, and it automatically works for children added later.</p>
+
+  <pre>const list = document.querySelector("#todos");
+
+<span class="comment">// without delegation: a listener per item, and new items need their own</span>
+list.querySelectorAll("button.delete").forEach((b) =&gt;
+  b.addEventListener("click", remove));
+
+<span class="comment">// with delegation: one listener, works for items added later</span>
+list.addEventListener("click", (e) =&gt; {
+  const btn = e.target.closest("button.delete");
+  if (!btn || !list.contains(btn)) return;      <span class="comment">// click was elsewhere</span>
+  btn.closest("li").remove();
+});</pre>
+
+  <p><code>closest()</code> is the key tool. It walks up from <code>e.target</code> and returns the nearest element matching the selector, so it still works when the user clicks an icon or <code>&lt;span&gt;</code> inside the button.</p>
+
+  <h2><span class="num">§3</span>When Not to Delegate</h2>
+
+  <p>Delegation is a default, not a rule. It is a poor fit for events that do not bubble (<code>focus</code>, <code>blur</code>, <code>mouseenter</code>, <code>scroll</code> on elements), though <code>focusin</code> and <code>focusout</code> are bubbling alternatives. It also adds a small cost to every event in that subtree, so do not put a heavy listener on <code>document</code> for something that fires constantly such as <code>mousemove</code>.</p>
+
+  <pre>form.addEventListener("focusin", (e) =&gt; {
+  e.target.closest(".field")?.classList.add("active");
+});
+form.addEventListener("focusout", (e) =&gt; {
+  e.target.closest(".field")?.classList.remove("active");
+});</pre>
+
+  <div class="callout">
+    <span class="label">One listener, many elements</span>
+    Delegation moves the decision from "which elements have a listener?" to "what was clicked?" It scales with no extra code and survives re-rendering, which is why frameworks use it internally.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Checking <code>e.target === button</code> when the button contains an icon</td><td>Clicks on the icon are missed</td><td>Use <code>e.target.closest("button")</code></td></tr>
+    <tr><td>Delegating <code>focus</code> or <code>blur</code></td><td>The listener never fires: they do not bubble</td><td>Use <code>focusin</code> and <code>focusout</code></td></tr>
+    <tr><td>Not verifying the match is inside the container</td><td>A <code>closest</code> hit outside your list triggers the handler</td><td>Check <code>container.contains(match)</code></td></tr>
+    <tr><td>Putting <code>stopPropagation()</code> in a child handler</td><td>Delegated listeners above it never see the click</td><td>Remove it and filter in the parent</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add three nested elements with listeners at each level and predict, then verify, the log order. Repeat with <code>capture: true</code> on the outermost.</li>
+      <li>Rebuild a to-do list so that <strong>one</strong> listener on the <code>&lt;ul&gt;</code> handles delete buttons for every item, including those added later.</li>
+      <li>Add a <code>data-action</code> attribute to buttons and dispatch to different functions from a single delegated handler.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Events capture down, hit the target, then bubble up; listeners run on the way up by default.</li>
+      <li>Delegation uses one parent listener plus <code>target.closest()</code> to serve many, including future, children.</li>
+      <li>Some events do not bubble: use their bubbling counterparts or attach directly.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Events — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

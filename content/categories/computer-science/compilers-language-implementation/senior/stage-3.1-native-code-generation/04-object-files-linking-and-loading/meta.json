@@ -1,0 +1,5 @@
+{
+  "title": "Object Files, Linking & Loading",
+  "description": "Sections, symbols, relocations, and how separate pieces become a running executable.",
+  "order": 4
+}

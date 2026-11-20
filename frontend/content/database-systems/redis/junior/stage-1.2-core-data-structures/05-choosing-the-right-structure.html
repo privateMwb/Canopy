@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Choosing the Right Structure — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · core data structures</span> → lesson 05</p>
+  <h1>Choosing the Right Structure</h1>
+  <p class="lede">Choosing a structure means starting from the question you will ask, because a wrong choice shows up later as slow commands or wasted memory.</p>
+
+  <h2><span class="num">§1</span>Start From the Access Pattern</h2>
+  <ul>
+    <li><strong>Do I need a FIFO queue or a stack?</strong> A list.</li>
+    <li><strong>Do I need an object with several fields I update separately?</strong> A hash.</li>
+    <li><strong>Do I need "is X in this group?" or "what do these groups share?"</strong> A set.</li>
+    <li><strong>Do I need ranking, top-N, or "everything between two values"?</strong> A sorted set.</li>
+    <li><strong>Do I need a single value, a counter, or a cached blob?</strong> A string.</li>
+  </ul>
+  <p>The same data can be modeled several ways. Ten thousand "recent items" could be a list per user, a sorted set scored by time, or a string holding JSON. Each answers different questions well.</p>
+  <h2><span class="num">§2</span>The Cost of a Wrong Choice</h2>
+  <pre><span class="comment"># Wrong: membership check in a list scans every element</span>
+LPOS blocked:ips "203.0.113.5"
+<span class="comment"># Right: constant time in a set</span>
+SISMEMBER blocked:ips "203.0.113.5"</pre>
+  <p>Using a list for membership, a string for an object you update field by field, or a set where order matters does not fail at once. It works in testing and then slows down, wastes memory, or loses updates at scale.</p>
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Write the queries first, then pick the structure. If you cannot say what question a key answers, it is not ready to be modeled.
+  </div>
+  <h2><span class="num">§3</span>Sometimes Combine Them</h2>
+  <p>A common design uses a hash for the object and a sorted set as an index over it: <code>HSET product:7 ...</code> holds details, <code>ZADD products:by_price 9.99 7</code> lets you range by price, and you fetch the hashes for the ids returned.</p>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Putting an entire object as JSON in a string and updating one field</td><td>Read-modify-write races and wasted bandwidth</td><td>Use a hash</td></tr>
+    <tr><td>One big list used as a lookup table</td><td>Every lookup is linear</td><td>Use a hash or set keyed by the lookup value</td></tr>
+    <tr><td>Sorting in the client after fetching everything</td><td>Large transfers and slow responses</td><td>Use a sorted set so Redis keeps the order</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>For a "top 10 most viewed articles this week" feature, choose a structure and write the commands for recording a view and reading the top 10.</li>
+      <li>Model a friends list with a set and a "recently active friends" view with a sorted set, and explain why one structure alone is not enough.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Pick the structure from the question you will ask, not from the shape of the data.</li>
+      <li>A wrong structure works at small scale and fails quietly at large scale.</li>
+      <li>Combine structures: a hash for details and a sorted set or set as an index.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Core Data Structures — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

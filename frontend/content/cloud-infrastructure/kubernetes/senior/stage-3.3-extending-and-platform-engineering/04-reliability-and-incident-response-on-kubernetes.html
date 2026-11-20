@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reliability &amp; Incident Response on Kubernetes — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · extending &amp; platform engineering</span> → lesson 04</p>
+  <h1>Reliability &amp; Incident Response on Kubernetes</h1>
+  <p class="lede">Clusters fail in a small set of recurring ways, and good incident response is a calm, structured process followed by a blameless review.</p>
+
+  <h2><span class="num">§1</span>Common Outage Patterns</h2>
+  <table>
+    <tr><th>Pattern</th><th>Typical trigger</th><th>First look</th></tr>
+    <tr><td>Control plane unavailable</td><td>etcd full or slow, expired certificates, overloaded API server</td><td>API server and etcd logs, <code>etcd</code> alarms, certificate dates</td></tr>
+    <tr><td>Nodes <code>NotReady</code></td><td>Kubelet crash, disk or memory pressure, network partition, runtime failure</td><td><code>kubectl describe node</code>, kubelet logs, node conditions</td></tr>
+    <tr><td>Everything Pending</td><td>No capacity, autoscaler stuck, quota hit, taints</td><td>Scheduler events, autoscaler logs, <code>kubectl describe pod</code></td></tr>
+    <tr><td>DNS failures</td><td>CoreDNS overloaded or crash-looping, <code>ndots</code> storms, network policy blocking port 53</td><td>CoreDNS metrics and logs, test from a pod</td></tr>
+    <tr><td>Webhook blocking changes</td><td>A failing admission webhook with <code>failurePolicy: Fail</code></td><td>Error messages naming the webhook; delete or disable it</td></tr>
+    <tr><td>Mass restarts or evictions</td><td>Memory pressure, a bad rollout, node drain without PDBs</td><td>Events, <code>kubectl get pods -A</code>, recent deployments</td></tr>
+    <tr><td>IP address exhaustion</td><td>Pod CIDR or VPC subnet full</td><td>CNI logs, node <code>podCIDR</code> and IP allocation</td></tr>
+  </table>
+  <p>Many serious incidents are <strong>changes</strong>: a deployment, upgrade, config push, or certificate expiry. Always ask what changed recently.</p>
+  <h2><span class="num">§2</span>A Diagnosis Routine</h2>
+  <ol>
+    <li><strong>Scope it</strong>: one app, one node, one namespace, or the whole cluster? Is the user impact real?</li>
+    <li><strong>Check what changed</strong>: recent rollouts, GitOps syncs, upgrades, node events.</li>
+    <li><strong>Stabilize first</strong>: roll back, scale up, cordon a bad node, or fail over, before finding root cause.</li>
+    <li><strong>Form a hypothesis</strong> from events, logs, and metrics, and test it with the cheapest check.</li>
+    <li><strong>Communicate</strong>: a named incident lead, a status channel, regular updates, and a record of timeline.</li>
+  </ol>
+  <pre>kubectl get events -A --sort-by=.lastTimestamp | tail -30
+kubectl get nodes
+kubectl get pods -A | grep -v Running | grep -v Completed
+kubectl top nodes
+kubectl -n kube-system logs deploy/coredns --tail=50</pre>
+  <h2><span class="num">§3</span>Reliability Habits That Prevent Incidents</h2>
+  <ul>
+    <li><strong>PodDisruptionBudgets, probes, requests, and topology spread</strong> on every critical workload.</li>
+    <li><strong>Alerts on symptoms</strong>, tied to service level objectives (SLOs) and error budgets.</li>
+    <li><strong>Runbooks</strong> for known failures, kept next to the alerts that trigger them.</li>
+    <li><strong>Game days and chaos experiments</strong> to practice failure on purpose.</li>
+    <li><strong>Certificate expiry monitoring</strong>, which prevents the most embarrassing outages.</li>
+    <li><strong>Progressive delivery</strong> so bad changes hit a fraction of traffic.</li>
+  </ul>
+  <h2><span class="num">§4</span>The Postmortem Habit</h2>
+  <p>After an incident, write a <strong>blameless postmortem</strong>: a timeline, impact, root cause and contributing factors, what worked, what did not, and <strong>concrete action items with owners and dates</strong>. Blameless means asking "how did the system allow this?" rather than "who did this?" People who fear blame hide information, and hidden information repeats outages.</p>
+  <div class="callout">
+    <span class="label">Fix the system, not the person</span>
+    If one tired engineer typing one command could take production down, the missing safeguard is the finding, not the engineer.
+  </div>
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Digging for root cause during an active outage</td><td>Impact lasts longer than needed</td><td>Stabilize and roll back first, investigate after</td></tr>
+    <tr><td>No record of the timeline</td><td>The postmortem relies on memory and guesses</td><td>Keep a running log in the incident channel</td></tr>
+    <tr><td>Action items with no owner</td><td>The same incident repeats</td><td>Assign an owner and a date to each item</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Pick one pattern from the table and write a short runbook with the first five commands you would run.</li>
+      <li>Write a blameless postmortem outline for an incident you have experienced.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Most outages fit recurring patterns, and many follow a recent change.</li>
+      <li>Stabilize, then diagnose, with a clear lead and communication.</li>
+      <li>Blameless postmortems with owned action items turn incidents into improvements.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Extending &amp; Platform Engineering — Lesson 4 of 6</p>
+  </footer>
+</div>
+</body>
+</html>

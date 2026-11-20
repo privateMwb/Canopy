@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Visualization with Matplotlib — Lesson 1.1.09</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #2D6A6A; --accent-soft: #E7F0EF; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15171C; --card: #1C1F26; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A;
+      --accent-soft: #1B2927; --code-bg: #0E1013;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C; --card: #1C1F26; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A;
+    --accent-soft: #1B2927; --code-bg: #0E1013;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · python data stack</span> → lesson 09</p>
+  <h1>Data Visualization with Matplotlib</h1>
+  <p class="lede">Plotting with matplotlib: line, bar, and histogram charts, and what bins actually controls.</p>
+
+  <h2><span class="num">§1</span>The Basic Pattern</h2>
+  <pre>import matplotlib.pyplot as plt
+
+df_indexed = df.set_index("student")
+df_indexed["score"].plot(kind="bar")
+plt.title("Score by student")
+plt.xlabel("Student")
+plt.ylabel("Score")
+plt.show()</pre>
+  <p>Every chart needs its own <code>plt.show()</code> — without it, the next chart you draw gets layered onto the same figure instead of starting fresh.</p>
+
+  <h2><span class="num">§2</span>Choosing a Chart Type</h2>
+  <table>
+    <tr><th>Type</th><th>Use for</th></tr>
+    <tr><td><code>kind="line"</code></td><td>Trends over an ordered sequence (time, days, months)</td></tr>
+    <tr><td><code>kind="bar"</code></td><td>Comparing categories (cities, products, students)</td></tr>
+    <tr><td><code>kind="hist"</code></td><td>The distribution of one <strong>numeric</strong> column</td></tr>
+  </table>
+  <p>A histogram only works on numbers — it buckets values into ranges. For a categorical column (city, product), count rows first with <code>value_counts()</code>, then plot that as a bar chart.</p>
+
+  <h2><span class="num">§3</span>What bins Controls</h2>
+  <pre>data.plot(kind="hist", bins=3)    <span class="comment"># 3 wide buckets — smoother, less detail</span>
+data.plot(kind="hist", bins=10)   <span class="comment"># 10 narrow buckets — more detail, can look noisy</span></pre>
+  <p><strong>Rule of thumb:</strong> small dataset (under ~30 values) → 3-5 bins. Larger dataset → 10-20 bins is common.</p>
+
+  <h2><span class="num">§4</span>Labeling by Category — set_index</h2>
+  <pre>df_indexed = df.set_index("student")
+df_indexed["score"].plot(kind="bar")   <span class="comment"># x-axis now shows student names</span></pre>
+  <p><code>x=</code> inside <code>.plot()</code> only works when called on the whole DataFrame, not a single column. The reliable way to label a chart by category is <code>set_index</code> first.</p>
+
+  <h2><span class="num">§5</span>Worked Example — Full Chart Set</h2>
+  <pre>sales_indexed = sales.set_index("month")
+
+sales_indexed["revenue"].plot(kind="line")
+plt.title("Revenue per month"); plt.xlabel("Month"); plt.ylabel("Revenue")
+plt.show()
+
+sales["city"].value_counts().plot(kind="bar")   <span class="comment"># categorical -> value_counts first</span>
+plt.title("Orders per city"); plt.xlabel("City"); plt.ylabel("Orders")
+plt.show()
+
+sales["revenue"].plot(kind="hist", bins=4)
+plt.title("Revenue distribution"); plt.xlabel("Revenue"); plt.ylabel("Count")
+plt.show()</pre>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No <code>plt.show()</code> between charts</td><td>Charts overlap in one figure</td><td>Call <code>plt.show()</code> after each chart</td></tr>
+    <tr><td><code>kind="hist"</code> on a text column</td><td>Error — can't bucket non-numeric data</td><td>Use <code>value_counts().plot(kind="bar")</code> instead</td></tr>
+    <tr><td>A histogram y-axis labeled with the measured unit</td><td>Misleading — y-axis is always a <strong>count</strong></td><td>Label it "Count" or "Number of ___"</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Using any small DataFrame with a category column and a numeric column, make a line chart of the numeric column over an ordered category (e.g. month).</li>
+      <li>Make a bar chart of counts per category.</li>
+      <li>Make a histogram of the numeric column with a bin count you justify in one sentence.</li>
+      <li>Title and label the axes of all three.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>line → trend, bar → category comparison, hist → numeric distribution.</li>
+      <li>Categorical "distribution" needs <code>value_counts()</code> first; histograms are numeric-only.</li>
+      <li>Each chart needs its own <code>plt.show()</code>, and a histogram's y-axis is always a count.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Python Data Stack — Lesson 9 of 9</p>
+  </footer>
+</div>
+</body>
+</html>

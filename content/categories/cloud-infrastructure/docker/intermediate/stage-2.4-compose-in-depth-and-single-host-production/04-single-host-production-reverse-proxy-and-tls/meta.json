@@ -1,0 +1,5 @@
+{
+  "title": "Single-Host Production: Reverse Proxy & TLS",
+  "description": "Running Compose behind Traefik or Caddy with automatic certificates.",
+  "order": 4
+}

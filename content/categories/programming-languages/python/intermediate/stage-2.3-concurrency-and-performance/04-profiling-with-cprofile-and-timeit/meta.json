@@ -1,0 +1,5 @@
+{
+  "title": "Profiling with cProfile & timeit",
+  "description": "Measuring before optimizing: finding the hot spot instead of guessing.",
+  "order": 4
+}

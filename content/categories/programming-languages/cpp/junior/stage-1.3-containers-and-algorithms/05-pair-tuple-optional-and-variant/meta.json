@@ -1,0 +1,5 @@
+{
+  "title": "pair, tuple, optional & variant",
+  "description": "Returning and holding more than one kind of thing without raw pointers or sentinels.",
+  "order": 5
+}

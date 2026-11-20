@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lists, Tables &amp; Reading Order — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · semantic html &amp; content</span> → lesson 04</p>
+  <h1>Lists, Tables &amp; Reading Order</h1>
+  <p class="lede">Screen readers announce structure as well as text. Real lists and tables carry that structure, and a logical source order keeps it all reading the way it looks.</p>
+
+  <h2><span class="num">§1</span>Real Lists</h2>
+  <p>When items belong together, mark them up as a list. A screen reader announces something like "list, five items", and lets users skip the whole thing or move item by item. Paragraphs with dashes or line breaks give none of that.</p>
+  <table>
+    <tr><th>Element</th><th>Use for</th></tr>
+    <tr><td><code>ul</code></td><td>Items where order does not matter</td></tr>
+    <tr><td><code>ol</code></td><td>Steps or ranked items where order matters</td></tr>
+    <tr><td><code>dl</code></td><td>Terms and their descriptions, or name-value pairs</td></tr>
+  </table>
+  <pre>&lt;ol&gt;
+  &lt;li&gt;Preheat the oven.&lt;/li&gt;
+  &lt;li&gt;Mix the dry ingredients.&lt;/li&gt;
+  &lt;li&gt;Bake for 25 minutes.&lt;/li&gt;
+&lt;/ol&gt;
+
+<span class="comment">&lt;!-- Navigation menus are lists of links too --&gt;</span>
+&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/guides"&gt;Guides&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+
+  <h2><span class="num">§2</span>Data Tables</h2>
+  <p>Use tables for <strong>data</strong>, never for layout. A well-built data table lets a screen reader announce the row and column headers as the user moves through the cells.</p>
+  <pre>&lt;table&gt;
+  &lt;caption&gt;Quarterly sales by region (thousand units)&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Region&lt;/th&gt;
+      &lt;th scope="col"&gt;Q1&lt;/th&gt;
+      &lt;th scope="col"&gt;Q2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;North&lt;/th&gt;
+      &lt;td&gt;120&lt;/td&gt;
+      &lt;td&gt;140&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <ul>
+    <li><code>caption</code> gives the table a name and purpose.</li>
+    <li><code>th</code> with <code>scope="col"</code> or <code>scope="row"</code> ties each data cell to its headers.</li>
+    <li>For complex tables with merged or multi-level headers, use <code>id</code> and <code>headers</code>, or simplify the table by splitting it.</li>
+    <li>Avoid empty cells with no meaning, and keep merged cells to a minimum.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Reading Order Follows the Source</h2>
+  <p>Assistive technology reads and tabs through content in <strong>DOM order</strong>, not the order you see on screen. CSS can reposition elements visually (with <code>order</code>, grid placement, or absolute positioning), but the underlying order does not change.</p>
+  <pre>&lt;div class="cards"&gt;
+  &lt;a href="/c"&gt;Third card&lt;/a&gt;   &lt;!-- DOM order: 1 --&gt;
+  &lt;a href="/a"&gt;First card&lt;/a&gt;   &lt;!-- DOM order: 2 --&gt;
+&lt;/div&gt;
+
+.cards { display: flex; }
+.cards a:nth-child(1) { order: 2; }   /* Looks second, tabs first */
+.cards a:nth-child(2) { order: 1; }</pre>
+  <p>When the visual and DOM order disagree, keyboard focus jumps around and the page reads in a confusing sequence. The fix is almost always to reorder the HTML so the source matches the intended reading order.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    If you can read the page in the same order with CSS turned off, and the structure still makes sense, you have done most of the work. Semantic structure should hold up on its own.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Faking lists with line breaks or dashes</td><td>No "list of five items" announcement, and no list navigation</td><td>Use <code>ul</code>, <code>ol</code>, and <code>li</code></td></tr>
+    <tr><td>Using tables for page layout</td><td>Screen readers announce misleading table structure</td><td>Use CSS Grid or Flexbox for layout, tables only for data</td></tr>
+    <tr><td>Reordering content only with CSS</td><td>Focus and reading order no longer match the visual order</td><td>Change the HTML order to match the intended order</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Find a bulleted layout on a page you know and check whether it uses real list markup. Rewrite any that does not.</li>
+      <li>Build a small table of your own data with a <code>caption</code>, column headers, and row headers, and listen to how a screen reader reads a cell.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Use real lists for related items and real tables, with <code>caption</code> and <code>th</code>, for data.</li>
+      <li>Never use tables for layout.</li>
+      <li>Assistive technology follows DOM order, so put the source in the order users should read it.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Semantic HTML &amp; Content — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "DynamoDB Fundamentals",
+  "description": "Keys, access patterns, and why the design starts with the queries.",
+  "order": 2
+}

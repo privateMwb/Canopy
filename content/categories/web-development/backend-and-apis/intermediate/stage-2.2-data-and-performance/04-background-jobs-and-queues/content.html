@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Background Jobs &amp; Queues — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · data &amp; performance</span> → lesson 04</p>
+  <h1>Background Jobs &amp; Queues</h1>
+  <p class="lede">Moving slow work out of the request.</p>
+
+  <h2><span class="num">§1</span>Don't Make the User Wait</h2>
+
+  <p>Sending a welcome email, resizing an image, generating a PDF, or calling a slow third-party API can take seconds, and if you do it inside the request, the user waits, a timeout can kill the work midway, and a traffic spike ties up your servers. A <strong>background job</strong> moves the slow work out of the request: the API records <em>what needs to be done</em> in a queue and answers immediately, and separate <strong>worker</strong> processes pick jobs up and run them.</p>
+
+  <pre><span class="comment">// API process: enqueue and return right away</span>
+import { Queue } from "bullmq";
+const emailQueue = new Queue("email", { connection: { url: process.env.REDIS_URL } });
+
+app.post("/signup", async (req, res) =&gt; {
+  const user = await createUser(req.body);
+  await emailQueue.add("welcome", { userId: user.id }, {
+    attempts: 5,                                      <span class="comment">// retry up to 5 times</span>
+    backoff: { type: "exponential", delay: 2000 },    <span class="comment">// 2s, 4s, 8s, ...</span>
+    removeOnComplete: 1000,                           <span class="comment">// keep the last 1000 for inspection</span>
+  });
+  res.status(201).json({ id: user.id });
+});
+
+<span class="comment">// Worker process (separate from the API, can scale independently)</span>
+import { Worker } from "bullmq";
+new Worker("email", async job =&gt; {
+  const user = await getUser(job.data.userId);
+  await mailer.send({ to: user.email, template: "welcome" });
+}, { connection: { url: process.env.REDIS_URL }, concurrency: 5 });</pre>
+
+  <h2><span class="num">§2</span>What a Queue Gives You</h2>
+
+  <ul>
+    <li><strong>Faster responses:</strong> the request does a few milliseconds of work instead of seconds.</li>
+    <li><strong>Retries with backoff</strong> for flaky dependencies, handled by the queue rather than hand-written loops.</li>
+    <li><strong>Load smoothing:</strong> a burst of 10,000 signups becomes a backlog that workers drain steadily instead of a crash.</li>
+    <li><strong>Independent scaling:</strong> add workers when the backlog grows, without touching the API.</li>
+    <li><strong>Scheduling:</strong> delayed and recurring jobs (nightly reports, reminders) share the same machinery.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Design Jobs for Failure</h2>
+
+  <p>Most queues give <strong>at-least-once</strong> delivery: a job might run more than once (a worker crashes after sending the email but before acknowledging it). This is the same retry problem from the idempotency lesson, so make jobs <strong>idempotent</strong>:</p>
+
+  <ul>
+    <li>Pass <strong>ids, not payloads</strong>, and load fresh data in the worker, so a retry sees current state rather than stale copies.</li>
+    <li>Record completion in your database (or use a unique job id) so the second run does nothing: check "already sent" before sending.</li>
+    <li>Use <strong>retries only for transient failures.</strong> A job failing because of bad data will fail forever; after the attempt limit it should land in a <strong>dead-letter queue</strong> (a failed-jobs set) that alerts a human.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Telling the Client What Happened</h2>
+
+  <p>When the user needs the result of slow work, respond with <code>202 Accepted</code> and a way to check progress, such as a job resource the client can poll or an event pushed over SSE.</p>
+
+  <pre>POST /reports            -&gt; 202 Accepted   Location: /reports/918
+GET  /reports/918        -&gt; 200 {"status": "running"}      ... later ...
+GET  /reports/918        -&gt; 200 {"status": "done", "downloadUrl": "https://..."}</pre>
+
+  <div class="callout">
+    <span class="label">Enqueue only after the data is committed</span>
+    If you enqueue inside a database transaction and the transaction rolls back, a worker may chase a row that never existed; if you enqueue first and the commit fails, same story. Enqueue after the commit, or use the <strong>transactional outbox</strong> pattern (write the job to a table in the same transaction and relay it) when you cannot afford to lose or phantom a job.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Doing slow work inside the request</td><td>Timeouts, tied-up servers, and partial work on failure</td><td>Enqueue and respond; process in workers</td></tr>
+    <tr><td>Non-idempotent jobs under at-least-once delivery</td><td>Duplicate emails, double charges</td><td>Record completion and make repeats a no-op</td></tr>
+    <tr><td>Retrying forever with no dead-letter handling</td><td>Poison jobs loop endlessly and hide real failures</td><td>Cap attempts, move failures to a dead-letter queue, and alert</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add a queue and worker for sending a welcome email (log it instead of really sending). Kill the worker mid-job and confirm the job is retried.</li>
+      <li>Make the job idempotent by recording sent emails in a table, then enqueue the same job twice and confirm one email.</li>
+      <li>Design a <code>202 Accepted</code> flow for a PDF export, including the status endpoint.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Move slow or unreliable work to queue-fed workers and return quickly to the client.</li>
+      <li>Assume at-least-once delivery: pass ids, make jobs idempotent, and bound retries with a dead-letter queue.</li>
+      <li>Enqueue after commit (or use an outbox) and give clients a way to check on long-running work.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Data &amp; Performance — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

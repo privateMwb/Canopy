@@ -1,0 +1,5 @@
+{
+  "title": "Sessions & Rate Limiting",
+  "description": "Storing login state and limiting requests per user or IP.",
+  "order": 2
+}

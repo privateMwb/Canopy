@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading the Spec — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · semantics in depth</span> → lesson 05</p>
+  <h1>Reading the Spec</h1>
+  <p class="lede">When someone asks "can I put a <code>div</code> in a <code>p</code>?", the answer is in the HTML Living Standard; knowing how to read it, and MDN, saves guessing.</p>
+
+  <h2><span class="num">§1</span>Where the Answers Live</h2>
+
+  <p>The <strong>HTML Living Standard</strong> (html.spec.whatwg.org) is the authoritative specification, continuously updated by WHATWG. It is precise and dense. <strong>MDN Web Docs</strong> is the friendlier reference, with examples and browser-support tables. Use MDN to learn, the spec to settle disputes.</p>
+  <table>
+    <tr><th>Source</th><th>Best for</th></tr>
+    <tr><td>HTML Living Standard</td><td>Exact rules, content models, parsing behavior</td></tr>
+    <tr><td>MDN Web Docs</td><td>Explanations, examples, compatibility data</td></tr>
+    <tr><td>caniuse.com</td><td>Browser support at a glance</td></tr>
+    <tr><td>WAI-ARIA Authoring Practices</td><td>Accessible patterns for custom widgets</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Anatomy of an Element Entry</h2>
+
+  <p>Every element in the spec follows the same layout. Learn to read it, and any new tag becomes answerable.</p>
+  <ul>
+    <li><strong>Categories</strong> — flow, phrasing, interactive, and so on; used to decide where it can appear.</li>
+    <li><strong>Contexts in which this element can be used</strong> — valid parents.</li>
+    <li><strong>Content model</strong> — what it may contain.</li>
+    <li><strong>Content attributes</strong> — the attributes it accepts.</li>
+    <li><strong>Accessibility considerations</strong> — roles and notes.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Worked Example: Can a <code>div</code> Go in a <code>p</code>?</h2>
+
+  <p>Look up <code>&lt;p&gt;</code>: its content model is <strong>phrasing content</strong>. <code>&lt;div&gt;</code> is <strong>flow content</strong>, not phrasing, so it isn't allowed inside <code>&lt;p&gt;</code>. Worse, the parser closes the paragraph automatically when it meets a <code>&lt;div&gt;</code>.</p>
+  <pre>&lt;p&gt;Intro text
+  &lt;div&gt;block&lt;/div&gt;
+&lt;/p&gt;
+
+<span class="comment">&lt;!-- the parser produces:
+&lt;p&gt;Intro text&lt;/p&gt;
+&lt;div&gt;block&lt;/div&gt;
+&lt;p&gt;&lt;/p&gt;        &lt;- the stray &lt;/p&gt; creates an empty paragraph --&gt;</span></pre>
+  <p>This is a practical use of the spec: instead of memorizing rules, you can derive them from content models.</p>
+
+  <div class="callout">
+    <span class="label">Spec first for "allowed?" questions</span>
+    MDN is great for "how do I?". For "is this valid?" or "what exactly happens?", read the element's content model and the parsing section of the spec.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating a Stack Overflow answer from 2012 as current</td><td>Outdated or removed features</td><td>Check the spec and MDN for current status</td></tr>
+    <tr><td>Assuming that if it renders, it's valid</td><td>Browsers forgive invalid markup</td><td>Validate and read content models</td></tr>
+    <tr><td>Skipping browser compatibility tables</td><td>A feature works in your browser only</td><td>Check MDN's table and caniuse before relying on it</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Look up <code>&lt;label&gt;</code>, <code>&lt;dialog&gt;</code>, and <code>&lt;ul&gt;</code> in the spec and write down each one's content model and permitted parents.</li>
+      <li>Find out why <code>&lt;a&gt;</code> can contain a <code>&lt;div&gt;</code> in modern HTML but <code>&lt;button&gt;</code> can't contain a link.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The HTML Living Standard is authoritative; MDN is the friendly guide.</li>
+      <li>Learn to read element entries: categories, contexts, content model, attributes.</li>
+      <li>Validity questions are answered by content models, not by what renders.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Semantics in Depth — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

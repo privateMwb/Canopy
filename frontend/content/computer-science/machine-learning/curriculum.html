@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Machine Learning Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / machine learning</p>
+    <h1>A path from first array to shipped system</h1>
+    <p class="lede">Three levels, ten stages, sixty-some lessons — each one a concrete skill, not a video to sit through. Checkpoints are unscaffolded on purpose: finishing one without hints is how you know the stage actually landed.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+  <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "can code" to "can clean data, train a basic model, and explain what it's doing."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Python Data Stack</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">NumPy Arrays &amp; Vectorized Operations</p><p class="lesson-desc">NumPy arrays and operations that apply to a whole array at once, no loops.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Boolean Masking &amp; Filtering</p><p class="lesson-desc">Boolean masking: selecting elements by condition.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">2D Arrays &amp; Axes</p><p class="lesson-desc">2D arrays, and the difference between axis=0 and axis=1.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Broadcasting</p><p class="lesson-desc">Broadcasting, and using it to standardize columns.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Pandas DataFrames</p><p class="lesson-desc">pandas DataFrames: selection, filtering, adding new columns.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Handling Missing Data</p><p class="lesson-desc">Handling missing data with fillna/dropna, and choosing mean vs. median.</p></div></div>
+      <div class="lesson"><span class="lesson-num">07</span><div><p class="lesson-title">Sorting &amp; Ranking</p><p class="lesson-desc">Sorting, and pulling out the top-N rows.</p></div></div>
+      <div class="lesson"><span class="lesson-num">08</span><div><p class="lesson-title">Groupby vs. value_counts</p><p class="lesson-desc">groupby for aggregating a different column vs. value_counts() for counting categories.</p></div></div>
+      <div class="lesson"><span class="lesson-num">09</span><div><p class="lesson-title">Data Visualization with Matplotlib</p><p class="lesson-desc">Plotting with matplotlib: line, bar, histogram, and what bins controls.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">10</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Clean a messy, real-world-style dataset and produce three justified charts.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Foundations of a Model</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What Is a Model?</p><p class="lesson-desc">What a model is: a function learned from examples, not hand-written rules.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Features and Labels</p><p class="lesson-desc">Features vs. labels, and why their shapes matter to scikit-learn.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Linear Regression</p><p class="lesson-desc">Linear regression: .fit(), .predict(), coef_, intercept_.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Train/Test Splits</p><p class="lesson-desc">Train/test splits, and why you never evaluate on training data.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Overfitting vs. Underfitting</p><p class="lesson-desc">Overfitting vs. underfitting, shown with a simple example.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Regression Evaluation Metrics</p><p class="lesson-desc">Evaluation basics for regression: MAE, MSE, R².</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Train and evaluate a linear regression model end-to-end on a new dataset.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Classification Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Classification vs. Regression</p><p class="lesson-desc">Classification vs. regression.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Logistic Regression</p><p class="lesson-desc">Logistic regression: how probabilities become class predictions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">The Confusion Matrix</p><p class="lesson-desc">The confusion matrix: true/false positives and negatives.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Precision and Recall</p><p class="lesson-desc">Precision, recall, and why accuracy alone can mislead you.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Decision Trees</p><p class="lesson-desc">Decision trees: how splits are chosen, and why they overfit easily.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Train a classifier and justify which metric matters most for it.</p></div></div>
+    </div>
+  </section>
+
+  <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "can train a basic model" to "can build a full pipeline, work with deep learning, and reason about model behavior."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Real-World Model Building</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Data Leakage</p><p class="lesson-desc">Data leakage: what it is, and how it quietly sneaks into pipelines.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Feature Engineering</p><p class="lesson-desc">Encoding categories, scaling numerics.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Cross-Validation</p><p class="lesson-desc">Cross-validation, and why it beats a single train/test split.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Hyperparameter Tuning</p><p class="lesson-desc">Hyperparameter tuning: grid search vs. random search.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Ensemble Methods</p><p class="lesson-desc">Ensemble methods: random forests, gradient boosting (XGBoost/LightGBM).</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Handling Imbalanced Data</p><p class="lesson-desc">Handling imbalanced data: resampling, class weights.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a full scikit-learn pipeline — preprocessing, model, tuning — on a messy dataset.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Neural Networks and PyTorch</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Neurons and Layers</p><p class="lesson-desc">The neuron and the layer: weights, biases, activation functions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Backpropagation</p><p class="lesson-desc">What backpropagation actually computes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Loss Functions &amp; Optimizers</p><p class="lesson-desc">Loss functions and optimizers: SGD, Adam.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">PyTorch Fundamentals</p><p class="lesson-desc">A model in PyTorch: nn.Module, training loops.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Regularization Techniques</p><p class="lesson-desc">Dropout, early stopping, weight decay.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">GPU Acceleration</p><p class="lesson-desc">GPUs and why they accelerate training.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Train a feedforward network on tabular data and compare it to Stage 2.1's models.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Computer Vision and NLP Foundations</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Convolutional Neural Networks</p><p class="lesson-desc">Convolutional neural networks, from first principles.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Image Data Pipelines</p><p class="lesson-desc">Image pipelines: augmentation, normalization, batching.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Transfer Learning</p><p class="lesson-desc">Transfer learning: fine-tuning a pretrained model.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Tokenization &amp; Embeddings</p><p class="lesson-desc">Tokenization and embeddings.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Recurrent Neural Networks</p><p class="lesson-desc">Recurrent networks, and the long-range dependency problem they had.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Attention &amp; Transformers</p><p class="lesson-desc">Attention and transformers, the mechanism behind modern language models.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Fine-tune a pretrained vision or language model on a custom dataset.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Working Like an ML Engineer</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Experiment Tracking</p><p class="lesson-desc">Experiment tracking: logging and comparing runs systematically.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Reproducibility</p><p class="lesson-desc">Reproducibility: seeds, environments, versioning data and models.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Model Serving</p><p class="lesson-desc">Model serving basics: wrapping a model in an API.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Model Monitoring</p><p class="lesson-desc">Monitoring: detecting data drift and performance decay.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a trained model from notebook to a deployable, documented artifact.</p></div></div>
+    </div>
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "can build and ship models" to "can design systems, push into research-level understanding, and make judgment calls others rely on."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Deep Architecture Mastery</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Transformer Architecture</p><p class="lesson-desc">Multi-head attention, positional encoding, layer norm.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Distributed Training</p><p class="lesson-desc">Mixed precision, gradient accumulation, distributed training.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Generative Models</p><p class="lesson-desc">Generative models: diffusion and autoregressive generation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Reinforcement Learning Fundamentals</p><p class="lesson-desc">Reinforcement learning fundamentals.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">RLHF &amp; Preference Tuning</p><p class="lesson-desc">RLHF and preference tuning.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Implement a transformer block from scratch and verify it trains.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Research and Experimentation</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Reading Research Papers</p><p class="lesson-desc">Reading papers efficiently: abstract → figures → method → results.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Reproducing Research Results</p><p class="lesson-desc">Reproducing a paper's core result at a small scale.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Ablation Studies</p><p class="lesson-desc">Ablation studies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Statistical Rigor in ML</p><p class="lesson-desc">Statistical rigor: significance, variance across runs, avoiding p-hacking.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Reproduce a recent paper's key experiment and write up what did and didn't hold.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Systems and Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Model Compression</p><p class="lesson-desc">Quantization, pruning, distillation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Retrieval-Augmented Generation (RAG)</p><p class="lesson-desc">Vector databases and retrieval-augmented generation (RAG).</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Cost &amp; Latency Tradeoffs</p><p class="lesson-desc">Cost and latency tradeoffs in production systems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Fault-Tolerant System Design</p><p class="lesson-desc">Fallbacks, guardrails, graceful degradation.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a production system for a model with real latency/cost constraints.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Technical Leadership</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Scoping ML Problems</p><p class="lesson-desc">Scoping problems: deciding if ML is the right tool at all.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Communicating Model Limitations</p><p class="lesson-desc">Communicating limitations and uncertainty to non-technical stakeholders.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Code &amp; Model Review</p><p class="lesson-desc">What to look for in code and model review.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Mentoring Engineers</p><p class="lesson-desc">Mentoring: finding why someone is stuck.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a structured critique of a peer's, or your own past, ML project.</p></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> You can work on Intermediate topics while still solidifying Junior fundamentals.</p>
+    <p><strong>Intermediate to Senior is a shift in judgment, not tools.</strong> Knowing when not to use a technique matters as much as knowing how.</p>
+  </footer>
+
+</div>
+</body>
+</html>

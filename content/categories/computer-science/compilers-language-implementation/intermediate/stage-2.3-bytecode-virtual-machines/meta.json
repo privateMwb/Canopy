@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Bytecode Virtual Machines",
+  "description": "Stack and register VMs, instruction sets, bytecode compilation, closures, and mark-sweep GC.",
+  "order": 3
+}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deploying to Vercel — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · shipping</span> → lesson 01</p>
+  <h1>Deploying to Vercel</h1>
+  <p class="lede">Previews, production, and environment config.</p>
+
+  <h2><span class="num">§1</span>From Git Push to Live URL</h2>
+
+  <p>Vercel (built by the makers of Next.js) connects to your Git repository. Every push triggers a build, and the result is deployed automatically. Pushes to your <strong>production branch</strong> (usually <code>main</code>) go live; pushes to any other branch become <strong>preview deployments</strong> with their own URLs.</p>
+
+  <ol>
+    <li>Push your project to GitHub, GitLab, or Bitbucket.</li>
+    <li>Import the repository in the Vercel dashboard. The framework is detected automatically.</li>
+    <li>Add your environment variables before the first build.</li>
+    <li>Deploy. Vercel runs <code>next build</code> and publishes the output globally.</li>
+  </ol>
+
+  <h2><span class="num">§2</span>Environments and Their Variables</h2>
+
+  <p>Vercel has three environments: <strong>Production</strong>, <strong>Preview</strong>, and <strong>Development</strong>. Each can have different variable values, so previews can point at a staging database while production uses the real one. A variable that is set for the wrong environment is the most common cause of 'works locally, breaks in production.'</p>
+
+  <table>
+    <tr><th>Environment</th><th>Triggered by</th><th>Typical config</th></tr>
+    <tr><td>Production</td><td>Merge or push to the production branch</td><td>Real database, live API keys</td></tr>
+    <tr><td>Preview</td><td>Any other branch or pull request</td><td>Staging database, test API keys</td></tr>
+    <tr><td>Development</td><td><code>vercel dev</code> / <code>vercel env pull</code></td><td>Local values</td></tr>
+  </table>
+
+  <pre>npm i -g vercel
+vercel link             <span class="comment"># connect this folder to a project</span>
+vercel env pull         <span class="comment"># download development variables to .env.local</span>
+vercel --prod           <span class="comment"># deploy from the CLI (usually Git does this)</span></pre>
+
+  <h2><span class="num">§3</span>What Gets Deployed</h2>
+
+  <p>Static pages go to the CDN, and dynamic routes and Server Actions become serverless functions that scale on demand. You don't manage servers, but you do inherit platform limits such as function timeouts and memory, which Stage 3.1 and 3.4 examine. Other hosts (Netlify, Cloudflare, AWS, a Docker container) can run the same framework with differing levels of feature support.</p>
+
+  <div class="callout">
+    <span class="label">Build locally first</span>
+    If <code>npm run build</code> fails on your machine, it will fail on the platform too. Type errors and lint errors that dev mode tolerated often surface only at build time.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Forgetting environment variables on the platform</td><td>The build or runtime fails because configuration is missing</td><td>Add variables for each environment before deploying</td></tr>
+    <tr><td>Pointing previews at the production database</td><td>Test activity corrupts real data</td><td>Use a separate staging database for the Preview environment</td></tr>
+    <tr><td>Never reading the build logs</td><td>You miss warnings that become production bugs</td><td>Read the log when a deploy fails, and skim it when it succeeds</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Deploy your task manager to Vercel and add the database URL as an environment variable.</li>
+      <li>Push a change on a new branch and find the preview URL that was generated for it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A Git push triggers a build; the production branch goes live and other branches get preview URLs.</li>
+      <li>Environment variables are set per environment, so verify each one.</li>
+      <li>Always run a production build locally before relying on the platform.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Shipping — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resilience: Timeouts, Retries &amp; Circuit Breakers — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · production service design</span> → lesson 01</p>
+  <h1>Resilience: Timeouts, Retries &amp; Circuit Breakers</h1>
+  <p class="lede">In a system of services, something is always slow or broken, and resilience is the set of techniques that stops one failing dependency from taking everything else down with it.</p>
+
+  <h2><span class="num">§1</span>Failure Is the Normal Case</h2>
+  <p>A call to another service can fail quickly, fail slowly, or never return. <strong>Slow failures are the dangerous ones</strong>: while a caller waits, it holds a thread, a connection, and memory, so a single slow dependency can exhaust a caller's resources and spread the failure upstream (a <strong>cascading failure</strong>). The design question is never "what if the dependency fails?" but "what do we do when it does, and how do we limit the damage?"</p>
+
+  <h2><span class="num">§2</span>Timeouts: The First Line of Defense</h2>
+  <p>Every remote call needs a timeout. Many clients default to <strong>no timeout</strong> or an enormous one, which means a stuck call can hold a thread forever. Set both a <strong>connect</strong> timeout (short, such as a second) and a <strong>read/response</strong> timeout based on what the dependency normally needs, plus a margin.</p>
+  <pre>HttpClient client = HttpClient.newBuilder()
+    .connectTimeout(Duration.ofSeconds(1))
+    .build();
+HttpRequest req = HttpRequest.newBuilder(URI.create(url))
+    .timeout(Duration.ofSeconds(2))                    <span class="comment">// total time for this request</span>
+    .build();
+<span class="comment">// JDBC: setQueryTimeout; pool: connectionTimeout; futures: orTimeout(...)</span></pre>
+  <p>Think in terms of a <strong>deadline budget</strong>: if the user-facing request must finish in 3 seconds, the sum of the timeouts and retries of everything beneath it must fit, or you will keep working on a result nobody is waiting for. Propagate the remaining deadline downstream where you can.</p>
+
+  <h2><span class="num">§3</span>Retries, Carefully</h2>
+  <p>Retrying fixes transient faults (a dropped connection, a brief overload), but a naive retry loop can turn a small problem into an outage. Rules:</p>
+  <ul>
+    <li><strong>Retry only idempotent operations</strong>, or ones protected by an idempotency key. Retrying a non-idempotent payment can charge twice.</li>
+    <li><strong>Retry only errors that may be transient</strong> (timeouts, 503, connection reset), not errors that will fail again (400, 404, validation).</li>
+    <li>Use <strong>exponential backoff with jitter</strong>: wait longer after each failure, and add randomness so thousands of clients don't retry in lockstep.</li>
+    <li><strong>Cap the attempts</strong>, usually two or three, and respect the deadline.</li>
+    <li>Beware of <strong>retry amplification</strong>: if three layers each retry three times, one failed call becomes 27 against the struggling service. Retry at one layer, usually the outermost that can.</li>
+  </ul>
+  <pre>long delay = 100;
+for (int attempt = 1; ; attempt++) {
+    try { return call(); }
+    catch (TransientException e) {
+        if (attempt == 3) throw e;
+        Thread.sleep(delay + ThreadLocalRandom.current().nextLong(delay));   <span class="comment">// jitter</span>
+        delay *= 2;                                                           <span class="comment">// exponential backoff</span>
+    }
+}</pre>
+
+  <h2><span class="num">§4</span>Circuit Breakers</h2>
+  <p>A <strong>circuit breaker</strong> wraps calls to a dependency and tracks failures. When the failure rate crosses a threshold, it <strong>opens</strong>: calls fail immediately without touching the dependency, giving it room to recover and freeing your threads. After a wait it goes <strong>half-open</strong>, lets a few trial calls through, and <strong>closes</strong> again if they succeed.</p>
+  <pre>CircuitBreaker breaker = CircuitBreaker.of("inventory", CircuitBreakerConfig.custom()
+    .failureRateThreshold(50)                          <span class="comment">// open at 50% failures</span>
+    .slidingWindowSize(20)
+    .waitDurationInOpenState(Duration.ofSeconds(30))
+    .build());
+Supplier&lt;Stock&gt; guarded = CircuitBreaker.decorateSupplier(breaker, () -&gt; inventory.stock(id));
+<span class="comment">// the above uses Resilience4j; Spring Cloud Circuit Breaker and others wrap similar ideas</span></pre>
+  <p>Pair the breaker with a <strong>fallback</strong>: a cached value, a default, a degraded feature ("recommendations unavailable"), or a clear error. Decide for each dependency what degraded behavior is acceptable.</p>
+
+  <h2><span class="num">§5</span>Bulkheads and Backpressure</h2>
+  <p>A <strong>bulkhead</strong> isolates resources so one dependency can't consume them all: separate thread pools, connection pools, or semaphores per downstream, so a slow inventory service can't starve the calls to payments. <strong>Backpressure</strong> is the system's way to say "slow down": bounded queues, rejecting work with <code>429</code>/<code>503</code> when overloaded (<strong>load shedding</strong>), and limiting concurrency. An unbounded queue is not resilience; it only hides overload until memory runs out, while latency grows without limit. It is usually better to reject some requests quickly than to accept all of them and serve every one badly.</p>
+  <pre>ExecutorService pool = new ThreadPoolExecutor(
+    10, 10, 0, TimeUnit.SECONDS,
+    new ArrayBlockingQueue&lt;&gt;(50),                      <span class="comment">// bounded</span>
+    new ThreadPoolExecutor.AbortPolicy());             <span class="comment">// reject when full: caller gets an exception, can shed load</span></pre>
+
+  <h2><span class="num">§6</span>Test the Failure Paths</h2>
+  <p>Resilience code that has never run is a guess. Verify behavior by injecting latency and errors (a proxy such as Toxiproxy, a stub that sleeps, or chaos testing in staging) and watching the timeouts, breakers, and fallbacks actually engage.</p>
+
+  <div class="callout">
+    <span class="label">Slow is worse than down</span>
+    A dependency that fails fast costs you one error. A dependency that hangs costs you a thread per request until you have none left. Timeouts convert slow failures into fast ones.
+  </div>
+
+  <h2><span class="num">§7</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No timeout on an HTTP or database call</td><td>Threads pile up behind a hung dependency</td><td>Set connect and read timeouts everywhere</td></tr>
+    <tr><td>Retrying non-idempotent operations</td><td>Duplicate side effects such as double charges</td><td>Retry only idempotent calls, or use idempotency keys</td></tr>
+    <tr><td>Retrying immediately without backoff or jitter</td><td>A retry storm overwhelms the recovering service</td><td>Use exponential backoff with jitter and a cap</td></tr>
+    <tr><td>Retries at every layer</td><td>Multiplied load (3 x 3 x 3 requests)</td><td>Retry at one layer</td></tr>
+    <tr><td>An unbounded queue or thread pool</td><td>Memory exhaustion with unbounded latency</td><td>Bound the queue and reject excess work</td></tr>
+    <tr><td>A circuit breaker with no fallback</td><td>Users just get errors faster</td><td>Define degraded behavior for each dependency</td></tr>
+    <tr><td>Never testing the failure paths</td><td>The first real test is the incident</td><td>Inject latency and errors regularly</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a client call with a 500 ms timeout against a stub that sleeps for 5 seconds, and confirm the caller recovers in about 500 ms.</li>
+      <li>Implement retry with exponential backoff and jitter, then run 100 simulated clients against a flapping stub and compare with a no-backoff retry.</li>
+      <li>Put a bounded executor in front of a slow dependency and show that overload produces fast rejections rather than ever-growing latency.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Timeouts turn slow failures into fast ones, so every remote call needs them, within an overall deadline.</li>
+      <li>Retry only safe, transient failures with backoff, jitter, caps, and at one layer.</li>
+      <li>Circuit breakers, bulkheads, bounded queues, and fallbacks contain failures, and they must be tested by injecting faults.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Production Service Design — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

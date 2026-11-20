@@ -1,0 +1,6 @@
+{
+  "title": "Linux & DevOps",
+  "description": "The command line, containers, and CI/CD, from shell to deployment.",
+  "order": 7,
+  "compileRoot": true
+}

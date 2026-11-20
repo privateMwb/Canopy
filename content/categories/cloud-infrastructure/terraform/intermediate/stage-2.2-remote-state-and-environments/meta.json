@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Remote State & Environments",
+  "description": "Remote backends and locking, environments, import and refactoring, secrets, and HCP Terraform.",
+  "order": 2
+}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The GIL, Free-Threading &amp; the JIT — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · inside cpython</span> → lesson 05</p>
+  <h1>The GIL, Free-Threading &amp; the JIT</h1>
+  <p class="lede">Recent CPython releases add an optional free-threaded build and an experimental JIT, and it's worth knowing exactly what each changes for your code and what it doesn't.</p>
+
+  <h2><span class="num">§1</span>Why the GIL Exists</h2>
+
+  <p>The GIL protects CPython's internals, especially reference counts, with one lock instead of fine-grained ones. That kept single-threaded code fast and C extensions simple, at the price of limiting pure-Python threads to one core at a time. Earlier lessons covered the effects: threads help I/O, processes help CPU work.</p>
+
+  <h2><span class="num">§2</span>The Free-Threaded Build</h2>
+
+  <p><strong>PEP 703</strong> made the GIL optional. A free-threaded build of CPython (installed separately, usually named <code>python3.13t</code> or <code>python3.14t</code>) runs Python threads truly in parallel on multiple cores. It was <strong>experimental in 3.13</strong> and became <strong>officially supported in 3.14</strong> (PEP 779), but it is still not the default build.</p>
+
+  <pre>import sys, sysconfig
+
+print(sysconfig.get_config_var("Py_GIL_DISABLED"))   <span class="comment"># 1 in a free-threaded build</span>
+print(sys._is_gil_enabled())                          <span class="comment"># False when it's really off (3.13+)</span></pre>
+
+  <pre><span class="comment"># CPU-bound work in threads can now scale across cores on a free-threaded build</span>
+from concurrent.futures import ThreadPoolExecutor
+
+with ThreadPoolExecutor(8) as pool:
+    results = list(pool.map(cpu_heavy, chunks))</pre>
+
+  <p>To make this work without the GIL, the runtime uses techniques such as biased and atomic reference counting and per-object locks.</p>
+
+  <h2><span class="num">§3</span>What It Does Not Change</h2>
+
+  <ul>
+    <li><strong>Your races are real.</strong> The GIL was hiding some timing bugs. Code like <code>counter += 1</code> on shared state needs a lock, with or without the GIL. Built-in containers stay internally consistent, but multi-step logic is still yours to protect.</li>
+    <li><strong>Single-thread speed can be lower.</strong> The free-threaded build has some overhead on single-threaded code, which has shrunk with each release but hasn't vanished.</li>
+    <li><strong>Extension modules must opt in.</strong> A C extension that doesn't declare free-threading support causes the interpreter to re-enable the GIL when imported (you can override with <code>PYTHON_GIL=0</code> or <code>-X gil=0</code>, at your own risk). Check your dependencies before assuming parallel speedups.</li>
+    <li><strong>I/O-bound code</strong> was already fine with threads or asyncio.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>The Experimental JIT</h2>
+
+  <p>CPython 3.13 introduced an experimental <strong>copy-and-patch JIT</strong> (PEP 744). It translates hot sequences of specialized bytecode into machine code using pre-built templates. It's <strong>off by default</strong> and must be enabled at build time and run time (for example, <code>PYTHON_JIT=1</code>). Early gains are modest and workload-dependent, and the design aims for gradual improvement over several releases rather than a dramatic jump.</p>
+
+  <pre>PYTHON_JIT=1 python3 bench.py        <span class="comment"># only if your build includes the JIT</span></pre>
+
+  <p>The JIT is separate from free-threading; the two features have their own limitations on combining, so check the current documentation for your version.</p>
+
+  <h2><span class="num">§5</span>What to Do With This</h2>
+
+  <ul>
+    <li>Don't rewrite working code for either feature. Measure on your real workload.</li>
+    <li>Do write thread-safe code now: use locks, queues, and immutable data, so your code is correct under free-threading when you adopt it.</li>
+    <li>Treat the status of these features as a moving target and read the release notes for your target Python version.</li>
+    <li>For CPU-bound parallelism today, multiprocessing and native libraries remain the proven route.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Removing the GIL changes performance, not correctness rules. Thread-safe code was always required; free-threading just stops hiding the bugs.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Assuming the default Python is GIL-free</td><td>No parallel speedup</td><td>Install and verify the free-threaded build, and check <code>sys._is_gil_enabled()</code></td></tr>
+    <tr><td>Importing a dependency that silently turns the GIL back on</td><td>Benchmarks show no gain</td><td>Check import warnings and extension support, and test with <code>PYTHON_GIL=0</code> carefully</td></tr>
+    <tr><td>Expecting the JIT to speed up every program</td><td>Little or no change on many workloads</td><td>Benchmark your workload before and after</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run a CPU-bound threaded benchmark on a regular build and, if available, a free-threaded build, and record both timings and <code>sys._is_gil_enabled()</code>.</li>
+      <li>Review a piece of threaded code you've written and list every shared mutable value that would need a lock without the GIL.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The free-threaded build runs threads in parallel; it's supported from 3.14 but is a separate, non-default build.</li>
+      <li>Race conditions and extension compatibility remain your responsibility.</li>
+      <li>The JIT is experimental and off by default; measure before relying on it.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Inside CPython — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

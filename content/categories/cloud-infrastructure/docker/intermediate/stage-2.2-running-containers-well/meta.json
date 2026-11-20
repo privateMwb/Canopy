@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Running Containers Well",
+  "description": "Resource limits, health and shutdown behavior, logging, networking in depth, and delivering configuration safely.",
+  "order": 2
+}

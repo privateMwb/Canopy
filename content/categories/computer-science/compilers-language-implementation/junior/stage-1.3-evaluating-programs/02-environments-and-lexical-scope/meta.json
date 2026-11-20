@@ -1,0 +1,5 @@
+{
+  "title": "Environments & Lexical Scope",
+  "description": "Variables, shadowing, nested blocks, and chains of environments.",
+  "order": 2
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Modules &amp; Large Codebases — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · architecture &amp; judgment</span> → lesson 01</p>
+  <h1>Modules &amp; Large Codebases</h1>
+  <p class="lede">As a codebase grows, the structure of its dependencies matters more than any single class, and the goal is to keep dependencies pointing in one direction so that parts can change, build, and be understood independently.</p>
+
+  <h2><span class="num">§1</span>Why Structure Matters</h2>
+  <p>In a small project everything can see everything, and that's fine. In a large one, unrestricted visibility means any code can depend on any other, so the dependency graph becomes a tangle: a change in one corner breaks distant code, builds can't be parallelized or cached, a cyclic dependency makes it impossible to extract or test a part alone, and nobody can say which code is safe to delete. The remedy is <strong>enforced boundaries</strong>: units with a small public surface and explicit, directional dependencies.</p>
+
+  <h2><span class="num">§2</span>Multi-Module Builds</h2>
+  <p>Both Maven and Gradle can split a project into <strong>modules</strong> (subprojects), each built into its own jar, with declared dependencies on the others.</p>
+  <pre>shop/
+  pom.xml  (or settings.gradle)
+  shop-domain/        pure business rules; depends on nothing internal
+  shop-persistence/   depends on shop-domain
+  shop-api/           depends on shop-domain
+  shop-app/           wires everything; depends on all of the above</pre>
+  <p>The build tool refuses cyclic module dependencies, which makes the boundary real, and it builds only what changed (with Gradle's caching, only what changed and what depends on it). The principle to apply is the <strong>dependency rule</strong>: dependencies point <strong>inward</strong>, toward the stable core. The domain doesn't know about the web framework or the database; the outer layers know about the domain. If <code>shop-domain</code> needs to save something, it defines an interface that <code>shop-persistence</code> implements (dependency inversion).</p>
+  <pre>// shop-api/build.gradle
+dependencies {
+    implementation project(':shop-domain')       // 'implementation' hides it from consumers of this module
+    api 'com.fasterxml.jackson.core:jackson-annotations:2.17.0'   // 'api' exposes it in this module's own public API
+}</pre>
+  <p>Prefer <code>implementation</code> over <code>api</code> so transitive dependencies don't leak into every consumer's compile classpath. Keep a module's public API small: put most classes in a package that isn't meant for others and, ideally, make that unreachable.</p>
+
+  <h2><span class="num">§3</span>The Java Platform Module System (JPMS)</h2>
+  <p>Since Java 9, a <strong>module</strong> is a named group of packages described by <code>module-info.java</code>. It states which packages it <strong>exports</strong> and which modules it <strong>requires</strong>. Unexported packages are inaccessible even through reflection (unless explicitly opened), which gives the language itself strong encapsulation.</p>
+  <pre>module com.shop.domain {
+    requires java.logging;
+    exports com.shop.domain.model;              <span class="comment">// public API</span>
+    <span class="comment">// com.shop.domain.internal is NOT exported: no one else can touch it</span>
+}
+
+module com.shop.persistence {
+    requires com.shop.domain;
+    provides com.shop.domain.OrderStore with com.shop.persistence.JdbcOrderStore;   <span class="comment">// service provider</span>
+}</pre>
+  <p>The JDK itself is modularized (<code>java.base</code>, <code>java.sql</code>, and so on), and <code>jlink</code> can build a minimal runtime image containing only the modules an application needs. In practice, many application codebases use JPMS little or not at all: much of the ecosystem still uses the classpath, and frameworks that rely on reflection need packages <code>opens</code>-ed to them. It is most valuable for libraries and platforms that want hard encapsulation and for building trimmed runtimes. For most services, <strong>build-tool modules plus package conventions</strong> give most of the benefit with less friction.</p>
+
+  <h2><span class="num">§4</span>Enforcing Architecture</h2>
+  <p>Boundaries erode unless a tool defends them. Options: separate build modules (the strongest and simplest), <strong>ArchUnit</strong> tests that fail the build when a rule is broken, and static analysis for cycles.</p>
+  <pre>@AnalyzeClasses(packages = "com.shop")
+class ArchitectureTest {
+    @ArchTest
+    static final ArchRule domainIsIndependent = noClasses().that().resideInAPackage("..domain..")
+        .should().dependOnClassesThat().resideInAnyPackage("..persistence..", "..api..", "org.springframework..");
+
+    @ArchTest
+    static final ArchRule noCycles = slices().matching("com.shop.(*)..").should().beFreeOfCycles();
+}</pre>
+
+  <h2><span class="num">§5</span>Modular Monolith or Microservices?</h2>
+  <p>A large codebase doesn't have to be split into separate services. A <strong>modular monolith</strong>, with strict internal modules in one deployable, gives most of the organizational benefits (clear ownership, independent evolution, testability) without the network, deployment, and consistency costs of distributed services. Extract a module to its own service only when it needs independent scaling, release cadence, or fault isolation. If a codebase can't be cleanly split into modules, splitting it into services only turns the tangle into a distributed one, which is much harder to fix.</p>
+
+  <div class="callout">
+    <span class="label">Architecture is the rules you enforce</span>
+    A diagram that nobody checks will drift. Boundaries only exist if the build or a test fails when someone crosses them.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>One giant module where everything can see everything</td><td>A tangled dependency graph, slow builds, and no ownership</td><td>Split by responsibility into modules with directional dependencies</td></tr>
+    <tr><td>Cyclic dependencies between modules or packages</td><td>Can't extract, test, or understand parts alone</td><td>Break the cycle with an interface or by moving shared code down</td></tr>
+    <tr><td>Using <code>api</code> everywhere in Gradle</td><td>Transitive dependencies leak into every consumer</td><td>Use <code>implementation</code> unless the type is part of your public API</td></tr>
+    <tr><td>A domain module depending on web or database frameworks</td><td>The core can't be tested or reused without infrastructure</td><td>Invert the dependency with interfaces</td></tr>
+    <tr><td>Adopting JPMS everywhere without a reason</td><td>Friction with reflection-heavy frameworks and libraries</td><td>Use it where strong encapsulation or <code>jlink</code> images pay off</td></tr>
+    <tr><td>Splitting into microservices to fix a tangled codebase</td><td>A distributed tangle that is harder to debug</td><td>Modularize inside the monolith first</td></tr>
+    <tr><td>Documenting rules but not testing them</td><td>Rules erode silently</td><td>Add ArchUnit tests or build-enforced modules</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Split a small single-module application into <code>domain</code>, <code>persistence</code>, and <code>app</code> modules, and observe the build failing when you introduce a cyclic dependency.</li>
+      <li>Write two ArchUnit rules: one forbidding the domain package from depending on the web layer, and one forbidding cycles. Break each on purpose.</li>
+      <li>Add a <code>module-info.java</code> to a small library, export only its public package, and show that code in another module can't reach the internal package.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Keep dependencies directional, with the stable domain at the center, and let the build refuse cycles.</li>
+      <li>Build-tool modules give most of the benefit; JPMS adds strong encapsulation and <code>jlink</code> where it pays off.</li>
+      <li>Enforce the architecture with modules and ArchUnit tests, and prefer a modular monolith before microservices.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Architecture &amp; Judgment — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

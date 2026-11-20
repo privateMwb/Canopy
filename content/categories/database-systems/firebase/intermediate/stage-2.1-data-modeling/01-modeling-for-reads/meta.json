@@ -1,0 +1,5 @@
+{
+  "title": "Modeling for Reads",
+  "description": "Denormalization, duplicating data on purpose, and keeping copies consistent.",
+  "order": 1
+}

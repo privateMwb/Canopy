@@ -1,0 +1,5 @@
+{
+  "title": "Window Functions",
+  "description": "Running totals, ranking, and lag/lead without self-joins.",
+  "order": 1
+}

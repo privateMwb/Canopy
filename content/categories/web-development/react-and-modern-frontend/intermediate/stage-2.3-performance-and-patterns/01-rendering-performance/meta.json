@@ -1,0 +1,5 @@
+{
+  "title": "Rendering Performance",
+  "description": "Profiling, memoization, and when it doesn't help.",
+  "order": 1
+}

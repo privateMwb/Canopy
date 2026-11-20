@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>API Design &amp; Evolution — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · production service design</span> → lesson 04</p>
+  <h1>API Design &amp; Evolution</h1>
+  <p class="lede">Once other teams or customers depend on an API, it is a contract, and the hard part of API design is changing it without breaking the people who rely on it.</p>
+
+  <h2><span class="num">§1</span>Designing for Consumers</h2>
+  <p>Design an API around the <strong>consumer's tasks</strong> rather than your internal data model. Use consistent naming, resource-oriented URLs, predictable error shapes, and clear documentation, ideally an <strong>OpenAPI</strong> specification that is the source of truth and can generate docs, clients, and contract tests. Make the safe path easy and the dangerous one explicit: require idempotency keys for operations that must not repeat, bound page sizes, and validate inputs strictly.</p>
+  <p>Remember that anything you expose, someone will depend on, including accidental behavior: the order of fields, an undocumented value, a quirk of a response time. This is sometimes called <strong>Hyrum's Law</strong>. The smaller and more deliberate the surface, the fewer promises you have to keep.</p>
+
+  <h2><span class="num">§2</span>What Counts as a Breaking Change</h2>
+  <p>A change is breaking if a correct existing client can fail or behave differently after it. Judge it from the consumer's side.</p>
+  <table>
+    <tr><th>Usually safe (compatible)</th><th>Breaking</th></tr>
+    <tr><td>Adding a new optional request field</td><td>Removing or renaming a field or endpoint</td></tr>
+    <tr><td>Adding a new response field</td><td>Changing a field's type or meaning</td></tr>
+    <tr><td>Adding a new endpoint</td><td>Making an optional field required</td></tr>
+    <tr><td>Adding a new enum value to a response, if clients were told to tolerate unknown values</td><td>Tightening validation; changing error codes or status semantics</td></tr>
+    <tr><td>Loosening validation</td><td>Changing ordering, pagination, or default behavior that clients rely on</td></tr>
+  </table>
+  <p>Even "safe" additions break clients that parse strictly (a client that fails on unknown JSON fields, or a <code>switch</code> over an enum with no default). That is why you should document the <strong>tolerant reader</strong> rule up front: clients ignore fields they don't know. For Java services, avoid exposing internal entities, enums, or exception types directly; keep a separate API model so internal refactors don't leak out.</p>
+
+  <h2><span class="num">§3</span>Compatible Evolution Techniques</h2>
+  <p>Most changes can be made compatibly if you plan for it. <strong>Expand and contract</strong> (parallel change) is the key pattern: add the new thing alongside the old, migrate consumers, then remove the old.</p>
+  <pre><span class="comment">// Renaming "fullName" to "name": expand, migrate, contract</span>
+record UserDto(
+    String name,                         <span class="comment">// new field, added first</span>
+    @Deprecated String fullName,         <span class="comment">// old field still returned during the migration window</span>
+    String email) {
+    UserDto(String name, String email) { this(name, name, email); }
+}</pre>
+  <ul>
+    <li><strong>Add, don't change</strong>: introduce a new field or endpoint instead of altering the meaning of an old one.</li>
+    <li><strong>Deprecate with notice</strong>: mark old fields and endpoints deprecated in the spec, return <code>Deprecation</code>/<code>Sunset</code> headers, announce a date, and track who still uses them (log the client id) before removal.</li>
+    <li><strong>Feature flags and defaults</strong>: new behavior is opt-in by a parameter or header until it can become the default.</li>
+    <li><strong>Never reuse a field name or number for a different meaning.</strong> (This is especially important for protobuf and other binary formats, where field numbers are the contract.)</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Versioning</h2>
+  <p>When a breaking change is truly necessary, version the API so old and new coexist. Common approaches are a version in the path (<code>/v2/orders</code>), a header or media type, or a date-based version. Path versions are simple and visible, which is why they are popular. Versioning has a cost: every version you keep alive is code to maintain, test, and secure, so aim to <strong>avoid</strong> new versions by evolving compatibly, and when you do ship one, set and enforce a sunset policy.</p>
+
+  <h2><span class="num">§5</span>Contracts and Testing</h2>
+  <p>Make compatibility checkable instead of a matter of good intentions. Use <strong>contract tests</strong> (such as consumer-driven contracts with Pact or Spring Cloud Contract), where consumers state what they use and the provider's build fails if it breaks them. Run an <strong>OpenAPI diff</strong> tool in CI to flag breaking changes in the spec. Keep old consumers' tests running against new provider versions. And for event and message schemas, use a <strong>schema registry</strong> with compatibility rules (backward, forward, or full) so a producer can't publish a message that breaks existing subscribers.</p>
+
+  <h2><span class="num">§6</span>Rolling Out Changes</h2>
+  <p>Deploys are not instantaneous: during a rolling deployment both old and new versions run at once, so each version must tolerate the other's requests, responses, and database schema. This is why you ship database changes in compatible steps too (add column, deploy code that writes both, backfill, switch reads, then drop the old column).</p>
+
+  <div class="callout">
+    <span class="label">Additive and tolerant</span>
+    Safe evolution depends on both sides: providers only add, and consumers ignore what they don't recognize. State the tolerant-reader rule in your API guidelines, because without it even harmless additions are risky.
+  </div>
+
+  <h2><span class="num">§7</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Renaming a field in place</td><td>Existing clients break immediately</td><td>Add the new field, deprecate the old, remove after migration</td></tr>
+    <tr><td>Exposing internal entities or enums directly</td><td>Internal refactors become public breaking changes</td><td>Use a dedicated API model</td></tr>
+    <tr><td>Changing the meaning of an existing field</td><td>Silent data corruption on the consumer side</td><td>Introduce a new field with a new name</td></tr>
+    <tr><td>Deprecating with no usage tracking</td><td>Removing blindly breaks unknown consumers</td><td>Log client ids and contact them, then set a sunset date</td></tr>
+    <tr><td>Creating a new API version for every change</td><td>Many versions to maintain and secure</td><td>Evolve compatibly and version only for true breaks</td></tr>
+    <tr><td>Relying on goodwill for compatibility</td><td>Breaks slip through code review</td><td>Add contract tests and OpenAPI diffs to CI</td></tr>
+    <tr><td>Forgetting rolling deployments</td><td>Old and new instances see incompatible data</td><td>Make each step compatible with the previous version</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take an endpoint and rename a field using expand and contract, writing down the steps and the order of deployments.</li>
+      <li>Run an OpenAPI diff on two versions of a spec in which you made one breaking and one non-breaking change, and read what it reports.</li>
+      <li>Write a short deprecation policy: how it is announced, how usage is tracked, and when the old version is removed.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>An API is a contract: judge changes from the consumer's side, and prefer additive, backward-compatible evolution.</li>
+      <li>Use expand-and-contract, deprecation with usage tracking, and versioning only when a real break is unavoidable.</li>
+      <li>Enforce compatibility with contract tests and schema checks, and remember that rolling deployments run two versions at once.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Production Service Design — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Running JavaScript — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · language basics</span> → lesson 01</p>
+  <h1>Running JavaScript</h1>
+  <p class="lede">JavaScript runs in the browser console, in a page's script tag, and in Node.js — and ES modules are how you split code across files in all of them.</p>
+
+  <h2><span class="num">§1</span>The Browser Console</h2>
+
+  <p>Every browser ships a JavaScript REPL. Open DevTools (F12, or Cmd/Ctrl+Shift+J), pick the <strong>Console</strong> tab, and type. Each line is evaluated immediately and the result is echoed back. It is the fastest way to test a one-liner.</p>
+
+  <pre>console.log("hello");        <span class="comment">// prints hello</span>
+2 + 2                         <span class="comment">// the console shows 4</span>
+document.title                <span class="comment">// the current page's title</span>
+console.table([{a: 1}, {a: 2}]) <span class="comment">// renders a table</span></pre>
+
+  <h2><span class="num">§2</span>Script Tags</h2>
+
+  <p>To run code as part of a page, put it in a <code>&lt;script&gt;</code> tag. Without attributes, the browser stops parsing HTML, runs the script, then continues. That is why scripts that touch the page need to wait for it to exist.</p>
+
+  <pre>&lt;!-- blocks parsing until it runs --&gt;
+&lt;script src="app.js"&gt;&lt;/script&gt;
+
+&lt;!-- downloads in parallel, runs after the HTML is parsed --&gt;
+&lt;script src="app.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- a module: always deferred, has its own scope --&gt;
+&lt;script type="module" src="main.js"&gt;&lt;/script&gt;</pre>
+
+  <p>Prefer <code>defer</code> or <code>type="module"</code> for scripts that read the DOM. <code>async</code> runs the script as soon as it downloads, in no guaranteed order — fine for independent scripts such as analytics.</p>
+
+  <h2><span class="num">§3</span>Node.js</h2>
+
+  <p>Node runs JavaScript outside a browser. There is no <code>document</code> or <code>window</code>; instead you get file, network, and process APIs. Run a file with <code>node file.js</code>, or start a REPL with plain <code>node</code>.</p>
+
+  <pre><span class="comment">// hello.js</span>
+console.log("Running on", process.version);
+console.log("Args:", process.argv.slice(2));
+
+<span class="comment">// $ node hello.js one two</span>
+<span class="comment">// Running on v22.x.x</span>
+<span class="comment">// Args: [ 'one', 'two' ]</span></pre>
+
+  <p>The language is the same in both places, but the <strong>host environment</strong> differs. <code>fetch</code> and <code>setTimeout</code> exist in both; <code>document</code> only in browsers; <code>fs</code> only in Node.</p>
+
+  <h2><span class="num">§4</span>ES Modules</h2>
+
+  <p>A module is a file with its own scope that uses <code>import</code> and <code>export</code>. Names inside a module are private unless exported, so modules don't pollute each other or the global scope.</p>
+
+  <pre><span class="comment">// math.js</span>
+export const PI = 3.14159;
+export function area(r) { return PI * r * r; }
+
+<span class="comment">// main.js</span>
+import { area } from "./math.js";
+console.log(area(2));</pre>
+
+  <p>In the browser, load the entry file with <code>type="module"</code>. In Node, use the <code>.mjs</code> extension or set <code>"type": "module"</code> in <code>package.json</code>. Relative imports must include the file extension.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The language and the environment are separate things. If code works in the console but fails in Node (or the reverse), check whether it relies on a browser-only or Node-only API before suspecting the language.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Script in <code>&lt;head&gt;</code> reads <code>document.getElementById</code></td><td>Returns <code>null</code> because the element isn't parsed yet</td><td>Add <code>defer</code>, use <code>type="module"</code>, or place the script at the end of <code>&lt;body&gt;</code></td></tr>
+    <tr><td>Opening an ES-module page via <code>file://</code></td><td>Browser blocks the module import (CORS)</td><td>Serve the folder, e.g. <code>npx serve</code> or <code>python3 -m http.server</code></td></tr>
+    <tr><td>Using <code>import</code> in a Node file with no module setup</td><td><code>SyntaxError: Cannot use import statement outside a module</code></td><td>Use <code>.mjs</code> or <code>"type": "module"</code> in package.json</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Open the console on any site and run <code>document.querySelectorAll('a').length</code> to count its links.</li>
+      <li>Write <code>greet.js</code> that prints the first command-line argument, run it with Node, then turn it into a module imported by a second file.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>JavaScript runs in the browser console, script tags, and Node — same language, different host APIs.</li>
+      <li>Use <code>defer</code> or <code>type="module"</code> so scripts run after the HTML is parsed.</li>
+      <li>ES modules give each file its own scope; share things with <code>export</code> and <code>import</code>.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Language Basics — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

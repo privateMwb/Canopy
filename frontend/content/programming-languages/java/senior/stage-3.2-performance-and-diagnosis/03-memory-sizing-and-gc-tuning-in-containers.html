@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memory Sizing &amp; GC Tuning in Containers — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · performance &amp; diagnosis</span> → lesson 03</p>
+  <h1>Memory Sizing &amp; GC Tuning in Containers</h1>
+  <p class="lede">In a container the JVM has to fit inside a hard memory limit, so the useful skill is to budget the whole process, not just the heap, and to change only the few settings that actually matter.</p>
+
+  <h2><span class="num">§1</span>What the JVM Knows About Its Container</h2>
+  <p>Modern JVMs are <strong>container-aware</strong>: they read the cgroup CPU and memory limits and size themselves from them, not from the host. This was not always true (very old Java 8 releases saw the host's memory), so check the JVM version if behavior looks wrong. By default the maximum heap is <strong>25 percent</strong> of the available memory and the JVM picks a GC based on the number of CPUs and memory: with fewer than 2 CPUs or under about 1792 MB, it selects <strong>Serial</strong> instead of G1.</p>
+  <pre>java -XX:+PrintFlagsFinal -version | grep -E 'MaxHeapSize|UseG1GC|UseSerialGC|ActiveProcessorCount'
+java -Xlog:os+container=debug -version        <span class="comment"># see what limits the JVM detected</span>
+jcmd &lt;pid&gt; VM.flags                           <span class="comment"># the flags a running JVM actually uses</span></pre>
+  <p>So a pod with a 1 CPU request and a 512 MB limit may silently run Serial GC with a 128 MB heap, which is a very different system than the one you tested on a laptop.</p>
+
+  <h2><span class="num">§2</span>Sizing the Heap</h2>
+  <p>Because the heap is only part of the footprint, the process total is roughly heap plus metaspace plus thread stacks plus code cache plus direct buffers plus GC and JVM overhead. Setting <code>-Xmx</code> equal to the container limit guarantees the kernel's OOM killer eventually terminates the process (reported as <code>OOMKilled</code>, exit code 137, with no Java stack trace, because the JVM never got to throw anything).</p>
+  <p>Rather than a fixed number, prefer percentages so the heap tracks the limit.</p>
+  <pre>java -XX:MaxRAMPercentage=75 -XX:InitialRAMPercentage=50 -jar app.jar     <span class="comment"># for larger containers</span>
+<span class="comment"># for small containers (under 1 GB) 75% leaves too little for non-heap memory: try 50-60%</span></pre>
+  <p>A reasonable starting point is 60 to 75 percent for the heap in the larger containers, with the remainder for everything else, then validate with Native Memory Tracking and observed resident set size under load. Also set <code>-Xms</code> equal to <code>-Xmx</code> (or use <code>InitialRAMPercentage</code>) for services where you don't want the heap to grow and shrink, and consider <code>-XX:+AlwaysPreTouch</code> where startup time is less important than avoiding page faults later.</p>
+
+  <h2><span class="num">§3</span>CPU Limits and Threads</h2>
+  <p>The JVM uses the CPU limit to decide <code>availableProcessors()</code>, which sizes the common ForkJoinPool, GC worker threads, and many library pools. A container with a CPU limit of 1 (or less) can make the JVM think it has a single processor, selecting Serial GC and starving parallel work. CPU <strong>limits</strong> also cause throttling: a JVM bursting during GC or JIT compilation may be paused by the cgroup scheduler, which appears as latency spikes unrelated to the application. If this is a problem, raise or remove the CPU limit while keeping a request, or set <code>-XX:ActiveProcessorCount</code> explicitly.</p>
+
+  <h2><span class="num">§4</span>The Settings Worth Changing</h2>
+  <p>Most services need very few flags. The ones that earn their place:</p>
+  <ul>
+    <li><strong>Heap size</strong> (<code>-XX:MaxRAMPercentage</code> or <code>-Xmx</code>), the one setting that matters most.</li>
+    <li><strong>The collector</strong>, chosen deliberately: G1 for a balanced default, ZGC or Shenandoah for a strict latency target, Parallel for batch throughput.</li>
+    <li><strong><code>-XX:MaxGCPauseMillis</code></strong> for G1 if you have a specific goal, understanding it is a target, not a promise.</li>
+    <li><strong>Metaspace and direct memory caps</strong>, for catching leaks early with a clear error instead of an OOM kill.</li>
+    <li><strong><code>-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps</code></strong> (mount a volume) and <strong>GC logging</strong> so that failures leave evidence.</li>
+    <li><strong><code>-Xss</code></strong> only if you really need deeper recursion or many threads.</li>
+  </ul>
+  <p>Resist long copied lists of exotic flags; each one is a hypothesis you haven't tested. Tune with a load test that mimics production, change one thing at a time, and compare pause times, throughput, and resident memory.</p>
+
+  <h2><span class="num">§5</span>Verifying in Production</h2>
+  <p>Watch <strong>resident memory against the container limit</strong>, GC pause time and frequency, heap after collection, and CPU throttling metrics. A flat heap-after-GC trend with high resident memory suggests native or off-heap use; a rising heap-after-GC trend suggests a leak or an undersized heap. Keep headroom (many teams aim to stay below about 80 percent of the limit under peak load) so a traffic spike doesn't cross it.</p>
+
+  <div class="callout">
+    <span class="label">Exit code 137 means the kernel killed you</span>
+    An <code>OOMKilled</code> pod has no Java stack trace and no heap dump, because the JVM never ran out of heap. It ran out of container memory. Check total resident size, not just the heap graph.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td><code>-Xmx</code> equal to the container memory limit</td><td>Non-heap memory pushes the process over the limit, and it gets OOM-killed</td><td>Use <code>MaxRAMPercentage</code> around 50 to 75 percent and verify with NMT</td></tr>
+    <tr><td>Tiny CPU limit with default ergonomics</td><td>Serial GC and one processor, so slow and throttled</td><td>Give more CPU, or set the GC and processor count explicitly</td></tr>
+    <tr><td>Copying a large flag list from a blog</td><td>Untested settings may hurt or conflict</td><td>Start with the defaults, and add only measured changes</td></tr>
+    <tr><td>No heap dump on OOM</td><td>Nothing to diagnose after a crash</td><td>Enable <code>HeapDumpOnOutOfMemoryError</code> with a persistent path</td></tr>
+    <tr><td>Looking only at heap graphs</td><td>Misses off-heap and thread memory growth</td><td>Chart container RSS and use Native Memory Tracking</td></tr>
+    <tr><td>Tuning on a laptop</td><td>Different CPU count and memory choose different defaults</td><td>Tune in a container with the production limits</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run <code>java -XX:+PrintFlagsFinal -version</code> inside containers limited to different CPU and memory settings, and record which GC and max heap you get in each.</li>
+      <li>Run a service in a 512 MB container with <code>-Xmx512m</code> under load and watch it get OOM-killed, then fix it with a percentage-based heap.</li>
+      <li>Enable <code>-XX:NativeMemoryTracking=summary</code> and produce a table of where a 1 GB-resident process is using memory.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The JVM sizes itself from container limits, which can silently pick Serial GC and a small heap for small pods.</li>
+      <li>Budget the whole process; set the heap to a percentage of the limit rather than all of it.</li>
+      <li>Change few flags, choose the collector deliberately, enable heap dumps and GC logs, and verify against resident memory in production.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Performance &amp; Diagnosis — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

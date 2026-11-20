@@ -1,0 +1,6 @@
+{
+  "title": "Software Engineering Practice",
+  "description": "Testing, Git, and design for code that is easy to change.",
+  "order": 10,
+  "compileRoot": true
+}

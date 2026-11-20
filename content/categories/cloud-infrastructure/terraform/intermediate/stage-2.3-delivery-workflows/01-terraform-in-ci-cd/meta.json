@@ -1,0 +1,5 @@
+{
+  "title": "Terraform in CI/CD",
+  "description": "Plans on pull requests and applies on merge.",
+  "order": 1
+}

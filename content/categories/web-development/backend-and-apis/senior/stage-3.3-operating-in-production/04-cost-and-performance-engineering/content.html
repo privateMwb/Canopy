@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cost &amp; Performance Engineering — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · operating in production</span> → lesson 04</p>
+  <h1>Cost &amp; Performance Engineering</h1>
+  <p class="lede">Finding waste and speeding up hot paths.</p>
+
+  <h2><span class="num">§1</span>Performance Is Money</h2>
+
+  <p>In production, speed and cost are linked: a slower endpoint needs more servers to serve the same traffic; a chatty service pays for network egress; verbose logging bills you per gigabyte. <strong>Cost and performance engineering</strong> is the practice of finding waste and speeding up the paths that matter, with measurement guiding every step. Without measurement it degrades into guessing, and guessing usually optimizes the wrong thing.</p>
+
+  <h2><span class="num">§2</span>Measure First: Where Does Time and Money Go?</h2>
+
+  <ul>
+    <li><strong>Unit economics:</strong> compute cost per request, per tenant, or per order. Without a unit cost you cannot tell whether growth is healthy. Tag cloud resources by service, team, and environment so the bill can be attributed.</li>
+    <li><strong>Find the heavy hitters:</strong> the Pareto principle usually holds, with a few endpoints, queries, or tenants responsible for most of the load or cost. Sort by <em>total time consumed</em> (calls × duration), not just by slowest single call.</li>
+    <li><strong>Profile real workloads:</strong> use production-like traffic and profilers rather than intuition.</li>
+  </ul>
+
+  <pre><span class="comment"># Node.js: find where CPU time goes</span>
+node --cpu-prof server.js            <span class="comment"># writes a .cpuprofile you can open in Chrome DevTools</span>
+npx clinic flame -- node server.js   <span class="comment"># flamegraph while you apply load</span>
+
+<span class="comment"># Is the event loop being blocked? (a single slow synchronous call stalls EVERY request)</span>
+import { monitorEventLoopDelay } from "node:perf_hooks";
+const h = monitorEventLoopDelay(); h.enable();
+setInterval(() =&gt; console.log("p99 loop delay ms:", h.percentile(99) / 1e6), 5000);
+
+<span class="comment">-- PostgreSQL: which queries consume the most total time?</span>
+SELECT query, calls, round(total_exec_time) AS total_ms, round(mean_exec_time) AS mean_ms
+FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT 10;</pre>
+
+  <h2><span class="num">§3</span>Common Wins, Roughly in Order of Payoff</h2>
+
+  <table>
+    <tr><th>Area</th><th>Typical waste</th><th>Typical fix</th></tr>
+    <tr><td><strong>Database</strong></td><td>Missing indexes, N+1 queries, <code>SELECT *</code>, unbounded queries</td><td>Index and rewrite hot queries; batch; paginate; read replicas</td></tr>
+    <tr><td><strong>Repeated work</strong></td><td>Recomputing the same results for every request</td><td>Caching, memoization, precomputed or materialized views</td></tr>
+    <tr><td><strong>Payloads</strong></td><td>Large JSON, uncompressed responses, over-fetching</td><td>Compression (gzip or brotli), field selection, pagination, HTTP caching with ETags</td></tr>
+    <tr><td><strong>Network</strong></td><td>New connection per call, chatty service calls, cross-region traffic</td><td>Connection reuse and keep-alive, batching, co-locating services, a CDN for static and cacheable content</td></tr>
+    <tr><td><strong>CPU</strong></td><td>Synchronous heavy work on the event loop, inefficient algorithms</td><td>Move work to workers or queues; fix the algorithm; profile</td></tr>
+    <tr><td><strong>Infrastructure</strong></td><td>Oversized instances, idle capacity, always-on non-prod environments</td><td>Right-size from actual utilization; autoscale; schedule dev and staging off at night; spot or preemptible capacity for tolerant workloads; commitment discounts for steady baselines</td></tr>
+    <tr><td><strong>Observability and storage</strong></td><td>Debug logs in production, infinite retention, high-cardinality metrics</td><td>Sampling, log levels, retention tiers, lifecycle rules for storage, bounded labels</td></tr>
+  </table>
+
+  <h2><span class="num">§4</span>Hot Paths and Tail Latency</h2>
+
+  <p>Optimize what users hit most and feel most. Under fan-out, <strong>tail latency</strong> dominates: if a page waits on ten parallel calls, the page is as slow as its slowest, so each service's p99 matters far more than its average. Techniques include timeouts and fallbacks, hedged requests (sending a second request if the first is slow, only for idempotent reads), and removing synchronous dependencies from the critical path.</p>
+
+  <h2><span class="num">§5</span>Optimize With Discipline</h2>
+
+  <ul>
+    <li><strong>Set a target and a budget</strong> ("p95 under 250 ms at 500 requests per second"), so you know when you are done.</li>
+    <li><strong>Change one thing, re-measure,</strong> and keep a record of the effect size. Many "optimizations" do nothing, or make things worse.</li>
+    <li><strong>Weigh engineering cost.</strong> A week of work to save $50 a month is a poor trade; a one-line index that saves $5,000 is not. Compare against engineer-time and risk.</li>
+    <li><strong>Beware premature optimization:</strong> clarity first, and optimize what the data shows to matter. But do not use the phrase to avoid obvious fixes like indexing a foreign key.</li>
+    <li><strong>Protect your gains:</strong> add performance tests and cost alerts (budget thresholds, anomaly detection), so that regressions are caught.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Cheaper is often just faster</span>
+    The same changes (fewer queries, less data transferred, less repeated work) reduce latency <em>and</em> cost together. When a cost review and a performance review find the same culprit, the fix tends to be uncontroversial and durable.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Optimizing by intuition</td><td>Effort goes into code that does not matter</td><td>Profile and rank by total time or cost first</td></tr>
+    <tr><td>Looking only at average latency or only at average utilization</td><td>Tail problems and wasted headroom hide behind averages</td><td>Use percentiles, and compare utilization against real peaks</td></tr>
+    <tr><td>No cost attribution or alerts</td><td>Surprise bills and no idea which service or tenant caused them</td><td>Tag resources, track unit costs, and set budget alerts</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use <code>pg_stat_statements</code> to list your top ten queries by total time and fix the worst one. Record before and after.</li>
+      <li>Profile an endpoint under load with a flamegraph and name the single largest contributor.</li>
+      <li>Compute the cost per 1,000 requests for your service from last month's bill and traffic, and propose two changes that would lower it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Tie cost and performance together with unit economics: cost per request, tenant, or order.</li>
+      <li>Profile and rank by total time or spend, then fix the biggest contributor, usually the database or repeated work.</li>
+      <li>Set targets, change one thing at a time, weigh engineering cost, and add guardrails against regression.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Operating in Production — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

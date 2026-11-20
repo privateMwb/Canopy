@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Allocators &amp; Memory Resources — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · performance &amp; the machine</span> → lesson 02</p>
+  <h1>Allocators &amp; Memory Resources</h1>
+  <p class="lede">The general-purpose heap is flexible but slow and unpredictable on hot paths, and C++ lets you replace it with arenas and pools without rewriting your containers.</p>
+
+  <h2><span class="num">§1</span>What malloc Costs</h2>
+
+  <p>Each <code>new</code> or <code>malloc</code> may take a lock, search free lists, and touch cold memory, and the time varies. A program doing millions of small allocations can spend more time in the allocator than in its own logic, and fragmentation makes worst cases unpredictable. The usual fixes are to allocate less (reserve, reuse buffers, <code>emplace</code>), or to allocate differently with an <strong>arena</strong> (bump allocator) or <strong>pool</strong>.</p>
+
+  <h2><span class="num">§2</span>Arena (Bump) Allocation</h2>
+
+  <p>An arena grabs one big block, then hands out pieces by moving a pointer forward. Allocation is a few instructions and freeing is <strong>all at once</strong> by resetting the pointer. This is ideal for data with a common lifetime, such as everything built while handling one request.</p>
+
+  <pre>class Arena {
+    std::byte* base_; std::size_t cap_, used_{0};
+public:
+    Arena(std::byte* buf, std::size_t cap) : base_{buf}, cap_{cap} {}
+    void* alloc(std::size_t n, std::size_t align) {
+        std::size_t p = (used_ + align - 1) &amp; ~(align - 1);     <span class="comment">// align up</span>
+        if (p + n &gt; cap_) throw std::bad_alloc{};
+        used_ = p + n;
+        return base_ + p;
+    }
+    void reset() { used_ = 0; }
+};</pre>
+
+  <h2><span class="num">§3</span>std::pmr: Allocators Without Template Pain</h2>
+
+  <p>Traditional allocators change a container's *type* (<code>vector&lt;int, MyAlloc&gt;</code>). C++17's <strong>polymorphic memory resources</strong> keep the type the same and choose the resource at run time.</p>
+
+  <pre>#include &lt;memory_resource&gt;
+std::array&lt;std::byte, 64 * 1024&gt; buffer;
+std::pmr::monotonic_buffer_resource arena{buffer.data(), buffer.size()};
+
+std::pmr::vector&lt;std::pmr::string&gt; names{&amp;arena};   <span class="comment">// allocates from the arena</span>
+names.emplace_back("alpha");
+names.emplace_back("beta");
+<span class="comment">// arena frees everything when it goes out of scope; no per-element deallocation</span></pre>
+
+  <p>Nested pmr containers pass their resource down to their elements automatically (via <code>polymorphic_allocator</code>). <code>monotonic_buffer_resource</code> falls back to an upstream resource (the default heap) if the buffer runs out, and <code>std::pmr::unsynchronized_pool_resource</code> provides size-class pools for repeated alloc/free patterns.</p>
+
+  <h2><span class="num">§4</span>Custom Allocator Interface</h2>
+
+  <p>When you do need a typed allocator, the minimal interface is small.</p>
+
+  <pre>template &lt;typename T&gt;
+struct CountingAlloc {
+    using value_type = T;
+    CountingAlloc() = default;
+    template &lt;typename U&gt; CountingAlloc(const CountingAlloc&lt;U&gt;&amp;) {}
+    T* allocate(std::size_t n) { ++allocs; return static_cast&lt;T*&gt;(::operator new(n * sizeof(T))); }
+    void deallocate(T* p, std::size_t) noexcept { ::operator delete(p); }
+    static inline int allocs{0};
+};
+template &lt;typename T, typename U&gt; bool operator==(const CountingAlloc&lt;T&gt;&amp;, const CountingAlloc&lt;U&gt;&amp;) { return true; }
+std::vector&lt;int, CountingAlloc&lt;int&gt;&gt; v;</pre>
+
+  <p>A counting allocator like this is also a handy way to <strong>measure</strong> how many allocations code performs.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Allocation strategy follows lifetime. Same-lifetime objects belong in an arena freed in one step, and many same-size objects belong in a pool. The general heap is for everything else.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Returning pmr containers that point into a local arena</td><td>Dangling pointers after the arena dies</td><td>Keep the resource alive longer than every container using it</td></tr>
+    <tr><td>Using <code>monotonic_buffer_resource</code> for long-running churn</td><td>Memory never returns until the resource is destroyed</td><td>Use it for bounded, batch-shaped work</td></tr>
+    <tr><td>Optimizing allocation without counting it first</td><td>Might not be the bottleneck</td><td>Count or profile allocations before and after</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Parse 1 million small strings into a <code>std::vector&lt;std::string&gt;</code> using default allocation and then <code>std::pmr</code> with a monotonic buffer, and compare times.</li>
+      <li>Write a counting allocator and report how many allocations a <code>std::vector</code> makes as it grows to 1000 elements, with and without <code>reserve</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Heap allocation is slow and unpredictable on hot paths; arenas and pools make it fast and deterministic.</li>
+      <li><code>std::pmr</code> switches allocation strategy at run time without changing container types.</li>
+      <li>Tie allocator choice to object lifetime, and measure allocations before optimizing.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Performance &amp; the Machine — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

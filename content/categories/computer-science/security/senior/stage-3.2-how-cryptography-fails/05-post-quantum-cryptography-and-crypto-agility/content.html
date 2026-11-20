@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Post-Quantum Cryptography &amp; Crypto Agility — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · how cryptography fails</span> → lesson 05</p>
+  <h1>Post-Quantum Cryptography &amp; Crypto Agility</h1>
+  <p class="lede">Large quantum computers would break today's public-key cryptography but not symmetric cryptography, and the migration has to start before such machines exist, because encrypted data can be recorded now.</p>
+
+  <h2><span class="num">§1</span>What Is and Isn't at Risk</h2>
+  <table>
+    <tr><th>Algorithm type</th><th>Effect of a large quantum computer</th><th>Status</th></tr>
+    <tr><td><strong>RSA, Diffie-Hellman, elliptic curves</strong> (key exchange and signatures)</td><td>Broken by Shor's algorithm</td><td>Must be replaced</td></tr>
+    <tr><td><strong>AES, ChaCha20, and similar symmetric ciphers</strong></td><td>Grover's algorithm gives only a quadratic speedup</td><td>Use 256-bit keys for comfortable margin</td></tr>
+    <tr><td><strong>SHA-2, SHA-3 hashes</strong></td><td>Same quadratic effect on preimage search</td><td>Use 256-bit or larger outputs</td></tr>
+  </table>
+  <p>Such machines don't exist yet at the required scale. The urgent threat is <strong>"harvest now, decrypt later"</strong>: an adversary records encrypted traffic today and decrypts it once a quantum computer exists. That matters for data that must stay secret for many years. Signatures matter on a different clock: they need replacing before forgery becomes feasible, especially long-lived roots and firmware keys.</p>
+
+  <h2><span class="num">§2</span>The New Standards</h2>
+  <p>In August 2024, NIST published the first post-quantum standards:</p>
+  <ul>
+    <li><strong>ML-KEM</strong> (FIPS 203, derived from CRYSTALS-Kyber): key establishment.</li>
+    <li><strong>ML-DSA</strong> (FIPS 204, from CRYSTALS-Dilithium): digital signatures.</li>
+    <li><strong>SLH-DSA</strong> (FIPS 205, from SPHINCS+): a hash-based signature scheme with conservative assumptions.</li>
+  </ul>
+  <p>Costs are real: ML-KEM-768 public keys and ciphertexts are around a kilobyte each, and ML-DSA signatures are several kilobytes, much larger than their elliptic-curve counterparts. That affects handshake size, certificates, and constrained devices.</p>
+
+  <h2><span class="num">§3</span>Hybrid Deployment and Crypto Agility</h2>
+  <p>Because these algorithms are newer, deployments commonly use a <strong>hybrid</strong> key exchange, such as X25519 combined with ML-KEM-768 in TLS: the session stays secure if *either* component holds. Major browsers and CDNs have begun deploying this.</p>
+  <ul>
+    <li><strong>Inventory</strong> where you use public-key cryptography (a cryptographic bill of materials): TLS, VPNs, code signing, tokens, stored data.</li>
+    <li><strong>Don't hard-code algorithms.</strong> Put an algorithm identifier and version in every key, token, and ciphertext format so you can change them.</li>
+    <li><strong>Prioritize</strong> long-lived confidentiality and long-lived signing keys first.</li>
+    <li><strong>Test migrations</strong> for larger sizes and performance before they're urgent, and follow current guidance, since timelines and recommendations are still evolving.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Agility is the lasting lesson</span>
+    Whatever happens with quantum computers, algorithms get weakened over time (MD5, SHA-1, 1024-bit RSA). Systems that can swap algorithms without a rewrite are the real goal.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Waiting until quantum computers exist to plan</td><td>Recorded traffic is already exposed to harvest-now attacks</td><td>Inventory and prioritize long-lived secrets now</td></tr>
+    <tr><td>Assuming symmetric cryptography must be replaced</td><td>Effort is wasted where the risk is small</td><td>Move to 256-bit keys and focus on public-key replacement</td></tr>
+    <tr><td>Hard-coding algorithm choices in formats</td><td>Migration needs a breaking change</td><td>Include algorithm IDs and versions in every format</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>List every place your system uses RSA or elliptic-curve cryptography, and mark which protect data that must stay secret for 10 years.</li>
+      <li>Add an algorithm identifier and version field to a token or ciphertext format you own.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Shor's algorithm threatens RSA and elliptic-curve cryptography; symmetric cryptography needs only larger keys.</li>
+      <li>Harvest-now-decrypt-later makes long-lived confidential data the first priority.</li>
+      <li>Use hybrid key exchange and build crypto agility with inventories and versioned formats.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · How Cryptography Fails — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

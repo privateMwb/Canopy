@@ -1,0 +1,1 @@
+{"title": "Cross-Site Request Forgery (CSRF)", "description": "How a malicious page triggers actions with your cookies, and why SameSite and anti-CSRF tokens work where CORS does not.", "order": 4}

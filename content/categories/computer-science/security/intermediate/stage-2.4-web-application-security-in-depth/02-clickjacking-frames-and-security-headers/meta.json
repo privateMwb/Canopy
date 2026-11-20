@@ -1,0 +1,1 @@
+{"title": "Clickjacking, Frames & Security Headers", "description": "frame-ancestors, X-Content-Type-Options, Referrer-Policy, and what each header actually stops, extending the HSTS lesson.", "order": 2}

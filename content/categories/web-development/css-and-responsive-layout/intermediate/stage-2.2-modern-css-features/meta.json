@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.2 — Modern CSS Features",
+  "description": "Custom properties, logical properties, container queries, :has(), and layers.",
+  "order": 2
+}

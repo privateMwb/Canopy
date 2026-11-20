@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Patterns in the JDK &amp; Frameworks — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · design &amp; generics in depth</span> → lesson 03</p>
+  <h1>Patterns in the JDK &amp; Frameworks</h1>
+  <p class="lede">Design patterns are named solutions to recurring problems, and the quickest way to understand them is to recognize them in the JDK and frameworks you already use.</p>
+
+  <h2><span class="num">§1</span>Builder</h2>
+  <p>When an object has many optional parameters, a long constructor becomes unreadable (<code>new Request(url, null, null, 30, true, false)</code>). A <strong>builder</strong> sets them by name and creates the object at the end, and the result can be immutable.</p>
+  <pre>HttpRequest req = HttpRequest.newBuilder()
+    .uri(URI.create("https:<span class="comment">//example.com/api"))</span>
+    .header("Accept", "application/json")
+    .timeout(Duration.ofSeconds(5))
+    .GET()
+    .build();                                          <span class="comment">// validated and immutable</span>
+
+StringBuilder sb = new StringBuilder().append("a").append(1);     <span class="comment">// also builder-shaped</span></pre>
+  <p>For your own classes, a static nested <code>Builder</code> or, for simple cases, a record with a few well-named factory methods does the job. Libraries like Lombok can generate builders, but a hand-written one is only a few lines.</p>
+
+  <h2><span class="num">§2</span>Factory</h2>
+  <p>A <strong>factory</strong> hides which concrete class is created. A static factory method can have a descriptive name, return a cached instance, or return a subtype, which constructors cannot do.</p>
+  <pre>List&lt;String&gt; a = List.of("x");                        <span class="comment">// returns an unspecified immutable implementation</span>
+Optional&lt;String&gt; o = Optional.empty();                 <span class="comment">// shared instance</span>
+Integer i = Integer.valueOf(127);                      <span class="comment">// cached for small values</span>
+Calendar c = Calendar.getInstance();
+LocalDate d = LocalDate.of(2026, 1, 15);
+Path p = Path.of("a", "b");
+
+public sealed interface Shape permits Circle, Square {
+    static Shape circle(double r) { return new Circle(r); }      <span class="comment">// callers never name the class</span>
+}</pre>
+
+  <h2><span class="num">§3</span>Strategy</h2>
+  <p>A <strong>strategy</strong> is an interchangeable algorithm behind an interface. In modern Java, a lambda is usually the whole strategy: <code>Comparator</code> is the canonical example, since sorting stays the same and the ordering rule is swapped in.</p>
+  <pre>people.sort(Comparator.comparing(Person::age));
+people.sort(Comparator.comparing(Person::name));
+
+interface PricingRule { long price(Cart c); }
+PricingRule standard = c -&gt; c.subtotal();
+PricingRule member = c -&gt; c.subtotal() * 90 / 100;
+long total = (isMember ? member : standard).price(cart);</pre>
+
+  <h2><span class="num">§4</span>Observer</h2>
+  <p>An <strong>observer</strong> lets objects subscribe to events from another object without it knowing who they are. Listener interfaces across Swing and JavaFX, and event publishers in Spring, work this way. Java's own <code>Flow</code> API and reactive streams build on the same idea.</p>
+  <pre>class EventBus&lt;E&gt; {
+    private final List&lt;Consumer&lt;E&gt;&gt; listeners = new CopyOnWriteArrayList&lt;&gt;();
+    void subscribe(Consumer&lt;E&gt; l) { listeners.add(l); }
+    void publish(E event) { listeners.forEach(l -&gt; l.accept(event)); }
+}
+bus.subscribe(e -&gt; audit.log(e));
+bus.subscribe(e -&gt; mailer.notify(e));</pre>
+  <p>Beware of listeners that are never unsubscribed, which causes memory leaks, and of listeners that throw, which can stop the others from running.</p>
+
+  <h2><span class="num">§5</span>More You Already Use</h2>
+  <ul>
+    <li><strong>Decorator</strong>: <code>new BufferedReader(new InputStreamReader(in))</code> wraps one object to add behavior; <code>Collections.unmodifiableList</code> is another.</li>
+    <li><strong>Iterator</strong>: the for-each loop over any <code>Iterable</code>.</li>
+    <li><strong>Template method</strong>: an abstract base class defines the skeleton and subclasses fill in steps, as with <code>InputStream.read</code> or Spring's <code>JdbcTemplate</code>.</li>
+    <li><strong>Singleton</strong>: one shared instance. Prefer letting a framework or your <code>main</code> create one object and pass it around, as hand-written singletons make testing hard; if you need one, a single-element <code>enum</code> is the safest form.</li>
+    <li><strong>Proxy</strong>: an object standing in for another to add behavior; Spring uses dynamic proxies for transactions and caching.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Patterns are vocabulary</span>
+    Their main value is communication: saying "this is a strategy" or "make it a builder" conveys a whole design in one phrase. Learn the problem each solves, because the code shape often differs in modern Java (a lambda replaces a strategy class).
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using a long constructor with many same-typed arguments</td><td>Easy to swap arguments silently</td><td>Use a builder or named factory methods</td></tr>
+    <tr><td>Hand-rolled global singletons</td><td>Hidden dependencies and untestable code</td><td>Pass dependencies in, or use a DI framework</td></tr>
+    <tr><td>Applying a pattern because it's on a list</td><td>Extra classes and no benefit</td><td>Start from the problem, not the pattern</td></tr>
+    <tr><td>Listeners that are never removed</td><td>Memory leaks</td><td>Provide unsubscribe, or use weak references carefully</td></tr>
+    <tr><td>A listener that throws inside <code>publish</code></td><td>Later listeners are skipped</td><td>Catch and log per listener</td></tr>
+    <tr><td>Writing a <code>Strategy</code> class hierarchy for a one-line behavior</td><td>Boilerplate</td><td>Use a lambda or method reference</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write an immutable <code>EmailMessage</code> with required <code>to</code>/<code>subject</code> and optional <code>cc</code>/<code>bcc</code>, using a builder that validates in <code>build()</code>.</li>
+      <li>Find three static factory methods in the JDK and say what each one gains over a constructor.</li>
+      <li>Implement a tiny event bus, then show how a slow or throwing subscriber affects the others and fix it.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Builder, factory, strategy, and observer are all visible in the standard library, and the JDK is a good source of examples.</li>
+      <li>In modern Java a lambda often replaces a strategy class, and static factories replace many constructors.</li>
+      <li>Choose a pattern in response to a real problem, and use pattern names as shared vocabulary.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Design &amp; Generics in Depth — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

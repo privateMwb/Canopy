@@ -1,0 +1,5 @@
+{
+  "title": "Testing & CI for Rules",
+  "description": "Automated rules tests that run on every change.",
+  "order": 5
+}

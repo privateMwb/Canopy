@@ -1,0 +1,5 @@
+{
+  "title": "Iterators & <algorithm>",
+  "description": "sort, find, transform, and expressing intent instead of writing loops.",
+  "order": 3
+}

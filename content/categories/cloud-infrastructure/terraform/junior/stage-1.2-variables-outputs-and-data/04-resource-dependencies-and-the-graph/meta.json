@@ -1,0 +1,5 @@
+{
+  "title": "Resource Dependencies & the Graph",
+  "description": "Implicit and explicit dependencies, and the order Terraform chooses.",
+  "order": 4
+}

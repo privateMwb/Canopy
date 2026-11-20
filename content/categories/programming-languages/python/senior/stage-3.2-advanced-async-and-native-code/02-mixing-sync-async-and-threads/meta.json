@@ -1,0 +1,5 @@
+{
+  "title": "Mixing Sync, Async & Threads",
+  "description": "Offloading blocking calls, avoiding event-loop stalls, and bridging old code to new.",
+  "order": 2
+}

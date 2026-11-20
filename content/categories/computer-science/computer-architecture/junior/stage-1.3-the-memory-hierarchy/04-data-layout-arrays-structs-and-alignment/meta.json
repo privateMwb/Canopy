@@ -1,0 +1,1 @@
+{"title": "Data Layout: Arrays, Structs & Alignment", "description": "How layout in memory decides how many cache lines you touch.", "order": 4}

@@ -1,0 +1,5 @@
+{
+  "title": "Recursive Descent Parsing",
+  "description": "One function per grammar rule, lookahead, and building the AST as you go.",
+  "order": 3
+}

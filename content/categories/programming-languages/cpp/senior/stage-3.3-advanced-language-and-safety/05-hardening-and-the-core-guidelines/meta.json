@@ -1,0 +1,5 @@
+{
+  "title": "Hardening & the Core Guidelines",
+  "description": "Static analysis, safe subsets, and reducing whole classes of bugs.",
+  "order": 5
+}

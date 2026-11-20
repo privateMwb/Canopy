@@ -1,0 +1,5 @@
+{
+  "title": "Triggers & UPSERT",
+  "description": "Reacting to changes, and insert-or-update in one statement.",
+  "order": 4
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>useState — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · state &amp; events</span> → lesson 01</p>
+  <h1>useState</h1>
+  <p class="lede">Props come from a parent, but some data belongs to the component itself and changes over time. <code>useState</code> gives a component a memory, and re-renders it whenever that memory changes.</p>
+
+  <h2><span class="num">§1</span>Declaring State</h2>
+
+  <p><code>useState(initial)</code> returns a pair: the current value and a <strong>setter</strong> function. Calling the setter tells React to store a new value and re-render the component with it.</p>
+
+  <pre>import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);        <span class="comment">// [value, setter]</span>
+
+  return (
+    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+      Clicked {count} times
+    &lt;/button&gt;
+  );
+}</pre>
+
+  <p>An ordinary variable does not work here: changing <code>let count</code> does not tell React anything happened, and the variable resets on every render anyway. State is <strong>preserved between renders</strong> and <strong>triggers them</strong>. Each instance of a component has its own state, so two <code>&lt;Counter /&gt;</code> elements count independently.</p>
+
+  <h2><span class="num">§2</span>State Is a Snapshot</h2>
+
+  <p>Within one render, state has a <strong>fixed value</strong>. Calling a setter does not change the variable you are looking at; it schedules a new render in which <code>useState</code> returns the new value.</p>
+
+  <pre>function Demo() {
+  const [n, setN] = useState(0);
+
+  function handleClick() {
+    setN(n + 1);
+    setN(n + 1);
+    setN(n + 1);
+    console.log(n);       <span class="comment">// still 0 here</span>
+  }                       <span class="comment">// result after render: 1, not 3</span>
+
+  return &lt;button onClick={handleClick}&gt;{n}&lt;/button&gt;;
+}</pre>
+
+  <p>All three calls used the same <code>n</code> (0), so each asked for 1. When the new value depends on the previous one, pass an <strong>updater function</strong>. React queues them and applies each to the latest value.</p>
+
+  <pre>setN((prev) =&gt; prev + 1);
+setN((prev) =&gt; prev + 1);
+setN((prev) =&gt; prev + 1);        <span class="comment">// result: 3</span></pre>
+
+  <h2><span class="num">§3</span>Updating Objects and Arrays</h2>
+
+  <p>React detects a change by comparing the old and new value with <code>Object.is</code>. If you <strong>mutate</strong> an object or array and pass the same reference, React sees no change and may skip the update. Always create a <strong>new</strong> object or array.</p>
+
+  <pre>const [user, setUser] = useState({ name: "Ada", city: "London" });
+const [todos, setTodos] = useState([]);
+
+<span class="comment">// objects: copy, then override</span>
+setUser({ ...user, city: "Paris" });
+
+<span class="comment">// arrays: add, remove, replace without mutating</span>
+setTodos([...todos, { id: 1, text: "Write" }]);               <span class="comment">// add</span>
+setTodos(todos.filter((t) =&gt; t.id !== 1));                    <span class="comment">// remove</span>
+setTodos(todos.map((t) =&gt; (t.id === 1 ? { ...t, done: true } : t)));   <span class="comment">// update</span>
+
+<span class="comment">// wrong: same reference, so React may not re-render</span>
+todos.push({ id: 2, text: "Oops" });
+setTodos(todos);</pre>
+
+  <ul>
+    <li>Pass a <strong>function</strong> to <code>useState</code> (<code>useState(() =&gt; expensive())</code>) to run costly initial setup once, not on every render.</li>
+    <li>Split unrelated values into separate <code>useState</code> calls; keep values that change together in one object.</li>
+    <li>Do not store values you can calculate from other state (like a total from an items array): derive them during render.</li>
+    <li>Call hooks only at the top level of a component, never inside conditions or loops.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Replace, never mutate</span>
+    Treat state as read-only. To change it, give the setter a new value: a new object, a new array, or a new number. That is how React knows something changed.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Mutating state (<code>items.push(x)</code>) then calling the setter</td><td>Same reference, so no re-render or stale UI</td><td>Create a new array: <code>setItems([...items, x])</code></td></tr>
+    <tr><td>Calling the setter three times with <code>n + 1</code></td><td>Only one increment happens</td><td>Use <code>setN((prev) =&gt; prev + 1)</code></td></tr>
+    <tr><td>Expecting state to update immediately after the setter</td><td><code>console.log</code> shows the old value</td><td>Use the new value you computed, or wait for the next render</td></tr>
+    <tr><td>Storing derived data in state</td><td>Two sources of truth that fall out of sync</td><td>Calculate it from existing state during render</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a counter with increment, decrement, and reset, and a second one that adds 3 using three updater calls.</li>
+      <li>Make a to-do list where you can add, toggle, and remove items without ever mutating the array.</li>
+      <li>Store a user object in state and update one field with the spread operator.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>useState</code> returns <code>[value, setter]</code>; calling the setter stores the value and re-renders.</li>
+      <li>State is a snapshot per render; use updater functions when the next value depends on the previous.</li>
+      <li>Never mutate state: copy objects and arrays when you update them.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · State &amp; Events — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

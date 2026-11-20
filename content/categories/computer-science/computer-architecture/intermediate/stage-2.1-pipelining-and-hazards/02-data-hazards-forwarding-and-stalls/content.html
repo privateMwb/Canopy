@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Hazards, Forwarding &amp; Stalls — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · pipelining & hazards</span> → lesson 02</p>
+  <h1>Data Hazards, Forwarding &amp; Stalls</h1>
+  <p class="lede">When an instruction needs a result that an earlier one hasn't produced yet, the pipeline must wait or shortcut, and the shortcut is a key piece of CPU design.</p>
+
+  <h2><span class="num">§1</span>The Read-After-Write Hazard</h2>
+  <p>A <strong>data hazard</strong> occurs when instructions depend on one another's results. The common case is read-after-write (RAW): the second instruction reads a register that the first writes.</p>
+  <pre>add x1, x2, x3        <span class="comment"># writes x1</span>
+sub x4, x1, x5        <span class="comment"># reads x1: depends on the add</span></pre>
+  <p>In the pipeline, <code>add</code> writes x1 in its WB stage (cycle 5), but <code>sub</code> wants to read x1 in its ID stage (cycle 3). Without any fix, <code>sub</code> would read a stale value.</p>
+
+  <h2><span class="num">§2</span>Stalling vs. Forwarding</h2>
+  <p>The simplest fix is to <strong>stall</strong>: hold <code>sub</code> in place until <code>add</code> has written back.</p>
+  <pre><span class="comment"># Without forwarding: the dependent instruction waits (stalls) for the write-back</span>
+add x1,x2,x3   IF  ID  EX  MEM WB
+sub x4,x1,x5       IF  --  --  ID  EX  MEM WB       <span class="comment"># two stall cycles</span></pre>
+  <p>Better is <strong>forwarding</strong> (also called bypassing): the value exists at the end of <code>add</code>'s EX stage, so extra wires route the ALU output directly to the input of the next instruction's EX stage, without waiting for write-back.</p>
+  <pre><span class="comment"># With forwarding: no stall for back-to-back ALU instructions</span>
+add x1,x2,x3   IF  ID  EX  MEM WB
+sub x4,x1,x5       IF  ID  EX  MEM WB             <span class="comment"># x1 forwarded from add's EX output</span></pre>
+
+  <h2><span class="num">§3</span>The Load-Use Hazard</h2>
+  <p>Forwarding can't fix everything. A load's data isn't available until the end of its MEM stage, one cycle later than an ALU result.</p>
+  <pre>lw  x1, 0(x2)  IF  ID  EX  MEM WB
+add x3, x1, x4     IF  ID  --  EX  MEM WB         <span class="comment"># one unavoidable stall: data arrives after MEM</span></pre>
+  <p>This <strong>load-use hazard</strong> costs one stall cycle even with full forwarding. Compilers reduce the penalty with <strong>instruction scheduling</strong>: placing an independent instruction between the load and its use so the slot isn't wasted.</p>
+  <pre><span class="comment"># Before scheduling: stalls          # After: independent work fills the gap</span>
+lw  x1, 0(x2)                          lw  x1, 0(x2)
+add x3, x1, x4    <span class="comment">(1 stall)</span>          addi x6, x6, 1        <span class="comment"># independent instruction</span>
+addi x6, x6, 1                         add x3, x1, x4       <span class="comment"># x1 is ready, no stall</span></pre>
+  <p>In out-of-order CPUs, later lessons show hardware does this reordering dynamically, which hides many such hazards automatically.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Forwarding turns most data hazards into no-ops, but a dependency chain still limits how fast a sequence can run. Long chains of dependent instructions are the pipeline's enemy.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Ignoring dependency chains in tight loops</td><td>A serial chain runs at the latency of each operation, not the throughput</td><td>Break long chains with independent work or multiple accumulators</td></tr>
+    <tr><td>Assuming forwarding removes all stalls</td><td>Loads still cost a cycle on use</td><td>Schedule independent work after loads</td></tr>
+    <tr><td>Forgetting that deeper pipelines lengthen stalls</td><td>More stages means more cycles per hazard</td><td>Weigh frequency gains against hazard penalties</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Draw pipeline diagrams for <code>lw x1,0(x2); add x3,x1,x4; sub x5,x3,x6</code> with full forwarding, and count the stall cycles.</li>
+      <li>Reorder a short instruction sequence of your own to remove a load-use stall without changing its result.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>RAW hazards occur when an instruction needs an earlier instruction's result.</li>
+      <li>Forwarding passes results directly between stages and removes most stalls.</li>
+      <li>A load followed immediately by its use still stalls one cycle, and scheduling can hide it.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Pipelining & Hazards — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

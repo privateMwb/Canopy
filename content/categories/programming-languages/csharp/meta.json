@@ -1,0 +1,7 @@
+{
+  "title": "C#",
+  "description": "Types, LINQ, and async/await on .NET, from basics to shipping apps.",
+  "order": 5,
+  "compileRoot": true,
+  "icon": "lang_csharp"
+}

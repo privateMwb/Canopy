@@ -1,0 +1,5 @@
+{
+  "title": "Key & Schema Design at Scale",
+  "description": "Bigint versus UUID keys, multi-tenancy models, and decisions that are painful to reverse.",
+  "order": 3
+}

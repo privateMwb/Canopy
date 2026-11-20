@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Validation &amp; Error Recovery — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · forms &amp; interactive controls</span> → lesson 02</p>
+  <h1>Validation &amp; Error Recovery</h1>
+  <p class="lede">Everyone makes mistakes on forms. A good error tells the person that something went wrong, where, why, and how to fix it, and it reaches people who cannot see the page.</p>
+
+  <h2><span class="num">§1</span>What WCAG Asks For</h2>
+  <p>Several criteria shape error handling:</p>
+  <table>
+    <tr><th>Criterion</th><th>Level</th><th>Requirement</th></tr>
+    <tr><td><strong>3.3.1 Error Identification</strong></td><td>A</td><td>Detected errors are identified and described in text</td></tr>
+    <tr><td><strong>3.3.3 Error Suggestion</strong></td><td>AA</td><td>If a fix is known, suggest it</td></tr>
+    <tr><td><strong>3.3.4 Error Prevention</strong></td><td>AA</td><td>For legal, financial, or data-changing submissions: allow reversal, checking, or confirmation</td></tr>
+    <tr><td><strong>4.1.3 Status Messages</strong></td><td>AA</td><td>Status messages are announced without moving focus</td></tr>
+  </table>
+  <p>Notice what is missing: nothing says errors must be red. Color can help sighted users, but the message must exist as text and must be connected to the field.</p>
+
+  <h2><span class="num">§2</span>Inline Errors</h2>
+  <p>For each field with a problem, show a clear message near it, and connect it with <code>aria-describedby</code> while marking the field <code>aria-invalid</code>.</p>
+  <pre>&lt;label for="dob"&gt;Date of birth&lt;/label&gt;
+&lt;input id="dob" aria-invalid="true" aria-describedby="dob-err dob-hint"&gt;
+&lt;p id="dob-hint"&gt;Use the format DD/MM/YYYY.&lt;/p&gt;
+&lt;p id="dob-err" class="error"&gt;
+  Error: enter a date in the format DD/MM/YYYY, for example 07/03/1990.
+&lt;/p&gt;</pre>
+  <ul>
+    <li>Say what is wrong and how to fix it. "Invalid input" helps no one.</li>
+    <li>Begin the message with a word like "Error" so it is clear in text, without relying on an icon or color.</li>
+    <li>Do not clear what the user typed. Keep their input so they can correct it.</li>
+    <li>Validate when the user finishes a field (on blur) or on submit. Validating on every keystroke interrupts typing and floods screen readers.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Error Summaries and Focus</h2>
+  <p>On submit, several errors can occur at once. A common and effective pattern is an <strong>error summary</strong> at the top of the form that lists each problem with a link to its field, and receives focus so assistive technology announces it.</p>
+  <pre>&lt;div id="summary" role="alert" tabindex="-1" hidden&gt;
+  &lt;h2&gt;There are 2 problems with your form&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="#email"&gt;Enter an email address&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#dob"&gt;Enter a date of birth in the format DD/MM/YYYY&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  form.addEventListener('submit', (e) =&gt; {
+    const errors = validate(form);
+    if (errors.length) {
+      e.preventDefault();
+      renderSummary(errors);          <span class="comment">// fill the list, then...</span>
+      summary.hidden = false;
+      summary.focus();                <span class="comment">// ...move focus so it is announced</span>
+    }
+  });
+&lt;/script&gt;</pre>
+  <p>Each summary link moves the user to the problem field. For high-stakes forms such as payments or legal agreements, also offer a review step before final submission, which satisfies 3.3.4.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Good error handling is a recovery path, not a rejection. Tell people what happened, where it is, and what to do, then keep their work intact.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Showing errors only as a red border</td><td>Users who cannot see color, or use a screen reader, miss the problem</td><td>Add text messages and link them with <code>aria-describedby</code></td></tr>
+    <tr><td>Vague messages like "Invalid input"</td><td>Users cannot tell what to fix</td><td>State the problem and give an example or fix</td></tr>
+    <tr><td>Clearing the form after an error</td><td>Users must retype everything and often give up</td><td>Preserve entered values and focus the first problem</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a form you know and submit it empty. Rewrite each error message so it says what is wrong and how to fix it.</li>
+      <li>Add an error summary with links to a form, and verify that a screen reader announces it on submit and that each link moves to the right field.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Identify errors in text, suggest fixes, and add confirmation for legal, financial, or data-changing actions.</li>
+      <li>Connect errors to fields with <code>aria-describedby</code> and <code>aria-invalid</code>, and never use color alone.</li>
+      <li>On submit, move focus to an error summary with links to each field, and keep the user's input.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Forms &amp; Interactive Controls — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "title": "JavaScript",
+  "description": "Closures, the event loop, and async code for browser and Node.js.",
+  "order": 2,
+  "compileRoot": true,
+  "icon": "lang_javascript"
+}

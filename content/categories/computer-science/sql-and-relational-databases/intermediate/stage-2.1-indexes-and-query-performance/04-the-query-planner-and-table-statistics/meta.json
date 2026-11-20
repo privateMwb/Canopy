@@ -1,0 +1,1 @@
+{"title": "The Query Planner & Table Statistics", "description": "How the optimizer chooses a plan, and why stale statistics cause bad ones.", "order": 4}

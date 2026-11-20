@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 \u2014 The Event Loop & Async in Depth",
+  "description": "How tasks and microtasks are ordered, promise combinators, cancellation, and keeping the main thread free.",
+  "order": 1
+}

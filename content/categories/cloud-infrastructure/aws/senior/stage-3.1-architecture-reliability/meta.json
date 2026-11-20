@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Architecture & Reliability",
+  "description": "Well-Architected reviews, disaster recovery, large-scale networking, failure-oriented design, and event-driven patterns.",
+  "order": 1
+}

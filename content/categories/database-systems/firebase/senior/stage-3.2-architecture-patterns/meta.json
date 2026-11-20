@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Architecture Patterns",
+  "description": "Direct client access versus an API layer, multi-tenancy, data lifecycle, eventing and analytics, and search.",
+  "order": 2
+}

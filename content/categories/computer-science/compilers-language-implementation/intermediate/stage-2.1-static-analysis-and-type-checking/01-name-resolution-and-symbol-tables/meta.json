@@ -1,0 +1,5 @@
+{
+  "title": "Name Resolution & Symbol Tables",
+  "description": "A resolver pass that binds every identifier to its declaration before anything runs.",
+  "order": 1
+}

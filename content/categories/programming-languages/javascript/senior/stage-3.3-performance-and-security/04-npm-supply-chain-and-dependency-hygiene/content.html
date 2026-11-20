@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>npm Supply Chain &amp; Dependency Hygiene — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · performance &amp; security</span> → lesson 04</p>
+  <h1>npm Supply Chain &amp; Dependency Hygiene</h1>
+  <p class="lede">Every dependency is code you run with your own privileges — so choosing, pinning, and auditing what you install is part of shipping securely.</p>
+
+  <h2><span class="num">§1</span>The Risk</h2>
+
+  <p>A typical app pulls in hundreds of packages through transitive dependencies. Attackers exploit that with <strong>typosquatting</strong> (<code>lodahs</code>), <strong>compromised maintainer accounts</strong>, <strong>malicious updates</strong> to previously good packages, <strong>dependency confusion</strong> (a public package that shadows a private name), and <strong>install scripts</strong> that run arbitrary code the moment you <code>npm install</code>.</p>
+
+  <pre><span class="comment"># package.json lifecycle scripts run automatically on install:</span>
+<span class="comment">#   "preinstall" / "install" / "postinstall"</span>
+<span class="comment"># That means `npm install some-package` can run code on your laptop and CI runner.</span>
+
+<span class="comment"># Block them by default, then allow only what's needed</span>
+<span class="comment"># npm install --ignore-scripts</span>
+<span class="comment"># npm config set ignore-scripts true</span>
+
+<span class="comment"># See what you actually depend on</span>
+<span class="comment"># npm ls --all | wc -l</span>
+<span class="comment"># npm explain left-pad          # why is this installed?</span></pre>
+
+  <h2><span class="num">§2</span>Lockfiles, Auditing, and Updates</h2>
+
+  <p>The lockfile records exact versions and integrity hashes, so installs are reproducible and tampering is detectable. Use <code>npm ci</code> in CI. Audit for known vulnerabilities, and update on purpose and in small steps with a bot (Dependabot, Renovate), reading the changelog of anything important.</p>
+
+  <pre><span class="comment"># npm ci                        # install exactly the lockfile; fails on mismatch</span>
+<span class="comment"># npm audit --omit=dev          # known vulnerabilities in production dependencies</span>
+<span class="comment"># npm audit signatures          # verify registry signatures and provenance attestations</span>
+<span class="comment"># npm outdated                  # what could be updated</span>
+<span class="comment"># npm install pkg@1.2.3 --save-exact</span>
+
+<span class="comment"># Review before updating: what changed in the tarball?</span>
+<span class="comment"># npm diff --diff=pkg@1.2.3 --diff=pkg@1.2.4</span>
+
+<span class="comment"># Newly published versions deserve a cooling-off period before you adopt them: many malicious</span>
+<span class="comment"># releases are detected and removed within days. Some tools support a minimum release age setting.</span></pre>
+
+  <p>Not every <code>npm audit</code> finding is exploitable in your usage — triage by whether the vulnerable code path is reachable. But a pile of unreviewed warnings trains everyone to ignore the next one.</p>
+
+  <h2><span class="num">§3</span>Deciding What to Depend On</h2>
+
+  <p>Treat adding a dependency as a decision with a cost: maintenance, update churn, supply-chain exposure, and bundle size. Ask the questions before <code>npm install</code>:</p>
+
+  <ul>
+    <li>Can the platform or about 20 lines of my own code do this? (<code>structuredClone</code>, <code>fetch</code>, <code>Array.prototype.at</code>, <code>crypto.randomUUID</code>)</li>
+    <li>Is it actively maintained, widely used, and published with provenance? How many dependencies does it bring along?</li>
+    <li>Does it need install scripts or native binaries?</li>
+    <li>How hard is it to remove later? Wrap it behind your own small interface so it stays swappable.</li>
+  </ul>
+
+  <pre><span class="comment">// Wrap third-party libraries behind your own function</span>
+<span class="comment">// date.js — the only file that imports the library</span>
+import { format } from "date-fns";
+export const formatDate = (d) =&gt; format(d, "yyyy-MM-dd");
+
+<span class="comment">// Use publish-time protections on your own packages: 2FA on npm accounts,</span>
+<span class="comment">// trusted publishing (provenance) from CI, and scoped, short-lived tokens</span></pre>
+
+  <div class="callout">
+    <span class="label">Reproducible installs</span>
+    If two machines can produce different <code>node_modules</code> from the same repo, you can't tell whether a bug or a compromise came from your code or from drift. The lockfile plus <code>npm ci</code> closes that gap.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Running <code>npm install</code> instead of <code>npm ci</code> in CI</td><td>Can silently update versions; not reproducible</td><td>Use <code>npm ci</code> and commit the lockfile</td></tr>
+    <tr><td>Blindly accepting every Dependabot or <code>npm audit fix</code> change</td><td>Breaking or malicious changes slip in</td><td>Review diffs and changelogs; test; update in small batches</td></tr>
+    <tr><td>Adding a package for something trivial</td><td>More attack surface and maintenance for little value</td><td>Prefer platform features or a few lines of your own code</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run <code>npm ls --all</code> on a project, count the transitive dependencies, and pick one you could remove or replace with platform features.</li>
+      <li>Set up a CI step that uses <code>npm ci</code>, runs <code>npm audit --omit=dev</code>, and fails on high-severity findings; document how you'd triage an alert.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Dependencies run with your privileges — install scripts, typosquats, and hijacked packages are real attack paths.</li>
+      <li>Pin with a lockfile, install with <code>npm ci</code>, audit, and update deliberately after reading diffs.</li>
+      <li>Prefer platform features, vet maintenance and provenance, and wrap libraries behind your own interface.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Performance &amp; Security — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"title": "Allocator Designs: Free Lists, Buddy & Slab", "description": "Splitting, coalescing, and picking a design for the allocation pattern.", "order": 2}

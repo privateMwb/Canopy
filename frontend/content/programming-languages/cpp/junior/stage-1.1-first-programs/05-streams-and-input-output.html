@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Streams &amp; Input/Output — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · first programs</span> → lesson 05</p>
+  <h1>Streams &amp; Input/Output</h1>
+  <p class="lede">C++ reads and writes through stream objects, and robust programs check that every read actually succeeded.</p>
+
+  <h2><span class="num">§1</span>Output with std::cout</h2>
+
+  <p><code>std::cout</code> is the standard output stream, written with <code>&lt;&lt;</code>. <code>'\n'</code> ends a line; <code>std::endl</code> also flushes the buffer, which is much slower in a loop and rarely needed.</p>
+
+  <pre>#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+int main() {
+    int items{3};
+    double price{4.5};
+    std::cout &lt;&lt; "Items: " &lt;&lt; items &lt;&lt; '\n';
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2)
+              &lt;&lt; "Total: " &lt;&lt; items * price &lt;&lt; '\n';        <span class="comment">// Total: 13.50</span>
+    std::cerr &lt;&lt; "warning: this goes to stderr\n";
+}</pre>
+
+  <p>Manipulators like <code>std::fixed</code>, <code>std::setprecision</code>, and <code>std::setw</code> change how later values print; precision and <code>fixed</code> stay set until you change them. Since C++20 <code>std::format</code> is often clearer, covered in a later lesson.</p>
+
+  <h2><span class="num">§2</span>Input with std::cin</h2>
+
+  <p><code>&gt;&gt;</code> reads whitespace-separated values and converts them to the target type. If the conversion fails, the stream enters a <strong>fail state</strong> and every later read does nothing until you clear it.</p>
+
+  <pre>int age;
+std::cout &lt;&lt; "Age? ";
+if (!(std::cin &gt;&gt; age)) {
+    std::cerr &lt;&lt; "not a number\n";
+    std::cin.clear();                                         <span class="comment">// reset the error flags</span>
+    std::cin.ignore(10000, '\n');                             <span class="comment">// discard the bad line</span>
+}</pre>
+
+  <p>Checking the result of a read (<code>if (std::cin &gt;&gt; x)</code>) is the single most important input habit.</p>
+
+  <h2><span class="num">§3</span>Reading Lines</h2>
+
+  <p><code>&gt;&gt;</code> stops at whitespace, so it cannot read "Ada Lovelace" into one string. Use <code>std::getline</code> for whole lines, and read line by line in a loop for files or piped input.</p>
+
+  <pre>std::string line;
+while (std::getline(std::cin, line)) {          <span class="comment">// false at end of input</span>
+    std::cout &lt;&lt; "got: " &lt;&lt; line &lt;&lt; '\n';
+}</pre>
+
+  <p>Mixing <code>&gt;&gt;</code> and <code>getline</code> is a classic trap: <code>&gt;&gt;</code> leaves the newline in the buffer, so the next <code>getline</code> returns an empty line. Skip it with <code>std::cin &gt;&gt; std::ws</code> or <code>std::cin.ignore()</code>.</p>
+
+  <h2><span class="num">§4</span>Files and String Streams</h2>
+
+  <p>Files and in-memory strings use the same interface. <code>std::ifstream</code> and <code>std::ofstream</code> (from <code>&lt;fstream&gt;</code>) close themselves when they go out of scope, which is RAII at work.</p>
+
+  <pre>#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+std::ifstream in{"data.txt"};
+if (!in) { std::cerr &lt;&lt; "cannot open file\n"; return 1; }
+std::string word;
+while (in &gt;&gt; word) { /* process */ }
+
+std::istringstream parts{"10 20 30"};
+int a, b, c;
+parts &gt;&gt; a &gt;&gt; b &gt;&gt; c;                           <span class="comment">// parse numbers out of a string</span></pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The condition <code>while (in &gt;&gt; x)</code> both reads and tests. Writing <code>while (!in.eof())</code> is a bug: the flag only turns on after a read fails, so you process one extra bogus value.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Never checking whether <code>cin &gt;&gt; x</code> succeeded</td><td>Bad input leaves <code>x</code> unset and all later reads fail</td><td>Test the read and recover with <code>clear</code> and <code>ignore</code></td></tr>
+    <tr><td>Using <code>std::endl</code> on every line</td><td>Flushes each time, which slows heavy output</td><td>Use <code>'\n'</code></td></tr>
+    <tr><td>Looping on <code>!in.eof()</code></td><td>An extra iteration with stale data</td><td>Loop on the read itself</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Read integers from standard input until end of input and print their sum and average to two decimals.</li>
+      <li>Read a file line by line and print each line with its line number.</li>
+      <li>Use <code>std::istringstream</code> to parse the line <code>"x=3 y=4"</code> into two integers.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Always test the result of a read, and loop with <code>while (in &gt;&gt; x)</code> or <code>while (getline(...))</code>.</li>
+      <li>Use <code>'\n'</code> instead of <code>std::endl</code> unless you really need a flush.</li>
+      <li>File and string streams share the stream interface and close themselves automatically.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · First Programs — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

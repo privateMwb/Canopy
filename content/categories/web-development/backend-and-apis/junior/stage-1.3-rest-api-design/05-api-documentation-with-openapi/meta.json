@@ -1,0 +1,5 @@
+{
+  "title": "API Documentation with OpenAPI",
+  "description": "A contract that doubles as docs and tests.",
+  "order": 5
+}

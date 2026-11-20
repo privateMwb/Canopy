@@ -1,0 +1,5 @@
+{
+  "title": "JIT Compilation & Warmup",
+  "description": "C1, C2, inlining, deoptimization, and why the first minute is slower.",
+  "order": 4
+}

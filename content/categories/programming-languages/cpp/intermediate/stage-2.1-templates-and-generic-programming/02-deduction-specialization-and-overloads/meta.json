@@ -1,0 +1,5 @@
+{
+  "title": "Deduction, Specialization & Overloads",
+  "description": "How the compiler picks a template, and customizing for special cases.",
+  "order": 2
+}

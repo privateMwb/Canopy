@@ -1,0 +1,5 @@
+{
+  "title": "API Objects, Versions & Declarative Management",
+  "description": "Kinds, apiVersions, and why you apply files instead of issuing commands.",
+  "order": 5
+}

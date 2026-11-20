@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.4 — Authentication Basics",
+  "description": "Password hashing, sessions, tokens, authorization, and secrets.",
+  "order": 4
+}

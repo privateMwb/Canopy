@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Performance Budgets &amp; Real-User Monitoring — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 02</p>
+  <h1>Performance Budgets &amp; Real-User Monitoring</h1>
+  <p class="lede">A site does not stay fast by accident. Performance budgets turn "be fast" into limits a build can enforce, and real-user monitoring tells you what people actually experience, which is rarely what your laptop shows.</p>
+
+  <h2><span class="num">§1</span>Measuring What Users Feel</h2>
+
+  <p>Pick metrics that reflect real experience. Google's <strong>Core Web Vitals</strong> are the common baseline, and they are measured at the <strong>75th percentile of real page loads</strong>, because averages hide the slow experiences that matter most.</p>
+
+  <table>
+    <tr><th>Metric</th><th>Measures</th><th>Good</th></tr>
+    <tr><td><strong>LCP</strong> Largest Contentful Paint</td><td>When the main content is visible</td><td>≤ 2.5 s</td></tr>
+    <tr><td><strong>INP</strong> Interaction to Next Paint</td><td>Responsiveness to input across the visit</td><td>≤ 200 ms</td></tr>
+    <tr><td><strong>CLS</strong> Cumulative Layout Shift</td><td>Visual stability (unexpected movement)</td><td>≤ 0.1</td></tr>
+  </table>
+
+  <p>Supporting metrics help diagnosis: <strong>TTFB</strong> (server and network start), <strong>FCP</strong> (first paint), total JavaScript bytes, and number of requests. A metric you cannot connect to a user-visible experience is probably not worth a budget.</p>
+
+  <h2><span class="num">§2</span>Budgets You Can Enforce</h2>
+
+  <p>A <strong>performance budget</strong> is a set of limits the team agrees on and enforces automatically, so regressions are caught in review rather than discovered by users. Budgets work best when they are few, specific, and tied to the user experience.</p>
+
+  <pre><span class="comment">// budgets.json: limits checked in CI</span>
+{
+  "initialRouteJsKb": 170,        <span class="comment">// compressed JavaScript for the first route</span>
+  "totalImagesKb": 500,
+  "lcpMs": 2500,                   <span class="comment">// lab value on a throttled mid-range profile</span>
+  "clsMax": 0.1,
+  "thirdPartyRequests": 8
+}
+
+<span class="comment">// Lighthouse CI assertion example</span>
+{
+  "ci": { "assert": { "assertions": {
+    "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+    "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+    "resource-summary:script:size": ["error", { "maxNumericValue": 174080 }]
+  } } }
+}</pre>
+
+  <ul>
+    <li>Set the first budget from <strong>what you measure today</strong> and your competitors, then ratchet it down; an impossible number gets ignored.</li>
+    <li><strong>Fail the build</strong> (or block the merge) when a budget is exceeded, with a clear message about which change caused it.</li>
+    <li>Budget in <strong>user-facing terms</strong> where possible (seconds to interactive on a mid-range phone), not only file sizes.</li>
+    <li>Use <strong>bundle analysis</strong> in each pull request to show what a change added.</li>
+    <li>Allow a <strong>deliberate exception process</strong>: someone must justify and sign off on exceeding the budget.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Real-User Monitoring</h2>
+
+  <p><strong>Lab data</strong> (Lighthouse, DevTools) is controlled and repeatable, which is good for catching regressions and diagnosing causes. <strong>Field data</strong> from real users, called <strong>RUM</strong>, tells you whether it actually matters to them: real devices, real networks, real geographies. You need both, and they often disagree.</p>
+
+  <pre>import { onLCP, onINP, onCLS, onTTFB } from "web-vitals";
+
+function send(metric) {
+  const body = JSON.stringify({
+    name: metric.name,
+    value: metric.value,
+    rating: metric.rating,                 <span class="comment">// "good" | "needs-improvement" | "poor"</span>
+    id: metric.id,
+    page: location.pathname,               <span class="comment">// group by route, not full URL</span>
+    nav: metric.navigationType,
+    conn: navigator.connection?.effectiveType,
+    release: "2026.10.3",
+  });
+  navigator.sendBeacon("/rum", body) || fetch("/rum", { method: "POST", body, keepalive: true });
+}
+onLCP(send); onINP(send); onCLS(send); onTTFB(send);</pre>
+
+  <ul>
+    <li>Analyze by <strong>percentile</strong> (p75, p95), and <strong>segment</strong> by route, device class, country, and connection type; the problem is usually in a segment.</li>
+    <li><strong>Tag with a release</strong> so you can see whether a deploy moved a metric, and set <strong>alerts</strong> on regressions rather than staring at dashboards.</li>
+    <li>Combine with the public <strong>Chrome UX Report (CrUX)</strong> for a free field baseline and competitor comparisons.</li>
+    <li>Respect <strong>privacy</strong>: collect performance data without personal information, and follow your consent obligations.</li>
+    <li>Turn insight into action: a slow p75 LCP on product pages becomes a prioritized, measurable ticket.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Averages lie, percentiles tell the truth</span>
+    If your median is great but your p95 is terrible, a large number of real users are having a bad time. Budget and alert on the percentile that represents your slower users.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Tracking only lab scores from a fast laptop</td><td>Real users on phones are much slower</td><td>Add RUM and test with CPU and network throttling</td></tr>
+    <tr><td>Reporting averages</td><td>Slow experiences are hidden</td><td>Use p75/p95 and segment by device and route</td></tr>
+    <tr><td>Setting budgets nobody enforces</td><td>They become decoration; performance decays</td><td>Fail the build or block the merge</td></tr>
+    <tr><td>Choosing too many metrics</td><td>Nobody knows what to prioritize</td><td>Pick a few tied to user experience</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add <code>web-vitals</code> to a page, send metrics to a simple endpoint, and chart p75 by route.</li>
+      <li>Define a three-item budget for a project and wire it into CI so a deliberately bloated PR fails.</li>
+      <li>Compare Lighthouse numbers with CrUX field data for a public site and write down why they differ.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Measure what users feel (LCP, INP, CLS) at the 75th percentile of real page loads.</li>
+      <li>Budgets only work if they are few, user-relevant, and enforced automatically in CI.</li>
+      <li>Use lab data to diagnose and field data to decide what matters; segment and alert on regressions.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Scheduling: Affinity, Taints & Tolerations",
+  "description": "Steering pods to the right nodes.",
+  "order": 3
+}

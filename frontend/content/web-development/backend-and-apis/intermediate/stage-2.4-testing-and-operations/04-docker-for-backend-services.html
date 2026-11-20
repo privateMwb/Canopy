@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Docker for Backend Services — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · testing &amp; operations</span> → lesson 04</p>
+  <h1>Docker for Backend Services</h1>
+  <p class="lede">Packaging and running consistently.</p>
+
+  <h2><span class="num">§1</span>"It Works on My Machine"</h2>
+
+  <p>A backend depends on a specific runtime version, operating-system libraries, and configuration. <strong>Docker</strong> packages your app and everything it needs into an <strong>image</strong>, a portable, immutable snapshot, which runs as an isolated <strong>container</strong> that behaves the same on your laptop, in CI, and in production.</p>
+
+  <h2><span class="num">§2</span>A Production-Minded Dockerfile</h2>
+
+  <pre><span class="comment"># syntax=docker/dockerfile:1</span>
+FROM node:22-slim AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev                                <span class="comment"># reproducible install from the lockfile</span>
+
+FROM node:22-slim AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY src ./src
+COPY package.json ./
+USER node                                            <span class="comment"># don't run as root</span>
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s CMD node -e "fetch('http://localhost:3000/healthz').then(r=&gt;process.exit(r.ok?0:1)).catch(()=&gt;process.exit(1))"
+CMD ["node", "src/server.js"]                        <span class="comment"># exec form: Node receives signals directly</span></pre>
+
+  <ul>
+    <li><strong>Layer caching:</strong> copy <code>package*.json</code> and install <em>before</em> copying source, so editing code does not reinstall dependencies.</li>
+    <li><strong>Multi-stage builds</strong> keep build tools and dev dependencies out of the final image, making it smaller and with less attack surface.</li>
+    <li><strong>Pin versions</strong> of base images (a specific tag, ideally a digest) so builds are repeatable.</li>
+    <li><strong>Run as a non-root user</strong> so a compromised process has fewer privileges.</li>
+    <li><strong><code>.dockerignore</code></strong> should list <code>node_modules</code>, <code>.git</code>, <code>.env</code>, and test files so secrets and clutter never enter the build context.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Configuration and Secrets</h2>
+
+  <p>Images must be <strong>environment-agnostic</strong>: the same image runs in staging and production, with differences injected at runtime through environment variables or mounted secrets. Never bake <code>.env</code> files or credentials into an image; anyone with the image can extract them.</p>
+
+  <h2><span class="num">§4</span>Graceful Shutdown</h2>
+
+  <p>When a container is stopped or replaced, the orchestrator sends <code>SIGTERM</code> and, after a grace period, <code>SIGKILL</code>. Handle <code>SIGTERM</code> by stopping new connections, letting in-flight requests finish, closing database pools, and then exiting. Without this, deploys drop requests.</p>
+
+  <pre>const server = app.listen(config.PORT);
+
+process.on("SIGTERM", () =&gt; {
+  server.close(async () =&gt; {                         <span class="comment">// stop accepting; wait for in-flight requests</span>
+    await pool.end();
+    process.exit(0);
+  });
+  setTimeout(() =&gt; process.exit(1), 10_000).unref(); // safety net if something hangs
+});</pre>
+
+  <h2><span class="num">§5</span>Running the Whole Stack Locally</h2>
+
+  <p>Docker Compose describes multi-container setups, such as your API plus Postgres and Redis, in a single file, so a new teammate can run <code>docker compose up</code> and have a working environment.</p>
+
+  <pre><span class="comment"># compose.yaml</span>
+services:
+  api:
+    build: .
+    ports: ["3000:3000"]
+    environment:
+      DATABASE_URL: postgres://app:devpass@db:5432/notes
+      REDIS_URL: redis://cache:6379
+    depends_on:
+      db: { condition: service_healthy }
+  db:
+    image: postgres:17
+    environment: { POSTGRES_USER: app, POSTGRES_PASSWORD: devpass, POSTGRES_DB: notes }
+    volumes: ["pgdata:/var/lib/postgresql/data"]    <span class="comment"># data survives container restarts</span>
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U app"], interval: 5s, retries: 10 }
+  cache:
+    image: redis:7
+volumes:
+  pgdata:</pre>
+
+  <div class="callout">
+    <span class="label">Containers are disposable; state is not</span>
+    A container's filesystem disappears when it is replaced. Keep durable state in volumes or managed services (databases, object storage), and keep the container itself stateless so it can be killed and restarted freely.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Copying all source before installing dependencies</td><td>Every code change reinstalls everything and builds slowly</td><td>Copy manifests first, install, then copy source</td></tr>
+    <tr><td>Running as root and baking in secrets</td><td>A breach gets root, and secrets can be pulled from the image</td><td>Use a non-root user and inject config at runtime</td></tr>
+    <tr><td>Ignoring <code>SIGTERM</code> (or using shell-form <code>CMD</code>)</td><td>Deploys kill in-flight requests after a hard timeout</td><td>Use exec-form <code>CMD</code> and handle graceful shutdown</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a Dockerfile for your API, build it, and compare the image size with and without a multi-stage build.</li>
+      <li>Create a <code>compose.yaml</code> that brings up the API with Postgres, and verify that data persists after <code>docker compose down</code> and <code>up</code>.</li>
+      <li>Start the container, run <code>docker stop</code>, and confirm via logs that your SIGTERM handler ran.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Docker packages the app and its dependencies into an immutable image that runs the same everywhere.</li>
+      <li>Use multi-stage builds, layer caching, a non-root user, and runtime-injected configuration.</li>
+      <li>Handle SIGTERM for graceful shutdown, and keep containers stateless with Compose for local stacks.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Testing &amp; Operations — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

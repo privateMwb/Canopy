@@ -1,0 +1,1 @@
+{"title": "Configuration Management & Idempotency with Ansible", "description": "Playbooks that converge a machine to a described state, and safe to run twice.", "order": 4}

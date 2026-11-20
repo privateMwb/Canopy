@@ -1,0 +1,5 @@
+{
+  "title": "State & Template Method: Behavior That Varies by Context",
+  "description": "Objects that change behavior as their state changes, and an algorithm skeleton whose steps subclasses fill in.",
+  "order": 5
+}

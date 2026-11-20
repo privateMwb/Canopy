@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Storage: SSDs, HDDs &amp; the Latency Gap — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · dram & the memory system</span> → lesson 04</p>
+  <h1>Storage: SSDs, HDDs &amp; the Latency Gap</h1>
+  <p class="lede">Below DRAM, storage is about a thousand times slower, and the physics of flash and spinning disks explains both their numbers and their odd behaviors.</p>
+
+  <h2><span class="num">§1</span>Spinning Disks</h2>
+  <p>A hard disk reads data from a spinning platter using a moving head. Reaching a random location costs a <strong>seek</strong> (moving the head, about 3 to 10 ms) plus <strong>rotational latency</strong>, the wait for the data to pass under the head. At 7,200 RPM, a full rotation takes 8.33 ms, so the average rotational wait is half that, about 4.2 ms.</p>
+  <pre>7200 RPM = 120 rotations/s -&gt; 8.33 ms per rotation -&gt; average wait 4.17 ms
+random read  = seek (~4-9 ms) + rotation (~4 ms) = roughly 8-13 ms
+sequential   = 100-250 MB/s once the head is positioned
+
+<span class="comment"># So random 4 KiB reads give only ~100 IOPS, while sequential reads stream fast.</span></pre>
+  <p>Hard disks reward sequential access heavily, which shaped decades of storage design, from log-structured writes to B-trees laid out for large blocks.</p>
+
+  <h2><span class="num">§2</span>Flash and SSDs</h2>
+  <p>An SSD stores data in NAND flash cells, with no moving parts. Reads are fast, around 20 to 100 microseconds, but flash has quirks.</p>
+  <ul>
+    <li><strong>Pages and blocks:</strong> data is read and written in pages (4 to 16 KiB), but erased only in whole <strong>blocks</strong> of hundreds of pages. You can't overwrite in place</li>
+    <li><strong>Flash translation layer (FTL):</strong> the SSD's controller maps logical addresses to physical pages, redirecting each write to a fresh page and cleaning up old ones later</li>
+    <li><strong>Garbage collection and write amplification:</strong> moving live data to free blocks means the SSD writes more internally than the host asked for</li>
+    <li><strong>Wear:</strong> each cell survives a limited number of erase cycles, from a few hundred to a few thousand depending on type, so SSDs spread writes and publish endurance ratings (TBW)</li>
+    <li><strong>Parallelism:</strong> many flash chips and channels work at once, so SSDs reach full speed only with many requests in flight (high <strong>queue depth</strong>)</li>
+  </ul>
+  <table>
+    <tr><th></th><th>HDD</th><th>SATA SSD</th><th>NVMe SSD</th></tr>
+    <tr><td>Random read latency</td><td>8–13 ms</td><td>About 100 µs</td><td>About 20–80 µs</td></tr>
+    <tr><td>Sequential throughput</td><td>100–250 MB/s</td><td>About 550 MB/s</td><td>3–7+ GB/s</td></tr>
+    <tr><td>Random 4 KiB IOPS</td><td>About 100</td><td>About 90k</td><td>Several hundred thousand to 1M+</td></tr>
+  </table>
+
+  <h2><span class="num">§3</span>The Latency Gap and Living With It</h2>
+  <p>DRAM is about 100 ns and an NVMe read about 50 µs: a factor of roughly 500 to 1,000. The OS hides much of this with the <strong>page cache</strong>, keeping recently used file data in DRAM, so repeated reads are served from memory.</p>
+  <pre>fio --name=randread --rw=randread --bs=4k --iodepth=32 --size=1G --runtime=10 --time_based
+<span class="comment"># Shows IOPS and latency percentiles for random reads at queue depth 32</span>
+iostat -x 1                     <span class="comment"># utilization, queue depth, and await times per device</span>
+free -h                         <span class="comment"># 'buff/cache' is file data held in DRAM</span></pre>
+  <ul>
+    <li><strong>Writes need durability:</strong> <code>fsync</code> forces data to the device, and it is much slower than a cached write</li>
+    <li><strong>Batch and queue:</strong> issue many I/Os at once so the SSD's parallelism is used</li>
+    <li><strong>Keep hot data in memory,</strong> and design for sequential access where possible, even on SSDs</li>
+    <li><strong>Expect tail latencies:</strong> garbage collection can make occasional operations far slower than the average</li>
+  </ul>
+  <p>The gap between DRAM and storage is the same hierarchy idea as before, one level further down, and the same principles of locality, batching, and caching apply.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Storage speed depends on both the technology and how you use it. A hard disk is 100 times worse at random than sequential access, while an SSD is fast at random access only if you keep many requests in flight.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Assuming an SSD overwrites in place</td><td>Misreading write behavior and wear</td><td>Remember pages, blocks, the FTL, and write amplification</td></tr>
+    <tr><td>Testing an SSD with one request at a time</td><td>Throughput looks far below the specification</td><td>Measure with realistic queue depths</td></tr>
+    <tr><td>Treating <code>write()</code> as durable</td><td>Data may be lost on a crash</td><td>Use <code>fsync</code> (or equivalent) where durability is needed</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Compute the average rotational latency of a 15,000 RPM disk.</li>
+      <li>Run <code>fio</code> random reads at queue depths 1 and 32 on an SSD and explain the difference in IOPS.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Hard disks pay seek and rotational latency, so random access is about 100 times slower than sequential.</li>
+      <li>SSDs read fast but erase by block, using an FTL, garbage collection, and wear leveling.</li>
+      <li>NVMe parallelism needs high queue depth; the page cache hides much of the DRAM-to-storage gap.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · DRAM & the Memory System — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Custom Elements",
+  "description": "Defining your own tags with lifecycle callbacks.",
+  "order": 1
+}

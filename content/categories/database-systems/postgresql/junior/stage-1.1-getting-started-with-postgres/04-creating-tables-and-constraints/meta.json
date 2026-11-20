@@ -1,0 +1,5 @@
+{
+  "title": "Creating Tables & Constraints",
+  "description": "Primary keys, NOT NULL, UNIQUE, CHECK, and defaults that make bad data impossible.",
+  "order": 4
+}

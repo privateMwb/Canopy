@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Navigation &amp; Links — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.1 · framework fundamentals</span> → lesson 04</p>
+  <h1>Navigation &amp; Links</h1>
+  <p class="lede">Client-side navigation, prefetching, and loading states.</p>
+
+  <h2><span class="num">§1</span>The Link Component</h2>
+
+  <p>Use <code>&lt;Link&gt;</code> from <code>next/link</code> for internal navigation instead of a plain <code>&lt;a&gt;</code>. It performs a client-side transition, so the page swaps without a full reload and shared layouts stay mounted.</p>
+
+  <pre>import Link from "next/link";
+
+&lt;Link href="/blog/hello-world"&gt;Read the post&lt;/Link&gt;
+&lt;Link href={{ pathname: "/search", query: { q: "next" } }}&gt;Search&lt;/Link&gt;</pre>
+
+  <h2><span class="num">§2</span>Prefetching</h2>
+
+  <p>When a <code>&lt;Link&gt;</code> scrolls into the viewport in production, the framework prefetches the route in the background, so a click often feels instant. Static routes are prefetched in full, while dynamic routes are typically prefetched only up to the nearest loading boundary. Prefetching is disabled in development, which is another reason to judge performance on a production build.</p>
+
+  <h2><span class="num">§3</span>Programmatic Navigation and Active State</h2>
+
+  <p>In a Client Component, <code>useRouter</code> lets you navigate from code, for instance after a form succeeds. <code>usePathname</code> tells you the current path so you can highlight the active link. On the server, use <code>redirect()</code> to send the user elsewhere.</p>
+
+  <pre>"use client";
+import { useRouter, usePathname } from "next/navigation";
+
+const router = useRouter();
+router.push("/dashboard");        <span class="comment">// add a history entry</span>
+router.replace("/login");         <span class="comment">// swap the current entry</span>
+const pathname = usePathname();   <span class="comment">// "/blog/hello-world"</span></pre>
+
+  <h2><span class="num">§4</span>Loading States</h2>
+
+  <p>Navigation to a dynamic route can take time while data loads. A <code>loading.tsx</code> file beside a route shows a fallback instantly while the real page streams in. Lesson 1.2.4 covers loading and error UI in detail.</p>
+
+  <div class="callout">
+    <span class="label">Links are real anchors</span>
+    <code>&lt;Link&gt;</code> renders an <code>&lt;a&gt;</code> tag, so it works with middle-click, 'open in new tab', and crawlers. Reach for <code>router.push</code> only when navigation follows an action, not as a replacement for links.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>&lt;a href&gt;</code> for internal pages</td><td>A full page reload, losing client state and speed</td><td>Use <code>&lt;Link&gt;</code> for internal routes</td></tr>
+    <tr><td>Using <code>router.push</code> for ordinary navigation</td><td>No prefetching, and poor accessibility and SEO</td><td>Render a <code>&lt;Link&gt;</code>; use the router after actions</td></tr>
+    <tr><td>Judging link speed in dev mode</td><td>Prefetching is off, so it feels slower than production</td><td>Test with <code>build</code> and <code>start</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a navigation bar that highlights the current page using <code>usePathname</code>.</li>
+      <li>Add a <code>loading.tsx</code> to a slow route and watch how the transition changes in a production build.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>&lt;Link&gt;</code> gives client-side transitions and prefetching while staying a real anchor tag.</li>
+      <li>Use <code>useRouter</code> for navigation after actions and <code>redirect()</code> on the server.</li>
+      <li><code>loading.tsx</code> makes slow navigations feel responsive.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.1 · Framework Fundamentals — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

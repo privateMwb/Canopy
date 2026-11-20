@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mobile &amp; Native Accessibility — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced technical topics</span> → lesson 04</p>
+  <h1>Mobile &amp; Native Accessibility</h1>
+  <p class="lede">Most of the principles carry over, but the APIs change. Native apps use the platform's own accessibility framework instead of HTML and ARIA, and the same WCAG ideas apply with different attributes.</p>
+
+  <h2><span class="num">§1</span>The Same Ideas, Different Names</h2>
+  <p>WCAG is written for web content, but its principles apply to apps, and standards such as EN 301 549 cover native software. In practice you ask the same questions: does every control have a <strong>name</strong>, a <strong>role</strong>, a <strong>state</strong>, and can it be operated by assistive technology? Only the vocabulary changes.</p>
+  <table>
+    <tr><th>Concept</th><th>iOS (VoiceOver)</th><th>Android (TalkBack)</th><th>React Native</th></tr>
+    <tr><td><strong>Name</strong></td><td><code>accessibilityLabel</code></td><td><code>contentDescription</code></td><td><code>accessibilityLabel</code></td></tr>
+    <tr><td><strong>Role</strong></td><td>Traits, such as <code>.button</code></td><td>Class or role description</td><td><code>accessibilityRole</code></td></tr>
+    <tr><td><strong>State</strong></td><td><code>accessibilityValue</code>, traits like <code>.selected</code></td><td>State descriptions</td><td><code>accessibilityState</code></td></tr>
+    <tr><td><strong>Hide</strong></td><td><code>isAccessibilityElement = false</code></td><td><code>importantForAccessibility</code></td><td><code>accessible: false</code></td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Platform Code in Practice</h2>
+  <p>The pattern is the same everywhere: use the standard controls, label anything that has no visible text, and set sensible text and touch behavior.</p>
+  <pre><span class="comment">iOS (Swift)</span>
+closeButton.accessibilityLabel = "Close"
+closeButton.accessibilityTraits = .button
+titleLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+titleLabel.adjustsFontForContentSizeCategory = true    <span class="comment">// respects Dynamic Type</span>
+
+<span class="comment">Android (XML)</span>
+&lt;ImageButton
+    android:id="@+id/close"
+    android:contentDescription="Close"
+    android:minWidth="48dp"
+    android:minHeight="48dp" /&gt;
+&lt;TextView android:textSize="16sp" /&gt;    <span class="comment">&lt;!-- sp scales with the user's font size --&gt;</span>
+
+<span class="comment">React Native</span>
+&lt;Pressable
+  accessibilityRole="button"
+  accessibilityLabel="Close"
+  accessibilityState={{ disabled: false }}
+  onPress={close}&gt;
+  &lt;CloseIcon /&gt;
+&lt;/Pressable&gt;</pre>
+
+  <h2><span class="num">§3</span>Mobile-Specific Concerns</h2>
+  <p>Mobile devices add situations that desktop pages rarely face.</p>
+  <ul>
+    <li><strong>Touch targets:</strong> about 44 points on iOS, and 48 dp on Android, as a floor for important controls.</li>
+    <li><strong>Text scaling:</strong> support Dynamic Type on iOS and font scale on Android, and test at the largest sizes, where layouts often break.</li>
+    <li><strong>Orientation:</strong> do not lock to portrait or landscape unless it is essential (WCAG 1.3.4, Level AA).</li>
+    <li><strong>Gestures:</strong> every swipe, pinch, or long press needs a simple alternative, and screen reader users use different gestures, so custom ones can conflict.</li>
+    <li><strong>Focus order and traversal:</strong> the reading order follows the view hierarchy, so check it with the screen reader on.</li>
+    <li><strong>Reduce motion and other settings:</strong> read the system preferences (for example <code>UIAccessibility.isReduceMotionEnabled</code>) and respect them.</li>
+    <li><strong>Hybrid and WebView content:</strong> ensure web content inside a native shell is accessible, with correct focus behavior across the boundary.</li>
+  </ul>
+  <p>Test on real devices with VoiceOver and TalkBack, and with large text, bold text, and reduced motion enabled. The simulators do not tell you how it feels.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A senior accessibility engineer is fluent in the underlying model, not one syntax. Name, role, state, and operability are the same on every platform. Learn those, and each new framework is only a new set of property names.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Icon buttons with no label in a native app</td><td>The screen reader says "button" and nothing else</td><td>Set the platform label, such as <code>accessibilityLabel</code> or <code>contentDescription</code></td></tr>
+    <tr><td>Fixed text sizes in points or pixels</td><td>The app ignores the user's text size setting</td><td>Use scalable units and text styles, and test at the largest size</td></tr>
+    <tr><td>Locking orientation without a need</td><td>Users with devices mounted in one orientation are shut out</td><td>Support both orientations unless it is essential</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Turn on VoiceOver or TalkBack and navigate an app you use. Write down three unlabeled or confusing controls.</li>
+      <li>Set your phone's text size to the largest setting and open an app. List what breaks.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Native platforms use the same concepts as ARIA (name, role, state), with different property names.</li>
+      <li>Use standard controls, label non-text controls, and support text scaling, touch target sizes, and both orientations.</li>
+      <li>Test on real devices with VoiceOver and TalkBack, large text, and reduced motion.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Technical Topics — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

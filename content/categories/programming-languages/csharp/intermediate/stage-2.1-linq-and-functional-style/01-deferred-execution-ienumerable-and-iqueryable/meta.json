@@ -1,0 +1,5 @@
+{
+  "title": "Deferred Execution, IEnumerable & IQueryable",
+  "description": "When a query actually runs, and why that matters with a database.",
+  "order": 1
+}

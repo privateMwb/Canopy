@@ -1,0 +1,5 @@
+{
+  "title": "Reading Errors & Debugging",
+  "description": "Tracebacks, print debugging, and stepping through code with pdb.",
+  "order": 5
+}

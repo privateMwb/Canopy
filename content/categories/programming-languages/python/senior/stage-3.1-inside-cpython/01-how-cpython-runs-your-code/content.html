@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How CPython Runs Your Code — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · inside cpython</span> → lesson 01</p>
+  <h1>How CPython Runs Your Code</h1>
+  <p class="lede">CPython compiles source into bytecode and runs it in a stack-based evaluation loop, and the <code>dis</code> module lets you read exactly what it generated.</p>
+
+  <h2><span class="num">§1</span>From Source to Bytecode</h2>
+
+  <p>CPython, the reference implementation, works in stages: <strong>parse</strong> the source into an abstract syntax tree (AST), <strong>compile</strong> the tree to bytecode stored in code objects, and <strong>execute</strong> that bytecode in the evaluation loop. Compiled modules are cached as <code>.pyc</code> files in <code>__pycache__</code>, keyed by the interpreter version.</p>
+
+  <pre>import ast, dis
+
+src = "total = price * qty + 1"
+print(ast.dump(ast.parse(src), indent=2)[:120])   <span class="comment"># the tree</span>
+
+def add(a, b):
+    return a + b
+
+dis.dis(add)</pre>
+
+  <pre>  RESUME        0
+  LOAD_FAST     0 (a)
+  LOAD_FAST     1 (b)
+  BINARY_OP     0 (+)
+  RETURN_VALUE</pre>
+
+  <p>The exact instructions change between Python versions (this is 3.12-style output), so treat bytecode as an implementation detail, not an API. A function's code object is available as <code>add.__code__</code>, with <code>co_code</code>, <code>co_consts</code>, <code>co_varnames</code>, and <code>co_names</code>.</p>
+
+  <h2><span class="num">§2</span>A Stack Machine</h2>
+
+  <p>Each instruction operates on a value stack inside a <strong>frame</strong>. <code>LOAD_FAST</code> pushes a local variable, <code>BINARY_OP</code> pops two values and pushes the result, and <code>RETURN_VALUE</code> pops the top and returns it. Each function call creates a frame holding the locals, the stack, and the current instruction position. That's what tracebacks display, and why deep recursion raises <code>RecursionError</code> (see <code>sys.getrecursionlimit()</code>).</p>
+
+  <h2><span class="num">§3</span>Reading dis to Learn Costs</h2>
+
+  <p><code>dis</code> explains performance questions with evidence.</p>
+
+  <pre>def f1(items):
+    out = []
+    for x in items:
+        out.append(x * 2)        <span class="comment"># attribute lookup + call on every iteration</span>
+    return out
+
+def f2(items):
+    return [x * 2 for x in items]
+
+dis.dis(f1)
+dis.dis(f2)</pre>
+
+  <p>It also shows scoping directly: names assigned in a function compile to <code>LOAD_FAST</code>/<code>STORE_FAST</code> (a fast array slot), while module-level and built-in names use <code>LOAD_GLOBAL</code>, a dictionary lookup. Constants like <code>2 * 3</code> are folded at compile time into <code>6</code>.</p>
+
+  <h2><span class="num">§4</span>The Adaptive Interpreter</h2>
+
+  <p>Since Python 3.11, CPython <strong>specializes</strong> hot bytecode at runtime. After an instruction runs a few times with the same operand types, the interpreter swaps it for a faster variant (for example, integer addition or a cached attribute load), and reverts if the types change. You can see the result with <code>dis.dis(add, adaptive=True)</code> after calling the function many times. This is a large reason newer versions run the same code faster, with no changes on your part.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Python isn't "interpreting text." It's executing compact bytecode on a stack machine whose hot paths specialize themselves. When performance puzzles you, <code>dis</code> and a profiler beat folklore.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Relying on exact bytecode in tests or tools</td><td>Breaks on every Python upgrade</td><td>Treat bytecode as version-specific; use the AST or public APIs</td></tr>
+    <tr><td>Distributing only <code>.pyc</code> files as "protection"</td><td>Trivially decompiled and tied to one version</td><td>Don't depend on <code>.pyc</code> for secrecy; use a license and a server boundary instead</td></tr>
+    <tr><td>Assuming the global lookups in a hot loop are free</td><td>Each <code>LOAD_GLOBAL</code> costs a dict lookup (cached in recent versions, but still not free)</td><td>Profile first; bind locals only where measurement shows a gain</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use <code>dis.dis</code> on a function with a <code>for</code> loop and one with a list comprehension, and identify which instructions are per-iteration.</li>
+      <li>Compile <code>x = 2 ** 10 + 1</code> with <code>dis</code> and explain why there's no arithmetic at runtime.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>CPython parses to an AST, compiles to bytecode in code objects, and executes it on a stack machine in frames.</li>
+      <li><code>dis</code> shows the bytecode, but its details change per version.</li>
+      <li>The 3.11+ adaptive interpreter specializes hot instructions, so upgrading Python alone can speed up code.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Inside CPython — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strongly Connected Components — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · advanced graph algorithms</span> → lesson 04</p>
+  <h1>Strongly Connected Components</h1>
+  <p class="lede">Finding tightly-linked clusters in a directed graph, where every node can reach every other.</p>
+
+  <h2><span class="num">§1</span>What a Strongly Connected Component Is</h2>
+  <p>In a directed graph, a strongly connected component (SCC) is a maximal group of nodes where every node can reach every other node in the group, following directed edges. A graph can be broken into several SCCs, each one internally tightly connected.</p>
+
+  <h2><span class="num">§2</span>Kosaraju's Algorithm — Two DFS Passes</h2>
+  <pre><span class="comment"># Step 1: DFS the original graph, record finish order (like topological sort)
+# Step 2: reverse all edges
+# Step 3: DFS the reversed graph in REVERSE finish order — each new tree is one SCC</span>
+def kosaraju(graph, reversed_graph, n):
+    finish_order = topological_sort_style_dfs(graph, n)
+    visited = set()
+    sccs = []
+    for node in reversed(finish_order):
+        if node not in visited:
+            component = dfs_collect(reversed_graph, node, visited)
+            sccs.append(component)
+    return sccs</pre>
+  <p>The key insight: running DFS on the reversed graph, in the reverse order nodes finished in the original graph's DFS, naturally groups each SCC together — a clever reuse of the same finish-order idea from topological sort, applied twice with a reversal in between.</p>
+
+  <h2><span class="num">§3</span>Why This Matters</h2>
+  <p>SCCs reveal structure that isn't obvious from the raw edge list: in a dependency graph, an SCC means a genuine cycle of mutual dependencies (A needs B, B needs A, directly or indirectly) — exactly the kind of structural problem topological sort alone can only detect, not fully characterize.</p>
+
+  <h2><span class="num">§4</span>Condensing a Graph by Its SCCs</h2>
+  <div class="callout">
+    <span class="label">A useful technique</span>
+    Once you've found a graph's SCCs, collapsing each one into a single "super-node" produces a new graph that's guaranteed to be a DAG — no cycles remain, since any cycle would have been absorbed into an SCC. This is a common first step before applying DAG-only techniques (like topological sort or DAG-based DP) to a graph that originally had cycles.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Confusing "connected" (undirected) with "strongly connected" (directed, both directions)</td><td>Misidentifying components in a directed graph</td><td>Remember strong connectivity specifically requires mutual reachability</td></tr>
+    <tr><td>Running DFS on the reversed graph in the wrong order</td><td>SCCs don't come out correctly grouped</td><td>Process nodes in reverse of the first pass's finish order, exactly</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Given a small directed graph with an obvious cycle plus some extra nodes, identify the SCCs by inspection.</li>
+      <li>Explain, in one or two sentences, why condensing SCCs into super-nodes always produces a DAG.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A strongly connected component is a maximal group of nodes that can all reach each other via directed paths.</li>
+      <li>Kosaraju's algorithm finds SCCs using two DFS passes — one on the original graph, one on the reversed graph in reverse finish order.</li>
+      <li>Condensing a graph by its SCCs always produces a DAG, useful before applying DAG-only techniques.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Advanced Graph Algorithms — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

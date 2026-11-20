@@ -1,0 +1,5 @@
+{
+  "title": "Context Managers & contextlib",
+  "description": "The with statement, __enter__/__exit__, and @contextmanager for clean setup and teardown.",
+  "order": 4
+}

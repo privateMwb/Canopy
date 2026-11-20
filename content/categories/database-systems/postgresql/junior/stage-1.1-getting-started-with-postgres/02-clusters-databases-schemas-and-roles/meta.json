@@ -1,0 +1,5 @@
+{
+  "title": "Clusters, Databases, Schemas & Roles",
+  "description": "How the pieces nest, what a schema is for, and why roles own everything.",
+  "order": 2
+}

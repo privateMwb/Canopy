@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Render and Commit Phases — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · inside react</span> → lesson 01</p>
+  <h1>The Render and Commit Phases</h1>
+  <p class="lede">Between a <code>setState</code> call and pixels changing, React does a precise sequence of work. Knowing the phases, and which code runs in each, explains StrictMode, effect timing, and nearly every "why did that run now?" question.</p>
+
+  <h2><span class="num">§1</span>Trigger, Render, Commit</h2>
+
+  <p>Every update passes through the same pipeline. A <strong>trigger</strong> schedules work (the initial <code>root.render</code>, or a state setter, dispatch, or context change). React then <strong>renders</strong>: it calls your components to compute a new tree of elements and works out what changed. Finally it <strong>commits</strong>: it applies the minimal DOM changes and runs effects. The browser paints after the commit.</p>
+
+  <table>
+    <tr><th>Phase</th><th>What happens</th><th>Can touch the DOM?</th><th>Interruptible?</th></tr>
+    <tr><td><strong>Render</strong></td><td>Call components and hooks; build the next fiber tree; diff against the current one</td><td>No (pure calculation)</td><td>Yes (in concurrent rendering)</td></tr>
+    <tr><td><strong>Commit</strong></td><td>Apply DOM mutations, attach refs, run layout effects</td><td>Yes</td><td>No: synchronous and atomic</td></tr>
+    <tr><td><strong>Passive effects</strong></td><td><code>useEffect</code> callbacks run after paint (usually)</td><td>Yes (DOM already updated)</td><td>Scheduled separately</td></tr>
+  </table>
+
+  <p>The render phase is pure calculation that React may <strong>pause, restart, or discard</strong>. That is why components and reducers must be pure, and why side effects in the render body are bugs: React may run your function more times than it commits, or never commit that render at all.</p>
+
+  <h2><span class="num">§2</span>The Commit Phase in Detail</h2>
+
+  <p>Commit has sub-steps that explain the different effect hooks. All DOM changes for an update are applied together, so the user never sees a half-updated screen.</p>
+
+  <ol>
+    <li><strong>Before mutation</strong>: read from the DOM before it changes (class <code>getSnapshotBeforeUpdate</code>).</li>
+    <li><strong>Mutation</strong>: insert, update, and delete DOM nodes; run cleanups of layout effects; detach old refs.</li>
+    <li><strong>Layout</strong>: attach refs; run <code>useLayoutEffect</code> callbacks <strong>synchronously</strong>, before the browser paints.</li>
+    <li><strong>Paint</strong>: the browser draws the frame.</li>
+    <li><strong>Passive</strong>: React runs <code>useEffect</code> cleanups and callbacks (for urgent updates caused by discrete events such as clicks, React flushes them before the next render to preserve ordering).</li>
+  </ol>
+
+  <pre>function Tooltip({ anchorRef, children }) {
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  <span class="comment">// measure after DOM update, before paint: no flicker from a wrong first position</span>
+  useLayoutEffect(() =&gt; {
+    const r = anchorRef.current.getBoundingClientRect();
+    setPos({ top: r.bottom, left: r.left });          <span class="comment">// re-render happens synchronously, before paint</span>
+  }, [anchorRef]);
+
+  <span class="comment">// data fetching, subscriptions, logging: after paint, does not block it</span>
+  useEffect(() =&gt; {
+    const id = analytics.track("tooltip-shown");
+    return () =&gt; analytics.cancel(id);
+  }, []);
+
+  return &lt;div style={{ position: "fixed", ...pos }}&gt;{children}&lt;/div&gt;;
+}</pre>
+
+  <p>Use <code>useEffect</code> by default. Reach for <code>useLayoutEffect</code> only when you must <strong>read layout and synchronously re-render</strong> to avoid a visible flash (tooltips, popovers, measurement). It blocks painting, so keep it short.</p>
+
+  <h2><span class="num">§3</span>Consequences You Can Predict</h2>
+
+  <ul>
+    <li><strong>StrictMode double-invocation</strong>: in development React renders components twice, and mounts effects twice (mount, unmount, mount). If doing that breaks your code, your render was impure or an effect lacks cleanup. Production runs once.</li>
+    <li><strong>A render is not a commit</strong>: you may see <code>console.log</code> in the body run without the screen changing, especially with transitions or Suspense.</li>
+    <li><strong>Batching</strong>: setters called in the same tick, including inside promises and timeouts, are batched into one render and one commit.</li>
+    <li><strong>Same state, no work</strong>: if <code>useState</code> receives a value equal (<code>Object.is</code>) to the current one, React usually bails out, though it may still call the component once more before deciding.</li>
+    <li><strong>Refs are not set during render</strong>: <code>ref.current</code> is populated in the commit, so read it in effects and handlers.</li>
+    <li><strong>Rendering a component does not mean its DOM changes</strong>: React diffs the output and only mutates what differs.</li>
+  </ul>
+
+  <pre>function Profile({ user }) {
+  console.log("render");              <span class="comment">// may log more often than the DOM changes</span>
+  const ref = useRef(null);
+  <span class="comment">// ref.current === null here on first render</span>
+
+  useEffect(() =&gt; {
+    console.log(ref.current.tagName); <span class="comment">// set by now</span>
+  });
+  return &lt;h1 ref={ref}&gt;{user.name}&lt;/h1&gt;;
+}</pre>
+
+  <div class="callout">
+    <span class="label">Render computes, commit changes</span>
+    Treat the render phase as a pure function that React may call freely and the commit phase as the only moment the world changes. Every rule of React follows from that split.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Fetching or mutating in the component body</td><td>Runs on discarded and repeated renders; double work in StrictMode</td><td>Move side effects to handlers or <code>useEffect</code></td></tr>
+    <tr><td>Using <code>useLayoutEffect</code> for ordinary effects</td><td>Blocks painting and hurts responsiveness</td><td>Use <code>useEffect</code> unless you need pre-paint measurement</td></tr>
+    <tr><td>Reading <code>ref.current</code> during render</td><td>It is <code>null</code> or stale before commit</td><td>Read it in effects and event handlers</td></tr>
+    <tr><td>Treating each log of "render" as a visible update</td><td>Misreading performance and behavior</td><td>Remember render may run without commit; profile actual commits</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add logs in the body, a layout effect, and a passive effect, and record the order for mount and for an update. Then explain it with the phases.</li>
+      <li>Build a tooltip that flickers with <code>useEffect</code> positioning and fix it with <code>useLayoutEffect</code>.</li>
+      <li>Turn StrictMode on and off and list every behavior that changes, with the reason for each.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>An update is trigger, render (pure, interruptible), then commit (DOM changes, synchronous).</li>
+      <li>Layout effects run before paint; passive effects run after; refs attach at commit.</li>
+      <li>Purity in render is what lets React pause, repeat, and discard work safely.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · Inside React — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

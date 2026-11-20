@@ -1,0 +1,5 @@
+{
+  "title": "Memory Sizing & GC Tuning in Containers",
+  "description": "Heap vs. container limits, ergonomics, and the settings worth changing.",
+  "order": 3
+}

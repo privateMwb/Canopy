@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SQLite Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / sqlite</p>
+    <h1>From your first query to SQLite you can ship inside real software</h1>
+    <p class="lede">Three levels, twelve stages — the SQL and file model first, then performance, concurrency, and the feature set, built toward the internals and judgment to run SQLite in production and know when to outgrow it.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've seen a .db file" to "I can create schemas, query data, and embed SQLite in an application correctly."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Getting Started with SQLite</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What SQLite Is</p><p class="lesson-desc">A serverless, single-file, embedded database, and where it's already running.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The sqlite3 Shell &amp; Dot Commands</p><p class="lesson-desc">Opening a database, exploring it, and the commands that aren't SQL.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Type Affinity &amp; Storage Classes</p><p class="lesson-desc">SQLite's flexible typing, what affinity means, and the surprises it causes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Creating Tables &amp; Constraints</p><p class="lesson-desc">Primary keys, rowid, NOT NULL, UNIQUE, CHECK, and STRICT tables.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Inserting, Updating &amp; Deleting</p><p class="lesson-desc">Changing data and checking the result.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Model a small personal-finance or notes database with constraints that reject bad data, and load sample rows.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Querying Data</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">SELECT, Filtering &amp; Sorting</p><p class="lesson-desc">Selecting, WHERE, ORDER BY, and LIMIT with offsets.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Joins &amp; Aggregation</p><p class="lesson-desc">Combining tables and summarizing with GROUP BY.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Subqueries &amp; CTEs</p><p class="lesson-desc">Building queries in readable steps.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Date, Time &amp; Text Functions</p><p class="lesson-desc">SQLite's date functions and string handling, and storing time sensibly.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Views &amp; Basic Indexes</p><p class="lesson-desc">Reusable queries, and the first index you add.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Answer a set of reporting questions on a sample dataset with single readable queries and a couple of well-chosen indexes.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Using SQLite in Applications</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Drivers &amp; Language Bindings</p><p class="lesson-desc">Opening databases from Python, JavaScript, and other languages.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Parameterized Queries</p><p class="lesson-desc">Binding values and avoiding SQL injection.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Transactions &amp; Autocommit</p><p class="lesson-desc">Grouping changes, and why many small writes are slow.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Schema Migrations with user_version</p><p class="lesson-desc">Versioning a schema inside the file and upgrading it safely.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Embedding SQLite in Apps</p><p class="lesson-desc">Mobile, desktop, and CLI use, and where to keep the file.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small app that stores its data in SQLite, with migrations, parameterized queries, and a test suite.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Files, Backups &amp; Tools</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Anatomy of a Database File</p><p class="lesson-desc">One file, its sidecar files, and what portability means.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Backups: .backup &amp; VACUUM INTO</p><p class="lesson-desc">Copying a live database safely.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Import &amp; Export</p><p class="lesson-desc">CSV, SQL dumps, and moving data between systems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Inspecting with Tools</p><p class="lesson-desc">GUI and command-line tools for debugging a database.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Foreign Keys, Pragmas &amp; Defaults</p><p class="lesson-desc">The settings that are off by default and why you should turn them on.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Ship the app with a safe backup command, foreign keys enforced, and a documented procedure for restoring from a backup.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "it works" to "I can make it fast, handle concurrent access, and use its advanced features."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Performance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">EXPLAIN QUERY PLAN</p><p class="lesson-desc">Reading scans, searches, and why a query chose its plan.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Covering, Partial &amp; Expression Indexes</p><p class="lesson-desc">Indexes beyond the basics and their write cost.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">ANALYZE &amp; the Query Planner</p><p class="lesson-desc">Statistics, and helping the planner choose well.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Performance PRAGMAs</p><p class="lesson-desc">cache_size, synchronous, journal_mode, and what each trades.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Batching &amp; Bulk Loading</p><p class="lesson-desc">Transactions, prepared statements, and loading a million rows quickly.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a slow workload, measure it, and speed it up by an order of magnitude, showing which change contributed what.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Concurrency &amp; Durability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Locking Model</p><p class="lesson-desc">Shared, reserved, and exclusive locks, and what blocks what.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Rollback Journal vs. WAL Mode</p><p class="lesson-desc">How each works, and why WAL changes the concurrency story.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Transaction Types &amp; Busy Handling</p><p class="lesson-desc">DEFERRED, IMMEDIATE, EXCLUSIVE, and busy timeouts that behave.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Durability &amp; the synchronous Setting</p><p class="lesson-desc">What survives a power loss under each configuration.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Multi-Process Access &amp; Pitfalls</p><p class="lesson-desc">Several writers, network file systems, and why they don't mix.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Stress a database with concurrent readers and writers, trigger and fix SQLITE_BUSY, and document the guarantees you ended up with.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Advanced Features</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">JSON Functions</p><p class="lesson-desc">Storing, querying, and indexing JSON in SQLite.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Full-Text Search with FTS5</p><p class="lesson-desc">Building a search index, ranking, and keeping it in sync.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Window Functions &amp; Generated Columns</p><p class="lesson-desc">Analytics and computed columns inside SQLite.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Triggers &amp; UPSERT</p><p class="lesson-desc">Reacting to changes, and insert-or-update in one statement.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">STRICT Tables &amp; Constraints Revisited</p><p class="lesson-desc">Getting real type safety out of a flexible engine.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add search, JSON queries, and an audit trail to an existing app using only built-in SQLite features.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Extending &amp; Integrating</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">User-Defined Functions</p><p class="lesson-desc">Registering your own functions from application code.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Virtual Tables</p><p class="lesson-desc">Exposing other data as tables, and how FTS and R-Tree use them.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Loadable Extensions</p><p class="lesson-desc">Adding capabilities such as vectors or geospatial indexes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">ORMs &amp; Query Builders</p><p class="lesson-desc">What they help with, and where they fight SQLite.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing with SQLite</p><p class="lesson-desc">In-memory databases, fixtures, and the risk of testing against a different engine than production.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Integrate SQLite with a larger application using an ORM and a custom extension, and write tests that run against a realistic database.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I use SQLite" to "I understand how it works inside, I can run it in production, and I know when to move on."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — SQLite Internals</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The B-Tree File Format</p><p class="lesson-desc">Pages, the file header, and how tables and indexes are stored.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The Pager &amp; Page Cache</p><p class="lesson-desc">Reading, caching, and writing pages.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">WAL Internals &amp; Checkpointing</p><p class="lesson-desc">The WAL file, the wal-index, and when checkpoints run.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">The Query Planner &amp; the VDBE</p><p class="lesson-desc">How SQL becomes bytecode, and how to read it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Atomic Commit &amp; Crash Recovery</p><p class="lesson-desc">Why SQLite stays consistent through power loss.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Inspect a real database file at the byte level, then trace one transaction through the pager and journal, and write up what you found.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Scaling Up &amp; Out</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Read/Write Patterns &amp; the Single Writer</p><p class="lesson-desc">Designing around one writer at a time.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Per-Tenant Databases</p><p class="lesson-desc">Sharding by file and what it makes simpler or harder.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Replication &amp; Sync</p><p class="lesson-desc">Streaming backups and replication tools such as Litestream, LiteFS, and rqlite.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">SQLite at the Edge</p><p class="lesson-desc">Hosted and distributed variants such as libSQL and Cloudflare D1.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Large Databases &amp; Limits</p><p class="lesson-desc">Size, row, and parameter limits, and how big is too big.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a multi-tenant SQLite deployment with replication and backups, and state exactly what it can and can't survive.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Reliability &amp; Security</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Corruption: Causes &amp; Detection</p><p class="lesson-desc">How databases get damaged and how integrity_check finds it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Backup Strategy &amp; Restore Testing</p><p class="lesson-desc">Schedules, retention, and rehearsing the restore.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Encryption &amp; Security</p><p class="lesson-desc">SQLCipher, file permissions, and injection risks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Migrations at Scale</p><p class="lesson-desc">Changing schemas across many deployed files and clients.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Observability</p><p class="lesson-desc">Measuring slow queries and lock waits in an embedded engine.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a reliability plan for a shipped product covering corruption, backups, encryption, and rolling out a schema change to thousands of installs.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Design</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">When SQLite Is Enough</p><p class="lesson-desc">Where it matches or beats a server database, and the evidence.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">SQLite as an Application File Format</p><p class="lesson-desc">Using a database file as a document format.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Choosing Between SQLite and Postgres</p><p class="lesson-desc">A decision framework based on concurrency, scale, and operations.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Migrating to a Server Database</p><p class="lesson-desc">Planning a path out before you need it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Case Studies in Production Use</p><p class="lesson-desc">How real products use SQLite, and what they learned.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design document for a real product: why SQLite, the concurrency model, backups, the migration trigger, and the risks you accept, argued for a skeptical reviewer.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Transactions appear at Junior as grouping writes, return at Intermediate as locking and WAL mode, and come back at Senior as atomic commit and crash recovery. Performance follows the same arc: indexes, then planner and PRAGMAs, then file format and the pager. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how the B-tree file format or the WAL works is one skill; deciding whether SQLite should hold a workload at all, planning the move to a server database, and writing that down for a skeptical reviewer, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

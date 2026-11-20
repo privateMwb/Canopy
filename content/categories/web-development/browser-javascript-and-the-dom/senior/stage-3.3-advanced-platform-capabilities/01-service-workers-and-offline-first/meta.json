@@ -1,0 +1,5 @@
+{
+  "title": "Service Workers & Offline-First",
+  "description": "Caching strategies and update flows.",
+  "order": 1
+}

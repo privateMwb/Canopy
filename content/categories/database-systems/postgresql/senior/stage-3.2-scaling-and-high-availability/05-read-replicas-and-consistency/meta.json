@@ -1,0 +1,5 @@
+{
+  "title": "Read Replicas & Consistency",
+  "description": "Routing reads safely when replicas lag behind the primary.",
+  "order": 5
+}

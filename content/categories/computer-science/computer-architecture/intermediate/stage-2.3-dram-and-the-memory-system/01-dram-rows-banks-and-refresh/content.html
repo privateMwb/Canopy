@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DRAM: Rows, Banks &amp; Refresh — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · dram & the memory system</span> → lesson 01</p>
+  <h1>DRAM: Rows, Banks &amp; Refresh</h1>
+  <p class="lede">Main memory is built from tiny leaky capacitors organized in rows, and the way you access them, within an open row or not, changes the speed of each access.</p>
+
+  <h2><span class="num">§1</span>How a DRAM Cell Works</h2>
+  <p>A DRAM bit is a single transistor and a capacitor: charged means 1, discharged means 0. It's dense and cheap, which is why gigabytes fit on a module, but the charge leaks away within milliseconds. So the memory controller must <strong>refresh</strong> every row regularly, standardly within a 64 ms window, by reading and rewriting it. SRAM, used in caches, stores each bit in about six transistors that hold their value without refresh, so it is faster and far larger per bit.</p>
+  <p>Refresh isn't free. While a row is refreshing it can't be read, which adds occasional latency spikes and a small bandwidth tax.</p>
+
+  <h2><span class="num">§2</span>Channels, Banks, Rows, and the Row Buffer</h2>
+  <pre>channel -&gt; DIMM -&gt; rank -&gt; chip -&gt; bank -&gt; row x column
+
+<span class="comment"># A bank is a 2D array. Reading a bit means:</span>
+1. ACTIVATE  open a whole row: copy it into the bank's row buffer     (tRCD)
+2. READ      pick the wanted columns from the row buffer              (CL)
+3. PRECHARGE close the row so another can be opened                   (tRP)</pre>
+  <p>The <strong>row buffer</strong> (sense amplifiers) holds the whole open row, around 8 KiB across a rank. Accessing another column of an already-open row is a <strong>row hit</strong> and is fast. Accessing a different row requires closing the old one and opening the new, which is a <strong>row conflict</strong>.</p>
+  <table>
+    <tr><th>Case</th><th>What happens</th><th>DDR4-3200 CL22 example</th></tr>
+    <tr><td>Row hit</td><td>Column read only</td><td>About 14 ns (CL)</td></tr>
+    <tr><td>Row empty (bank idle)</td><td>ACTIVATE then read</td><td>About 28 ns (tRCD + CL)</td></tr>
+    <tr><td>Row conflict</td><td>PRECHARGE, ACTIVATE, read</td><td>About 41 ns (tRP + tRCD + CL)</td></tr>
+  </table>
+  <p>At a 1,600 MHz memory clock, 22 cycles is 13.75 ns, so CL, tRCD, and tRP each cost about 14 ns. The total latency a CPU sees, around 70 to 100 ns, adds the cache lookups, the memory controller queue, and the trip across the bus.</p>
+
+  <h2><span class="num">§3</span>What This Means for Programs</h2>
+  <ul>
+    <li><strong>Sequential access</strong> stays inside open rows, so it is mostly row hits, and it benefits from the full bandwidth</li>
+    <li><strong>Random access</strong> opens a new row nearly every time, so it pays the longer row-miss latency</li>
+    <li><strong>Banks work in parallel:</strong> a controller can open a row in one bank while reading from another, so spreading accesses across banks keeps the bus busy</li>
+    <li><strong>Controllers reorder requests</strong> to favor row hits, while keeping fairness</li>
+  </ul>
+  <pre>sudo dmidecode -t memory | grep -E 'Type:|Speed|Size'      <span class="comment"># DIMM type, speed, and sizes</span>
+sudo lshw -class memory                                       <span class="comment"># more detail</span></pre>
+  <p>Frequently seen labels such as DDR4-3200 CL16 describe data rate (3200 mega-transfers per second) and CAS latency in memory-clock cycles. A higher data rate with a proportionally higher CL gives the same absolute latency but more bandwidth.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    DRAM is fastest when you stay in the row you opened. The row buffer is a small cache inside the memory, which is why access pattern matters even below the CPU's caches.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Assuming DRAM latency is constant</td><td>It varies several-fold with row hit or conflict, and queueing</td><td>Think of access pattern, not a single latency number</td></tr>
+    <tr><td>Comparing memory by data rate alone</td><td>CL changes absolute latency</td><td>Compare CAS latency in nanoseconds (CL / clock) as well as MT/s</td></tr>
+    <tr><td>Ignoring refresh in tail latency</td><td>Occasional stalls appear in precise timing</td><td>Expect small periodic delays on any DRAM system</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Convert DDR5-4800 CL40 to an absolute CAS latency in nanoseconds. (Memory clock is half the data rate.)</li>
+      <li>Explain why scanning a 1 GiB array sequentially is faster per byte than reading 1 GiB at random 64-byte locations.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>DRAM cells leak and need refresh; caches use faster, larger SRAM instead.</li>
+      <li>Accesses to an open row are fast, and row conflicts add precharge and activate time.</li>
+      <li>Sequential patterns get row hits and bank parallelism, while random patterns pay more per access.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · DRAM & the Memory System — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

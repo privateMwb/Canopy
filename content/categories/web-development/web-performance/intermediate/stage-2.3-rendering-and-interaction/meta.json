@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Rendering & Interaction",
+  "description": "Layout, paint and composite costs, CLS, INP, animation, and virtualization.",
+  "order": 3
+}

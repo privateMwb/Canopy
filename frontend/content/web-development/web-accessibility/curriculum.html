@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web Accessibility Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style></head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / web-accessibility</p>
+    <h1>From an inaccessible page to a site everyone can use</h1>
+    <p class="lede">Three levels, twelve stages — semantics, keyboard support, assistive technology, and WCAG, built toward products that are accessible by design rather than by audit.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've heard of accessibility" to "I can recognize common barriers, build accessible basics, and test with a keyboard and a screen reader."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Why Accessibility</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Who Uses the Web</p><p class="lesson-desc">Disability, situational limits, and the diversity of users.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Assistive Technologies</p><p class="lesson-desc">Screen readers, magnifiers, switch devices, and voice control.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">WCAG &amp; the POUR Principles</p><p class="lesson-desc">Perceivable, Operable, Understandable, Robust.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Law, Standards &amp; Business Cases</p><p class="lesson-desc">ADA, the European Accessibility Act, and why it matters.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Your First Accessibility Audit</p><p class="lesson-desc">Using a checker, and learning its limits.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit a real page with an automated tool, then manually find three issues the tool missed.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Semantic HTML &amp; Content</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Headings, Landmarks &amp; Structure</p><p class="lesson-desc">Navigating by structure.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Text Alternatives</p><p class="lesson-desc">Writing useful alt text, and handling decorative images.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Links, Buttons &amp; Names</p><p class="lesson-desc">Clear accessible names for controls.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Lists, Tables &amp; Reading Order</p><p class="lesson-desc">Structures that read correctly aloud.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Plain Language &amp; Readability</p><p class="lesson-desc">Writing content people can understand.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Fix an inaccessible article page using only semantic HTML, and verify the result with a screen reader.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Keyboard &amp; Focus</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Keyboard Operation</p><p class="lesson-desc">Tab order, Enter, Space, and Escape.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Focus Visibility</p><p class="lesson-desc">Never hiding focus, and designing strong focus styles.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Skip Links &amp; Bypass Blocks</p><p class="lesson-desc">Letting users jump past repeated content.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Focus Order &amp; Focus Traps</p><p class="lesson-desc">Keeping order logical, and avoiding traps.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Pointer &amp; Touch Targets</p><p class="lesson-desc">Sizes, spacing, and alternatives to gestures.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Make a page fully operable with the keyboard alone, with a visible and logical focus order throughout.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Color, Contrast &amp; Visual Design</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Color Contrast</p><p class="lesson-desc">Ratios, tools, and meeting AA.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Not Relying on Color Alone</p><p class="lesson-desc">Redundant cues and patterns.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Text Size, Spacing &amp; Zoom</p><p class="lesson-desc">Supporting 200% zoom and user text spacing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Motion &amp; Flashing</p><p class="lesson-desc">Respecting reduced motion and avoiding seizure triggers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Dark Mode &amp; High Contrast</p><p class="lesson-desc">Supporting user preferences and forced colors.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Review a UI design for color, contrast, and motion problems, and fix them with measured results.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can build accessible basics" to "I build accessible interactive components, test with assistive technology, and bake accessibility into a team's workflow."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Forms &amp; Interactive Controls</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Labels, Instructions &amp; Errors</p><p class="lesson-desc">Accessible forms that explain themselves.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Validation &amp; Error Recovery</p><p class="lesson-desc">Announcing errors and guiding fixes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Custom Controls &amp; Native First</p><p class="lesson-desc">When to use native elements, and when to build your own.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Autocomplete &amp; Input Purpose</p><p class="lesson-desc">Helping users and password managers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Time Limits &amp; Re-authentication</p><p class="lesson-desc">Not punishing users for being slow.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build an accessible multi-step form with clear errors that works with a screen reader and voice control.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — ARIA &amp; Dynamic Content</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">ARIA Roles, States &amp; Properties</p><p class="lesson-desc">What ARIA does, and the rules for using it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The First Rule of ARIA</p><p class="lesson-desc">Don't use ARIA when native HTML works.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Live Regions &amp; Announcements</p><p class="lesson-desc">Telling users about updates.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Managing Focus in SPAs</p><p class="lesson-desc">Route changes, modals, and dynamic content.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Widgets from the ARIA Authoring Practices</p><p class="lesson-desc">Tabs, menus, comboboxes, and dialogs.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a tabs widget and a modal dialog to the ARIA Authoring Practices and test both with two screen readers.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Testing with Assistive Technology</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Screen Reader Basics</p><p class="lesson-desc">NVDA, VoiceOver, and TalkBack.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Testing with Keyboard &amp; Voice Control</p><p class="lesson-desc">Repeatable manual checks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Automated Testing</p><p class="lesson-desc">axe, Lighthouse, and CI integration.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Browser &amp; Screen Reader Differences</p><p class="lesson-desc">Where behavior diverges, and how to cope.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing with People with Disabilities</p><p class="lesson-desc">Learning from real users.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write and run a repeatable accessibility test plan for a feature, covering automated, manual, and assistive-technology checks.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Accessible Components &amp; Media</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Accessible Modals, Menus &amp; Tooltips</p><p class="lesson-desc">The hardest common patterns.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Data Tables &amp; Charts</p><p class="lesson-desc">Making data understandable without sight.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Video, Audio &amp; Captions</p><p class="lesson-desc">Captions, transcripts, and audio description.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Documents &amp; PDFs</p><p class="lesson-desc">Accessible downloads.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Accessibility in Design Systems</p><p class="lesson-desc">Baking it into shared components.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Make a data dashboard with charts and tables accessible, including text equivalents and keyboard navigation.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I build accessible components" to "I lead accessibility across products and teams, interpret standards in depth, and can defend decisions to stakeholders."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Standards &amp; Compliance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">WCAG 2.2 in Depth</p><p class="lesson-desc">Success criteria, techniques, and failures.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Conformance Reports &amp; VPATs</p><p class="lesson-desc">Documenting accessibility honestly.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Legal Landscape &amp; Risk</p><p class="lesson-desc">Regulations across regions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Accessibility Statements &amp; Feedback Channels</p><p class="lesson-desc">Communicating openly with users.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Beyond WCAG: Cognitive &amp; Emerging Needs</p><p class="lesson-desc">Where the guidelines end and users' needs continue.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Produce a conformance report for a real product, with evidence, gaps, and a remediation timeline.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Accessibility at Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Building an Accessibility Program</p><p class="lesson-desc">Roles, training, and ownership.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Shifting Left</p><p class="lesson-desc">Design reviews, linting, and a definition of done.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Design System Governance</p><p class="lesson-desc">Keeping components accessible as they evolve.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Procurement &amp; Third-Party Components</p><p class="lesson-desc">Evaluating vendors.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Metrics &amp; Continuous Monitoring</p><p class="lesson-desc">Tracking progress without gaming it.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Create an accessibility program plan for an organization, with measurable goals and a rollout schedule.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Advanced Technical Topics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Accessibility Tree &amp; Browser APIs</p><p class="lesson-desc">How platforms expose semantics.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Complex Widgets &amp; Custom Components</p><p class="lesson-desc">Grids, trees, and rich editors.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Accessibility in Canvas, WebGL &amp; Games</p><p class="lesson-desc">Making non-DOM content usable.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Mobile &amp; Native Accessibility</p><p class="lesson-desc">Platform guidance beyond the web.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Internationalization &amp; Accessibility</p><p class="lesson-desc">Right-to-left, language, and reading level.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Make a complex custom widget (a data grid or rich text editor) accessible and document its keyboard model.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Prioritizing Barriers by User Impact</p><p class="lesson-desc">Not every violation is equal.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Influencing Teams &amp; Leadership</p><p class="lesson-desc">Persuading without lecturing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Remediating Legacy Products</p><p class="lesson-desc">Fixing at scale, incrementally.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Inclusive Design Thinking</p><p class="lesson-desc">Designing with people rather than for them.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Present an accessibility remediation strategy for a legacy product to a skeptical leadership team, with priorities, costs, and outcomes.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Testing arrives at Junior as a checker and a keyboard, returns at Intermediate as screen readers and repeatable test plans, and comes back at Senior as programs, governance, and conformance reporting. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how the accessibility tree exposes a widget is one skill; deciding which barrier to fix first, and persuading a leadership team to fund it, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

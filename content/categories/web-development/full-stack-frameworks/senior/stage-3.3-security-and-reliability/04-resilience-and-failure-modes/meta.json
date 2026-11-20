@@ -1,0 +1,5 @@
+{
+  "title": "Resilience & Failure Modes",
+  "description": "Timeouts, retries, and graceful degradation.",
+  "order": 4
+}

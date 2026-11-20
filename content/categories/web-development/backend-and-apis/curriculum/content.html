@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backend &amp; APIs Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style></head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / backend-and-apis</p>
+    <h1>From your first endpoint to APIs other teams can rely on</h1>
+    <p class="lede">Three levels, twelve stages — HTTP, servers, data, and authentication, built toward backend services that are reliable, secure, and easy for others to integrate with. Examples use Node.js, but the concepts apply to any backend stack.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I can build a front end" to "I can build, run, and test a small HTTP server that stores data in a database and protects it with login."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — How the Backend Works</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Clients, Servers &amp; HTTP</p><p class="lesson-desc">Requests, responses, methods, status codes, and headers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Your First Server</p><p class="lesson-desc">Building a server in Node.js and handling routes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Routing &amp; Middleware</p><p class="lesson-desc">Express-style routing and the middleware chain.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Request Parsing &amp; Validation</p><p class="lesson-desc">Query strings, JSON bodies, and rejecting bad input.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing Endpoints by Hand</p><p class="lesson-desc">curl, Postman, and reading raw responses.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small server with five routes, input validation, and correct status codes for every error case.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Data &amp; Persistence</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Relational Databases &amp; SQL Basics</p><p class="lesson-desc">Tables, queries, and why databases exist.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Connecting from Code</p><p class="lesson-desc">Drivers, connection pools, and parameterized queries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">ORMs &amp; Query Builders</p><p class="lesson-desc">Prisma and Drizzle: benefits and costs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Schema Design Basics</p><p class="lesson-desc">Keys, relations, and normalization.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Migrations</p><p class="lesson-desc">Evolving a schema safely over time.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a notes API with a real database, migrations, and a schema that supports users and tags.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — REST API Design</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">REST Principles &amp; Resources</p><p class="lesson-desc">Nouns, verbs, and designing URLs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">CRUD Endpoints</p><p class="lesson-desc">Create, read, update, and delete done correctly.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Status Codes &amp; Error Responses</p><p class="lesson-desc">Consistent, helpful error shapes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Pagination, Filtering &amp; Sorting</p><p class="lesson-desc">Lists that don't return everything.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">API Documentation with OpenAPI</p><p class="lesson-desc">A contract that doubles as docs and tests.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design and document a REST API for a small product, then implement it so it matches its OpenAPI spec.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Authentication Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Passwords &amp; Hashing</p><p class="lesson-desc">bcrypt and argon2, salts, and why not to roll your own.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Sessions &amp; Cookies</p><p class="lesson-desc">Server-side sessions and secure cookie settings.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Tokens &amp; JWTs</p><p class="lesson-desc">Stateless auth and its trade-offs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Authorization Basics</p><p class="lesson-desc">Who can do what, enforced on the server.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Environment Config &amp; Secrets</p><p class="lesson-desc">Keeping credentials out of code.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add registration, login, and protected routes to your API, and show that another user's data is inaccessible.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "I can build a working API" to "I build reliable, secure, well-tested services with caching, background jobs, and real-world integrations."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — API Design in Depth</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Versioning &amp; Evolution</p><p class="lesson-desc">Changing an API without breaking clients.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Idempotency &amp; Retries</p><p class="lesson-desc">Making unsafe operations safe to retry.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">GraphQL Fundamentals</p><p class="lesson-desc">Schemas, resolvers, and when GraphQL fits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Realtime APIs</p><p class="lesson-desc">WebSockets and server-sent events.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">gRPC &amp; Internal APIs</p><p class="lesson-desc">Contracts between services.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build the same feature as REST and as GraphQL, then argue which suits it better.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Data &amp; Performance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Indexes &amp; Query Performance</p><p class="lesson-desc">Reading query plans and fixing slow queries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Transactions &amp; Concurrency</p><p class="lesson-desc">ACID, isolation levels, and race conditions.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Caching with Redis</p><p class="lesson-desc">Cache-aside, TTLs, and invalidation.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Background Jobs &amp; Queues</p><p class="lesson-desc">Moving slow work out of the request.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">File Storage &amp; Third-Party Integrations</p><p class="lesson-desc">Object storage, email, and payments.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Take a slow endpoint, profile it, add the right index and cache, and show the latency improvement.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Security</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The OWASP API Top Ten</p><p class="lesson-desc">The most common API vulnerabilities.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Input Validation &amp; Injection</p><p class="lesson-desc">SQL injection, command injection, and safe handling.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">OAuth 2.0 &amp; OpenID Connect</p><p class="lesson-desc">Delegated login and tokens done right.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Rate Limiting, CORS &amp; Hardening</p><p class="lesson-desc">Protecting a public API.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Secrets Management &amp; Auditing</p><p class="lesson-desc">Rotating keys and knowing who did what.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit your API against the OWASP Top Ten and fix every finding you can reproduce.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Testing &amp; Operations</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Unit &amp; Integration Testing</p><p class="lesson-desc">Testing logic and endpoints against a test database.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Contract Testing</p><p class="lesson-desc">Keeping clients and servers in agreement.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Logging, Metrics &amp; Tracing</p><p class="lesson-desc">Seeing inside a running service.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Docker for Backend Services</p><p class="lesson-desc">Packaging and running consistently.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">CI/CD &amp; Deployments</p><p class="lesson-desc">Automated releases with rollbacks.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Containerize your API, add CI with tests, and deploy it with health checks and structured logs.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I build solid services" to "I design systems that scale, fail gracefully, and evolve, and can defend architectural decisions."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Architecture</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Monoliths, Modules &amp; Microservices</p><p class="lesson-desc">Choosing boundaries, and the cost of splitting.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Domain Modeling &amp; Clean Boundaries</p><p class="lesson-desc">Keeping business logic independent.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Event-Driven Architecture</p><p class="lesson-desc">Queues, streams, and eventual consistency.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">API Gateways &amp; BFFs</p><p class="lesson-desc">Shaping APIs for different clients.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Multi-Tenancy &amp; Data Isolation</p><p class="lesson-desc">Serving many customers safely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design the backend architecture for a product, justifying each boundary and the failure modes it creates.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Scale &amp; Reliability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Horizontal Scaling &amp; Load Balancing</p><p class="lesson-desc">Stateless services, and where state hides.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Database Scaling</p><p class="lesson-desc">Replication, partitioning, and sharding.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Resilience Patterns</p><p class="lesson-desc">Timeouts, circuit breakers, bulkheads, and backpressure.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Distributed Systems Pitfalls</p><p class="lesson-desc">Clocks, partial failure, and consistency trade-offs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Load Testing &amp; Capacity Planning</p><p class="lesson-desc">Finding limits before users do.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Load-test a service, find its first bottleneck, fix it, and document the capacity you now have.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Operating in Production</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Observability Practice</p><p class="lesson-desc">SLIs, SLOs, alerting, and dashboards that help.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Incident Response &amp; Postmortems</p><p class="lesson-desc">Debugging live systems and learning from outages.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Zero-Downtime Deploys &amp; Migrations</p><p class="lesson-desc">Expand and contract, feature flags, and rollbacks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Cost &amp; Performance Engineering</p><p class="lesson-desc">Finding waste and speeding up hot paths.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Security Operations</p><p class="lesson-desc">Dependency scanning, secrets rotation, and incident readiness.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a runbook and a postmortem for a simulated production outage, including the fix and a prevention plan.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Communication</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Designing APIs for Other Teams</p><p class="lesson-desc">Treating consumers as customers.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Build vs. Buy</p><p class="lesson-desc">Evaluating services, frameworks, and platforms.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Technical Debt &amp; Migration Strategy</p><p class="lesson-desc">Paying down risk deliberately.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Writing Design Docs &amp; RFCs</p><p class="lesson-desc">Getting buy-in for technical change.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design document for a real backend change, with alternatives, risks, and a rollout plan, argued for a skeptical reviewer.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Data arrives at Junior as tables and queries, returns at Intermediate as indexes, transactions, and caching, and comes back at Senior as replication, sharding, and consistency trade-offs. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how a queue or a circuit breaker works is one skill; deciding where a service boundary belongs, and getting a team to agree, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

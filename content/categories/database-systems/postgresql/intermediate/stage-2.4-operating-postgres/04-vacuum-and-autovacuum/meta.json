@@ -1,0 +1,5 @@
+{
+  "title": "Vacuum & Autovacuum",
+  "description": "Dead tuples, freezing, and tuning autovacuum for a busy table.",
+  "order": 4
+}

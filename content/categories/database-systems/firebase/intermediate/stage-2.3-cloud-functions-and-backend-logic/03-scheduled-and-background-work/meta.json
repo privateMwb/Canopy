@@ -1,0 +1,5 @@
+{
+  "title": "Scheduled & Background Work",
+  "description": "Cron-style jobs and long-running tasks.",
+  "order": 3
+}

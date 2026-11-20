@@ -1,0 +1,5 @@
+{
+  "title": "Monitoring with INFO & SLOWLOG",
+  "description": "Reading the server's own metrics and finding slow commands.",
+  "order": 4
+}

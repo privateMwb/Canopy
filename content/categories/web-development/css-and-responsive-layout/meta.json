@@ -1,0 +1,7 @@
+{
+  "title": "CSS & Responsive Layout",
+  "description": "Selectors, Flexbox, Grid, and layouts that fit every screen.",
+  "order": 2,
+  "compileRoot": true,
+  "icon": "web_css"
+}

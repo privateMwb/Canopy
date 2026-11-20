@@ -1,0 +1,5 @@
+{
+  "title": "StatefulSets & Headless Services",
+  "description": "Stable identity and storage for databases and similar workloads.",
+  "order": 2
+}

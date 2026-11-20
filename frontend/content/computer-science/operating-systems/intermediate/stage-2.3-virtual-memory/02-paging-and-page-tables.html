@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paging &amp; Page Tables — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · virtual memory</span> → lesson 02</p>
+  <h1>Paging &amp; Page Tables</h1>
+  <p class="lede">Paging chops memory into fixed-size pages, and a page table says which physical frame each virtual page currently occupies.</p>
+
+  <h2><span class="num">§1</span>Pages and Frames</h2>
+  <p>Virtual memory is divided into <strong>pages</strong> and physical memory into <strong>frames</strong> of the same size, typically 4 KiB. Any page can go in any frame, so physical memory never needs to be contiguous and external fragmentation disappears.</p>
+  <p>A virtual address splits into two parts: the <strong>virtual page number</strong> (VPN), which selects the page, and the <strong>offset</strong>, the byte within it. With 4 KiB pages, the low 12 bits are the offset, because 2^12 = 4096.</p>
+
+  <h2><span class="num">§2</span>Translating an Address by Hand</h2>
+  <p>Suppose the page table maps virtual page 0 to frame 5 and virtual page 1 to frame 9. Translate virtual address <code>0x1A3C</code>:</p>
+  <pre>0x1A3C  =  0001 1010 0011 1100
+offset  =  low 12 bits  =  0xA3C
+VPN     =  remaining    =  0x1   (page 1)
+
+page table[1] -&gt; frame 9
+physical = (frame 9 * 0x1000) + 0xA3C = 0x9000 + 0xA3C = 0x9A3C</pre>
+  <p>The offset is unchanged by translation. Only the page number is replaced by a frame number.</p>
+
+  <h2><span class="num">§3</span>What's in a Page Table Entry</h2>
+  <table>
+    <tr><th>Field</th><th>Purpose</th></tr>
+    <tr><td>Frame number</td><td>Where the page lives in physical memory</td></tr>
+    <tr><td>Present bit</td><td>Is the page in RAM right now? If 0, access causes a page fault</td></tr>
+    <tr><td>Read/write bit</td><td>Writes to a read-only page cause a fault</td></tr>
+    <tr><td>User/supervisor bit</td><td>Whether user-mode code may access it</td></tr>
+    <tr><td>Accessed bit</td><td>Set by hardware on any access, used by replacement policies</td></tr>
+    <tr><td>Dirty bit</td><td>Set by hardware on a write, so the OS knows the page must be saved before eviction</td></tr>
+    <tr><td>No-execute bit</td><td>Marks data pages as non-executable</td></tr>
+  </table>
+  <p>The Present, Accessed, and Dirty bits are the hardware's way of giving the OS the information it needs to manage memory without trapping on every access.</p>
+
+  <h2><span class="num">§4</span>The Size Problem</h2>
+  <p>A single flat table has one entry per virtual page. A 32-bit address space with 4 KiB pages has 2^20 pages, which at 4 bytes per entry is 4 MB per process, even if the process uses little memory. A 64-bit space makes a flat table impossible. The next lesson shows how real systems solve this.</p>
+  <pre><span class="comment"># Page size on your system</span>
+getconf PAGESIZE     <span class="comment"># usually 4096</span></pre>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Translation changes the page number and keeps the offset. Everything else about paging, from page tables to TLBs, is about doing that substitution quickly and storing the mapping compactly.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Translating the whole address instead of only the page number</td><td>Wrong physical address</td><td>Split into VPN and offset, translate the VPN, reattach the offset</td></tr>
+    <tr><td>Using the wrong offset width</td><td>VPN and offset boundaries shift</td><td>Offset bits = log2(page size); 4 KiB gives 12 bits</td></tr>
+    <tr><td>Assuming pages in order are in adjacent frames</td><td>Wrong picture of physical layout</td><td>Consecutive virtual pages may map to unrelated frames</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>With 4 KiB pages and the table {0→5, 1→9, 2→3}, translate virtual addresses 0x0123, 0x1FFF, and 0x2800.</li>
+      <li>How big is a flat page table for a 36-bit address space with 4 KiB pages and 4-byte entries?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A virtual address is a page number plus an offset; translation replaces only the page number.</li>
+      <li>Page table entries hold the frame number plus present, permission, accessed, and dirty bits.</li>
+      <li>A flat page table is too large, which motivates multi-level tables.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Virtual Memory — Lesson 2 of 6</p>
+  </footer>
+</div>
+</body>
+</html>

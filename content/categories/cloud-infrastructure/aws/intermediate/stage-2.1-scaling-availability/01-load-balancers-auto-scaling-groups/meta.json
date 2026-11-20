@@ -1,0 +1,5 @@
+{
+  "title": "Load Balancers & Auto Scaling Groups",
+  "description": "Distributing traffic and replacing unhealthy servers automatically.",
+  "order": 1
+}

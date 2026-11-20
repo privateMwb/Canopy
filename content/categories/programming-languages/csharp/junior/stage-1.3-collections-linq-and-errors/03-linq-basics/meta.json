@@ -1,0 +1,5 @@
+{
+  "title": "LINQ Basics",
+  "description": "Where, Select, OrderBy, GroupBy, and reading query chains.",
+  "order": 3
+}

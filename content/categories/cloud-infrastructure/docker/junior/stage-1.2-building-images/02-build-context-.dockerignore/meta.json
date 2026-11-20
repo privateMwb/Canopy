@@ -1,0 +1,5 @@
+{
+  "title": "Build Context & .dockerignore",
+  "description": "What gets sent to the builder and how to keep it small.",
+  "order": 2
+}

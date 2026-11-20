@@ -1,0 +1,5 @@
+{
+  "title": "Caching Layers",
+  "description": "Data cache, full-route cache, CDN, and invalidation.",
+  "order": 2
+}

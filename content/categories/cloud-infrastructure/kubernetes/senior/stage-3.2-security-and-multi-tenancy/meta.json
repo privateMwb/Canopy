@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.2 — Security & Multi-Tenancy",
+  "description": "RBAC, pod security, admission control, secrets and supply chain, multi-tenancy, and runtime detection.",
+  "order": 2
+}

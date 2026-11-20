@@ -1,0 +1,5 @@
+{
+  "title": "Transaction Types & Busy Handling",
+  "description": "DEFERRED, IMMEDIATE, EXCLUSIVE, and busy timeouts that behave.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Records, Sealed Types & Pattern Matching",
+  "description": "Modeling closed hierarchies and switching over them exhaustively.",
+  "order": 4
+}

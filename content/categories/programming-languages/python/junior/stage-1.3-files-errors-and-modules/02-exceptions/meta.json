@@ -1,0 +1,5 @@
+{
+  "title": "Exceptions",
+  "description": "try/except/else/finally, raising your own errors, and catching only what you can handle.",
+  "order": 2
+}

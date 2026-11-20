@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Security",
+  "description": "The OWASP API Top Ten, injection, OAuth and OpenID Connect, hardening, and secrets.",
+  "order": 3
+}

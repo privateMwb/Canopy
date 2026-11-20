@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Testing with Keyboard &amp; Voice Control — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · testing with assistive technology</span> → lesson 02</p>
+  <h1>Testing with Keyboard &amp; Voice Control</h1>
+  <p class="lede">Keyboard and voice testing need no special software and catch a huge share of real barriers. Both are repeatable if you turn them into short, written checks.</p>
+
+  <h2><span class="num">§1</span>A Repeatable Keyboard Check</h2>
+  <p>Keyboard testing is the fastest accessibility test there is. Put the mouse aside and run the same checklist on every page or component, so results are comparable over time.</p>
+  <ol>
+    <li><strong>Reach.</strong> Press Tab from the top. Can you reach every interactive element, and nothing that is not interactive?</li>
+    <li><strong>See.</strong> Is a strong focus indicator visible at every stop, including at 200% zoom?</li>
+    <li><strong>Order.</strong> Does focus move in an order that matches the visual layout?</li>
+    <li><strong>Operate.</strong> Can you activate everything with Enter, Space, and arrow keys, as appropriate?</li>
+    <li><strong>Escape.</strong> Do dialogs, menus, and popups close with Escape, and does focus return where it started?</li>
+    <li><strong>No traps.</strong> Can you always move forward and back out, using only the keyboard?</li>
+    <li><strong>Shortcuts.</strong> If the page has single-key shortcuts, can they be turned off or remapped (WCAG 2.1.4)?</li>
+  </ol>
+  <p>Write the result for each step as pass, fail, or not applicable, with a note. That small record is the difference between "I tried it" and a test.</p>
+
+  <h2><span class="num">§2</span>Voice Control Testing</h2>
+  <p>Voice control lets people operate a device by speaking. Built-in options include <strong>Voice Control</strong> on macOS and iOS, <strong>Voice Access</strong> on Windows 11 and Android, and commercial tools such as Dragon. Users speak what they see, so visible text must match accessible names.</p>
+  <table>
+    <tr><th>Command</th><th>What it tests</th></tr>
+    <tr><td>"Click Save"</td><td>Visible label contains the accessible name (WCAG 2.5.3)</td></tr>
+    <tr><td>"Show numbers"</td><td>Every actionable item gets a number, so missing items are obvious</td></tr>
+    <tr><td>"Show names"</td><td>Which names the tool has found for controls</td></tr>
+    <tr><td>"Scroll down", "Go back"</td><td>Basic page operation</td></tr>
+    <tr><td>"Click" on an icon button</td><td>Whether an icon button has any usable name</td></tr>
+  </table>
+  <pre><span class="comment">A failure you will meet often</span>
+&lt;button aria-label="Submit form"&gt;Send&lt;/button&gt;
+<span class="comment">Visible: "Send"  Accessible name: "Submit form"</span>
+<span class="comment">A voice user says "Click Send" and nothing happens.</span>
+
+<span class="comment">The fix: the accessible name starts with, or contains, the visible text</span>
+&lt;button&gt;Send&lt;/button&gt;</pre>
+
+  <h2><span class="num">§3</span>Putting It in a Test Plan</h2>
+  <p>Turn these into a short script you can run on any feature. The same steps every time make regressions obvious.</p>
+  <pre>Feature: Checkout address form
+Browser: Firefox, Chrome   Input: keyboard, voice control
+
+[ ] Tab reaches every field and button, in visual order
+[ ] Focus indicator is visible on every control
+[ ] Enter submits the form from any text field
+[ ] Errors appear after submit and can be reached by keyboard
+[ ] Escape closes the address suggestions list
+[ ] Voice: "Click Postal code" focuses the field
+[ ] Voice: "Click Place order" activates the button</pre>
+  <p>Add devices to the matrix over time, such as a phone with a Bluetooth keyboard, but start with the cheapest ones. The keyboard and voice runs rarely take more than five minutes per component.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Keyboard testing is a necessary condition for almost everything else: switch devices, screen readers, and voice tools all depend on controls that can be reached and operated without a mouse.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Testing with the keyboard once, informally</td><td>Regressions slip back in without anyone noticing</td><td>Use a written checklist and record results</td></tr>
+    <tr><td>Visible labels that differ from accessible names</td><td>Voice users cannot activate the control by what they see</td><td>Make the accessible name contain the visible text</td></tr>
+    <tr><td>Ignoring Escape and focus return</td><td>Overlays trap or strand keyboard users</td><td>Test closing every dialog, menu, and popup</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run the seven keyboard checks above on one component, and record pass, fail, or note for each.</li>
+      <li>Turn on your operating system's voice control and try to operate three controls by saying their visible names. List any that fail and why.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Use a written keyboard checklist covering reach, visibility, order, operation, Escape, traps, and shortcuts.</li>
+      <li>Voice control testing verifies that accessible names contain the visible labels.</li>
+      <li>Record results in a repeatable test plan so regressions are easy to spot.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Testing with Assistive Technology — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

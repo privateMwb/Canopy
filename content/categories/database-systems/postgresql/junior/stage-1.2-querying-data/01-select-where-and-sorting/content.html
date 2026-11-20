@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SELECT, WHERE &amp; Sorting — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · querying data</span> → lesson 01</p>
+  <h1>SELECT, WHERE &amp; Sorting</h1>
+  <p class="lede"><code>SELECT</code> chooses columns, <code>WHERE</code> chooses rows, and <code>ORDER BY</code> and <code>LIMIT</code> decide which rows you see first.</p>
+
+  <h2><span class="num">§1</span>Projecting and Filtering</h2>
+
+  <p>A query reads from a table, filters rows with <code>WHERE</code>, and then returns the columns you list. The examples in this stage use a small bookstore: <code>books(id, title, author_id, price, published, in_stock)</code>.</p>
+  <pre>SELECT title, price
+FROM books
+WHERE in_stock AND price &lt; 15
+  AND published &gt;= '2020-01-01';</pre>
+  <p>Common predicates: comparison (<code>=</code>, <code>&lt;&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>), ranges (<code>BETWEEN 5 AND 10</code>, inclusive at both ends), sets (<code>IN ('a','b')</code>), patterns (<code>LIKE 'The %'</code>, case-insensitive <code>ILIKE</code>), and <code>IS NULL</code> for missing values. Combine them with <code>AND</code>, <code>OR</code>, and <code>NOT</code>; use parentheses whenever you mix <code>AND</code> and <code>OR</code>, because <code>AND</code> binds tighter.</p>
+  <p>Prefer naming columns over <code>SELECT *</code> in application code. It keeps results stable when the schema changes and avoids fetching data you do not need.</p>
+
+  <h2><span class="num">§2</span>Sorting and Limiting</h2>
+
+  <p>Rows come back in no guaranteed order unless you say so. <code>ORDER BY</code> sorts by one or more expressions, each ascending (the default) or descending.</p>
+  <pre>SELECT title, price
+FROM books
+ORDER BY price DESC, title ASC
+LIMIT 10 OFFSET 20;       <span class="comment">-- page 3 when pages hold 10 rows</span></pre>
+  <p>NULLs sort last in ascending order and first in descending order by default; override with <code>NULLS FIRST</code> or <code>NULLS LAST</code>. <code>DISTINCT</code> removes duplicate result rows, and <code>DISTINCT ON (author_id)</code> keeps the first row per author according to your <code>ORDER BY</code>, a Postgres-specific shortcut for "latest per group".</p>
+  <pre>SELECT DISTINCT ON (author_id) author_id, title, published
+FROM books
+ORDER BY author_id, published DESC;      <span class="comment">-- newest book per author</span></pre>
+
+  <h2><span class="num">§3</span>Pagination</h2>
+
+  <p><code>LIMIT ... OFFSET ...</code> is simple, but the database must still walk past every skipped row, so deep pages get slower. For large tables, use <strong>keyset pagination</strong>: remember the last row you showed and ask for rows after it.</p>
+  <pre>SELECT id, title
+FROM books
+WHERE id &gt; 1042            <span class="comment">-- last id from the previous page</span>
+ORDER BY id
+LIMIT 20;</pre>
+  <p>Keyset pagination stays fast with an index on the sort column and does not skip or repeat rows when data is inserted between requests. Whatever you use, always include <code>ORDER BY</code> with a unique tiebreaker such as <code>id</code>, or pages can overlap.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A table has no inherent row order. If the order matters to the reader or to pagination, it must be in the query as <code>ORDER BY</code>, ending with a unique column as a tiebreaker.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Mixing <code>AND</code> and <code>OR</code> without parentheses</td><td><code>a OR b AND c</code> means <code>a OR (b AND c)</code>, returning surprising rows</td><td>Add explicit parentheses</td></tr>
+    <tr><td>Paginating with <code>LIMIT</code> and no <code>ORDER BY</code></td><td>Rows can repeat or vanish between pages</td><td>Order by a unique key on every paginated query</td></tr>
+    <tr><td>Writing <code>WHERE col = NULL</code></td><td>Always returns no rows, since NULL is not equal to anything</td><td>Use <code>IS NULL</code> or <code>IS NOT NULL</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a query for in-stock books under 20, sorted by price descending then title, limited to 5 rows.</li>
+      <li>Use <code>DISTINCT ON</code> to return the most recent book for each author.</li>
+      <li>Rewrite a deep <code>OFFSET 100000</code> page query as a keyset query and compare timings with <code>\timing</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>WHERE</code> filters rows; the select list picks columns; name columns rather than using <code>*</code> in application code.</li>
+      <li>Without <code>ORDER BY</code> there is no order, and pagination needs a unique tiebreaker.</li>
+      <li>Keyset pagination scales better than large <code>OFFSET</code> values.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Querying Data — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

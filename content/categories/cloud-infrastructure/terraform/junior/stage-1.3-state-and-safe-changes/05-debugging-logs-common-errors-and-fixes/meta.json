@@ -1,0 +1,5 @@
+{
+  "title": "Debugging: Logs, Common Errors & Fixes",
+  "description": "Turning on TF_LOG and reading the errors you will meet most.",
+  "order": 5
+}

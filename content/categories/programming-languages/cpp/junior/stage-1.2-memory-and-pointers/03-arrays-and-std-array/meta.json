@@ -1,0 +1,5 @@
+{
+  "title": "Arrays & std::array",
+  "description": "C-style array decay and bounds problems, and the safer replacements.",
+  "order": 3
+}

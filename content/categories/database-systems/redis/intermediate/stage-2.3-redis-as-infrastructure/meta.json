@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Redis as Infrastructure",
+  "description": "Reliable job queues, distributed locks, rate limiting algorithms, Pub/Sub versus Streams, and modules.",
+  "order": 3
+}

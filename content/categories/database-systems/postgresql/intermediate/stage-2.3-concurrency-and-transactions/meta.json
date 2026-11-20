@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Concurrency & Transactions",
+  "description": "MVCC, isolation levels, locks, job queues, and the cost of long transactions.",
+  "order": 3
+}

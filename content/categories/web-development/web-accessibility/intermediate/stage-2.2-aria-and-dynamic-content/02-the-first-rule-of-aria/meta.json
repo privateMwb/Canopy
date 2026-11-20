@@ -1,0 +1,5 @@
+{
+  "title": "The First Rule of ARIA",
+  "description": "Don't use ARIA when native HTML works.",
+  "order": 2
+}

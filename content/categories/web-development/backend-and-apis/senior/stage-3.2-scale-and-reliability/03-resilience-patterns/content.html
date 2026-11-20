@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resilience Patterns — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.2 · scale &amp; reliability</span> → lesson 03</p>
+  <h1>Resilience Patterns</h1>
+  <p class="lede">Timeouts, circuit breakers, bulkheads, and backpressure.</p>
+
+  <h2><span class="num">§1</span>Failure Is the Normal Case</h2>
+
+  <p>In a system with many dependencies, something is always slow or down. The danger is not the initial failure but how it <strong>spreads</strong>: a slow downstream service ties up your threads or connections, your service stops responding, its callers pile up behind it, and a small problem becomes a cascading outage. Resilience patterns contain failures where they start.</p>
+
+  <h2><span class="num">§2</span>Timeouts: The Foundation</h2>
+
+  <p>A call with no timeout can wait forever, holding a connection, memory, and a user's patience. <strong>Every</strong> network call needs an explicit timeout, set from a <em>latency budget</em>: if the whole request must finish in 2 seconds, each dependency gets a slice, and the downstream timeouts must be shorter than the upstream ones.</p>
+
+  <pre>const res = await fetch(`${PRICING_URL}/quote`, {
+  method: "POST",
+  body: JSON.stringify(cart),
+  signal: AbortSignal.timeout(300),                  <span class="comment">// fail fast: 300 ms budget for this hop</span>
+});</pre>
+
+  <h2><span class="num">§3</span>Retries, With Discipline</h2>
+
+  <p>Retries rescue transient errors but can also multiply load on a struggling service: if every layer retries three times across three layers, one user request can become 27 calls. Retry only idempotent operations, with exponential backoff and jitter, a small attempt limit, and ideally a <strong>retry budget</strong> (retries limited to, say, 10% of traffic) so retries cannot overwhelm a service that is already failing.</p>
+
+  <h2><span class="num">§4</span>Circuit Breaker</h2>
+
+  <p>Like an electrical breaker, it <strong>stops calling a dependency that is clearly failing</strong>, failing fast instead of waiting on timeouts, and gives the dependency room to recover. It has three states:</p>
+
+  <ul>
+    <li><strong>Closed:</strong> calls flow normally; failures are counted.</li>
+    <li><strong>Open:</strong> after too many failures, calls are rejected immediately (or served a fallback) for a cool-down period.</li>
+    <li><strong>Half-open:</strong> after the cool-down, a few trial calls are allowed; success closes the breaker, failure reopens it.</li>
+  </ul>
+
+  <pre>import CircuitBreaker from "opossum";
+
+const breaker = new CircuitBreaker(callRecommendations, {
+  timeout: 400,                                      <span class="comment">// each call: 400 ms max</span>
+  errorThresholdPercentage: 50,                      <span class="comment">// open when &gt;=50% of recent calls fail</span>
+  rollingCountTimeout: 10_000,                       <span class="comment">// ...measured over a 10 s window</span>
+  resetTimeout: 15_000,                              <span class="comment">// try again (half-open) after 15 s</span>
+});
+
+breaker.fallback(() =&gt; ({ items: [], degraded: true }));   <span class="comment">// degrade instead of failing the whole page</span>
+
+const recs = await breaker.fire(userId);</pre>
+
+  <h2><span class="num">§5</span>Bulkheads: Isolate Resources</h2>
+
+  <p>Ships have watertight compartments so one leak does not sink the vessel. Apply the same idea by giving each dependency (or each customer tier) its <strong>own pool of resources</strong>, such as separate connection pools, worker queues, or concurrency limits, so one slow dependency can exhaust only its own share.</p>
+
+  <pre>import pLimit from "p-limit";
+
+const limits = {
+  payments:        pLimit(20),                       <span class="comment">// at most 20 concurrent calls to the payment provider</span>
+  recommendations: pLimit(5),                        <span class="comment">// a flaky nice-to-have gets a tiny allowance</span>
+};
+
+const recs = await limits.recommendations(() =&gt; breaker.fire(userId));</pre>
+
+  <h2><span class="num">§6</span>Backpressure and Load Shedding</h2>
+
+  <p>When demand exceeds capacity, queues grow, latency explodes, and eventually everything times out, so no one is served. It is better to <strong>reject some work quickly</strong> and serve the rest well than to accept everything and fail everyone. Bound your queues and concurrency, and when full, return <code>503 Service Unavailable</code> with <code>Retry-After</code>. Prioritize: shed analytics and batch traffic before checkout. Backpressure also means propagating the signal upstream, so producers slow down rather than flooding a consumer that cannot keep up.</p>
+
+  <pre>let inFlight = 0;
+const MAX_IN_FLIGHT = 200;
+
+app.use((req, res, next) =&gt; {
+  if (inFlight &gt;= MAX_IN_FLIGHT &amp;&amp; !req.isPriority) {
+    return res.status(503).set("Retry-After", "2").json({ error: "Server busy, retry shortly" });
+  }
+  inFlight++;
+  res.on("close", () =&gt; inFlight--);
+  next();
+});</pre>
+
+  <h2><span class="num">§7</span>Fallbacks and Graceful Degradation</h2>
+
+  <p>Decide in advance what the product does when each dependency fails: show cached data, hide the optional widget, queue the action for later, or return a simpler result. Distinguish <em>critical</em> dependencies (cannot check out without payments) from <em>optional</em> ones (recommendations), and make sure optional ones can never take down the critical path.</p>
+
+  <div class="callout">
+    <span class="label">Test failure on purpose</span>
+    Resilience code that has never run is a hope, not a feature. Inject latency and errors in staging (or carefully in production with chaos experiments) and verify that breakers open, fallbacks appear, and shedding kicks in. Pull the network cable on a dependency and watch what your dashboards and users see.
+  </div>
+
+  <h2><span class="num">§8</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>No timeouts, or timeouts longer than the caller's own</td><td>Requests hang and failures cascade upstream</td><td>Set explicit timeouts from a latency budget, shorter downstream than upstream</td></tr>
+    <tr><td>Retrying at every layer without limits</td><td>Retry storms amplify an outage</td><td>Retry at one layer, with backoff, jitter, limits, and budgets</td></tr>
+    <tr><td>Unbounded queues and concurrency</td><td>Memory grows, latency spikes, then the process dies</td><td>Bound them and shed load with 503 plus Retry-After</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Wrap a call to a flaky stub service with a timeout, a circuit breaker, and a fallback, then use a load generator to confirm the breaker opens during failures and closes after recovery.</li>
+      <li>Add a concurrency cap to an expensive endpoint and show it returns 503 under overload rather than slowing everything.</li>
+      <li>List the dependencies of one request in your system, mark each as critical or optional, and define a fallback for each optional one.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Contain failures: timeouts everywhere, disciplined retries, circuit breakers, and bulkheads keep one problem from cascading.</li>
+      <li>Under overload, shed load and apply backpressure rather than accepting work you cannot finish.</li>
+      <li>Define fallbacks for optional dependencies and rehearse failures in testing.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.2 · Scale &amp; Reliability — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

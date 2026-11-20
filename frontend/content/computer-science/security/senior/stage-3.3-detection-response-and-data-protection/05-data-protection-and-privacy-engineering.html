@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Protection &amp; Privacy Engineering — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · detection, response &amp; data protection</span> → lesson 05</p>
+  <h1>Data Protection &amp; Privacy Engineering</h1>
+  <p class="lede">The most reliable way to limit a data breach is to hold less data, keep it for less time, and make what remains less useful to a thief.</p>
+
+  <h2><span class="num">§1</span>Minimize and Classify</h2>
+  <p>Data you never collect can't leak. For each field, ask whether you need it, for what purpose, and how long. Then classify what remains, so protections follow sensitivity.</p>
+  <table>
+    <tr><th>Class</th><th>Examples</th><th>Typical handling</th></tr>
+    <tr><td>Public</td><td>Marketing pages</td><td>No special controls</td></tr>
+    <tr><td>Internal</td><td>Roadmaps, metrics</td><td>Access control</td></tr>
+    <tr><td>Confidential or personal</td><td>Emails, addresses, order history</td><td>Access control, encryption, logging, retention limits</td></tr>
+    <tr><td>Highly sensitive</td><td>Government IDs, health data, payment data</td><td>Strict need-to-know, field-level encryption or tokenization, audit</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Retention and Deletion</h2>
+  <p>Define how long each data type is kept and <strong>actually delete it</strong>: in the database, backups (on their schedule), search indexes, analytics copies, and logs. Many privacy regimes, such as GDPR, give people rights over their data and require limits on retention, so know what you hold and where, with a <strong>data inventory</strong> and a deletion process that reaches every copy.</p>
+
+  <h2><span class="num">§3</span>Tokenization, Masking, and Pseudonymization</h2>
+  <ul>
+    <li><strong>Tokenization</strong>: replace a sensitive value (a card number) with a random token, keeping the real value in a small, heavily protected vault. Most systems then handle only tokens.</li>
+    <li><strong>Masking</strong>: show or log only part of a value (for example, only the last four digits, <code>XXXX-4242</code>), and mask data in non-production copies so developers don't work with real personal data.</li>
+    <li><strong>Pseudonymization</strong>: replace identifiers with stable aliases so analysis works without direct identity, remembering that re-identification may still be possible by joining datasets.</li>
+    <li><strong>Field-level encryption</strong> for the most sensitive columns, with keys managed as in Stage 2.2.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Design for the Breach</h2>
+  <p>Assume a breach will occur and ask what an attacker walks away with. Separate sensitive data into its own store with tight access, avoid copying it into logs, analytics, and caches, and limit what any single service can read. This turns a catastrophic breach into a contained one.</p>
+
+  <div class="callout">
+    <span class="label">Regulation, briefly</span>
+    Laws such as GDPR, HIPAA, and PCI DSS add specific obligations around consent, retention, and breach notification. Treat them as constraints to understand with legal and compliance colleagues, not as a substitute for the engineering controls above.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Collecting data "in case it's useful"</td><td>More to protect, more to leak, more regulatory exposure</td><td>Collect only what a defined purpose requires</td></tr>
+    <tr><td>Deleting from the main database but not from backups, logs, and analytics</td><td>Data persists in copies</td><td>Maintain a data inventory and delete across every copy</td></tr>
+    <tr><td>Using production data in test environments</td><td>Developers and test systems hold real personal data</td><td>Mask or generate synthetic data</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Build a data inventory for a small app: each field, its purpose, its classification, and where copies live.</li>
+      <li>Describe how tokenizing card numbers changes what a database breach exposes.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Minimize what you collect and how long you keep it.</li>
+      <li>Classify data and apply controls by sensitivity, including tokenization and masking.</li>
+      <li>Design so a breach exposes as little as possible.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Detection, Response &amp; Data Protection — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

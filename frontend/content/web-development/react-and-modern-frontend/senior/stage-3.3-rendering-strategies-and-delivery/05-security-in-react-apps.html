@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security in React Apps — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · rendering strategies &amp; delivery</span> → lesson 05</p>
+  <h1>Security in React Apps</h1>
+  <p class="lede">React escapes output by default, which prevents many injection bugs, but security does not end there. The risky spots are the escape hatches, untrusted URLs, where credentials live, server boundaries, and the dependencies you install.</p>
+
+  <h2><span class="num">§1</span>XSS and the Escape Hatches</h2>
+
+  <p>Values placed in JSX with <code>{}</code> are <strong>escaped</strong>, so <code>{userInput}</code> is rendered as text, not as HTML. Cross-site scripting (XSS) in React almost always comes through a small set of <strong>escape hatches</strong> and unsafe URLs.</p>
+
+  <pre><span class="comment">// safe: escaped text</span>
+&lt;p&gt;{comment.body}&lt;/p&gt;
+
+<span class="comment">// dangerous: renders raw HTML</span>
+&lt;div dangerouslySetInnerHTML={{ __html: comment.html }} /&gt;
+
+<span class="comment">// if you must render user HTML, sanitize with an allow-list library first</span>
+import DOMPurify from "dompurify";
+&lt;div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.html) }} /&gt;
+
+<span class="comment">// dangerous: a user-controlled URL can be `javascript:alert(1)`</span>
+&lt;a href={profile.website}&gt;Website&lt;/a&gt;
+
+function safeHref(url) {
+  try {
+    const u = new URL(url, window.location.origin);
+    return ["https:", "http:", "mailto:"].includes(u.protocol) ? u.href : "#";
+  } catch { return "#"; }
+}
+&lt;a href={safeHref(profile.website)} rel="noopener noreferrer"&gt;Website&lt;/a&gt;</pre>
+
+  <ul>
+    <li>Treat <code>dangerouslySetInnerHTML</code>, <code>innerHTML</code> via refs, <code>eval</code>, <code>new Function</code>, and <code>setTimeout(string)</code> as <strong>review triggers</strong>.</li>
+    <li>Validate <strong>URL schemes</strong> for <code>href</code>, <code>src</code>, and redirects. Never put untrusted values into a <code>javascript:</code> or <code>data:</code> URL.</li>
+    <li>Do not spread <strong>untrusted objects</strong> as props (<code>&lt;div {...userProps} /&gt;</code>): an attacker may supply <code>dangerouslySetInnerHTML</code> or event handlers.</li>
+    <li>Add a <strong>Content Security Policy</strong> (with nonces, no <code>unsafe-inline</code> for scripts) as defense in depth, and consider <strong>Trusted Types</strong>.</li>
+    <li>Markdown and rich-text renderers need an <strong>allow-list sanitizer</strong>; do not write your own with regexes.</li>
+  </ul>
+
+  <h2><span class="num">§2</span>Credentials, Server Boundaries, and Requests</h2>
+
+  <ul>
+    <li><strong>Where tokens live matters</strong>: a token in <code>localStorage</code> is readable by any script that runs on the page, including injected XSS and compromised dependencies. Prefer an <strong><code>HttpOnly; Secure; SameSite</code></strong> session cookie for browser apps, with CSRF protection for state-changing requests.</li>
+    <li><strong>Never put secrets in client code or <code>VITE_</code>/<code>NEXT_PUBLIC_</code> environment variables</strong>: everything in the bundle is public. Keep API keys and database credentials on the server.</li>
+    <li><strong>Authorization happens on the server.</strong> Hiding a button or route in React is a UI courtesy, not security. Every endpoint must check permissions itself.</li>
+    <li><strong>Server Components and Server Actions</strong>: treat actions as <strong>public endpoints</strong>: authenticate, authorize, and validate input inside each one. Use <code>server-only</code> to keep server modules out of client bundles.</li>
+    <li><strong>Validate all input</strong> (forms, URL params, API responses) with a schema, on the client for usability and on the server for security.</li>
+    <li><strong>CSRF and CORS</strong>: use <code>SameSite</code> cookies and anti-CSRF tokens; configure CORS to allow only the origins you intend, and never <code>*</code> with credentials.</li>
+    <li><strong>Open redirects</strong> (<code>?next=...</code>): allow only relative paths or an allow-list of hosts after login.</li>
+  </ul>
+
+  <pre><span class="comment">// server action: authorize and validate every time</span>
+"use server";
+export async function deletePost(formData) {
+  const session = await getSession();
+  if (!session) throw new Error("Unauthorized");
+  const id = z.string().uuid().parse(formData.get("id"));
+  const post = await db.post.findUnique({ where: { id } });
+  if (!post || post.authorId !== session.userId) throw new Error("Forbidden");   <span class="comment">// ownership check</span>
+  await db.post.delete({ where: { id } });
+}</pre>
+
+  <h2><span class="num">§3</span>Dependencies and the Supply Chain</h2>
+
+  <p>A typical React app pulls in <strong>hundreds of transitive packages</strong>, each one a place where malicious or vulnerable code can arrive. These attacks have included hijacked maintainer accounts, typosquatted names, and malicious install scripts.</p>
+
+  <ul>
+    <li><strong>Commit the lockfile</strong> and install with <code>npm ci</code> in CI so builds are reproducible. Avoid floating versions for anything that ships.</li>
+    <li><strong>Scan continuously</strong>: <code>npm audit</code>, Dependabot or Renovate, and tools like Socket or Snyk. Review changelogs and diffs of updates, especially for packages with install scripts.</li>
+    <li><strong>Reduce the surface</strong>: remove unused dependencies, prefer well-maintained packages with few sub-dependencies, and replace trivial packages with a few lines of code.</li>
+    <li><strong>Harden the pipeline</strong>: require 2FA, give CI least-privilege tokens, consider <code>--ignore-scripts</code> for installs, and use package provenance where available.</li>
+    <li><strong>Third-party scripts</strong> (analytics, chat) run with full page authority: load them deliberately, use SRI for static files, sandbox in iframes, and restrict with CSP.</li>
+    <li>Follow framework <strong>security advisories</strong> and update promptly: framework-level vulnerabilities have affected server-rendering features in the past.</li>
+    <li>Run a <strong>threat model</strong> for new features: what is untrusted, what can an attacker control, and what is the worst thing that could happen?</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">React protects the default path, so audit the exceptions</span>
+    Search the codebase for the escape hatches, untrusted URLs, secrets in the bundle, unprotected server actions, and unreviewed dependencies. That short list is where almost all real React vulnerabilities live.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>dangerouslySetInnerHTML</code> with unsanitized content</td><td>Stored or reflected XSS</td><td>Sanitize with DOMPurify, or render as text</td></tr>
+    <tr><td>Rendering <code>&lt;a href={userUrl}&gt;</code> unchecked</td><td><code>javascript:</code> URLs run script on click</td><td>Allow only <code>https:</code>/<code>mailto:</code> schemes</td></tr>
+    <tr><td>Putting API secrets in <code>VITE_</code> or <code>NEXT_PUBLIC_</code> variables</td><td>Secrets are public in the bundle</td><td>Keep secrets on the server</td></tr>
+    <tr><td>Relying on hidden UI for authorization</td><td>Anyone can call the endpoint directly</td><td>Enforce permissions on the server for every request</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Search a codebase for <code>dangerouslySetInnerHTML</code>, <code>innerHTML</code>, and <code>href={</code>, and assess each use for XSS risk.</li>
+      <li>Write a Server Action that authenticates, validates with a schema, and checks ownership, then try to bypass each check.</li>
+      <li>Run <code>npm audit</code> and a dependency review on a project, and write down what you would remove or replace.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>React escapes JSX output; XSS arrives through escape hatches, unsafe URLs, and spread untrusted props.</li>
+      <li>Keep secrets and authorization on the server, prefer HttpOnly cookies, and treat server actions as public APIs.</li>
+      <li>Manage the supply chain: lockfiles, scanning, fewer dependencies, a hardened pipeline, and CSP.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Rendering Strategies &amp; Delivery — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

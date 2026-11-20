@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CompletableFuture — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · concurrency on the jvm</span> → lesson 04</p>
+  <h1>CompletableFuture</h1>
+  <p class="lede"><code>CompletableFuture</code> lets you describe a chain of asynchronous steps, with error handling, so the result of one step feeds the next without any thread sitting blocked waiting for it.</p>
+
+  <h2><span class="num">§1</span>From Future to CompletableFuture</h2>
+  <p>A plain <code>Future</code> can only be polled or blocked on with <code>get()</code>. A <code>CompletableFuture&lt;T&gt;</code> is a future you can attach continuations to, so you say what should happen <em>when</em> the result arrives.</p>
+  <pre>ExecutorService io = Executors.newFixedThreadPool(8);
+
+CompletableFuture&lt;String&gt; user = CompletableFuture.supplyAsync(() -&gt; fetchUser(42), io);
+
+CompletableFuture&lt;Void&gt; done = user
+    .thenApply(u -&gt; u.toUpperCase())                 <span class="comment">// transform the result</span>
+    .thenAccept(u -&gt; System.out.println("got " + u)); <span class="comment">// consume it</span>
+
+String blocking = user.join();                        <span class="comment">// like get(), but throws unchecked exceptions</span></pre>
+  <p><code>supplyAsync</code> runs a task that returns a value; <code>runAsync</code> runs one that doesn't. <strong>Always pass your own executor</strong> for blocking work: without one, tasks run on the shared <code>ForkJoinPool.commonPool()</code>, which is sized for CPU-bound work and is easily starved by blocking calls.</p>
+
+  <h2><span class="num">§2</span>Composing Steps</h2>
+  <p>The key methods differ by what the function returns. This mirrors <code>map</code> and <code>flatMap</code>.</p>
+  <table>
+    <tr><th>Method</th><th>Use when the next step...</th></tr>
+    <tr><td><code>thenApply(f)</code></td><td>is a plain function: <code>T -&gt; U</code></td></tr>
+    <tr><td><code>thenCompose(f)</code></td><td>itself returns a <code>CompletableFuture</code> (like <code>flatMap</code>)</td></tr>
+    <tr><td><code>thenCombine(other, f)</code></td><td>needs the results of two independent futures</td></tr>
+    <tr><td><code>thenAccept</code> / <code>thenRun</code></td><td>only has a side effect</td></tr>
+  </table>
+  <pre>CompletableFuture&lt;Order&gt; order = CompletableFuture
+    .supplyAsync(() -&gt; fetchUser(42), io)
+    .thenCompose(u -&gt; CompletableFuture.supplyAsync(() -&gt; fetchLastOrder(u), io));   <span class="comment">// sequential, dependent</span>
+
+CompletableFuture&lt;Price&gt; price = supplyAsync(() -&gt; priceFor(id), io);
+CompletableFuture&lt;Stock&gt; stock = supplyAsync(() -&gt; stockFor(id), io);
+CompletableFuture&lt;String&gt; summary = price.thenCombine(stock, (p, s) -&gt; p + " / " + s);   <span class="comment">// run in parallel</span></pre>
+  <p>To wait for many futures, use <code>allOf</code> (completes when all finish) or <code>anyOf</code> (first to finish). <code>allOf</code> returns <code>CompletableFuture&lt;Void&gt;</code>, so collect the results from the individual futures afterward.</p>
+  <pre>List&lt;CompletableFuture&lt;Page&gt;&gt; pages = urls.stream()
+    .map(u -&gt; CompletableFuture.supplyAsync(() -&gt; download(u), io)).toList();
+CompletableFuture.allOf(pages.toArray(CompletableFuture[]::new)).join();
+List&lt;Page&gt; all = pages.stream().map(CompletableFuture::join).toList();</pre>
+
+  <h2><span class="num">§3</span>Error Handling and Timeouts</h2>
+  <p>If a stage throws, the exception travels down the chain and later <code>thenApply</code> stages are skipped. Handle it with <code>exceptionally</code>, <code>handle</code> (both result and error), or <code>whenComplete</code> (observe without changing). Exceptions are usually wrapped in a <code>CompletionException</code>.</p>
+  <pre>CompletableFuture&lt;String&gt; safe = supplyAsync(() -&gt; riskyCall(), io)
+    .exceptionally(ex -&gt; "fallback")                 <span class="comment">// recover with a default</span>
+    .orTimeout(2, TimeUnit.SECONDS);                 <span class="comment">// fail with TimeoutException if too slow</span>
+
+CompletableFuture&lt;Integer&gt; both = supplyAsync(() -&gt; compute(), io)
+    .handle((value, ex) -&gt; ex != null ? -1 : value);</pre>
+  <p><code>completeOnTimeout(default, 2, SECONDS)</code> supplies a value instead of failing. Cancelling a <code>CompletableFuture</code> does <strong>not</strong> interrupt the underlying running task.</p>
+
+  <h2><span class="num">§4</span>Avoiding Blocked Pools</h2>
+  <p>The usual pitfall is calling <code>join()</code> or <code>get()</code> inside a task running on the same pool, which can use up all the threads waiting on work that is queued behind them, so nothing ever finishes. Keep the chain asynchronous, using <code>thenCompose</code> rather than blocking in the middle, and block only at the very edge of your program. Also, <code>thenApply</code> runs on whichever thread completed the previous stage; use the <code>...Async</code> variants with an executor if a continuation is slow.</p>
+
+  <div class="callout">
+    <span class="label">Async is not the same as parallel</span>
+    A chain of <code>thenApply</code> steps runs one after another; the benefit is that no thread waits while a step is pending. Parallelism comes from starting independent futures and combining them.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>thenApply</code> with a function returning a <code>CompletableFuture</code></td><td>A nested <code>CompletableFuture&lt;CompletableFuture&lt;T&gt;&gt;</code></td><td>Use <code>thenCompose</code></td></tr>
+    <tr><td>Running blocking I/O on the common pool</td><td>The shared pool stalls, and unrelated work slows down</td><td>Supply a dedicated executor</td></tr>
+    <tr><td>Calling <code>join()</code> inside a pool task</td><td>Thread starvation and deadlock</td><td>Compose with <code>thenCompose</code>, and block only at the edge</td></tr>
+    <tr><td>Ignoring exceptions</td><td>Failures are silent unless something calls <code>join()</code></td><td>Add <code>exceptionally</code>, <code>handle</code>, or <code>whenComplete</code></td></tr>
+    <tr><td>Expecting <code>cancel(true)</code> to stop the task</td><td>The task keeps running</td><td>Build cooperative cancellation into the task</td></tr>
+    <tr><td>No timeout</td><td>A slow dependency hangs the chain</td><td>Use <code>orTimeout</code> or <code>completeOnTimeout</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Simulate two slow services (500 ms sleeps), call them in parallel with <code>thenCombine</code>, and show that the total time is about 500 ms, not 1,000 ms.</li>
+      <li>Use <code>allOf</code> to fetch ten items and print the results in order, tolerating a failure in any one with <code>exceptionally</code>.</li>
+      <li>Write a chain that fails midway and use <code>handle</code> to log the error and return a default.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Chain asynchronous steps with <code>thenApply</code>, <code>thenCompose</code>, and <code>thenCombine</code> instead of blocking.</li>
+      <li>Handle errors explicitly with <code>exceptionally</code> or <code>handle</code>, and add timeouts.</li>
+      <li>Use a dedicated executor for blocking work, and never block pool threads waiting on the same pool.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Concurrency on the JVM — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

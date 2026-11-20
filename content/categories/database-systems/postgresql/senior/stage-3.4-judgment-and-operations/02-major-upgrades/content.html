@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Major Upgrades — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; operations</span> → lesson 02</p>
+  <h1>Major Upgrades</h1>
+  <p class="lede">A major-version upgrade is a planned project with a tested path forward and a decided way back.</p>
+
+  <h2><span class="num">§1</span>Minor vs Major Upgrades</h2>
+
+  <p>Postgres releases a <strong>major version</strong> about once a year (such as 17 to 18) and supports each for five years. <strong>Minor releases</strong> (18.5 to 18.6) contain only bug and security fixes, never format changes: stop and start the server with the new binaries, no migration needed. Apply them promptly, and keep a regular patching routine.</p>
+  <p>A major upgrade changes the on-disk format and system catalogs, so the data directory cannot simply be opened by new binaries. Your options:</p>
+  <table>
+    <tr><th>Method</th><th>Downtime</th><th>Notes</th></tr>
+    <tr><td><code>pg_dump</code> / <code>pg_restore</code></td><td>Proportional to database size</td><td>Simple and clean; fine for small databases</td></tr>
+    <tr><td><code>pg_upgrade</code></td><td>Minutes, mostly independent of size (with <code>--link</code>)</td><td>The standard in-place method</td></tr>
+    <tr><td>Logical replication</td><td>Seconds at cutover</td><td>Most flexible; needs more setup (Lesson 3.2.3)</td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>pg_upgrade in Practice</h2>
+
+  <p><code>pg_upgrade</code> creates a new cluster with the new binaries and transfers the data and catalogs. With <code>--link</code> it hard-links data files instead of copying them, which is very fast and needs no extra space, but means the old cluster cannot be safely started once the new one has run. <code>--clone</code> (on file systems that support it) and <code>--copy</code> are alternatives with different trade-offs.</p>
+  <pre>pg_upgrade --check \
+  -b /usr/lib/postgresql/17/bin  -B /usr/lib/postgresql/18/bin \
+  -d /var/lib/postgresql/17/main -D /var/lib/postgresql/18/main      <span class="comment"># dry run: finds problems</span>
+
+pg_upgrade --link  ...same arguments without --check...
+
+vacuumdb --all --analyze-in-stages          <span class="comment"># rebuild planner statistics after the upgrade</span></pre>
+  <p>Before PostgreSQL 18, <code>pg_upgrade</code> did not carry over planner statistics, so queries could be slow until <code>ANALYZE</code> finished; newer versions preserve most of them, but still verify. Also update extensions (<code>ALTER EXTENSION ... UPDATE</code>), check that every extension has a build for the new version, and reindex any indexes the release notes flag.</p>
+
+  <h2><span class="num">§3</span>Plan the Way Back</h2>
+
+  <p>Decide before the upgrade day what happens if it goes wrong, and test that path too.</p>
+  <ul>
+    <li><strong>Rehearse</strong> on a production-sized copy with real extensions and the real application; time every step and record it.</li>
+    <li><strong>Read the release notes</strong> for each version you cross: removed features, changed defaults, and incompatibilities in queries, drivers, and extensions.</li>
+    <li><strong>Back up</strong> immediately before starting, and keep it. With <code>--link</code>, once the new cluster has started, the old directory is not a valid fallback.</li>
+    <li><strong>Rollback options:</strong> restore the backup (slow, loses data written after the upgrade), or use <strong>logical replication in reverse</strong>, keeping the old cluster as a subscriber of the new one so you can switch back with little loss.</li>
+    <li><strong>Application readiness:</strong> drivers, ORMs, and SQL that depends on version-specific behavior must be tested against the new version first.</li>
+    <li><strong>Define success and a deadline:</strong> specific checks, a rollback decision point, and who makes the call.</li>
+  </ul>
+  <p>A well-run upgrade is dull because every surprise was found in rehearsal.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    The upgrade method matters less than the rehearsal and the rollback plan. If you cannot describe how you would go back, you are not ready to go forward.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Upgrading production first, and testing later</td><td>Incompatible extensions or queries are found during the outage</td><td>Rehearse on a production-sized copy, including the application</td></tr>
+    <tr><td>Using <code>pg_upgrade --link</code> without a backup</td><td>No fallback once the new cluster starts</td><td>Take and verify a backup before the upgrade</td></tr>
+    <tr><td>Skipping <code>ANALYZE</code> after the upgrade</td><td>Missing statistics produce terrible plans until autovacuum catches up</td><td>Run <code>vacuumdb --analyze-in-stages</code> and verify key queries</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run <code>pg_upgrade --check</code> between two major versions on a test cluster and read the report.</li>
+      <li>Write an upgrade runbook with steps, expected durations, success checks, and the rollback decision point.</li>
+      <li>Outline how you would upgrade with logical replication, and how you would keep a reverse path open.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Minor releases are drop-in fixes; major releases need <code>pg_upgrade</code>, dump and restore, or logical replication.</li>
+      <li><code>pg_upgrade --link</code> is fast but removes the old cluster as a fallback; back up first and analyze after.</li>
+      <li>Rehearse, read the release notes, and plan rollback before the day.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Operations — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

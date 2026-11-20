@@ -1,0 +1,5 @@
+{
+  "title": "Optimistic Updates",
+  "description": "Making the UI feel instant and recovering from errors.",
+  "order": 3
+}

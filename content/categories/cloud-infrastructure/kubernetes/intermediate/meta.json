@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Autoscaling, scheduling, ingress, stateful workloads, packaging, GitOps, and release patterns for running real applications reliably.",
+  "order": 2
+}

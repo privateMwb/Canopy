@@ -1,0 +1,5 @@
+{
+  "title": "Latency Analysis",
+  "description": "Slow commands, blocking operations, and measuring tail latency.",
+  "order": 5
+}

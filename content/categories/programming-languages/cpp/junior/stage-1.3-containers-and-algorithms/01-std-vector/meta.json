@@ -1,0 +1,5 @@
+{
+  "title": "std::vector",
+  "description": "Contiguous storage, capacity vs. size, and invalidated iterators.",
+  "order": 1
+}

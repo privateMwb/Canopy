@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Designing and Defending a Data Architecture — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · data architecture &amp; design judgment</span> → lesson 04</p>
+  <h1>Designing and Defending a Data Architecture</h1>
+  <p class="lede">A data architecture is a set of trade-offs made visible. Senior engineers can state requirements in numbers, propose a design, say what it costs, and explain it to people who don't speak database.</p>
+
+  <h2><span class="num">§1</span>Start with Requirements, in Numbers</h2>
+  <p>Every good design starts by turning vague wishes into measurable requirements.</p>
+  <ul>
+    <li><strong>Workload</strong>: reads/sec, writes/sec, peak vs. average, read:write ratio, growth rate.</li>
+    <li><strong>Data</strong>: size now and in 3 years, record shapes, hot vs. cold data.</li>
+    <li><strong>Latency</strong>: targets by operation (p99 under 100 ms for checkout reads).</li>
+    <li><strong>Consistency</strong>: which operations need the latest data, and which can be stale?</li>
+    <li><strong>Availability and durability</strong>: RTO and RPO, acceptable downtime, region failure tolerance.</li>
+    <li><strong>Query patterns</strong>: the top 10 queries, plus the reporting and analytics needs.</li>
+    <li><strong>Constraints</strong>: team skills, budget, compliance, existing systems, time to ship.</li>
+  </ul>
+  <p>If you don't have numbers, estimate them and say so, and design for the order of magnitude, not false precision.</p>
+
+  <h2><span class="num">§2</span>Evaluating Options</h2>
+  <p>List 2–3 serious candidates and compare them against the requirements, not against each other's marketing.</p>
+  <table>
+    <tr><th>Criterion</th><th>Option A: single PostgreSQL + replicas</th><th>Option B: sharded / distributed SQL</th><th>Option C: PostgreSQL + Redis + search</th></tr>
+    <tr><td>Fits the load (e.g. 2k writes/s, 2 TB)</td><td>Yes, with headroom</td><td>Overkill for now</td><td>Yes</td></tr>
+    <tr><td>Consistency</td><td>Strong</td><td>Strong, with latency cost</td><td>Strong core, eventual caches</td></tr>
+    <tr><td>Operational burden</td><td>Low</td><td>High</td><td>Medium</td></tr>
+    <tr><td>Cost</td><td>Low</td><td>High</td><td>Medium</td></tr>
+    <tr><td>Growth path</td><td>Vertical, then shard</td><td>Built in</td><td>Add components as needed</td></tr>
+    <tr><td>Risks</td><td>Write ceiling in ~2 years</td><td>Team unfamiliarity</td><td>Cache invalidation bugs</td></tr>
+  </table>
+  <p>The point of the table isn't the winner; it's making the trade-offs explicit so others can challenge the reasoning.</p>
+
+  <h2><span class="num">§3</span>Writing the Design Document</h2>
+  <p>A short, clear document (1–3 pages) beats a long one. A reliable structure:</p>
+  <ol>
+    <li><strong>Context and goals</strong>: what problem, for whom, and what success looks like.</li>
+    <li><strong>Requirements and numbers</strong>: from above, including non-goals.</li>
+    <li><strong>Proposed design</strong>: a diagram, the data model, and the main data flows.</li>
+    <li><strong>Alternatives considered</strong>: and why each was not chosen.</li>
+    <li><strong>Trade-offs and risks</strong>: what this design is bad at; what could go wrong; how you'd detect it.</li>
+    <li><strong>Failure and recovery</strong>: what happens when a node, zone, or region fails; backup and restore plan.</li>
+    <li><strong>Migration and rollout</strong>: how to get there from here, safely, in stages.</li>
+    <li><strong>Open questions</strong> and decisions needed.</li>
+    <li><strong>Evolution</strong>: what signals would make you revisit this (for example "if writes exceed 5k/s, begin sharding by tenant").</li>
+  </ol>
+
+  <h2><span class="num">§4</span>Defending It to Different Audiences</h2>
+  <ul>
+    <li><strong>To engineers</strong>: lead with requirements, show the numbers and the alternatives, invite attack on the assumptions, and be explicit about the weakest part of the design.</li>
+    <li><strong>To product and business</strong>: translate into outcomes: "Customers can't lose a paid order; the system survives losing a data center; we can launch in the EU in Q3." Express cost as money and risk as likelihood × impact. Avoid jargon; offer an analogy only if it holds up.</li>
+    <li><strong>To leadership</strong>: three things: the decision, the cost (and cost of delay), and the main risk with its mitigation.</li>
+  </ul>
+  <p>In any room, <strong>separate facts from opinions</strong>, say "I don't know yet, here's how I'll find out" when true, and prefer <strong>reversible</strong> decisions: choose the option that leaves the most future choices open at an acceptable cost. Record decisions in short <strong>architecture decision records (ADRs)</strong> so future engineers know why, not just what.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A design isn't senior because it's sophisticated. It's senior because the requirements are explicit, the alternatives were weighed, the costs are stated honestly, and the plan says what would change the decision.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Designing for imagined scale ("millions of users") without numbers</td><td>Over-engineering, cost, and slow delivery</td><td>Estimate real load and growth; design for 10× and note the path beyond</td></tr>
+    <tr><td>Presenting one option as the only option</td><td>No one can judge the trade-offs, and objections arrive late</td><td>Show alternatives considered and why they lost</td></tr>
+    <tr><td>Omitting failure, recovery, and migration from the design</td><td>Beautiful steady-state designs that can't be operated or adopted</td><td>Include failure modes, backups, and a staged rollout</td></tr>
+    <tr><td>Explaining to non-engineers with technical detail</td><td>Decision-makers disengage or decide blindly</td><td>Frame in outcomes, cost, and risk; keep detail on request</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Given: a marketplace with 500k users, 200 orders/min at peak (3× on sale days), 5-year growth to 5×, a 99.95% availability target, EU data residency, and a 5-person team. Write requirements in numbers and propose a data architecture in one page.</li>
+      <li>Present your design aloud twice: once for engineers (3 minutes) and once for the CEO (90 seconds). What did you remove, and what did you add, for each audience?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Start from measurable requirements: workload, data size, latency, consistency, availability, and constraints.</li>
+      <li>Compare real alternatives, state the costs and risks, and describe failure, recovery, and migration.</li>
+      <li>Tailor the explanation to the audience, favor reversible decisions, and record them in ADRs.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Data Architecture &amp; Design Judgment — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

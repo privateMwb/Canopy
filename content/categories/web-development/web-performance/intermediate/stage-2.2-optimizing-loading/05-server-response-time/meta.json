@@ -1,0 +1,5 @@
+{
+  "title": "Server Response Time",
+  "description": "TTFB, caching, and edge rendering.",
+  "order": 5
+}

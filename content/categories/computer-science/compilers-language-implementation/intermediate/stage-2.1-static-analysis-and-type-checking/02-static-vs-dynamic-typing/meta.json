@@ -1,0 +1,5 @@
+{
+  "title": "Static vs. Dynamic Typing",
+  "description": "What a type system buys, what it costs, and which errors it moves from run time to compile time.",
+  "order": 2
+}

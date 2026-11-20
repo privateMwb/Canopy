@@ -1,0 +1,5 @@
+{
+  "title": "Abstraction & Encapsulation",
+  "description": "Hiding detail behind a small interface so callers depend on what a thing does, not how it does it.",
+  "order": 1
+}

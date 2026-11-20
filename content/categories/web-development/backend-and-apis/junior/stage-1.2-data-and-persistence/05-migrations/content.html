@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Migrations — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.2 · data &amp; persistence</span> → lesson 05</p>
+  <h1>Migrations</h1>
+  <p class="lede">Evolving a schema safely over time.</p>
+
+  <h2><span class="num">§1</span>Schemas Change, and Databases Hold Real Data</h2>
+
+  <p>Your first schema will not be your last. Features add columns, requirements rename things, and mistakes need fixing, all while a database full of real data stays in place. Editing the schema by hand in a console works on your laptop and becomes a disaster across a team and several environments: nobody can say what state production is in. <strong>Migrations</strong> solve this by recording every schema change as a small, ordered, versioned file that is committed to git and applied by a tool.</p>
+
+  <pre><span class="comment">-- migrations/0003_add_notes_archived.sql</span>
+ALTER TABLE notes ADD COLUMN archived BOOLEAN NOT NULL DEFAULT false;
+CREATE INDEX idx_notes_user_archived ON notes (user_id, archived);</pre>
+
+  <h2><span class="num">§2</span>How a Migration Tool Works</h2>
+
+  <ul>
+    <li>Files are applied <strong>in order</strong> (by number or timestamp).</li>
+    <li>The database keeps a <strong>history table</strong> listing which migrations have run, so each runs exactly once.</li>
+    <li>Every environment (local, CI, staging, production) runs the same files and converges on the same schema.</li>
+    <li>Tools range from SQL-file runners (node-pg-migrate, Flyway, Atlas) to ORM-integrated ones (<code>prisma migrate</code>, <code>drizzle-kit</code>) that generate the SQL from changes to your schema definition.</li>
+  </ul>
+
+  <pre><span class="comment"># Typical workflow with an ORM-integrated tool</span>
+<span class="comment"># 1. Edit the schema definition (add a column)</span>
+<span class="comment"># 2. Generate a migration file and apply it locally</span>
+npx prisma migrate dev --name add-notes-archived
+<span class="comment"># 3. Commit the migration file with the code that uses it</span>
+<span class="comment"># 4. In CI/production, apply pending migrations only</span>
+npx prisma migrate deploy</pre>
+
+  <h2><span class="num">§3</span>Rules That Keep You Safe</h2>
+
+  <ul>
+    <li><strong>Never edit a migration that has already been applied</strong> anywhere shared. Add a new migration instead; otherwise environments drift apart.</li>
+    <li><strong>Review the generated SQL.</strong> A rename can be generated as drop-and-create, which destroys data.</li>
+    <li><strong>Prefer additive changes.</strong> Adding a nullable column or a new table is low-risk; dropping or renaming columns needs care because running code may still use them.</li>
+    <li><strong>Test on realistic data.</strong> A migration that takes a millisecond on ten rows may lock a ten-million-row table for minutes.</li>
+  </ul>
+
+  <div class="callout">
+    <span class="label">Down migrations are less valuable than they look</span>
+    Many teams write "down" scripts, but reversing a migration after data has been written often cannot restore what was lost. A safer rollback strategy is to make changes backward compatible and fix forward. The senior level returns to this with the expand-and-contract pattern.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Editing a migration that already ran</td><td>Environments diverge and the history table no longer matches reality</td><td>Never rewrite history; add a new migration</td></tr>
+    <tr><td>Changing the schema manually in production</td><td>Nobody knows the true state, and the next deploy may fail</td><td>All changes go through migration files in version control</td></tr>
+    <tr><td>Not reviewing generated SQL</td><td>A rename becomes drop and recreate, and the data is gone</td><td>Read every migration before applying it, especially renames</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Set up a migration tool in your project and create migrations that (1) create <code>users</code>, (2) create <code>notes</code>, and (3) add a <code>pinned</code> column to notes.</li>
+      <li>Drop your local database, re-run all migrations from scratch, and confirm you get an identical schema.</li>
+      <li>Write a migration that renames a column safely in two steps (add new column and copy data, then drop the old one in a later migration). Why two steps?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Migrations are ordered, versioned schema changes stored in git and applied by a tool, once per environment.</li>
+      <li>Never edit an applied migration, never hand-edit production, and always review generated SQL.</li>
+      <li>Favor additive, backward-compatible changes so running code keeps working during a deploy.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.2 · Data &amp; Persistence — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

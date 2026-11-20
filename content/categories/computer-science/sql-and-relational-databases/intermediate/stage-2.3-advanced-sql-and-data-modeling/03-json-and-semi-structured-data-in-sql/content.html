@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JSON &amp; Semi-Structured Data in SQL — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · advanced sql &amp; data modeling</span> → lesson 03</p>
+  <h1>JSON &amp; Semi-Structured Data in SQL</h1>
+  <p class="lede">Modern relational databases can store and query JSON documents, which is a powerful tool for flexible attributes and a trap when it replaces proper columns.</p>
+
+  <h2><span class="num">§1</span>JSON Columns</h2>
+  <p>PostgreSQL (<code>JSONB</code>), MySQL (<code>JSON</code>), SQLite, and SQL Server can store JSON in a column and query inside it.</p>
+  <pre>CREATE TABLE events (
+  id         BIGSERIAL PRIMARY KEY,
+  user_id    INTEGER NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  payload    JSONB NOT NULL
+);
+
+INSERT INTO events (user_id, payload)
+VALUES (1, '{"type": "purchase", "amount": 42.5, "items": ["pen", "notebook"]}');</pre>
+  <p>In PostgreSQL prefer <strong><code>JSONB</code></strong> over <code>JSON</code>: it's stored in a parsed binary form that's faster to query and indexable. (<code>JSON</code> keeps the original text and re-parses it each time.)</p>
+
+  <h2><span class="num">§2</span>Querying Inside JSON</h2>
+  <pre>SELECT payload-&gt;&gt;'type'                  AS type,       <span class="comment">-- -&gt;&gt; returns text</span>
+       (payload-&gt;&gt;'amount')::numeric     AS amount      <span class="comment">-- cast to a real type</span>
+FROM events
+WHERE payload-&gt;&gt;'type' = 'purchase'
+  AND payload @&gt; '{"items": ["pen"]}';                  <span class="comment">-- @&gt; : "contains" (JSONB)</span>
+
+SELECT payload-&gt;'items'-&gt;&gt;0 AS first_item FROM events;  <span class="comment">-- -&gt; returns JSON; index into arrays</span></pre>
+  <p><code>-&gt;</code> returns JSON, <code>-&gt;&gt;</code> returns text, and <code>#&gt;&gt;</code> follows a path. MySQL's equivalents are <code>JSON_EXTRACT</code> and the <code>-&gt;</code> / <code>-&gt;&gt;</code> operators; SQLite has <code>json_extract</code>.</p>
+
+  <h2><span class="num">§3</span>Indexing JSON</h2>
+  <pre><span class="comment">-- Index one frequently-queried field</span>
+CREATE INDEX idx_events_type ON events ((payload-&gt;&gt;'type'));
+
+<span class="comment">-- GIN index: supports containment (@&gt;), key-existence (?) over the whole document</span>
+CREATE INDEX idx_events_payload ON events USING GIN (payload);</pre>
+  <p>Without an index, every query on a JSON field scans and parses the documents. Another useful feature: generated columns can promote a JSON field to a real column that is indexed and typed automatically.</p>
+
+  <h2><span class="num">§4</span>When JSON Is the Right Choice, and When It Isn't</h2>
+  <p><strong>Good uses:</strong></p>
+  <ul>
+    <li>Genuinely variable attributes (product specs that differ per category).</li>
+    <li>Storing a third-party payload exactly as received (webhooks, API responses).</li>
+    <li>Sparse, optional metadata and user preferences.</li>
+  </ul>
+  <p><strong>Poor uses:</strong></p>
+  <ul>
+    <li>Core fields you filter, join, and constrain on every day (should be real columns).</li>
+    <li>Relationships between entities (no foreign keys inside JSON).</li>
+    <li>Data that needs <code>NOT NULL</code>, uniqueness, or type enforcement.</li>
+  </ul>
+  <p>A pragmatic pattern: <strong>real columns for what you know and query, JSON for the long tail.</strong> Promote a JSON field to a column the moment it becomes important.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    JSON columns give you schema flexibility, but you give up the database's enforcement: types, constraints, and foreign keys don't reach inside the document. Use it where flexibility is worth that price.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Putting everything in one <code>JSONB</code> column</td><td>A schemaless table with no constraints and slow filters</td><td>Model known fields as columns; keep JSON for variable attributes</td></tr>
+    <tr><td>Using <code>JSON</code> instead of <code>JSONB</code> in PostgreSQL</td><td>Slower queries and no good indexing</td><td>Use <code>JSONB</code></td></tr>
+    <tr><td>Filtering on a JSON field without an index</td><td>Full scan parsing every document</td><td>Add an expression or GIN index, or a generated column</td></tr>
+    <tr><td>Relying on application code to validate JSON shape</td><td>Bad documents slip in via other writers</td><td>Add <code>CHECK</code> constraints or validate against a JSON schema at write time</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create an <code>events</code> table with a <code>JSONB</code> payload, insert a few shapes of event, and write queries for events of one type and events whose items contain <code>'pen'</code>. Add an index and compare plans.</li>
+      <li>Take a product table with a JSON <code>attributes</code> column and decide which three attributes deserve to become real columns. Justify each.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>JSON columns store flexible documents and can be queried and indexed.</li>
+      <li>In PostgreSQL use JSONB; index the fields you query.</li>
+      <li>Use real columns for core, constrained data; JSON for the variable long tail.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · Advanced SQL &amp; Data Modeling — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>gRPC &amp; Internal APIs — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · api design in depth</span> → lesson 05</p>
+  <h1>gRPC &amp; Internal APIs</h1>
+  <p class="lede">Contracts between services.</p>
+
+  <h2><span class="num">§1</span>A Different Contract for Service-to-Service Calls</h2>
+
+  <p>Public APIs favor human-readable JSON over HTTP because strangers need to understand them. <em>Inside</em> your own system, between services you control, you can trade some readability for speed, strictness, and generated code. <strong>gRPC</strong> is a widely used framework for that: you define services and messages in a <code>.proto</code> file using <strong>Protocol Buffers</strong>, and tooling generates typed clients and servers in many languages.</p>
+
+  <pre><span class="comment">// notes.proto</span>
+syntax = "proto3";
+package notes.v1;
+
+service NoteService {
+  rpc GetNote (GetNoteRequest) returns (Note);                      <span class="comment">// unary</span>
+  rpc ListNotes (ListNotesRequest) returns (stream Note);           <span class="comment">// server streaming</span>
+}
+
+message GetNoteRequest { int64 id = 1; }
+message ListNotesRequest { int64 user_id = 1; int32 limit = 2; }
+
+message Note {
+  int64  id      = 1;
+  string title   = 2;
+  string body    = 3;
+  int64  user_id = 4;
+}</pre>
+
+  <p>Those numbers are <strong>field tags</strong>, and they are the wire identity of each field. Messages are encoded into a compact binary format that is smaller and faster to parse than JSON, and the generated code removes whole classes of mistakes (a misspelled field is a compile error, not a runtime surprise).</p>
+
+  <h2><span class="num">§2</span>What gRPC Provides</h2>
+
+  <ul>
+    <li><strong>HTTP/2 transport:</strong> multiplexed requests over one connection, with header compression.</li>
+    <li><strong>Four call types:</strong> unary (one request, one response), server streaming, client streaming, and bidirectional streaming.</li>
+    <li><strong>Deadlines and cancellation</strong> built in: callers state how long they will wait, and the deadline propagates through chains of services.</li>
+    <li><strong>Standard status codes</strong> (such as <code>NOT_FOUND</code>, <code>UNAVAILABLE</code>, <code>DEADLINE_EXCEEDED</code>) with interceptors for auth, logging, and retries.</li>
+  </ul>
+
+  <pre>import grpc from "@grpc/grpc-js";
+import * as loader from "@grpc/proto-loader";
+
+const def = loader.loadSync("notes.proto", { keepCase: true });
+const { notes } = grpc.loadPackageDefinition(def);
+
+const client = new notes.v1.NoteService("notes.internal:50051", grpc.credentials.createInsecure()); // use TLS in production
+
+client.GetNote({ id: 7 }, { deadline: Date.now() + 500 }, (err, note) =&gt; {   <span class="comment">// 500 ms budget</span>
+  if (err) return console.error(err.code, err.details);
+  console.log(note.title);
+});</pre>
+
+  <h2><span class="num">§3</span>Evolving Protobuf Schemas Safely</h2>
+
+  <ul>
+    <li><strong>Never change or reuse a field number.</strong> Old and new binaries would disagree about what the bytes mean.</li>
+    <li><strong>Adding fields is safe;</strong> old readers ignore tags they do not know.</li>
+    <li><strong>When removing a field,</strong> mark its number and name <code>reserved</code> so no one reuses it later.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>REST or gRPC?</h2>
+
+  <table>
+    <tr><th></th><th>REST/JSON</th><th>gRPC</th></tr>
+    <tr><td>Readability</td><td>Human-readable; easy to debug with curl</td><td>Binary; needs tooling such as grpcurl</td></tr>
+    <tr><td>Browser support</td><td>Native</td><td>Needs gRPC-Web or a gateway</td></tr>
+    <tr><td>Performance</td><td>Good</td><td>Smaller payloads and streaming; usually faster</td></tr>
+    <tr><td>Contract</td><td>Optional (OpenAPI)</td><td>Mandatory, generated, strongly typed</td></tr>
+    <tr><td>Best fit</td><td>Public and partner APIs</td><td>Internal service-to-service calls and streaming</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">Choose by audience</span>
+    A common pattern is gRPC between internal services and a REST or GraphQL layer facing outside clients. Adopting gRPC for a two-service system with a few endpoints is often needless complexity; the benefits grow with the number of services and languages.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Renumbering or reusing protobuf field numbers</td><td>Data is silently misread by older clients</td><td>Treat numbers as permanent; use <code>reserved</code> for removed fields</td></tr>
+    <tr><td>Calling services with no deadline</td><td>One slow dependency stalls every caller</td><td>Set a deadline on every call and propagate it downstream</td></tr>
+    <tr><td>Exposing gRPC directly to browsers or third parties</td><td>Poor tooling and compatibility for external developers</td><td>Put a REST/GraphQL gateway in front for external consumers</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a <code>.proto</code> with one unary and one server-streaming method, then implement a server and call it from a client.</li>
+      <li>Add a new field to a message and verify an older client still works. Then mark a removed field as <code>reserved</code>.</li>
+      <li>Give the client a 100 ms deadline against a handler that sleeps 1 second, and read the resulting error code.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>gRPC defines services in .proto files and generates typed, efficient clients and servers over HTTP/2.</li>
+      <li>Field numbers are permanent identities; add fields freely but never reuse or renumber them.</li>
+      <li>Use gRPC for internal service calls, keep REST or GraphQL for public ones, and always set deadlines.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · API Design in Depth — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

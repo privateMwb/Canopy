@@ -1,0 +1,5 @@
+{
+  "title": "Queues, Events & Eventual Consistency",
+  "description": "Designing workflows that tolerate delay.",
+  "order": 4
+}

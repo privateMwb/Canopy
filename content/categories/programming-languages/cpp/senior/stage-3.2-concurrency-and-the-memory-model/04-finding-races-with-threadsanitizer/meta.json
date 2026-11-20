@@ -1,0 +1,5 @@
+{
+  "title": "Finding Races with ThreadSanitizer",
+  "description": "Reading TSan reports and fixing races you didn't know you had.",
+  "order": 4
+}

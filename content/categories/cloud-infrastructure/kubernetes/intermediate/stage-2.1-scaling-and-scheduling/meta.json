@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Scaling & Scheduling",
+  "description": "Autoscaling, resource semantics, scheduling constraints, disruption budgets, and right-sizing.",
+  "order": 1
+}

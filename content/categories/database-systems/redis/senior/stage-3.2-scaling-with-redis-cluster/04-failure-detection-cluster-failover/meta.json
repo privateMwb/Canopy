@@ -1,0 +1,5 @@
+{
+  "title": "Failure Detection & Cluster Failover",
+  "description": "Gossip, quorum, and when a cluster stops accepting writes.",
+  "order": 4
+}

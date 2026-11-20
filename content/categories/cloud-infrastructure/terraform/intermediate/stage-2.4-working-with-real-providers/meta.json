@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — Working With Real Providers",
+  "description": "Multiple providers and regions, provisioners, Kubernetes and Helm, and SaaS providers.",
+  "order": 4
+}

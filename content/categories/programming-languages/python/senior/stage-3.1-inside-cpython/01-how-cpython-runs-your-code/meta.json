@@ -1,0 +1,5 @@
+{
+  "title": "How CPython Runs Your Code",
+  "description": "Source to bytecode to the evaluation loop, read with the dis module.",
+  "order": 1
+}

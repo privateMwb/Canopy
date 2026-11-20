@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Power, Frequency &amp; the End of Free Speedups — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.4 · performance basics</span> → lesson 04</p>
+  <h1>Power, Frequency &amp; the End of Free Speedups</h1>
+  <p class="lede">Clock rates stopped climbing around 2005 because power and heat grew faster than speed, and that single constraint explains why modern chips add cores instead of gigahertz.</p>
+
+  <h2><span class="num">§1</span>Why Power Limits Speed</h2>
+  <p>A chip's dynamic power is roughly proportional to <strong>capacitance × voltage² × frequency</strong>. To run faster, the supply voltage generally has to rise as well, so power grows far faster than frequency, close to its cube over a useful range.</p>
+  <pre>P  ~  C * V^2 * f          <span class="comment"># dynamic power</span>
+raising f usually requires raising V, so P grows roughly like f^3
+
+<span class="comment"># Lower both voltage and frequency by 15%:</span>
+power = 0.85^3 = 0.61  -&gt;  39% less power for 15% less speed</pre>
+  <p>A chip's heat has to be removed, and there's a limit to how much a small piece of silicon can dissipate, on the order of 100 watts per square centimeter before cooling becomes impractical. That is the <strong>power wall</strong>.</p>
+
+  <h2><span class="num">§2</span>The Turn to Multicore</h2>
+  <p>For decades, <strong>Dennard scaling</strong> let each shrink in transistor size cut voltage so that power per area stayed roughly constant, and clocks rose with every generation. Around the mid-2000s, voltage scaling stalled, leakage grew, and clock rates plateaued near 3 to 5 GHz. Designers responded by spending the extra transistors on more cores instead.</p>
+  <pre><span class="comment"># One core at full speed vs. two cores at 85% speed (illustrative, ideal parallel work)</span>
+one core,  100% freq:  performance 1.00,  power 1.00
+two cores,  85% freq:  performance 1.70,  power 2 * 0.61 = 1.23</pre>
+  <p>Two slower cores beat one fast core on throughput for the same rough power, if the work parallelizes. This is the engine behind today's many-core CPUs, and it is why Amdahl's law now matters for every programmer.</p>
+
+  <h2><span class="num">§3</span>What Modern Chips Do About It</h2>
+  <ul>
+    <li><strong>Dynamic frequency and voltage scaling:</strong> cores speed up when few are busy, and slow down when many are, to stay within a power budget (turbo boost)</li>
+    <li><strong>Thermal throttling:</strong> if temperature rises too high, the chip lowers its clock, so sustained performance can be below burst performance</li>
+    <li><strong>Dark silicon:</strong> not every transistor can be active at once within the power budget, so chips use heterogeneous parts that are switched on only when needed</li>
+    <li><strong>Specialization:</strong> efficient accelerators for common tasks, such as video, cryptography, and machine learning, which do far more per watt than a general core</li>
+  </ul>
+  <pre>cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq     <span class="comment"># current clock of core 0, in kHz</span>
+grep MHz /proc/cpuinfo | head                                  <span class="comment"># clock of each core</span>
+sensors                                                        <span class="comment"># temperatures, if lm-sensors is installed</span></pre>
+  <p>The consequence for software: single-thread speed now improves slowly, mostly through better IPC. Faster programs now require parallelism, better locality, and sometimes specialized hardware.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Performance used to arrive for free with each chip generation. Now it has to be earned: by exposing parallelism, using the memory hierarchy well, and matching work to hardware.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Expecting next year's CPU to run single-threaded code much faster</td><td>Clock rates have been flat for about two decades</td><td>Plan on parallelism and efficiency, not clock gains</td></tr>
+    <tr><td>Benchmarking only short bursts</td><td>Turbo clocks inflate results that sustained load can't hold</td><td>Measure at steady state, including thermal behavior</td></tr>
+    <tr><td>Treating all cores as equally available</td><td>Power budgets and heterogeneity change per-core speed</td><td>Check the real clock under your actual load</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Run an all-core CPU stress test and watch <code>/proc/cpuinfo</code> MHz fall as load rises. Compare with a single-core test.</li>
+      <li>If voltage must scale linearly with frequency, what is the power ratio for a core run at 70% frequency?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Dynamic power grows roughly with f³, so higher clocks quickly become unaffordable.</li>
+      <li>The power wall ended clock scaling around 2005 and drove the move to multicore and specialization.</li>
+      <li>Software now has to supply parallelism and locality, since single-thread gains are modest.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.4 · Performance Basics — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

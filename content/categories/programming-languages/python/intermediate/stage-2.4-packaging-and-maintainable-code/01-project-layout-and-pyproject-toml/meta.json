@@ -1,0 +1,5 @@
+{
+  "title": "Project Layout & pyproject.toml",
+  "description": "src layout, metadata, and declaring dependencies in one standard file.",
+  "order": 1
+}

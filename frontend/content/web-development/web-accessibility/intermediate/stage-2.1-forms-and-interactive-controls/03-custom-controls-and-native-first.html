@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Custom Controls &amp; Native First — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · forms &amp; interactive controls</span> → lesson 03</p>
+  <h1>Custom Controls &amp; Native First</h1>
+  <p class="lede">The most accessible control is the one the browser already built. Native elements bring roles, keyboard behavior, and states for free, and building your own means taking responsibility for all of it.</p>
+
+  <h2><span class="num">§1</span>Why Native First</h2>
+  <p>A native <code>button</code>, <code>input</code>, <code>select</code>, or <code>details</code> comes with a role, an accessible name, state, keyboard support, and focus handling that is tested across browsers and assistive technology. A custom <code>div</code> widget has none of that until you rebuild it.</p>
+  <p>Every custom control must answer five questions: <strong>role</strong> (what is it?), <strong>name</strong> (what is it called?), <strong>state</strong> (on or off, open or closed?), <strong>keyboard</strong> (how do I operate it?), and <strong>focus</strong> (can I reach it and see it?). Skip one and some users are locked out.</p>
+  <table>
+    <tr><th>Need</th><th>Reach for</th></tr>
+    <tr><td>Toggle a section</td><td><code>details</code> and <code>summary</code></td></tr>
+    <tr><td>A modal</td><td><code>dialog</code> with <code>showModal()</code></td></tr>
+    <tr><td>Pick a date</td><td><code>input type="date"</code></td></tr>
+    <tr><td>Choose one of a few options</td><td>Radio buttons or <code>select</code></td></tr>
+    <tr><td>A toggle switch</td><td>A checkbox, or a <code>button</code> with <code>role="switch"</code></td></tr>
+  </table>
+
+  <h2><span class="num">§2</span>Style Native Controls Instead of Replacing Them</h2>
+  <p>You can often change the look without losing the behavior. For checkboxes and radios, modern CSS goes a long way, and the <code>accent-color</code> property tints them to match your brand.</p>
+  <pre>input[type="checkbox"], input[type="radio"] {
+  accent-color: #1D4ED8;
+  width: 1.5rem;
+  height: 1.5rem;
+}</pre>
+  <p>When you need a fully custom look, the safest pattern keeps the real input in the page and styles the visual around it. The input stays focusable and operable, and the custom visuals follow its state.</p>
+  <pre>&lt;label class="switch"&gt;
+  &lt;input type="checkbox" role="switch"&gt;
+  &lt;span class="track" aria-hidden="true"&gt;&lt;/span&gt;
+  Email notifications
+&lt;/label&gt;
+
+.switch input {
+  position: absolute;
+  opacity: 0;              <span class="comment">/* hidden visually but still focusable */</span>
+  width: 1.5rem; height: 1.5rem;
+}
+.switch input:focus-visible + .track { outline: 3px solid #1D4ED8; }
+.switch input:checked + .track      { background: #15803D; }</pre>
+
+  <h2><span class="num">§3</span>When You Must Build Your Own</h2>
+  <p>Sometimes no native element fits, such as a rich combobox or a tree view. In that case follow the <strong>ARIA Authoring Practices Guide</strong> patterns, which document the expected roles, states, and keys for each widget. A custom toggle button, for instance, needs a role, a state, and key handling.</p>
+  <pre>&lt;button type="button" role="switch" aria-checked="false" id="dark-toggle"&gt;
+  Dark mode
+&lt;/button&gt;
+
+&lt;script&gt;
+  const t = document.getElementById('dark-toggle');
+  t.addEventListener('click', () =&gt; {
+    const on = t.getAttribute('aria-checked') === 'true';
+    t.setAttribute('aria-checked', String(!on));
+    document.documentElement.classList.toggle('dark', !on);
+  });
+&lt;/script&gt;</pre>
+  <p>Using a real <code>button</code> as the base means Enter, Space, focus, and the name are already handled. You add only the state. The next stage covers ARIA in depth.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    If you cannot name the role, name, state, keyboard behavior, and focus behavior of a custom control, it is not ready to ship. Prefer a native element, or a native element with a small addition.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Replacing <code>select</code> or <code>button</code> with <code>div</code> widgets</td><td>Lost keyboard support, roles, and screen reader behavior</td><td>Use native elements, and style them with CSS</td></tr>
+    <tr><td>Hiding the native input with <code>display: none</code></td><td>The control is removed from the Tab order and the accessibility tree</td><td>Hide it visually with opacity or clipping, and keep it focusable</td></tr>
+    <tr><td>Adding ARIA roles without behavior</td><td>A role promises behavior that does not exist</td><td>Implement the full keyboard and state pattern, or use native HTML</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Find a custom dropdown or toggle on a site you use. List which of role, name, state, keyboard, and focus it supports, and which are missing.</li>
+      <li>Build an accessible toggle two ways: a styled native checkbox, and a <code>button</code> with <code>role="switch"</code>. Compare how much code each needed.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Native elements supply role, name, state, keyboard support, and focus for free. Use them first.</li>
+      <li>Style native controls instead of replacing them, and keep real inputs focusable.</li>
+      <li>When you must build custom, follow ARIA Authoring Practices patterns for roles, states, and keys.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · Forms &amp; Interactive Controls — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

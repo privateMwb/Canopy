@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Congestion Control — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · tcp in depth</span> → lesson 02</p>
+  <h1>Congestion Control</h1>
+  <p class="lede">Flow control protects the receiver; congestion control protects the network, and it works by probing for capacity and backing off when packets are lost.</p>
+
+  <h2><span class="num">§1</span>The Congestion Window</h2>
+  <p>A sender doesn't know how much capacity the path has, and sending too much overloads routers and causes loss for everyone. TCP keeps a second limit, the <strong>congestion window</strong> (cwnd), which it adjusts based on feedback. The amount in flight is capped by the smaller of cwnd and the receive window.</p>
+  <ul>
+    <li><strong>Slow start:</strong> cwnd starts small (10 segments on modern Linux) and roughly <strong>doubles every RTT</strong> until loss occurs or a threshold (ssthresh) is reached</li>
+    <li><strong>Congestion avoidance:</strong> past the threshold, cwnd grows by about one segment per RTT, cautiously</li>
+    <li><strong>On loss:</strong> cwnd is cut, classically halved. This pattern of additive increase and multiplicative decrease is <strong>AIMD</strong></li>
+  </ul>
+  <pre>cwnd over time (segments):
+ 10 → 20 → 40 → 80 → 160  <span class="comment">slow start: exponential</span>
+              loss!  → 80   <span class="comment">cut in half</span>
+ 80 → 81 → 82 → 83 ...     <span class="comment">congestion avoidance: linear</span></pre>
+
+  <h2><span class="num">§2</span>Why a Short Connection Never Speeds Up</h2>
+  <p>Slow start means every new connection begins slowly. A 100 KB response over a fresh connection may finish before cwnd ever grows large, so latency rather than bandwidth limits it. This is a major reason to reuse connections: a warm connection has a large cwnd already.</p>
+  <pre>ss -ti dst 203.0.113.9
+<span class="comment"># cwnd:10 ssthresh:... rtt:48.2/12.1 retrans:0/2</span></pre>
+  <p>Raising the <strong>initial window</strong> helps short transfers, which is why the default rose from 3 to 10 segments.</p>
+
+  <h2><span class="num">§3</span>Algorithms</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Signal it reacts to</th><th>Character</th></tr>
+    <tr><td>Reno / NewReno</td><td>Packet loss</td><td>Classic AIMD; slow to fill high-bandwidth, high-latency paths</td></tr>
+    <tr><td>CUBIC</td><td>Packet loss</td><td>Grows by a cubic curve; the default on Linux; good on fast paths</td></tr>
+    <tr><td>BBR</td><td>Measured bandwidth and minimum RTT</td><td>Aims at the rate the path can carry without filling buffers; not driven by loss</td></tr>
+  </table>
+  <pre>sysctl net.ipv4.tcp_congestion_control       <span class="comment"># cubic</span>
+sysctl net.ipv4.tcp_available_congestion_control</pre>
+  <p>Loss-based algorithms have a side effect called <strong>bufferbloat</strong>: they keep growing until router buffers fill, adding queuing delay even though throughput looks fine. A rough guide to loss-limited throughput is the Mathis formula: rate ≈ (MSS / RTT) × 1.22 / √p, where p is the loss rate. With a 1460-byte MSS and 50 ms RTT, 0.01% loss allows about 3.6 MB/s, but 1% loss cuts that to about 0.36 MB/s.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    On a lossy or high-latency path, TCP throughput is set by loss and RTT, not by the link's bandwidth. A 1 Gbps link with 1% loss and a 100 ms RTT delivers a small fraction of its capacity.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Expecting a new connection to use full bandwidth immediately</td><td>Slow start means early data is slow</td><td>Reuse connections; consider larger initial windows</td></tr>
+    <tr><td>Treating all loss as network failure</td><td>Congestion control reacts to any loss, including wireless noise</td><td>On lossy links, consider BBR or link-layer fixes</td></tr>
+    <tr><td>Judging a link by speed tests with parallel streams alone</td><td>A single flow may reach far less</td><td>Test the single-connection case your application actually uses</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Starting from cwnd=10, how many RTTs of slow start does it take to exceed 1,000 segments?</li>
+      <li>Use the Mathis formula to estimate throughput at 0.1% loss and 80 ms RTT with a 1460-byte MSS.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Slow start doubles cwnd per RTT; congestion avoidance adds about one segment per RTT; loss cuts it.</li>
+      <li>Loss and RTT, not bandwidth, usually limit a single TCP flow's speed.</li>
+      <li>CUBIC is the Linux default, and BBR uses measured bandwidth and RTT instead of loss.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · TCP in Depth — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Patterns in the JDK & Frameworks",
+  "description": "Builder, factory, strategy, and observer, seen where Java already uses them.",
+  "order": 3
+}

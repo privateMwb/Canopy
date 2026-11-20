@@ -1,0 +1,5 @@
+{
+  "title": "Routing, History & Browser APIs",
+  "description": "Client-side routing, URL state, IntersectionObserver, and the platform features you don't need a library for.",
+  "order": 3
+}

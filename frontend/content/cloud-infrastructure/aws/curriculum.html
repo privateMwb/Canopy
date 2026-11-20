@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amazon Web Services (AWS) Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / aws</p>
+    <h1>From your first account to cloud architecture you can defend</h1>
+    <p class="lede">Three levels, twelve stages — accounts, core services, data and delivery, and good habits first, then scaling, managed data and messaging, security operations, and infrastructure as code, built toward architecture, governance, cost, migration, and the judgment to design systems and defend the trade-offs.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "the cloud is someone else's computer" to "I can launch, secure, and pay for a small app on AWS."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Getting Started on AWS</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Cloud Concepts &amp; the Shared Responsibility Model</p><p class="lesson-desc">What the cloud changes and who secures what.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Accounts, IAM Users &amp; the Root Account</p><p class="lesson-desc">Protecting the root account and creating safe everyday access.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">The Console, CLI &amp; Regions</p><p class="lesson-desc">Three ways to work, and the region mistakes everyone makes once.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Billing, the Free Tier &amp; Budgets</p><p class="lesson-desc">Understanding charges and setting alarms before a surprise bill.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Global Infrastructure: Regions, Availability Zones &amp; Edge</p><p class="lesson-desc">How AWS is physically organized and why it matters for design.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Set up a new account safely: MFA on root, an admin user, a budget alert, and a working CLI profile, then explain each choice.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Core Services</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">EC2: Virtual Servers</p><p class="lesson-desc">Instance types, images, security groups, and key pairs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">S3: Object Storage</p><p class="lesson-desc">Buckets, storage classes, access, and versioning.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">VPC Basics</p><p class="lesson-desc">Subnets, route tables, gateways, and what makes a subnet public.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">IAM Roles &amp; Policies</p><p class="lesson-desc">Reading a policy and giving services only the access they need.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">EBS &amp; Instance Storage</p><p class="lesson-desc">Block volumes, snapshots, and what survives a stopped instance.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Security Groups, NACLs &amp; Basic Network Security</p><p class="lesson-desc">Controlling traffic at the instance and subnet level.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Launch a server in a custom network that reads a file from a private bucket using a role, with no access keys on the machine.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Data &amp; Delivery</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">RDS &amp; Managed Databases</p><p class="lesson-desc">What AWS manages for you and what it does not.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Route 53, DNS &amp; TLS Certificates</p><p class="lesson-desc">Pointing a domain at your app with HTTPS.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">CloudFront &amp; Static Sites</p><p class="lesson-desc">Serving a site from S3 through a CDN.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Monitoring Basics with CloudWatch</p><p class="lesson-desc">Metrics, logs, and a first alarm.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Deploying a Simple Web App End to End</p><p class="lesson-desc">Server, database, domain, and certificate working together.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Host a static site on your own domain with HTTPS, add a database-backed API, and set up an alarm that notifies you.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Tooling &amp; Habits</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">CLI Profiles, SSO &amp; Credentials</p><p class="lesson-desc">Working with several accounts without long-lived keys on your laptop.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Tagging, Naming &amp; Organizing Resources</p><p class="lesson-desc">Conventions that make cost and ownership visible later.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">From Console to Code: CloudFormation &amp; CDK Intro</p><p class="lesson-desc">Why clicking does not scale and what replaces it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Cleanup &amp; Cost Traps</p><p class="lesson-desc">The resources people forget and how to find them.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Audit a test account for forgotten resources, tag everything with an owner and purpose, and delete what is not needed.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Scaling &amp; Availability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Load Balancers &amp; Auto Scaling Groups</p><p class="lesson-desc">Distributing traffic and replacing unhealthy servers automatically.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Multi-AZ Design</p><p class="lesson-desc">Surviving the loss of a data center.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Serverless: Lambda &amp; API Gateway</p><p class="lesson-desc">Event-driven functions, limits, and cold starts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Containers on AWS: ECS &amp; Fargate</p><p class="lesson-desc">Running containers without managing servers, and where EKS fits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Elastic Beanstalk, App Runner &amp; Lightsail</p><p class="lesson-desc">Higher-level ways to run an app, and what they trade away.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Launch Templates, Scaling Policies &amp; Instance Refresh</p><p class="lesson-desc">Tuning how groups grow, shrink, and roll out new images.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Deploy an app across two availability zones behind a load balancer, terminate a server, and show it recovers with no downtime.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Messaging &amp; Data Services</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">SQS, SNS &amp; EventBridge</p><p class="lesson-desc">Queues, topics, and event routing for decoupled systems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">DynamoDB Fundamentals</p><p class="lesson-desc">Keys, access patterns, and why the design starts with the queries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Caching with ElastiCache</p><p class="lesson-desc">Putting a cache in front of a database on AWS.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Storage Patterns: EFS &amp; S3 Lifecycle</p><p class="lesson-desc">Choosing the right storage and managing its cost over time.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Aurora &amp; RDS Operations</p><p class="lesson-desc">Backups, replicas, failover, and connection management with a proxy.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Kinesis &amp; Streaming Basics</p><p class="lesson-desc">Ingesting and processing continuous data.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build an order pipeline where a queue absorbs a traffic spike, a worker processes it, and a dead-letter queue catches failures.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Security &amp; Operations</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">IAM in Depth: Conditions &amp; Boundaries</p><p class="lesson-desc">Policy evaluation, conditions, and permission boundaries.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Secrets Manager, KMS &amp; Encryption</p><p class="lesson-desc">Managing keys and secrets, and encrypting data at rest and in transit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Logging &amp; Auditing: CloudTrail, Config &amp; CloudWatch Logs</p><p class="lesson-desc">Knowing who did what, and when.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">CI/CD &amp; Infrastructure Delivery</p><p class="lesson-desc">Deploying to AWS from a pipeline without long-lived keys.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Systems Manager &amp; Patch Management</p><p class="lesson-desc">Managing and patching servers without opening SSH.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Backup &amp; Recovery With AWS Backup</p><p class="lesson-desc">Policies, retention, and proving a restore works.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Deploy an application from a pipeline using short-lived credentials, with encrypted data, audited access, and least-privilege roles.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Infrastructure as Code on AWS</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">CloudFormation Fundamentals</p><p class="lesson-desc">Templates, stacks, change sets, and drift.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">The AWS CDK</p><p class="lesson-desc">Defining infrastructure in a programming language.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">SAM &amp; Serverless Deployment Tools</p><p class="lesson-desc">Packaging and deploying functions and APIs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Environments, Accounts &amp; Promotion Pipelines</p><p class="lesson-desc">Moving the same change from development to production safely.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Define a small application stack in code, deploy it to two accounts through a pipeline, and roll back a bad change.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal"></p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Architecture &amp; Reliability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Well-Architected Framework</p><p class="lesson-desc">Using the pillars as a review tool rather than a poster.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">High Availability &amp; Disaster Recovery Strategies</p><p class="lesson-desc">RPO, RTO, and the spectrum from backup to active-active.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Networking at Scale: Transit Gateway, PrivateLink &amp; Hybrid</p><p class="lesson-desc">Connecting many networks and on-premises systems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Designing for Failure &amp; Chaos Testing</p><p class="lesson-desc">Static stability, graceful degradation, and testing failures on purpose.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Event-Driven &amp; Serverless Architecture Patterns</p><p class="lesson-desc">Choreography, orchestration, and idempotency in distributed systems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Data Architecture: Lakes, Warehouses &amp; Analytics</p><p class="lesson-desc">S3, Glue, Athena, and Redshift, and when each fits.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a disaster recovery plan for a real workload with stated RPO and RTO, and run a failover drill against it.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Security &amp; Governance</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Multi-Account Strategy &amp; Organizations</p><p class="lesson-desc">Account boundaries, guardrails, and landing zones.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Identity at Scale: Identity Center &amp; Federation</p><p class="lesson-desc">Single sign-on and temporary access across accounts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Detective &amp; Preventive Controls</p><p class="lesson-desc">Threat detection, configuration rules, and service control policies.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Compliance, Data Protection &amp; Incident Response</p><p class="lesson-desc">Evidence, data classification, and responding to a compromise.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Network Security: WAF, Shield &amp; Firewall Manager</p><p class="lesson-desc">Protecting public endpoints and enforcing rules across accounts.</p></div></div>
+      <div class="lesson"><span class="lesson-num">06</span><div><p class="lesson-title">Encryption Strategy &amp; Key Management at Scale</p><p class="lesson-desc">Key policies, rotation, and separating duties.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">07</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a multi-account structure for a regulated company and write the first-hour response plan for a leaked access key.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Cost, Performance &amp; Judgment</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Cost Optimization &amp; FinOps</p><p class="lesson-desc">Rightsizing, commitments, tagging, and making cost a shared responsibility.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Performance Efficiency &amp; Observability</p><p class="lesson-desc">Tracing, metrics, and finding the real bottleneck.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Serverless vs. Containers vs. Instances</p><p class="lesson-desc">Choosing a compute model with honest trade-offs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Multi-Cloud, Lock-in &amp; Migration Strategy</p><p class="lesson-desc">What lock-in really costs and when avoiding it is worth it.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Migration Strategies: The Seven Rs, DMS &amp; MGN</p><p class="lesson-desc">Moving existing workloads to AWS in a sequence that limits risk.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Review a real monthly bill, find the three biggest savings, and write an architecture decision record for one compute choice.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Specialized Services &amp; Scale</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Machine Learning on AWS: SageMaker &amp; Bedrock</p><p class="lesson-desc">What the managed AI services offer and where they fit.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Hybrid &amp; Edge: Outposts, Local Zones &amp; IoT</p><p class="lesson-desc">Running AWS closer to users and devices.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Service Quotas, Limits &amp; Capacity Planning</p><p class="lesson-desc">Finding the limit before production does.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Architecture Review Practice &amp; Decision Records</p><p class="lesson-desc">Running reviews and writing decisions people can revisit.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">05</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run an architecture review on a real system and deliver a prioritized list of findings with owners and deadlines.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Identity appears at Junior as users, roles, and least privilege, returns at Intermediate as conditions and boundaries, and comes back at Senior as multi-account governance and federation. Cost follows the same arc: budgets, then lifecycle and rightsizing, then FinOps. The ideas transfer to Azure and Google Cloud even though the product names do not.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how to build a multi-AZ application is one skill; choosing a recovery strategy with stated RPO and RTO, and writing the decision so a skeptical reviewer accepts it, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Cluster Architecture",
+  "description": "The control plane, nodes, the kubelet, and etcd.",
+  "order": 2
+}

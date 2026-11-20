@@ -1,0 +1,5 @@
+{
+  "title": "Runtime Memory Areas",
+  "description": "Heap, stack, metaspace, and where each kind of data lives.",
+  "order": 2
+}

@@ -1,0 +1,5 @@
+{
+  "title": "CMake in Practice",
+  "description": "Targets, dependencies, build types, and a project that builds anywhere.",
+  "order": 4
+}

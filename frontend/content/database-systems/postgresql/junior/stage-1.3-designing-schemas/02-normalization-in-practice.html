@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Normalization in Practice — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · designing schemas</span> → lesson 02</p>
+  <h1>Normalization in Practice</h1>
+  <p class="lede">Normalization removes redundancy so each fact is stored once, and knowing the normal forms tells you when copying data is a deliberate choice.</p>
+
+  <h2><span class="num">§1</span>Why Redundancy Hurts</h2>
+
+  <p>Suppose every order row repeats the customer's name and city. Changing a customer's city now means updating many rows, and missing one leaves the database contradicting itself. These <strong>update, insert, and delete anomalies</strong> are what normalization prevents.</p>
+  <pre><span class="comment">-- Unnormalized: customer facts repeated on every order</span>
+orders(order_id, customer_name, customer_city, product, price)
+
+<span class="comment">-- Normalized: each fact lives in exactly one place</span>
+customers(id, name, city)
+orders(id, customer_id)
+products(id, name, price)
+order_items(order_id, product_id, quantity)</pre>
+
+  <h2><span class="num">§2</span>The Normal Forms in Plain Terms</h2>
+
+  <ul>
+    <li><strong>First normal form (1NF):</strong> each column holds one atomic value, with no repeating groups or comma-separated lists, and each row is identifiable by a key.</li>
+    <li><strong>Second normal form (2NF):</strong> every non-key column depends on the *whole* key. This matters for composite keys: in <code>order_items(order_id, product_id, product_name)</code>, <code>product_name</code> depends only on <code>product_id</code>, so move it out.</li>
+    <li><strong>Third normal form (3NF):</strong> non-key columns depend on the key and nothing but the key. If <code>zip</code> determines <code>city</code>, store <code>city</code> in a <code>zip_codes</code> table rather than on every address.</li>
+  </ul>
+  <p>A handy phrase: every non-key attribute depends on <strong>the key, the whole key, and nothing but the key</strong>. Stopping at 3NF is the right target for most transactional systems. Higher forms (BCNF, 4NF) rarely change a practical design.</p>
+
+  <h2><span class="num">§3</span>Breaking the Rules on Purpose</h2>
+
+  <p>Normalization is a tool, not a law. Controlled denormalization is justified when you have evidence:</p>
+  <ul>
+    <li><strong>Snapshots of history</strong>: an order line should store the unit price at purchase time, not look up today's price. This is not redundancy; it is a different fact.</li>
+    <li><strong>Derived values for speed</strong>: a cached <code>order_total</code> or a counter column, kept correct by a trigger or by the application inside the same transaction.</li>
+    <li><strong>Read-heavy reporting</strong>: a summary table or materialized view refreshed on a schedule.</li>
+    <li><strong>Semi-structured attributes</strong>: a <code>jsonb</code> column for properties that really do vary per row.</li>
+  </ul>
+  <pre>CREATE TABLE order_items (
+    order_id   bigint NOT NULL REFERENCES orders (id),
+    product_id bigint NOT NULL REFERENCES products (id),
+    quantity   int    NOT NULL CHECK (quantity &gt; 0),
+    unit_price numeric(10,2) NOT NULL,        <span class="comment">-- price at time of sale</span>
+    PRIMARY KEY (order_id, product_id)
+);</pre>
+  <p>Every denormalized column is a promise to keep two copies in sync. Write down who keeps that promise.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Normalize first, then denormalize only for a measured reason and with a clear owner for keeping copies consistent. Historical snapshots are not violations; they are different facts.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Storing a list in a column to "save a table"</td><td>Cannot query, index, or constrain individual values</td><td>Use a child table or, for truly flexible data, <code>jsonb</code></td></tr>
+    <tr><td>Copying customer details onto every order and treating them as current</td><td>Updates diverge and reports disagree</td><td>Reference the customer; snapshot only what must be historical (address at ship time)</td></tr>
+    <tr><td>Denormalizing before measuring anything</td><td>Extra write complexity with no proven benefit</td><td>Fix the query or add an index first; denormalize with evidence</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Take a flat spreadsheet of orders (customer, address, product, price, quantity) and normalize it to 3NF, listing each table's key.</li>
+      <li>Identify two columns in a schema you know that are snapshots, and two that are accidental copies.</li>
+      <li>Add a cached <code>order_total</code> and describe how you would keep it correct within a transaction.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Normalization stores each fact once, preventing update, insert, and delete anomalies.</li>
+      <li>3NF: each non-key attribute depends on the key, the whole key, and nothing but the key.</li>
+      <li>Denormalize deliberately, for history, measured performance, or flexible attributes, and name who keeps copies in sync.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Designing Schemas — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

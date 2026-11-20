@@ -1,0 +1,5 @@
+{
+  "title": "Garbage Collection",
+  "description": "Generational collection, G1, ZGC, and Shenandoah \u2014 what each one optimizes for.",
+  "order": 3
+}

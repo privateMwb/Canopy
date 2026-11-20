@@ -1,0 +1,5 @@
+{
+  "title": "Auth State & User Management",
+  "description": "Tracking the signed-in user, sign-out, and account linking.",
+  "order": 2
+}

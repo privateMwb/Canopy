@@ -1,0 +1,1 @@
+{"title": "Spinlocks vs. Sleeping Locks", "description": "When busy-waiting beats blocking, and the cost of each on a multicore machine.", "order": 5}

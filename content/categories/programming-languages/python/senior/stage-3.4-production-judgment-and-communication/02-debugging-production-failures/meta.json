@@ -1,0 +1,5 @@
+{
+  "title": "Debugging Production Failures",
+  "description": "Structured logging, tracebacks in the wild, and reading evidence from a system you can't attach a debugger to.",
+  "order": 2
+}

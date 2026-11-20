@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 \u2014 Runtime Internals",
+  "description": "The JIT, the garbage collector, spans, hidden allocations, and reflection \u2014 what actually happens to your code.",
+  "order": 1
+}

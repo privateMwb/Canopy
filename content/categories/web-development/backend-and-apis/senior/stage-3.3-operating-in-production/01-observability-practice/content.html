@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Observability Practice — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · operating in production</span> → lesson 01</p>
+  <h1>Observability Practice</h1>
+  <p class="lede">SLIs, SLOs, alerting, and dashboards that help.</p>
+
+  <h2><span class="num">§1</span>From Collecting Signals to Making Decisions</h2>
+
+  <p>In stage 2.4 you added logs, metrics, and traces. Practicing observability means deciding <em>what those signals are for</em>: knowing whether users are happy, being woken only when it matters, and diagnosing unfamiliar failures quickly. Three ideas do most of the work: SLIs, SLOs, and alerts built on them.</p>
+
+  <h2><span class="num">§2</span>SLIs and SLOs</h2>
+
+  <p>A <strong>Service Level Indicator (SLI)</strong> is a measurement of user-visible behavior, expressed as the proportion of "good" events. A <strong>Service Level Objective (SLO)</strong> is the target for that indicator over a window. Together they replace vague goals ("the API should be fast and reliable") with something you can measure and negotiate.</p>
+
+  <table>
+    <tr><th>User journey</th><th>SLI (good events / valid events)</th><th>SLO</th></tr>
+    <tr><td>Read notes</td><td>Requests returning non-5xx in under 300 ms</td><td>99.5% over 30 days</td></tr>
+    <tr><td>Checkout</td><td>Orders completed without server error</td><td>99.9% over 30 days</td></tr>
+    <tr><td>Data freshness</td><td>Search index updates visible within 60 s</td><td>99% over 30 days</td></tr>
+  </table>
+
+  <ul>
+    <li><strong>Measure what users experience,</strong> ideally at the edge (load balancer or client), not what is easy to measure on one host.</li>
+    <li><strong>Pick a few SLIs per critical journey</strong>, based on the golden signals: <strong>latency, traffic, errors, and saturation</strong>.</li>
+    <li><strong>100% is the wrong target.</strong> It is unaffordable, and users cannot tell 99.99% from 100% through their own network's flakiness. Choose the level at which extra reliability stops mattering to users.</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Error Budgets</h2>
+
+  <p>The gap between the SLO and 100% is your <strong>error budget</strong>: a 99.9% SLO over 30 days allows about 43 minutes of failure. The budget turns reliability into a shared, quantitative trade-off. While budget remains, ship features and take reasonable risks; when it is nearly spent, slow down releases and invest in stability. This ends the unproductive argument between "ship faster" and "be safer."</p>
+
+  <h2><span class="num">§4</span>Alert on Symptoms, Not Causes</h2>
+
+  <p>Page a human only for conditions that need <em>human action now</em> and that users would notice. High CPU on one node is a cause that may harm nobody; elevated error rate or latency on checkout is a symptom that always matters. Cause-based signals belong on dashboards and in tickets, not in a pager.</p>
+
+  <p>The best SLO alerts use <strong>burn rate</strong>: how fast you are consuming the error budget. A burn rate of 1 uses the budget exactly over the window; a burn rate of 14 would exhaust a 30-day budget in about two days. Combine a fast window to catch sharp outages and a slow window to catch gradual ones, which cuts both noise and missed incidents.</p>
+
+  <pre><span class="comment"># Prometheus alert rules (simplified): multi-window burn rate for a 99.9% availability SLO</span>
+- alert: CheckoutErrorBudgetFastBurn
+  expr: |
+    ( sum(rate(http_requests_total{route="/checkout",code=~"5.."}[5m])) / sum(rate(http_requests_total{route="/checkout"}[5m])) &gt; (14.4 * 0.001) )
+    and
+    ( sum(rate(http_requests_total{route="/checkout",code=~"5.."}[1h])) / sum(rate(http_requests_total{route="/checkout"}[1h])) &gt; (14.4 * 0.001) )
+  labels: { severity: page }
+  annotations:
+    summary: "Checkout burning error budget 14x too fast"
+    runbook: "https://wiki.example.com/runbooks/checkout-errors"</pre>
+
+  <ul>
+    <li><strong>Every page links to a runbook</strong> that says what the alert means, how to check impact, and what to try first.</li>
+    <li><strong>Tune ruthlessly.</strong> An alert that fires without needing action trains people to ignore the pager. Delete or downgrade it, or fix the underlying issue.</li>
+    <li><strong>Distinguish urgency:</strong> page for imminent user impact; open a ticket for slow-burn issues like disk filling over a week.</li>
+  </ul>
+
+  <h2><span class="num">§5</span>Dashboards That Help</h2>
+
+  <p>A good dashboard answers a question at a glance. Structure them top-down: an <strong>overview</strong> with SLO status and the golden signals per service; <strong>service dashboards</strong> broken down by route, version, and region; and <strong>dependency views</strong> for the database, cache, and queues. Mark deploys and feature-flag changes on the graphs, because "what changed?" is the first question in any incident. Avoid walls of every available metric: more graphs are not more insight.</p>
+
+  <h2><span class="num">§6</span>Making Unknown Problems Findable</h2>
+
+  <p>Dashboards cover failures you predicted. Observability earns its name when you can investigate failures you did not: high-cardinality, structured events (user, tenant, build version, route, region) that you can slice arbitrarily, plus traces linked to logs. If you can answer "is it slow only for tenant X on build 412 in region eu-west?" without shipping new code, your instrumentation is doing its job.</p>
+
+  <div class="callout">
+    <span class="label">Reliability is a product decision</span>
+    The SLO is not an engineering vanity number. It should be agreed with product and business stakeholders, in terms of user harm and cost. That conversation, not the dashboard, is where the value lies.
+  </div>
+
+  <h2><span class="num">§7</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Paging on CPU, memory, or other causes</td><td>Pages with no user impact, and alert fatigue</td><td>Page on SLO burn and user-visible symptoms; keep causes on dashboards</td></tr>
+    <tr><td>SLOs set at 100% or copied from another company</td><td>Unreachable targets, or numbers that mean nothing</td><td>Derive from user needs and current performance, and review regularly</td></tr>
+    <tr><td>Alerts with no runbook or owner</td><td>Responders start from zero at 3 a.m.</td><td>Attach a runbook, an owner, and the expected first steps to every alert</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Define two SLIs and SLOs for your service. Compute the monthly error budget in minutes for each.</li>
+      <li>Review the alerts you currently have, and for each decide whether it should page, create a ticket, or be deleted.</li>
+      <li>Build an overview dashboard with the four golden signals plus deploy markers, and use it to answer: did the last release change latency?</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>SLIs measure user-visible behavior, SLOs set targets, and error budgets make reliability a shared trade-off.</li>
+      <li>Page on symptoms and budget burn rate, with runbooks, rather than on low-level causes.</li>
+      <li>Instrument with high-cardinality context so you can diagnose failures you did not predict.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Operating in Production — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

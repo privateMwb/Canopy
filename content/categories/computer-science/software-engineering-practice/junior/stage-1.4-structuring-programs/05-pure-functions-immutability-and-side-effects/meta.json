@@ -1,0 +1,5 @@
+{
+  "title": "Pure Functions, Immutability & Side Effects",
+  "description": "Code that depends only on its inputs is easy to test and reason about; where to push the side effects instead.",
+  "order": 5
+}

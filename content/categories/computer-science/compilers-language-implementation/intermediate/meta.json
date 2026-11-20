@@ -1,0 +1,5 @@
+{
+  "title": "Intermediate",
+  "description": "Type checking, intermediate representations, bytecode VMs, and optimization.",
+  "order": 2
+}

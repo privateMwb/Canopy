@@ -1,0 +1,7 @@
+{
+  "title": "HTML & Semantic Markup",
+  "description": "Structure, forms, and media that browsers and screen readers understand.",
+  "order": 1,
+  "compileRoot": true,
+  "icon": "web_html"
+}

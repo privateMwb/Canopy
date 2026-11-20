@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interoperating with C &amp; Other Languages — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · engineering &amp; judgment</span> → lesson 04</p>
+  <h1>Interoperating with C &amp; Other Languages</h1>
+  <p class="lede">The common ground between languages is the C ABI, so crossing a language boundary means exposing a C-shaped interface and carefully handling ownership, errors, and strings.</p>
+
+  <h2><span class="num">§1</span>extern "C"</h2>
+
+  <p>C++ mangles names, so other languages can't find your functions. <code>extern "C"</code> gives a function C linkage: an unmangled name and the C calling convention.</p>
+
+  <pre><span class="comment">// mylib.h: usable from both C and C++</span>
+#ifdef __cplusplus
+extern "C" {
+#endif
+typedef struct Counter Counter;                   <span class="comment">// opaque handle</span>
+Counter* counter_create(void);
+void     counter_add(Counter*, int);
+int      counter_value(const Counter*);
+void     counter_destroy(Counter*);
+#ifdef __cplusplus
+}
+#endif</pre>
+
+  <pre><span class="comment">// mylib.cpp</span>
+struct Counter { int n{0}; };
+extern "C" Counter* counter_create() { return new Counter; }
+extern "C" void counter_add(Counter* c, int x) { c-&gt;n += x; }
+extern "C" int counter_value(const Counter* c) { return c-&gt;n; }
+extern "C" void counter_destroy(Counter* c) { delete c; }</pre>
+
+  <p>The inside can be rich C++, and the outside is a plain C interface.</p>
+
+  <h2><span class="num">§2</span>Rules at the Boundary</h2>
+
+  <ul>
+    <li><strong>Only C types</strong> cross: integers, floats, pointers, plain structs, function pointers. No <code>std::string</code>, <code>std::vector</code>, references, or classes.</li>
+    <li><strong>No exceptions may escape</strong>: catch everything at the boundary and convert to error codes. An exception propagating into C or another runtime is undefined behavior or a crash.</li>
+    <li><strong>Ownership must be explicit</strong>: whoever allocates must free, ideally with a matching <code>_destroy</code> or <code>_free</code> function from the same library, so allocators match.</li>
+    <li><strong>Strings</strong>: pass <code>const char*</code> plus length (or null-terminated) and document encoding (UTF-8) and who owns the memory.</li>
+    <li><strong>Fixed-width types</strong> (<code>int32_t</code>) and explicit struct packing avoid size surprises.</li>
+  </ul>
+
+  <pre>extern "C" int counter_parse(Counter* c, const char* text) noexcept {
+    try { c-&gt;n = std::stoi(text); return 0; }
+    catch (const std::exception&amp;) { return -1; }
+    catch (...) { return -2; }
+}</pre>
+
+  <h2><span class="num">§3</span>Calling C from C++</h2>
+
+  <p>Wrap C library handles in RAII types immediately so every exit path releases them, as in the RAII lesson.</p>
+
+  <pre>using FilePtr = std::unique_ptr&lt;std::FILE, decltype(&amp;std::fclose)&gt;;
+FilePtr f{std::fopen("x.txt", "r"), &amp;std::fclose};</pre>
+
+  <h2><span class="num">§4</span>Python Bindings</h2>
+
+  <p>Pybind11 and nanobind expose C++ functions and classes to Python with very little code, and handle type conversion, reference counting, and exceptions.</p>
+
+  <pre>#include &lt;pybind11/pybind11.h&gt;
+namespace py = pybind11;
+int add(int a, int b) { return a + b; }
+PYBIND11_MODULE(example, m) {
+    m.def("add", &amp;add, "Add two integers");
+    py::class_&lt;Counter&gt;(m, "Counter")
+        .def(py::init&lt;&gt;())
+        .def("add", &amp;Counter::add)
+        .def_property_readonly("value", &amp;Counter::value);
+}</pre>
+
+  <p>Consider the <strong>GIL</strong>: release it (<code>py::gil_scoped_release</code>) around long computations, and be careful about object lifetimes shared with Python. Other routes: <code>ctypes</code> and <code>cffi</code> on a C interface, SWIG, and for Rust, the <code>cxx</code> crate or <code>cbindgen</code>.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A language boundary is a trust boundary. Treat everything crossing it as untrusted input: validate sizes and pointers, never let exceptions through, and make ownership impossible to misread.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Letting a C++ exception propagate through a C callback or FFI call</td><td>Crash or undefined behavior</td><td>Catch all exceptions at the boundary and return an error code</td></tr>
+    <tr><td>Freeing memory with a different allocator than the one that allocated it</td><td>Heap corruption</td><td>Provide the library's own <code>destroy</code> function</td></tr>
+    <tr><td>Exposing <code>std::string</code> or a class in a C interface</td><td>Layout and ABI mismatch</td><td>Use <code>const char*</code> plus length, and opaque handles</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Wrap a small C++ class in a C interface, then call it from C and from Python with <code>ctypes</code>.</li>
+      <li>Write a pybind11 module exposing a function and a class, and release the GIL during a long loop.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>extern "C"</code> plus plain C types gives a stable, language-neutral boundary.</li>
+      <li>Catch every exception, make ownership explicit, and validate all inputs at the boundary.</li>
+      <li>Wrap C handles in RAII on the C++ side, and use pybind11 or nanobind for Python.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Engineering &amp; Judgment — Lesson 4 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

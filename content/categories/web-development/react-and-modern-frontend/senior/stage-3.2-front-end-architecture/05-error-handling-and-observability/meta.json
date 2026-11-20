@@ -1,0 +1,5 @@
+{
+  "title": "Error Handling & Observability",
+  "description": "Boundaries, logging, and tracing for front ends.",
+  "order": 5
+}

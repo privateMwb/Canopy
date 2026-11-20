@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnosing CPU, Memory &amp; Lock Contention — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · diagnosis & design judgment</span> → lesson 02</p>
+  <h1>Diagnosing CPU, Memory &amp; Lock Contention</h1>
+  <p class="lede">A systematic method, check each resource for use, saturation, and errors, beats guessing and keeps you from fixing the wrong bottleneck.</p>
+
+  <h2><span class="num">§1</span>The USE Method</h2>
+  <p>For every resource, check three things: <strong>Utilization</strong> (how busy is it?), <strong>Saturation</strong> (is work queued waiting for it?), and <strong>Errors</strong>. A resource at 100% utilization with a growing queue is a bottleneck; one with high utilization and no queue may be fine.</p>
+  <table>
+    <tr><th>Resource</th><th>Utilization</th><th>Saturation</th><th>Errors</th></tr>
+    <tr><td>CPU</td><td><code>mpstat</code> per-core %</td><td>Run queue length (<code>vmstat</code> r), load average</td><td>Throttling, machine-check events</td></tr>
+    <tr><td>Memory</td><td><code>free</code>, <code>MemAvailable</code></td><td>Swapping, major faults, PSI</td><td>OOM kills in <code>dmesg</code></td></tr>
+    <tr><td>Disk</td><td><code>iostat</code> %util</td><td>Queue depth, await time</td><td>I/O errors in logs</td></tr>
+    <tr><td>Network</td><td>Bandwidth in use</td><td>Drops, retransmits</td><td>Interface error counters</td></tr>
+  </table>
+  <pre>vmstat 1                   <span class="comment"># r = runnable, b = blocked, si/so = swap, us/sy/id/wa/st = CPU split</span>
+mpstat -P ALL 1            <span class="comment"># per-core view: one pegged core means a serial bottleneck</span>
+pidstat -w -u -r 1         <span class="comment"># per-process CPU, context switches, memory</span>
+iostat -x 1                <span class="comment"># disk utilization, queue size, latency</span></pre>
+
+  <h2><span class="num">§2</span>Reading the Signals</h2>
+  <ul>
+    <li><strong>High <code>us</code>:</strong> your code is computing. Profile it with <code>perf</code>.</li>
+    <li><strong>High <code>sy</code>:</strong> lots of kernel time: system calls, page faults, or lock contention. Check <code>strace -c</code> and context switches.</li>
+    <li><strong>High <code>wa</code>:</strong> CPUs idle while waiting on disk. Look at I/O, not CPU.</li>
+    <li><strong>High <code>st</code>:</strong> steal time: the hypervisor is giving your CPU to someone else.</li>
+    <li><strong>Load average high, CPU idle:</strong> threads are blocked, often in uninterruptible I/O (state D).</li>
+  </ul>
+  <p>Load average on Linux counts runnable tasks plus those in uninterruptible sleep, so a number above the core count doesn't by itself mean the CPU is the problem.</p>
+
+  <h2><span class="num">§3</span>A Worked Example: Slow Service, Low CPU</h2>
+  <p>A service has slow responses while CPU shows 30% busy. Work through it:</p>
+  <ol>
+    <li><code>vmstat</code>: <code>r</code> is low, <code>b</code> is low, <code>cs</code> (context switches) is very high. The CPU isn't saturated, but threads are constantly switching.</li>
+    <li><code>pidstat -w</code>: huge voluntary context switches, so threads are blocking and waking, not being preempted.</li>
+    <li><code>strace -f -c</code>: <code>futex</code> dominates syscall time. That's lock contention.</li>
+    <li><code>perf</code> off-CPU or a thread dump shows most threads waiting on one lock around a shared cache.</li>
+    <li>Fix: shard the lock, shorten the critical section, or reduce sharing. Re-measure.</li>
+  </ol>
+  <p>The conclusion came from following the evidence in order, with each step ruling out an alternative.</p>
+
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    Averages hide the problem. A 30% average CPU can coexist with one core pegged at 100% running a serial section, or with cgroup throttling. Look per core, per thread, and at percentiles.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Fixing the first anomaly you see</td><td>The real bottleneck remains</td><td>Check every resource with USE before deciding</td></tr>
+    <tr><td>Equating high load average with a CPU problem</td><td>It also counts tasks blocked on I/O</td><td>Compare <code>r</code> and <code>b</code> in <code>vmstat</code>, and check CPU states</td></tr>
+    <tr><td>Looking at system-wide averages only</td><td>A single hot thread or core goes unnoticed</td><td>Look per core and per thread (<code>mpstat -P ALL</code>, <code>top -H</code>)</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Generate load with <code>stress-ng</code> for CPU, memory, and I/O separately, and write down which <code>vmstat</code> columns change for each.</li>
+      <li>Build a program with heavy lock contention. Show how it looks in <code>vmstat</code>, <code>pidstat -w</code>, and <code>strace -c</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>USE: check utilization, saturation, and errors for every resource.</li>
+      <li>The split of user, system, I/O wait, and steal time points to where to look next.</li>
+      <li>Follow evidence step by step; averages and load numbers alone mislead.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Diagnosis & Design Judgment — Lesson 2 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

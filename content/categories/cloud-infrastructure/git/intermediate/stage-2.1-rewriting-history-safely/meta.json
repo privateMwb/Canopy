@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.1 — Rewriting History Safely",
+  "description": "Rebase, interactive rebase, cherry-pick, revert, reset, and the reflog.",
+  "order": 1
+}

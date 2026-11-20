@@ -1,0 +1,5 @@
+{
+  "title": "Junior",
+  "description": "Data structures, caching and session patterns, persistence, and running Redis safely.",
+  "order": 1
+}

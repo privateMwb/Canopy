@@ -1,0 +1,5 @@
+{
+  "title": "Loadable Extensions",
+  "description": "Adding capabilities such as vectors or geospatial indexes.",
+  "order": 3
+}

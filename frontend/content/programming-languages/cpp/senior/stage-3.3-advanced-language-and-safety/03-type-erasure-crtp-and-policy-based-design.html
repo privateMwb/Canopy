@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Type Erasure, CRTP &amp; Policy-Based Design — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · advanced language &amp; safety</span> → lesson 03</p>
+  <h1>Type Erasure, CRTP &amp; Policy-Based Design</h1>
+  <p class="lede">C++ has several ways to abstract over types, such as virtual functions, templates, and type erasure, and each trades speed, code size, flexibility, and binary compatibility differently.</p>
+
+  <h2><span class="num">§1</span>The Options</h2>
+
+  <ul>
+    <li><strong>Virtual functions</strong>: run-time polymorphism. One compiled function, indirect call, objects must inherit from a base.</li>
+    <li><strong>Templates / static polymorphism</strong>: compile-time polymorphism. A copy of the code per type, fully inlinable, no inheritance needed, but implementation must be visible and types differ.</li>
+    <li><strong>Type erasure</strong>: a value-semantic wrapper that hides the concrete type behind a uniform interface, combining the strengths of both.</li>
+  </ul>
+
+  <h2><span class="num">§2</span>CRTP (Curiously Recurring Template Pattern)</h2>
+
+  <p>A class derives from a template of itself, so the base can call derived functions with no virtual dispatch.</p>
+
+  <pre>template &lt;typename Derived&gt;
+struct Shape {
+    double area() const { return static_cast&lt;const Derived*&gt;(this)-&gt;areaImpl(); }
+    void describe() const { std::cout &lt;&lt; "area " &lt;&lt; area() &lt;&lt; '\n'; }
+};
+struct Circle : Shape&lt;Circle&gt; {
+    double r{1};
+    double areaImpl() const { return 3.14159 * r * r; }
+};</pre>
+
+  <p>It yields inlined calls and is how mixins like <code>std::enable_shared_from_this</code> or "add comparison operators from <code>&lt;</code>" are written. The costs: every derived type gets a different base, so there's no common type to store in a <code>vector</code>, and errors are harder to read. C++23 "deducing this" removes much of the need for CRTP.</p>
+
+  <h2><span class="num">§3</span>Policy-Based Design</h2>
+
+  <p>Configure behavior by passing small classes as template parameters.</p>
+
+  <pre>struct ThrowOnError { static void fail(const char* m) { throw std::runtime_error{m}; } };
+struct AbortOnError { static void fail(const char* m) { std::cerr &lt;&lt; m &lt;&lt; '\n'; std::abort(); } };
+
+template &lt;typename T, typename ErrorPolicy = ThrowOnError&gt;
+class Checked {
+    std::vector&lt;T&gt; v_;
+public:
+    T&amp; at(std::size_t i) {
+        if (i &gt;= v_.size()) ErrorPolicy::fail("index out of range");
+        return v_[i];
+    }
+};
+Checked&lt;int, AbortOnError&gt; a;</pre>
+
+  <p>Policies compile away, but each combination is a separate type, and too many policies make a class hard to use.</p>
+
+  <h2><span class="num">§4</span>Type Erasure</h2>
+
+  <p>Type erasure gives value semantics and a stable type to anything that fits an interface, with no inheritance in the user's types. <code>std::function</code> and <code>std::any</code> are examples. The pattern is a non-template handle holding a hidden virtual interface.</p>
+
+  <pre>class Drawable {
+    struct Concept {
+        virtual ~Concept() = default;
+        virtual void draw(std::ostream&amp;) const = 0;
+        virtual std::unique_ptr&lt;Concept&gt; clone() const = 0;
+    };
+    template &lt;typename T&gt;
+    struct Model final : Concept {
+        T value;
+        explicit Model(T v) : value{std::move(v)} {}
+        void draw(std::ostream&amp; os) const override { value.draw(os); }
+        std::unique_ptr&lt;Concept&gt; clone() const override { return std::make_unique&lt;Model&gt;(*this); }
+    };
+    std::unique_ptr&lt;Concept&gt; p_;
+public:
+    template &lt;typename T&gt; Drawable(T v) : p_{std::make_unique&lt;Model&lt;T&gt;&gt;(std::move(v))} {}
+    Drawable(const Drawable&amp; o) : p_{o.p_-&gt;clone()} {}
+    Drawable(Drawable&amp;&amp;) noexcept = default;
+    void draw(std::ostream&amp; os) const { p_-&gt;draw(os); }
+};
+std::vector&lt;Drawable&gt; scene{Circle{}, Square{}};     <span class="comment">// unrelated types, one container</span></pre>
+
+  <p>Costs: a heap allocation (unless small-buffer optimization is used), one indirect call, and more code. Benefits: types don't need a common base, and the interface can be added after the fact.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Choose by what varies and what must stay stable. If types are known at compile time and speed matters, use templates. If you need a heterogeneous collection or a stable binary interface, use virtual functions or type erasure.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using CRTP when a plain template function would do</td><td>Complexity for no benefit</td><td>Reserve CRTP for adding functionality to a class</td></tr>
+    <tr><td>Type erasure with expensive copies by default</td><td>Unexpected allocations when copied</td><td>Provide move, and document or avoid copy</td></tr>
+    <tr><td>Stacking five policy parameters</td><td>Hard to read, and each combination is a new type</td><td>Use fewer policies or runtime configuration</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Add comparison operators to a class via a CRTP <code>Comparable&lt;T&gt;</code> base that needs only <code>operator&lt;</code>.</li>
+      <li>Build a small <code>Callable&lt;R(Args...)&gt;</code> type-erased wrapper and compare its size and call overhead to <code>std::function</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Virtual functions, templates, and type erasure trade run-time cost, code size, and flexibility.</li>
+      <li>CRTP gives static polymorphism and mixins, and policies configure behavior at compile time.</li>
+      <li>Type erasure provides value-semantic polymorphism at the cost of an allocation and an indirect call.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Advanced Language &amp; Safety — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

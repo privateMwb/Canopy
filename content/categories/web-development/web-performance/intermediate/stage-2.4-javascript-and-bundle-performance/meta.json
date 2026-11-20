@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.4 — JavaScript & Bundle Performance",
+  "description": "Bundle analysis, code splitting, tree shaking, workers, and framework pitfalls.",
+  "order": 4
+}

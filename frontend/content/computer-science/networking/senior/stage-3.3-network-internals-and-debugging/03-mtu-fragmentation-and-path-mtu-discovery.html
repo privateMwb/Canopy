@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MTU, Fragmentation &amp; Path MTU Discovery — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · network internals & debugging</span> → lesson 03</p>
+  <h1>MTU, Fragmentation &amp; Path MTU Discovery</h1>
+  <p class="lede">A connection that works for small requests and hangs on large ones is often an MTU problem, hiding behind a filtered ICMP message.</p>
+
+  <h2><span class="num">§1</span>The Problem</h2>
+  <p>Each link has an MTU, the largest packet it can carry, and Ethernet's standard is 1500 bytes. A path may include a link with a smaller MTU, commonly because of VPNs, tunnels, or cloud overlays that add their own headers. A packet bigger than a link's MTU has to be fragmented or dropped.</p>
+  <table>
+    <tr><th>Setup</th><th>Typical MTU</th></tr>
+    <tr><td>Standard Ethernet</td><td>1500</td></tr>
+    <tr><td>WireGuard default</td><td>1420</td></tr>
+    <tr><td>PPPoE (some DSL)</td><td>1492</td></tr>
+    <tr><td>Jumbo frames (data centers)</td><td>9000</td></tr>
+  </table>
+  <p>In IPv4, a router *could* fragment a packet, but fragmentation is slow, and a lost fragment loses the whole datagram. So modern TCP sets the <strong>Don't Fragment</strong> (DF) bit and relies on discovery instead.</p>
+
+  <h2><span class="num">§2</span>Path MTU Discovery</h2>
+  <p><strong>PMTUD</strong> works like this: the sender sends packets with DF set. A router that can't forward a packet because it's too large drops it and sends back an ICMP message, 'fragmentation needed' (type 3, code 4), which includes the next-hop MTU. The sender lowers its segment size and resends.</p>
+  <pre>Sender (MTU 1500) ──► Router A ──► Router B (link MTU 1400) ──► ...
+  sends 1500-byte packet, DF set
+                         Router B drops it
+  ◄── ICMP 'fragmentation needed, MTU 1400' ──
+  sender now uses 1400-byte packets</pre>
+  <p>IPv6 routers never fragment; only the sender may, so PMTUD (via ICMPv6 'Packet Too Big') is mandatory there.</p>
+
+  <h2><span class="num">§3</span>The Blackhole Failure</h2>
+  <p>Many firewalls drop all ICMP as a misguided security measure. Then the 'too big' message never arrives, and the sender keeps resending packets that can never get through. The symptom is distinctive: the <strong>TCP handshake succeeds</strong> (tiny packets), small requests work, but anything large, a big response, a file upload, or a TLS handshake with a large certificate, <strong>hangs</strong>.</p>
+  <pre><span class="comment"># Find the working size: ping with DF set; payload + 28 bytes of headers = packet size</span>
+ping -M do -s 1472 example.com        <span class="comment"># 1472 + 28 = 1500: works on a clean path</span>
+ping -M do -s 1372 example.com        <span class="comment"># try smaller until it succeeds</span>
+tracepath example.com                 <span class="comment"># reports the discovered path MTU hop by hop</span></pre>
+  <ul>
+    <li><strong>MSS clamping:</strong> have the router or firewall rewrite the MSS in SYN packets to fit the smaller MTU, so TCP never builds oversized segments, the most common practical fix</li>
+    <li><strong>Allow ICMP 'fragmentation needed' / 'packet too big'</strong> through firewalls</li>
+    <li><strong>Set the right interface MTU</strong> on tunnel endpoints</li>
+    <li><strong>Packetization-layer PMTUD:</strong> Linux can probe sizes using TCP itself when ICMP is unreliable (<code>net.ipv4.tcp_mtu_probing</code>)</li>
+  </ul>
+  <p>QUIC avoids the issue differently, by starting with conservative datagram sizes, about 1200 bytes, and probing upward.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Handshake works but data hangs is the classic MTU signature. If small things work and big things stall, test with DF-flagged pings before looking anywhere else.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Blocking all ICMP at the firewall</td><td>PMTUD breaks and large transfers hang silently</td><td>Permit the ICMP types needed for path MTU discovery</td></tr>
+    <tr><td>Forgetting tunnel overhead when setting MTU</td><td>Packets exceed the real path limit after encapsulation</td><td>Subtract encapsulation headers from the interface MTU</td></tr>
+    <tr><td>Testing connectivity only with small requests</td><td>The failure appears only with larger payloads</td><td>Test with a range of sizes, including near-MTU</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use <code>ping -M do</code> with different <code>-s</code> values to find the largest unfragmented payload to a host. Convert it to an MTU.</li>
+      <li>Explain why a TLS handshake might hang when the server's certificate chain is large, but an HTTP request to a plain port works.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>MTU mismatches arise from tunnels and overlays, and PMTUD relies on ICMP messages to adapt.</li>
+      <li>Filtering ICMP creates blackholes where handshakes succeed and large transfers hang.</li>
+      <li>Fix with MSS clamping, allowing needed ICMP, and setting correct tunnel MTUs.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Network Internals & Debugging — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

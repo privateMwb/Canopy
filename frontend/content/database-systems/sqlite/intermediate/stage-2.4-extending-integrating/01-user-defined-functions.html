@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>User-Defined Functions — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · extending &amp; integrating</span> → lesson 01</p>
+  <h1>User-Defined Functions</h1>
+  <p class="lede">Your application can register its own functions, which SQL then calls like any built-in function.</p>
+
+  <h2><span class="num">§1</span>Registering a Function</h2>
+  <pre>import sqlite3, re
+
+def slugify(s):
+    return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
+
+con = sqlite3.connect(":memory:")
+con.create_function("slugify", 1, slugify, deterministic=True)
+print(con.execute("SELECT slugify('Hello, World!')").fetchone()[0])      <span class="comment"># hello-world</span></pre>
+  <pre>db.function("slugify", { deterministic: true }, (s) =&gt; s.toLowerCase().replace(/[^a-z0-9]+/g, "-"));</pre>
+  <p><code>deterministic</code> promises the same input always returns the same output, which lets SQLite use the function in indexes and optimize repeated calls.</p>
+  <h2><span class="num">§2</span>Aggregates and Collations</h2>
+  <pre>class Median:
+    def __init__(self): self.values = []
+    def step(self, v): self.values.append(v)
+    def finalize(self):
+        v = sorted(self.values); n = len(v)
+        return None if n == 0 else (v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2)
+
+con.create_aggregate("median", 1, Median)
+con.create_collation("nocase_unicode", lambda a, b: (a.casefold() &gt; b.casefold()) - (a.casefold() &lt; b.casefold()))</pre>
+  <h2><span class="num">§3</span>Use in Indexes</h2>
+  <pre>CREATE INDEX idx_post_slug ON post (slugify(title));</pre>
+  <p>An expression index may only call deterministic functions.</p>
+  <h2><span class="num">§4</span>Trade-Offs</h2>
+  <p>A function exists <strong>only on connections that registered it</strong>. Opening the database in the shell, or with another program, fails to evaluate it. Avoid depending on custom functions in indexes, triggers, or views if other tools must open the file.</p>
+  <div class="callout">
+    <span class="label">Gotcha</span>
+    If an index or a view uses a custom function, opening the file elsewhere can fail with "no such function". Think about every tool that will touch the database.
+  </div>
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using a custom function in an index</td><td>Other tools cannot use or rebuild the database</td><td>Prefer built-in functions in the schema</td></tr>
+    <tr><td>Marking a non-deterministic function <code>deterministic</code></td><td>Wrong results from caching or index use</td><td>Only mark true pure functions</td></tr>
+    <tr><td>Doing heavy work in a function called on every row</td><td>Slow queries</td><td>Filter rows with SQL first</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Register a <code>slugify</code> function and use it in a query and in an <code>UPDATE</code>.</li>
+      <li>Write a <code>median</code> aggregate and compare it with a manual SQL approach.</li>
+    </ol>
+  </div>
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Functions, aggregates, and collations can be registered from application code.</li>
+      <li>Mark pure functions <code>deterministic</code> so they can be optimized and indexed.</li>
+      <li>Custom functions exist only on the connections that register them.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Extending &amp; Integrating — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

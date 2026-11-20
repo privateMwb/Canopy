@@ -1,0 +1,5 @@
+{
+  "title": "Library & API Design",
+  "description": "Stable interfaces, ownership in signatures, and designing for users who can't see your source.",
+  "order": 1
+}

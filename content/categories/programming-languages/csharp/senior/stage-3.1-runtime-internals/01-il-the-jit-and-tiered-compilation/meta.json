@@ -1,0 +1,5 @@
+{
+  "title": "IL, the JIT & Tiered Compilation",
+  "description": "From C# to intermediate language to machine code, and what tiering and Native AOT change.",
+  "order": 1
+}

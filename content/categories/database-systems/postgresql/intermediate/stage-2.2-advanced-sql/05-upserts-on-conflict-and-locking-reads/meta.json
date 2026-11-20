@@ -1,0 +1,5 @@
+{
+  "title": "Upserts, ON CONFLICT & Locking Reads",
+  "description": "INSERT ... ON CONFLICT, SELECT ... FOR UPDATE, and idempotent writes.",
+  "order": 5
+}

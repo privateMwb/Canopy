@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Advanced Features",
+  "description": "JSON functions, FTS5 search, window functions and generated columns, triggers and upsert, and STRICT tables.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Minification, Compression & Bundling",
+  "description": "Gzip, Brotli, and smaller files.",
+  "order": 3
+}

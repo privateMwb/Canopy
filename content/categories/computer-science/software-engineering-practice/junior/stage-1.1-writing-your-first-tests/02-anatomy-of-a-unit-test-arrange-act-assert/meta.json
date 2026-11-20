@@ -1,0 +1,5 @@
+{
+  "title": "Anatomy of a Unit Test: Arrange, Act, Assert",
+  "description": "Structure a test so it fails for one reason, reads like a spec, and needs no hidden setup.",
+  "order": 2
+}

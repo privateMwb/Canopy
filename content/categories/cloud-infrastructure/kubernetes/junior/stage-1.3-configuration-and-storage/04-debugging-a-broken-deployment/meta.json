@@ -1,0 +1,5 @@
+{
+  "title": "Debugging a Broken Deployment",
+  "description": "Reading events and fixing CrashLoopBackOff, ImagePullBackOff, and Pending.",
+  "order": 4
+}

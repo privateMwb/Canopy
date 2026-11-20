@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Firebase Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1;
+    --card: #FFFFFF;
+    --ink: #1C1F26;
+    --muted: #63636B;
+    --line: #E4E1D7;
+    --l1: #2D6A6A;
+    --l1-soft: #E7F0EF;
+    --l2: #A9752E;
+    --l2-soft: #F3EADC;
+    --l3: #7A2E3B;
+    --l3-soft: #F2E3E5;
+    --check: #1C1F26;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #15171C;
+      --card: #1C1F26;
+      --ink: #EDEBE4;
+      --muted: #9A9AA3;
+      --line: #2D303A;
+      --l1-soft: #1B2927;
+      --l2-soft: #2A2419;
+      --l3-soft: #2B1D21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171C;
+    --card: #1C1F26;
+    --ink: #EDEBE4;
+    --muted: #9A9AA3;
+    --line: #2D303A;
+    --l1-soft: #1B2927;
+    --l2-soft: #2A2419;
+    --l3-soft: #2B1D21;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 96px; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 20px;
+  }
+  .note {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+    max-width: 56ch;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin: 40px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  section.level { margin-bottom: 64px; }
+  .level-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+  .level-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0;
+  }
+  .level-goal {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 16px 0 36px;
+    max-width: 56ch;
+  }
+
+  .stage { margin-bottom: 36px; padding-left: 20px; border-left: 2px solid var(--accent-soft); }
+  .stage-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage > .lesson:first-of-type { border-top: none; }
+  .lesson-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .lesson-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 3px;
+  }
+  .lesson-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .checkpoint {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-top: 6px;
+  }
+  .checkpoint .lesson-title { display: flex; align-items: center; gap: 7px; }
+  .checkpoint .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lvl-junior { --accent: var(--l1); --accent-soft: var(--l1-soft); }
+  .lvl-intermediate { --accent: var(--l2); --accent-soft: var(--l2-soft); }
+  .lvl-senior { --accent: var(--l3); --accent-soft: var(--l3-soft); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 20px;
+  }
+  footer p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0 0 12px;
+  }
+  footer strong { color: var(--ink); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 44px 18px 72px; }
+    h1 { font-size: 32px; }
+    .stage { padding-left: 14px; }
+    .lesson { grid-template-columns: 24px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">curriculum / firebase</p>
+    <h1>From your first Firestore read to a Firebase backend you can defend</h1>
+    <p class="lede">Three levels, twelve stages — Firestore, Auth, and security rules first, then data modeling, Cloud Functions, and realtime behavior, built toward the cost control, architecture, and judgment to scale a Firebase backend or leave it.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--l1)"></span>Junior</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l2)"></span>Intermediate</span>
+      <span class="legend-item"><span class="dot" style="background:var(--l3)"></span>Senior</span>
+    </div>
+  </header>
+
+    <!-- LEVEL 1 -->
+  <section class="level lvl-junior">
+    <div class="level-head">
+      <span class="level-num">LVL 01</span>
+      <h2>Junior</h2>
+    </div>
+    <p class="level-goal">Go from "I've heard Firebase is easy" to "I can build an app with Firestore, Auth, and security rules that actually protect the data."</p>
+
+    <div class="stage">
+      <p class="stage-title">1.1 — Firebase Foundations</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">What Firebase Is</p><p class="lesson-desc">The product family, what runs where, and the problems it removes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Projects, the Console &amp; the CLI</p><p class="lesson-desc">Creating a project, the Firebase CLI, and how configuration is organized.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Connecting a Web App</p><p class="lesson-desc">The modular SDK, app configuration, and what is and isn't secret.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">The Firestore Data Model</p><p class="lesson-desc">Collections, documents, subcollections, and field types.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Reading &amp; Writing Documents</p><p class="lesson-desc">Setting, adding, updating, and deleting, and what each call returns.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Build a small notes or tasks app that reads and writes Firestore from the browser, with data you can inspect in the console.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.2 — Firestore Queries</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Queries &amp; Filters</p><p class="lesson-desc">where clauses, comparison operators, and what Firestore can and cannot filter.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Ordering, Limits &amp; Pagination</p><p class="lesson-desc">orderBy, limit, and cursor-based paging.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Real-Time Listeners</p><p class="lesson-desc">onSnapshot, local writes, and keeping the UI in sync.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Data Types, References &amp; Timestamps</p><p class="lesson-desc">References, server timestamps, arrays, maps, and their quirks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Composite Indexes &amp; Query Limits</p><p class="lesson-desc">Why some queries need an index and how to read the error that tells you.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add filtering, sorting, pagination, and live updates to the app, and explain which indexes each query needs.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.3 — Authentication &amp; Security Basics</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Firebase Authentication</p><p class="lesson-desc">Email, social providers, and anonymous users.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Auth State &amp; User Management</p><p class="lesson-desc">Tracking the signed-in user, sign-out, and account linking.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Your First Security Rules</p><p class="lesson-desc">The default locked state, match and allow, and why test mode is dangerous.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Ownership-Based Rules</p><p class="lesson-desc">Letting users read and write only their own data.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing Rules with the Emulator</p><p class="lesson-desc">Running rules locally and proving what is allowed and denied.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Lock the app down so each user can reach only their own data, and write emulator tests for every allow and deny case.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">1.4 — Beyond Firestore</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Cloud Storage for Firebase</p><p class="lesson-desc">Uploading files, access rules, and download URLs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Realtime Database vs. Firestore</p><p class="lesson-desc">The older database, its model, and how to choose between the two.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Firebase Hosting &amp; Deployment</p><p class="lesson-desc">Deploying a site, previews, and rollbacks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">The Emulator Suite</p><p class="lesson-desc">Developing and testing the whole stack locally.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Environments &amp; Configuration</p><p class="lesson-desc">Separate projects for development and production, and managing their configs.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Deploy the app to Hosting with separate dev and production projects, user-uploaded files, and a full emulator-based test run.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 2 -->
+  <section class="level lvl-intermediate">
+    <div class="level-head">
+      <span class="level-num">LVL 02</span>
+      <h2>Intermediate</h2>
+    </div>
+    <p class="level-goal">Go from "it works in the demo" to "I can model data for reads, write real security rules, and add server logic safely."</p>
+
+    <div class="stage">
+      <p class="stage-title">2.1 — Data Modeling</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Modeling for Reads</p><p class="lesson-desc">Denormalization, duplicating data on purpose, and keeping copies consistent.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Subcollections vs. Top-Level Collections</p><p class="lesson-desc">Query scope, collection group queries, and the trade-offs.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Counters &amp; Aggregations</p><p class="lesson-desc">Aggregate queries, distributed counters, and when to precompute.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Transactions &amp; Batched Writes</p><p class="lesson-desc">Atomic multi-document updates and their limits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Offline Persistence &amp; Sync</p><p class="lesson-desc">Local caching, offline writes, and how conflicts resolve.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design the data model for a chat or social app from its list of screens, and defend every duplicated field.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.2 — Security Rules in Depth</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Rules Language</p><p class="lesson-desc">Functions, request and resource objects, and reading rules like code.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Validating Data in Rules</p><p class="lesson-desc">Enforcing types, required fields, and allowed changes.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Role-Based &amp; Attribute-Based Access</p><p class="lesson-desc">Custom claims, membership documents, and sharing data between users.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Rules Performance &amp; Cost</p><p class="lesson-desc">get() and exists() calls, their limits, and their billing.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Testing &amp; CI for Rules</p><p class="lesson-desc">Automated rules tests that run on every change.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write and test a rules file for a multi-user app with roles, field validation, and shared documents, with no unprotected path.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.3 — Cloud Functions &amp; Backend Logic</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Triggers: Firestore, Auth &amp; HTTP</p><p class="lesson-desc">Running code when data changes or a request arrives.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Callable Functions &amp; App Check</p><p class="lesson-desc">Authenticated client calls, and verifying that requests come from your app.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Scheduled &amp; Background Work</p><p class="lesson-desc">Cron-style jobs and long-running tasks.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Idempotency, Retries &amp; Errors</p><p class="lesson-desc">Handling duplicate deliveries without duplicate effects.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Configuration &amp; Secrets</p><p class="lesson-desc">Environment values, secret storage, and keeping keys out of code.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Add server logic for something clients must not do themselves, such as payments or role changes, and make it safe to retry.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">2.4 — Realtime &amp; Mobile Concerns</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">The Realtime Database Model</p><p class="lesson-desc">Tree data, queries, and the situations where it still wins.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Listener Management &amp; Read Costs</p><p class="lesson-desc">Detaching listeners, and what a chatty UI costs on the bill.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Offline Behavior &amp; Conflict Handling</p><p class="lesson-desc">Designing for flaky connections and concurrent edits.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Cloud Messaging</p><p class="lesson-desc">Push notifications and message handling on web and mobile.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Remote Config &amp; Analytics</p><p class="lesson-desc">Changing behavior without a release, and measuring what users do.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Make an app behave well offline, reduce its read count by half with evidence, and add a feature flag and a push notification.</p></div></div>
+    </div>
+
+  </section>
+    <!-- LEVEL 3 -->
+  <section class="level lvl-senior">
+    <div class="level-head">
+      <span class="level-num">LVL 03</span>
+      <h2>Senior</h2>
+    </div>
+    <p class="level-goal">Go from "I use Firebase" to "I can control cost and scale, design the architecture, and decide whether Firebase is the right backend."</p>
+
+    <div class="stage">
+      <p class="stage-title">3.1 — Scaling &amp; Cost</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">How Firebase Pricing Works</p><p class="lesson-desc">Reads, writes, deletes, storage, and the traps that cause surprise bills.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Hotspots &amp; Write Limits</p><p class="lesson-desc">Sequential keys, index hotspots, and per-document write rates.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Index Design &amp; Exemptions</p><p class="lesson-desc">Controlling index storage and write cost.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Pagination, Bundles &amp; Caching at Scale</p><p class="lesson-desc">Reducing reads for popular, read-heavy data.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Quotas, Limits &amp; Locations</p><p class="lesson-desc">Hard limits, region choice, and planning around both.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Estimate the monthly cost of a real workload, find the three biggest cost drivers, and redesign to cut them.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.2 — Architecture Patterns</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Direct Client Access vs. a Backend Layer</p><p class="lesson-desc">When security rules are enough and when an API is safer.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Multi-Tenancy</p><p class="lesson-desc">Isolating customers in one project, and the limits of that approach.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Data Lifecycle: TTL, Exports &amp; Backups</p><p class="lesson-desc">Expiring data, scheduled exports, and point-in-time recovery.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Eventing &amp; Analytics Integration</p><p class="lesson-desc">Pub/Sub, BigQuery export, and feeding other systems.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Adding Search</p><p class="lesson-desc">Why Firestore has no full-text search and how to bolt it on.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Design a multi-tenant architecture for a SaaS product on Firebase, including its backup, search, and analytics paths.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.3 — Security &amp; Reliability</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Abuse Prevention &amp; App Check</p><p class="lesson-desc">Stopping scripted clients and quota exhaustion.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Threat Modeling for Rules</p><p class="lesson-desc">Reviewing rules as an attacker would.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Admin SDK &amp; Privileged Access</p><p class="lesson-desc">What bypasses rules, and keeping that access minimal.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Disaster Recovery</p><p class="lesson-desc">Backups, restores, and the failure scenarios a managed service doesn't solve for you.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">Logging &amp; Observability</p><p class="lesson-desc">Function logs, alerts, and tracing a problem across services.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Run a security review of an existing Firebase project, report concrete findings ranked by risk, and fix the top three.</p></div></div>
+    </div>
+
+    <div class="stage">
+      <p class="stage-title">3.4 — Judgment &amp; Migration</p>
+      <div class="lesson"><span class="lesson-num">01</span><div><p class="lesson-title">Firebase or Postgres?</p><p class="lesson-desc">A decision framework for relational versus document, and managed versus self-run.</p></div></div>
+      <div class="lesson"><span class="lesson-num">02</span><div><p class="lesson-title">Vendor Lock-in &amp; Exit Strategy</p><p class="lesson-desc">What is portable, what isn't, and planning an exit before you need one.</p></div></div>
+      <div class="lesson"><span class="lesson-num">03</span><div><p class="lesson-title">Migrating Data In and Out</p><p class="lesson-desc">Exports, transformations, and moving without downtime.</p></div></div>
+      <div class="lesson"><span class="lesson-num">04</span><div><p class="lesson-title">Cost Forecasting &amp; Growth Planning</p><p class="lesson-desc">What happens to the bill and the design at ten times the users.</p></div></div>
+      <div class="lesson"><span class="lesson-num">05</span><div><p class="lesson-title">When Firebase Is the Wrong Tool</p><p class="lesson-desc">Honest limits and the cases where another backend wins.</p></div></div>
+      <div class="lesson checkpoint"><span class="lesson-num">06</span><div><p class="lesson-title">Checkpoint <span class="tag">unscaffolded</span></p><p class="lesson-desc">Write a design document for a real product: why Firebase, the data model, cost forecast, exit plan, and the risks you accept, argued for a skeptical reviewer.</p></div></div>
+    </div>
+
+  </section>
+  <footer>
+    <p><strong>Checkpoints are deliberately unscaffolded.</strong> If you can finish one without hints, the stage actually landed, not just the following-along.</p>
+    <p><strong>Levels aren't strict walls.</strong> Security rules appear at Junior as ownership checks, return at Intermediate as validation and roles, and come back at Senior as threat modeling and abuse prevention. Cost follows the same arc: reads and writes, then listener behavior, then forecasting and architecture. Revisiting a topic at a harder level is expected.</p>
+    <p><strong>Senior is about judgment as much as mechanism.</strong> Knowing how Firestore indexes or hotspots behave is one skill; deciding whether Firebase should be the backend at all, planning the exit, and writing that down for a skeptical reviewer, is another, and the last stage is built around that gap.</p>
+  </footer>
+
+</div>
+</body>
+</html>

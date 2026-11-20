@@ -1,0 +1,5 @@
+{
+  "title": "Aggregation & GROUP BY",
+  "description": "COUNT, SUM, AVG, GROUP BY, HAVING, and the rule about every selected column.",
+  "order": 3
+}

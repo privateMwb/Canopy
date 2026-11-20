@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.3 — Platform Practice & Judgment",
+  "description": "Standards for base images, observing container performance, choosing a scale of orchestration, and knowing when containers are not the answer.",
+  "order": 3
+}

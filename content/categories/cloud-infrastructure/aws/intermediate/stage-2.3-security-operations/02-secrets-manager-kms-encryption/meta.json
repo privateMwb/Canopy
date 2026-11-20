@@ -1,0 +1,5 @@
+{
+  "title": "Secrets Manager, KMS & Encryption",
+  "description": "Managing keys and secrets, and encrypting data at rest and in transit.",
+  "order": 2
+}

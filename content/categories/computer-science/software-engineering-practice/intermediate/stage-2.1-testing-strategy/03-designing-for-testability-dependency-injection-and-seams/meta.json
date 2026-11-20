@@ -1,0 +1,5 @@
+{
+  "title": "Designing for Testability: Dependency Injection & Seams",
+  "description": "Passing collaborators in rather than reaching for them, so clocks, files, and networks can be swapped in tests.",
+  "order": 3
+}

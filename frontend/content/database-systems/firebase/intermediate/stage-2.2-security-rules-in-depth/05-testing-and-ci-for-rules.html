@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Testing &amp; CI for Rules — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.2 · security rules in depth</span> → lesson 05</p>
+  <h1>Testing &amp; CI for Rules</h1>
+  <p class="lede">Rules are code that guards your data, so they should have tests that run automatically before every deploy.</p>
+
+  <h2><span class="num">§1</span>A Reusable Test Setup</h2>
+  <p>Structure tests so each case is a small, named statement of policy.</p>
+  <pre>import { initializeTestEnvironment, assertSucceeds, assertFails } from "@firebase/rules-unit-testing";
+import { readFileSync } from "fs";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+
+let env;
+beforeAll(async () =&gt; {
+  env = await initializeTestEnvironment({
+    projectId: "demo-rules",
+    firestore: { rules: readFileSync("firestore.rules", "utf8") },
+  });
+});
+afterAll(() =&gt; env.cleanup());
+beforeEach(() =&gt; env.clearFirestore());
+
+const as = (uid) =&gt; env.authenticatedContext(uid, { role: "member" }).firestore();
+
+test("owner can edit title but not ownerId", async () =&gt; {
+  await env.withSecurityRulesDisabled(async (ctx) =&gt; {
+    await setDoc(doc(ctx.firestore(), "notes/n1"), { ownerId: "alice", title: "a" });
+  });
+  await assertSucceeds(updateDoc(doc(as("alice"), "notes/n1"), { title: "b" }));
+  await assertFails(updateDoc(doc(as("alice"), "notes/n1"), { ownerId: "bob" }));
+});</pre>
+  <p>The second argument to <code>authenticatedContext</code> sets custom claims, so you can test admin and role behavior.</p>
+  <h2><span class="num">§2</span>Run Tests in CI</h2>
+  <pre>firebase emulators:exec --only firestore "npm test"</pre>
+  <p>In GitHub Actions or any CI system, run that command on every pull request, and block merging if it fails. Deploy rules from CI only after tests pass.</p>
+  <pre>- run: npm ci
+- run: npx firebase-tools emulators:exec --only firestore "npm test"
+- run: npx firebase-tools deploy --only firestore:rules --project prod   <span class="comment"># on main only</span></pre>
+  <h2><span class="num">§3</span>What to Cover</h2>
+  <p>For every collection, test a signed-out user, a normal user, the owner, a different user, and an admin, against each of get, list, create, update, and delete. Add a test for each bug you ever fix so it cannot come back. Rules coverage reports from the emulator show which <code>allow</code> statements your tests never exercised.</p>
+  <div class="callout">
+    <span class="label">A rule without a test is a guess</span>
+    Rules are easy to read as correct and still be wrong. Tests turn "I think this is secure" into something that fails loudly when a later edit breaks it.
+  </div>
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Testing as a single user</td><td>Cross-user holes are never exercised</td><td>Test owner, other user, signed-out, and admin</td></tr>
+    <tr><td>Seeding data through rules</td><td>Setup fails for the wrong reasons</td><td>Use <code>withSecurityRulesDisabled</code> to seed</td></tr>
+    <tr><td>Deploying rules without running tests</td><td>A broken rule reaches production</td><td>Gate deploys on passing tests in CI</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a test matrix for one collection covering four kinds of user and five operations.</li>
+      <li>Add a CI job that runs the rules tests on every pull request.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Test rules with the emulator and <code>rules-unit-testing</code>, including custom claims.</li>
+      <li>Run tests in CI and deploy only when they pass.</li>
+      <li>Cover every user type and operation, and add a test for every fixed bug.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.2 · Security Rules in Depth — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

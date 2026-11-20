@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Writing &amp; Defending a Design Document — Lesson 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · correctness, tooling &amp; design judgment</span> → lesson 04</p>
+  <h1>Writing &amp; Defending a Design Document</h1>
+  <p class="lede">A design document records a decision's problem, alternatives, and risks, so reviewers can disagree with specific parts instead of with the whole.</p>
+
+  <h2><span class="num">§1</span>Why write it down</h2>
+  <p>A design that lives only in someone's head can't be reviewed, only trusted. Writing it down forces you to find the gaps in your own thinking, and it lets others find the ones you missed, before the feature is built, when changing it is cheap.</p>
+  <p>A design document also outlives the discussion. Months later, when someone asks 'why does it work this way?', the document holds the reasons, and the rejected alternatives, so the same debate isn't repeated.</p>
+
+  <h2><span class="num">§2</span>A structure that works</h2>
+  <p>Good design documents for language and compiler changes share a shape.</p>
+  <pre>Title and status           (draft / accepted / rejected / implemented)
+1. Problem                 what's painful today, with a concrete example
+2. Goals and non-goals     what this must do, and what it deliberately won't
+3. Proposal                syntax, semantics, and edge cases, with examples
+4. Implementation plan     changes to each stage, and a testing plan
+5. Alternatives considered what else could solve it, and why not
+6. Risks and open questions what could go wrong, and what you don't yet know
+7. Compatibility           effect on existing programs and tools</pre>
+  <p>The <strong>non-goals</strong> and <strong>alternatives</strong> sections do the most for review quality. A reader who knows what you ruled out, and why, argues with your reasoning instead of repeating options you already considered.</p>
+  <pre>Example, proposed 'defer' statement for Twig:
+  Problem:     cleanup code is far from the code that needs it, and missed on early return
+  Non-goal:    full exception support
+  Alternative: try/finally  (rejected: heavier syntax, needs exceptions first)
+  Risk:        interacts with 'return' values and with loops that 'break'</pre>
+
+  <h2><span class="num">§3</span>Defending a design</h2>
+  <p>Review is not an attack, but it will find weaknesses. Prepare for the questions reviewers always ask.</p>
+  <ul>
+    <li><strong>'Why not just...?'</strong> Have the alternative and the reason ready.</li>
+    <li><strong>'What about this edge case?'</strong> Keep a list of edge cases and their answers in the document.</li>
+    <li><strong>'How will you test it?'</strong> Say which tests, which fuzz generators, and which existing programs.</li>
+    <li><strong>'What does this cost?'</strong> Give numbers where possible: code size, compile-time, performance.</li>
+    <li><strong>'What if we're wrong?'</strong> Describe how you'd back it out, or limit the damage.</li>
+  </ul>
+  <p>When a reviewer finds a real flaw, change the document, and record the change and the reason. A design that survives honest challenge is stronger, and one that was never challenged is only untested. Explaining tradeoffs plainly, including what's uncertain, builds more trust than claiming everything is settled.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    A design document is a tool for being wrong cheaply. It moves disagreement from after the code is written to before, and gives it something precise to point at.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Writing only the proposal</td><td>Reviewers re-propose the alternatives you already rejected</td><td>Include goals, non-goals, and alternatives with reasons</td></tr>
+    <tr><td>Hiding open questions</td><td>Reviewers find them and trust the rest less</td><td>List what you don't know yet, with a plan for each</td></tr>
+    <tr><td>Treating review feedback as opposition</td><td>Real flaws get defended instead of fixed</td><td>Treat each objection as a test of the design and update the document</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write the one-page design document for adding <code>defer</code> or pattern matching to Twig, using the seven-part structure.</li>
+      <li>Pair up, or imagine a skeptical reviewer, and list the five hardest questions about your document, then answer each in writing.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>A design document states the problem, goals, proposal, plan, alternatives, and risks.</li>
+      <li>Non-goals and rejected alternatives improve review more than anything else.</li>
+      <li>Defend a design with prepared answers, and change the document when a flaw is real.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Correctness, Tooling &amp; Design Judgment — Lesson 4 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

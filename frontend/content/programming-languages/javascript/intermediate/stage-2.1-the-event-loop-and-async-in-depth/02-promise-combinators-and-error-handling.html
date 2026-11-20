@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Promise Combinators &amp; Error Handling — Lesson 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.1 · the event loop &amp; async in depth</span> → lesson 02</p>
+  <h1>Promise Combinators &amp; Error Handling</h1>
+  <p class="lede"><code>all</code>, <code>allSettled</code>, <code>race</code>, and <code>any</code> combine several promises into one, and each answers a different question about success and failure.</p>
+
+  <h2><span class="num">§1</span>The Four Combinators</h2>
+
+  <p>All four take an iterable of promises. They differ in *when they settle* and *what they return*.</p>
+
+  <pre>const jobs = [fetchA(), fetchB(), fetchC()];
+
+await Promise.all(jobs);          <span class="comment">// all succeed -&gt; array of values; first reject -&gt; rejects</span>
+await Promise.allSettled(jobs);   <span class="comment">// never rejects -&gt; [{status, value|reason}, ...]</span>
+await Promise.race(jobs);         <span class="comment">// first to settle (success OR failure) wins</span>
+await Promise.any(jobs);          <span class="comment">// first to *succeed*; rejects only if all fail (AggregateError)</span></pre>
+
+  <pre>const results = await Promise.allSettled([getUser(), getPosts(), getAds()]);
+for (const r of results) {
+  if (r.status === "fulfilled") use(r.value);
+  else console.warn("failed:", r.reason);   <span class="comment">// optional pieces don't break the page</span>
+}
+
+<span class="comment">// Mirror requests; take the fastest successful one</span>
+const data = await Promise.any([fetch(mirror1), fetch(mirror2)]);</pre>
+
+  <h2><span class="num">§2</span>Choosing the Right One</h2>
+
+  <p>Use <code>all</code> when you need *every* result and one failure invalidates the rest. Use <code>allSettled</code> when partial success is acceptable. Use <code>race</code> for timeouts (a promise that rejects after N ms). Use <code>any</code> for redundancy.</p>
+
+  <pre>const timeout = (ms) =&gt;
+  new Promise((_, reject) =&gt; setTimeout(() =&gt; reject(new Error("timeout")), ms));
+
+const res = await Promise.race([fetch("/slow"), timeout(3000)]);
+<span class="comment">// Note: the fetch itself isn't cancelled — next lesson covers AbortController</span></pre>
+
+  <h2><span class="num">§3</span>Unhandled Rejections</h2>
+
+  <p>A rejected promise with no handler by the time the microtask queue drains triggers <code>unhandledrejection</code> (browser) or <code>unhandledRejection</code> (Node, which since v15 <strong>terminates the process</strong> by default). The usual culprits: a missing <code>.catch</code>, a forgotten <code>await</code>, or a floating promise inside a loop.</p>
+
+  <pre>async function save() { throw new Error("db down"); }
+
+function bad() { save(); }                  <span class="comment">// floating promise — nothing handles it</span>
+async function good() {
+  try { await save(); } catch (e) { report(e); }
+}
+
+window.addEventListener("unhandledrejection", (e) =&gt; report(e.reason));
+process.on("unhandledRejection", (reason) =&gt; { report(reason); });   <span class="comment">// Node — last resort</span></pre>
+
+  <p>Global handlers are a safety net for logging, not a place to handle errors. Handle each failure where you have the context to react to it.</p>
+
+  <div class="callout">
+    <span class="label">A subtle trap</span>
+    <code>Promise.all</code> rejecting does <strong>not</strong> cancel the other promises — they keep running, and their later rejections are silently ignored. If you need to stop work, you need cancellation, not just a combinator.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Using <code>Promise.all</code> when some results are optional</td><td>One failure discards every other result</td><td>Use <code>allSettled</code> and handle each outcome</td></tr>
+    <tr><td>Calling an async function without <code>await</code> or <code>.catch</code></td><td>Floating promise; rejection goes unhandled</td><td><code>await</code> it, return it, or attach <code>.catch</code></td></tr>
+    <tr><td>Expecting <code>Promise.race</code> to cancel the losers</td><td>They keep running in the background</td><td>Pair with <code>AbortController</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Fetch three URLs with <code>allSettled</code> and print how many succeeded and failed, with the failure reasons.</li>
+      <li>Implement <code>withTimeout(promise, ms)</code> using <code>Promise.race</code> and make sure the timer is cleared when the promise wins.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>all</code> = every success, <code>allSettled</code> = every outcome, <code>race</code> = first to settle, <code>any</code> = first success.</li>
+      <li>A floating promise is an unhandled rejection waiting to happen — <code>await</code> it or <code>.catch</code> it.</li>
+      <li>Combinators don't cancel the losing work; they only change what you wait for.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.1 · The Event Loop &amp; Async in Depth — Lesson 2 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

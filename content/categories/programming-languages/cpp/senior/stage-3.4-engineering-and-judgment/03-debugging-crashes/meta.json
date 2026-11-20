@@ -1,0 +1,5 @@
+{
+  "title": "Debugging Crashes",
+  "description": "Core dumps, gdb and lldb, and reading a stack from a failure you can't reproduce.",
+  "order": 3
+}

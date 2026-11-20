@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Designing APIs for Other Teams — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.4 · judgment &amp; communication</span> → lesson 01</p>
+  <h1>Designing APIs for Other Teams</h1>
+  <p class="lede">Treating consumers as customers.</p>
+
+  <h2><span class="num">§1</span>Your Consumers Are Your Customers</h2>
+
+  <p>An internal API used by three other teams is a product, and those teams are its customers. They did not choose your design, they cannot easily switch away, and every awkward decision you make is multiplied across everyone who integrates. The senior skill here is less about clever endpoints than about <strong>empathy, clarity, and stability</strong>: making it easy to do the right thing, hard to do the wrong thing, and safe to depend on you.</p>
+
+  <h2><span class="num">§2</span>Start From the Consumer's Job</h2>
+
+  <ul>
+    <li><strong>Interview consumers before designing.</strong> Ask what they are trying to accomplish, what they do today, and what hurts. Design around those jobs, not around your database tables.</li>
+    <li><strong>Write the integration first.</strong> Draft the sample client code (or an OpenAPI spec plus an example call sequence) and review it with a real consumer before building anything. If the happy path takes eight calls, the design is wrong.</li>
+    <li><strong>Expose domain concepts, not internals.</strong> An API that mirrors your schema leaks every future refactor to your consumers. Model what the business means (<code>POST /orders/{id}/cancellation</code>), not how you store it.</li>
+    <li><strong>Make the common case trivial</strong> and the advanced case possible: sensible defaults, optional parameters, and no mandatory knowledge of your internals.</li>
+  </ul>
+
+  <pre><span class="comment"># A design-review checklist for an API other teams will use</span>
+Naming       Consistent, domain-language names; one word per concept across the API.
+Shape        Same pagination, filtering, error format, and timestamp format on every endpoint.
+Errors       Machine-readable code + human message + how to fix it; stable codes consumers can switch on.
+Idempotency  Safe retries on every operation with side effects (Idempotency-Key).
+Evolution    How will this change without breaking callers? What is the deprecation policy?
+Limits       Documented rate limits, payload limits, and timeouts; clear 429 behavior.
+Auth         Least-privilege scopes; how do consumers get credentials and rotate them?
+Docs         Reference + a quickstart + worked examples; a sandbox consumers can safely try.
+Observability Request ids in responses; consumers can quote them when reporting problems.</pre>
+
+  <h2><span class="num">§3</span>The Contract Is a Promise</h2>
+
+  <p>Once consumers depend on behavior, <em>all</em> observable behavior is the contract, including things you never intended to promise: field order, undocumented fields, error messages, and response times. (This is sometimes called Hyrum's Law.) Reduce accidental promises by documenting what is guaranteed, returning only what is specified, and being explicit about what is <em>not</em> guaranteed.</p>
+
+  <ul>
+    <li><strong>Publish a stability policy:</strong> what counts as a breaking change, how much notice you give (for example 90 days), and how deprecation is signaled.</li>
+    <li><strong>Be additive by default,</strong> as in stage 2.1, and version only when you must.</li>
+    <li><strong>Announce changes where consumers will see them:</strong> a changelog, a mailing list or channel, and headers like <code>Deprecation</code> and <code>Sunset</code> on affected responses.</li>
+    <li><strong>Track who uses what</strong> (per-client usage by endpoint and version), so you can contact the right teams before removing anything.</li>
+  </ul>
+
+  <h2><span class="num">§4</span>Reduce Integration Cost</h2>
+
+  <ul>
+    <li><strong>Great documentation is part of the API.</strong> A reference generated from an OpenAPI spec, a five-minute quickstart, copy-pasteable examples, and an explanation of concepts and common workflows.</li>
+    <li><strong>Provide a sandbox and test data</strong> so teams can integrate without touching production or waiting on you.</li>
+    <li><strong>Offer SDKs or generated clients</strong> where many consumers share a language; keep them thin and generated from the spec.</li>
+    <li><strong>Make errors teach.</strong> "<code>invalid_request</code>" is useless; "<code>currency</code> must be an ISO 4217 code such as <code>USD</code>" lets the developer fix it without asking you.</li>
+    <li><strong>Give consumers a support path</strong> with an owner and a response expectation. An API with no one to ask is a liability.</li>
+  </ul>
+
+  <pre>{
+  "error": {
+    "code": "validation_failed",
+    "message": "Request body failed validation.",
+    "details": [
+      { "field": "currency", "problem": "must be an ISO 4217 code, for example \"USD\"" }
+    ],
+    "requestId": "req_8f14e45f",
+    "docs": "https://docs.example.com/errors#validation_failed"
+  }
+}</pre>
+
+  <h2><span class="num">§5</span>Build Feedback Loops</h2>
+
+  <p>Treat the API like any product: watch adoption and errors by consumer, review integration pain points regularly, and keep a roadmap that consumers can see. A short office hours slot or a shared channel often surfaces misunderstandings long before they become incidents. When a consumer needs something you will not build, say so clearly, explain the trade-off, and suggest an alternative; a fast, honest "no" is better than months of silence.</p>
+
+  <div class="callout">
+    <span class="label">Say no to protect the interface</span>
+    Every field, endpoint, and option you add is a permanent commitment. A mature API owner declines requests that serve one consumer at the cost of everyone's clarity, and offers extension points (webhooks, generic filters) rather than special cases.
+  </div>
+
+  <h2><span class="num">§6</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Mirroring your database schema in the API</td><td>Every internal refactor becomes a breaking change for consumers</td><td>Model domain concepts and keep storage details private</td></tr>
+    <tr><td>Changing behavior with no notice or usage data</td><td>Consumers break in production and lose trust</td><td>Publish a stability policy, deprecate with notice, and track per-client usage</td></tr>
+    <tr><td>Shipping without docs, examples, or a sandbox</td><td>Every consumer interrupts you with the same questions</td><td>Treat documentation and test environments as part of the deliverable</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Pick an internal API in your system and write the quickstart a new consumer would need. Where do you struggle to explain it?</li>
+      <li>Review one existing endpoint against the checklist above and list the three gaps with the highest consumer impact.</li>
+      <li>Draft a stability and deprecation policy (what is breaking, notice period, how it is announced) in half a page.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Treat internal APIs as products: start from consumers' jobs, prototype integrations, and expose domain concepts.</li>
+      <li>All observable behavior becomes a promise, so document guarantees, be additive, and deprecate with notice and usage data.</li>
+      <li>Lower integration cost with great docs, sandboxes, helpful errors, and a clear support path.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.4 · Judgment &amp; Communication — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

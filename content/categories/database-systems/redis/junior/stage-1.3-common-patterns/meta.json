@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Common Patterns",
+  "description": "Cache-aside caching, sessions and rate limiting, pub/sub, leaderboards, and client libraries.",
+  "order": 3
+}

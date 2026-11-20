@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading &amp; Writing Files — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · files, errors &amp; modules</span> → lesson 01</p>
+  <h1>Reading &amp; Writing Files</h1>
+  <p class="lede"><code>open()</code> inside a <code>with</code> block reads and writes files safely, and <code>pathlib</code> makes paths and small file jobs painless.</p>
+
+  <h2><span class="num">§1</span>open() and the with Statement</h2>
+
+  <p><code>open(path, mode, encoding=...)</code> returns a file object. Modes: <code>"r"</code> read (default), <code>"w"</code> write (truncates!), <code>"a"</code> append, <code>"x"</code> create-only, with <code>"b"</code> added for bytes. Use <code>with</code> so the file is closed even if an error occurs.</p>
+
+  <pre>with open("notes.txt", "w", encoding="utf-8") as f:
+    f.write("first line\n")
+    f.write("second line\n")
+
+with open("notes.txt", encoding="utf-8") as f:
+    text = f.read()            <span class="comment"># whole file as one string</span>
+
+with open("notes.txt", encoding="utf-8") as f:
+    for line in f:             <span class="comment"># lazy: one line at a time, any file size</span>
+        print(line.rstrip("\n"))</pre>
+
+  <p>Always pass <code>encoding="utf-8"</code> for text files. The default depends on the platform, which is a classic source of "works on my machine" bugs.</p>
+
+  <h2><span class="num">§2</span>pathlib</h2>
+
+  <p><code>pathlib.Path</code> represents paths as objects, with <code>/</code> to join and handy methods.</p>
+
+  <pre>from pathlib import Path
+
+base = Path("data")
+path = base / "reports" / "2026.txt"
+print(path.name, path.suffix, path.parent)   <span class="comment"># 2026.txt .txt data/reports</span>
+
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text("hello\n", encoding="utf-8")
+print(path.read_text(encoding="utf-8"))
+print(path.exists(), path.is_file())
+
+for p in base.glob("**/*.txt"):              <span class="comment"># recursive search</span>
+    print(p)</pre>
+
+  <h2><span class="num">§3</span>Binary Files and Cleanup</h2>
+
+  <p>Use <code>"rb"</code> and <code>"wb"</code> for images, archives, and anything that isn't text. Reading and writing bytes does no encoding or newline translation.</p>
+
+  <pre>data = Path("logo.png").read_bytes()
+Path("copy.png").write_bytes(data)
+
+import os
+os.remove("notes.txt")        <span class="comment"># or Path("notes.txt").unlink()</span></pre>
+
+  <p>Relative paths resolve against the <strong>current working directory</strong>, not the script's location. To find files next to your script use <code>Path(__file__).parent</code>.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Opening with <code>"w"</code> empties the file immediately, before you write a byte. If the data matters, write to a temporary file and rename it into place, or open with <code>"x"</code> to refuse to overwrite.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Opening a file without <code>with</code></td><td>The file may stay open, and buffered data may never be flushed</td><td>Always use <code>with open(...) as f:</code></td></tr>
+    <tr><td>Omitting <code>encoding</code></td><td>Garbled characters or <code>UnicodeDecodeError</code> on another machine</td><td>Pass <code>encoding="utf-8"</code></td></tr>
+    <tr><td>Building paths with string <code>+</code></td><td>Breaks on different operating systems</td><td>Use <code>Path("a") / "b"</code></td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Write a script that copies a text file to a new file with every line numbered.</li>
+      <li>Use <code>pathlib</code> to list every <code>.py</code> file under the current directory with its size in bytes.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Use <code>with open(...)</code> so files always close, and specify <code>encoding="utf-8"</code> for text.</li>
+      <li>Iterating over a file reads lazily, one line at a time.</li>
+      <li><code>pathlib.Path</code> makes joining, reading, writing, and searching paths cleaner than string handling.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Files, Errors &amp; Modules — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

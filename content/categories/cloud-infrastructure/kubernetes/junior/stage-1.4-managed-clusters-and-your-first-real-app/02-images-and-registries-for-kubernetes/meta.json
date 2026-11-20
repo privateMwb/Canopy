@@ -1,0 +1,5 @@
+{
+  "title": "Images & Registries for Kubernetes",
+  "description": "Pull secrets, tagging, and private registries.",
+  "order": 2
+}

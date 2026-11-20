@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JSON, CSV &amp; a Standard Library Tour — Lesson 05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">junior → <span class="accent">stage 1.3 · files, errors &amp; modules</span> → lesson 05</p>
+  <h1>JSON, CSV &amp; a Standard Library Tour</h1>
+  <p class="lede">Python ships with modules for data formats, dates, counting, and randomness, so you can do a lot before installing anything.</p>
+
+  <h2><span class="num">§1</span>json</h2>
+
+  <p><code>json.dumps</code> / <code>json.loads</code> convert between Python objects and JSON strings; <code>dump</code> / <code>load</code> work with files. Dicts, lists, strings, numbers, booleans, and <code>None</code> map to their JSON counterparts (<code>None</code> becomes <code>null</code>).</p>
+
+  <pre>import json
+
+record = {"name": "Ana", "scores": [90, 85], "active": True}
+text = json.dumps(record, indent=2)
+back = json.loads(text)
+
+with open("record.json", "w", encoding="utf-8") as f:
+    json.dump(record, f, indent=2)
+
+with open("record.json", encoding="utf-8") as f:
+    data = json.load(f)</pre>
+
+  <p>JSON has no tuples, sets, or dates; tuples come back as lists, and other types raise <code>TypeError</code> unless you convert them.</p>
+
+  <h2><span class="num">§2</span>csv</h2>
+
+  <p>Use the <code>csv</code> module rather than <code>line.split(",")</code>, because real fields contain quoted commas and newlines. Open with <code>newline=""</code>.</p>
+
+  <pre>import csv
+
+with open("people.csv", newline="", encoding="utf-8") as f:
+    for row in csv.DictReader(f):        <span class="comment"># each row is a dict keyed by header</span>
+        print(row["name"], int(row["age"]))
+
+with open("out.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=["name", "age"])
+    writer.writeheader()
+    writer.writerow({"name": "Ana", "age": 31})</pre>
+
+  <p>Every CSV value is a string, so convert numbers and dates yourself.</p>
+
+  <h2><span class="num">§3</span>datetime, collections, random</h2>
+
+  <pre>from datetime import datetime, timedelta, date
+from collections import Counter, defaultdict
+import random
+
+now = datetime.now()
+deadline = now + timedelta(days=7)
+print(deadline.strftime("%Y-%m-%d"))
+d = datetime.strptime("2026-03-05", "%Y-%m-%d")
+print((date(2026, 12, 25) - date.today()).days)   <span class="comment"># days until Christmas</span>
+
+words = "a b a c b a".split()
+print(Counter(words).most_common(2))     <span class="comment"># [('a', 3), ('b', 2)]</span>
+
+groups = defaultdict(list)
+for w in words:
+    groups[w].append(len(groups[w]))     <span class="comment"># missing keys start as []</span>
+
+print(random.choice(["red", "green"]), random.randint(1, 6))
+random.seed(42)                          <span class="comment"># reproducible sequence</span></pre>
+
+  <p><code>random</code> is not suitable for security; use <code>secrets</code> for tokens and passwords.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Before installing a package for a small task, check the standard library. <code>json</code>, <code>csv</code>, <code>datetime</code>, <code>collections</code>, <code>pathlib</code>, <code>argparse</code>, and <code>sqlite3</code> solve a surprising share of real problems.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Splitting CSV lines with <code>split(",")</code></td><td>Quoted fields containing commas break the parse</td><td>Use <code>csv.reader</code> or <code>csv.DictReader</code></td></tr>
+    <tr><td>Opening CSV files without <code>newline=""</code></td><td>Blank rows or mangled line endings on some platforms</td><td>Pass <code>newline=""</code> to <code>open</code></td></tr>
+    <tr><td>Using <code>random</code> for passwords</td><td>Output is predictable</td><td>Use the <code>secrets</code> module</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Read a CSV of names and ages, and write a JSON file with the average age and the list of names sorted alphabetically.</li>
+      <li>Use <code>Counter</code> to find the three most common words in a paragraph of text.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li><code>json</code> and <code>csv</code> handle serialization; values from CSV are always strings.</li>
+      <li><code>datetime</code>, <code>timedelta</code>, and <code>strftime</code>/<code>strptime</code> cover everyday date handling.</li>
+      <li><code>Counter</code> and <code>defaultdict</code> remove most hand-written counting and grouping loops.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 1.3 · Files, Errors &amp; Modules — Lesson 5 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

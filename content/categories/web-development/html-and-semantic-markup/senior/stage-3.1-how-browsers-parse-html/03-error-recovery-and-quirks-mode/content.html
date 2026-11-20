@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Error Recovery &amp; Quirks Mode — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #15803D; --accent-soft: #86EFAC; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #15271B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · how browsers parse html</span> → lesson 03</p>
+  <h1>Error Recovery &amp; Quirks Mode</h1>
+  <p class="lede">Browsers forgive markup mistakes by spec, and the doctype decides which of three layout modes applies.</p>
+
+  <h2><span class="num">§1</span>Common Recovery Behaviors</h2>
+
+  <p>The spec defines recovery for many mistakes, and recognizing them speeds up debugging.</p>
+  <table>
+    <tr><th>Input</th><th>What the parser does</th></tr>
+    <tr><td><code>&lt;p&gt;</code> inside <code>&lt;p&gt;</code></td><td>Closes the first paragraph, starts a new one</td></tr>
+    <tr><td><code>&lt;div&gt;</code> inside <code>&lt;p&gt;</code></td><td>Closes the <code>&lt;p&gt;</code> first</td></tr>
+    <tr><td>Stray <code>&lt;/p&gt;</code></td><td>Creates an empty <code>&lt;p&gt;&lt;/p&gt;</code></td></tr>
+    <tr><td>Text directly inside <code>&lt;table&gt;</code></td><td>Moves it before the table ("foster parenting")</td></tr>
+    <tr><td><code>&lt;tr&gt;</code> without <code>&lt;tbody&gt;</code></td><td>Inserts an implied <code>&lt;tbody&gt;</code></td></tr>
+    <tr><td>Misnested <code>&lt;b&gt;&lt;i&gt;&lt;/b&gt;&lt;/i&gt;</code></td><td>Repairs via the adoption agency algorithm</td></tr>
+    <tr><td>Missing <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code></td><td>Creates them</td></tr>
+  </table>
+  <pre>&lt;table&gt;
+  Orphan text
+  &lt;tr&gt;&lt;td&gt;cell&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+<span class="comment">&lt;!-- DOM: "Orphan text" before &lt;table&gt;; &lt;tbody&gt; inserted around &lt;tr&gt; --&gt;</span></pre>
+
+  <h2><span class="num">§2</span>Standards, Quirks, and Almost-Standards Mode</h2>
+
+  <p>Before CSS was standardized, browsers implemented quirky layout. To avoid breaking old pages, modern browsers keep those behaviors behind a mode switch chosen by the doctype.</p>
+  <table>
+    <tr><th>Mode</th><th>Triggered by</th><th>Effect</th></tr>
+    <tr><td>No-quirks (standards)</td><td><code>&lt;!DOCTYPE html&gt;</code></td><td>Spec-compliant layout</td></tr>
+    <tr><td>Limited-quirks (almost standards)</td><td>Certain old transitional doctypes</td><td>Standards, except a few line-height details in table cells</td></tr>
+    <tr><td>Quirks</td><td>Missing or very old doctype</td><td>Legacy box model and sizing behaviors</td></tr>
+  </table>
+  <p>Check <code>document.compatMode</code>: <code>"CSS1Compat"</code> means standards mode and <code>"BackCompat"</code> means quirks.</p>
+
+  <h2><span class="num">§3</span>Forgiveness Has Limits</h2>
+
+  <p>Recovery rules make pages display, not behave correctly. Repaired DOMs can differ between your expectation and reality, and <strong>CSS and scripts attach to the repaired tree</strong>. A single stray tag can change which element a selector matches.</p>
+  <pre>console.log(document.compatMode);   <span class="comment">// "CSS1Compat" is what you want</span></pre>
+  <p>Treat validator errors as defects, even when the page looks fine. They're often the source of intermittent bugs.</p>
+
+  <div class="callout">
+    <span class="label">One line prevents a mode</span>
+    <code>&lt;!DOCTYPE html&gt;</code> at the very top of the file, with nothing before it, keeps you in standards mode. Very old browsers could even be pushed into quirks mode by a comment before it.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Omitting the doctype</td><td>Quirks mode, with different box sizing</td><td>Always put <code>&lt;!DOCTYPE html&gt;</code> first</td></tr>
+    <tr><td>Relying on <code>&lt;tbody&gt;</code> not being there in selectors</td><td>CSS and JS miss because <code>tbody</code> was auto-inserted</td><td>Write selectors against the DOM, not the source</td></tr>
+    <tr><td>Using text directly in tables</td><td>It jumps outside the table</td><td>Wrap in a cell or a caption</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Create a page with no doctype and print <code>document.compatMode</code>; add the doctype and compare.</li>
+      <li>Write a table with stray text and a missing <code>tbody</code>, then inspect the resulting DOM.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>The parser's recovery behavior is specified: closing, inserting, and foster parenting.</li>
+      <li>The doctype selects between no-quirks, limited-quirks, and quirks mode.</li>
+      <li>Repaired markup can still break selectors and scripts, so validate.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · How Browsers Parse HTML — Lesson 3 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

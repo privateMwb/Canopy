@@ -1,0 +1,5 @@
+{
+  "title": "Strings & Interpolation",
+  "description": "Immutability, StringBuilder, formatting, and culture traps.",
+  "order": 4
+}

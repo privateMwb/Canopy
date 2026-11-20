@@ -1,0 +1,5 @@
+{
+  "title": "Closures",
+  "description": "Functions that remember their scope, and the classic loop-variable bug.",
+  "order": 1
+}

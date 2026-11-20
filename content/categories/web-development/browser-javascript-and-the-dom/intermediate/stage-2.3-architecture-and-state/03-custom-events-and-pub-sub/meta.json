@@ -1,0 +1,5 @@
+{
+  "title": "Custom Events & Pub/Sub",
+  "description": "Decoupled communication between parts of an app.",
+  "order": 3
+}

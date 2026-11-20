@@ -1,0 +1,1 @@
+{"title": "Pipelines, $match, $group & $project", "description": "Thinking in stages, and replacing application loops with a pipeline.", "order": 1}

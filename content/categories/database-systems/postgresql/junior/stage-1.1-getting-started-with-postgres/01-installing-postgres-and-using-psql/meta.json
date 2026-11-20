@@ -1,0 +1,5 @@
+{
+  "title": "Installing Postgres & Using psql",
+  "description": "Running a server, connecting with psql, and the meta-commands that make exploring painless.",
+  "order": 1
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Class Loading &amp; Bytecode — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.1 · jvm internals</span> → lesson 01</p>
+  <h1>Class Loading &amp; Bytecode</h1>
+  <p class="lede">The JVM loads classes lazily, on demand, through a hierarchy of classloaders, and understanding that lifecycle and the bytecode it loads explains a whole family of baffling production errors.</p>
+
+  <h2><span class="num">§1</span>The Lifecycle of a Class</h2>
+  <p>A class is not loaded when your program starts; it is loaded the first time it is needed. The JVM then takes it through three phases.</p>
+  <ul>
+    <li><strong>Loading</strong>: a classloader finds the bytes (usually a <code>.class</code> file in a jar or directory) and creates a <code>Class</code> object.</li>
+    <li><strong>Linking</strong>: <strong>verification</strong> checks the bytecode is structurally safe (the reason the JVM can run untrusted bytecode without crashing), <strong>preparation</strong> allocates static fields with default values, and <strong>resolution</strong> turns symbolic references into direct ones (often lazily).</li>
+    <li><strong>Initialization</strong>: the static initializer (<code>static { }</code> and static field initializers) runs, exactly once, thread-safely, the first time the class is actively used.</li>
+  </ul>
+  <pre>class Config {
+    static final Map&lt;String, String&gt; VALUES = load();       <span class="comment">// runs once at initialization</span>
+    static { System.out.println("Config initialized"); }
+}
+<span class="comment">// Merely declaring "Config c;" does not initialize it; calling Config.VALUES or new Config() does.</span></pre>
+  <p>A failure in a static initializer throws <code>ExceptionInInitializerError</code> the first time, and then <strong><code>NoClassDefFoundError</code></strong> on every later use of that class, which confuses people because the real cause appears only once, early in the logs.</p>
+
+  <h2><span class="num">§2</span>Classloader Hierarchy and Delegation</h2>
+  <p>Classes are loaded by a <strong>classloader</strong>, and each loader is identified with a parent. The standard ones are the <strong>bootstrap</strong> loader (core <code>java.base</code> classes), the <strong>platform</strong> loader (other JDK modules), and the <strong>application</strong> (system) loader (your classpath). Loading follows <strong>parent delegation</strong>: a loader first asks its parent, and only tries itself if the parent can't find the class. This guarantees that <code>java.lang.String</code> is always the JDK's version and not something on your classpath.</p>
+  <pre>System.out.println(String.class.getClassLoader());           <span class="comment">// null: bootstrap</span>
+System.out.println(Main.class.getClassLoader());              <span class="comment">// the application classloader</span>
+Thread.currentThread().getContextClassLoader();               <span class="comment">// used by frameworks to find app classes</span></pre>
+  <p>A class's identity is <strong>its name plus its defining classloader</strong>. Two loaders can each load a class named <code>com.acme.Plugin</code> and get two distinct, incompatible types. That is the root of the confusing error <code>ClassCastException: com.acme.Plugin cannot be cast to com.acme.Plugin</code>, which appears in application servers, plugin systems, and hot-reload tools that use separate loaders per component.</p>
+
+  <h2><span class="num">§3</span>Reading Bytecode with javap</h2>
+  <p>Source compiles to bytecode for a stack machine. <code>javap</code> shows you what was actually generated, which settles questions about what the compiler does.</p>
+  <pre>javap -c -p com.example.Counter        <span class="comment"># -c: disassemble, -p: include private members</span>
+javap -v com.example.Counter           <span class="comment"># verbose: constant pool, flags, class file version</span></pre>
+  <pre>int add(int a, int b) { return a + b; }
+<span class="comment">// javap -c shows roughly:</span>
+<span class="comment">//   iload_1        push a</span>
+<span class="comment">//   iload_2        push b</span>
+<span class="comment">//   iadd           pop two, push the sum</span>
+<span class="comment">//   ireturn        return the top of the stack</span></pre>
+  <p>Useful things you can discover: string concatenation compiles to an <code>invokedynamic</code> call (so its implementation can improve without recompiling your code), lambdas also use <code>invokedynamic</code>, and <code>switch</code> on strings compiles to a hash lookup. The class file header records a <strong>major version</strong> (for example 65 for Java 21), and a JVM refuses a class compiled for a newer version with <code>UnsupportedClassVersionError</code>.</p>
+
+  <h2><span class="num">§4</span>Where It Bites in Production</h2>
+  <p>The common failures all come back to the classpath and loaders. <code>ClassNotFoundException</code> (loading by name failed at runtime, such as <code>Class.forName</code>) differs from <code>NoClassDefFoundError</code> (the class was present at compile time but is missing or failed to initialize at runtime). <code>NoSuchMethodError</code> or <code>AbstractMethodError</code> mean you compiled against one version of a library and ran against another, a <strong>classpath conflict</strong> where two versions of the same dependency are present and one wins. Tools such as <code>mvn dependency:tree</code>, <code>-verbose:class</code>, and <code>-Xlog:class+load</code> show what was loaded and from where. Resource leaks arise when a loader (and therefore all its classes and statics) can't be garbage collected because something still references it, a classic cause of <strong>metaspace leaks</strong> after repeated redeploys.</p>
+
+  <div class="callout">
+    <span class="label">Same name does not mean same class</span>
+    The JVM identifies a class by name and loader together. When you see two apparently identical types that won't cast to each other, suspect two classloaders and look at who loaded each.
+  </div>
+
+  <h2><span class="num">§5</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating <code>NoClassDefFoundError</code> like "jar missing"</td><td>Misses that a static initializer failed earlier</td><td>Search the logs for the first <code>ExceptionInInitializerError</code></td></tr>
+    <tr><td>Two versions of one library on the classpath</td><td><code>NoSuchMethodError</code> and random behavior</td><td>Inspect the dependency tree and force a single version</td></tr>
+    <tr><td>Assuming a class loads at startup</td><td>Failures appear late, in a rarely used path</td><td>Test those paths, or load critical classes eagerly</td></tr>
+    <tr><td>Heavy work in static initializers</td><td>Slow startup and cascading failures</td><td>Keep initializers trivial and defer work</td></tr>
+    <tr><td>Hot-redeploying without releasing the old loader</td><td>Metaspace grows until <code>OutOfMemoryError: Metaspace</code></td><td>Remove references (threads, caches, <code>ThreadLocal</code>s) to old classes</td></tr>
+    <tr><td>Compiling with a newer JDK than you run</td><td><code>UnsupportedClassVersionError</code></td><td>Compile with <code>--release</code> set to the runtime version</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Compile a small class with <code>javac</code>, run <code>javap -c -p</code> on it, and annotate what each instruction does.</li>
+      <li>Write a class whose static initializer throws, touch it twice, and compare the two exceptions you get.</li>
+      <li>Run an application with <code>-Xlog:class+load</code> and find which jar a particular class was loaded from.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Classes load lazily and pass through loading, linking (verify, prepare, resolve), and initialization.</li>
+      <li>Delegation makes core classes consistent; a class's identity is name plus loader.</li>
+      <li><code>javap</code> shows the real bytecode, and most class-related production errors trace back to classpath conflicts or loader leaks.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.1 · JVM Internals — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "title": "Stage 1.3 — Data & Multi-Container Apps",
+  "description": "Volumes, container networking, Docker Compose, and a full multi-container stack.",
+  "order": 3
+}

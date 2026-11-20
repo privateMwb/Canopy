@@ -1,0 +1,5 @@
+{
+  "title": "Stage 3.1 — Native Code Generation",
+  "description": "Instruction selection, register allocation, ABIs, linking, and existing backends.",
+  "order": 1
+}

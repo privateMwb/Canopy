@@ -1,0 +1,5 @@
+{
+  "title": "SELECT, WHERE & Sorting",
+  "description": "Projecting columns, filtering rows, ORDER BY, LIMIT, and pagination basics.",
+  "order": 1
+}

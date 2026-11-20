@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Namespaces: What a Container Really Is — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #B91C1C; --accent-soft: #FCA5A5; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2B1D21; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">senior → <span class="accent">stage 3.3 · isolation & virtualization</span> → lesson 01</p>
+  <h1>Namespaces: What a Container Really Is</h1>
+  <p class="lede">A container is an ordinary process whose view of the system has been restricted by kernel namespaces, with no separate kernel involved.</p>
+
+  <h2><span class="num">§1</span>Namespaces Restrict What a Process Can See</h2>
+  <p>A <strong>namespace</strong> gives a process its own private view of one kind of system resource. Processes in the same namespace share that view; those in different namespaces can't see each other's. Linux has several kinds:</p>
+  <table>
+    <tr><th>Namespace</th><th>Isolates</th></tr>
+    <tr><td>PID</td><td>Process IDs: the first process inside sees itself as PID 1</td></tr>
+    <tr><td>Mount</td><td>The filesystem tree and mount points</td></tr>
+    <tr><td>Network</td><td>Interfaces, IP addresses, routing, ports</td></tr>
+    <tr><td>UTS</td><td>Hostname and domain name</td></tr>
+    <tr><td>IPC</td><td>System V IPC and POSIX message queues</td></tr>
+    <tr><td>User</td><td>User and group IDs (root inside can map to an unprivileged user outside)</td></tr>
+    <tr><td>Cgroup</td><td>The view of the cgroup hierarchy</td></tr>
+  </table>
+  <pre>ls -l /proc/self/ns                        <span class="comment"># the namespaces your process belongs to</span>
+sudo unshare --pid --fork --mount-proc bash
+ps aux                                      <span class="comment"># only a handful of processes, bash is PID 1</span></pre>
+
+  <h2><span class="num">§2</span>Assembling a Container</h2>
+  <p>A container runtime combines several pieces and calls it a container:</p>
+  <ol>
+    <li><strong>Namespaces</strong> to restrict what the process can see</li>
+    <li><strong>cgroups</strong> to restrict how much it can use (next lesson)</li>
+    <li>A <strong>root filesystem</strong> from an image, mounted using <code>pivot_root</code> or <code>chroot</code></li>
+    <li><strong>Security layers</strong> such as dropped capabilities and a seccomp filter</li>
+    <li>The process itself, started with <code>exec</code></li>
+  </ol>
+  <pre><span class="comment">// Namespaces are created with clone() or unshare() flags</span>
+clone(child_fn, stack_top,
+      CLONE_NEWPID | CLONE_NEWNS | CLONE_NEWNET | CLONE_NEWUTS | SIGCHLD, NULL);</pre>
+  <p>From the host, the 'container' is visible as a normal process in <code>ps</code>, with a different PID than the one it sees for itself.</p>
+
+  <h2><span class="num">§3</span>What Namespaces Don't Do</h2>
+  <p>All containers on a host share <strong>one kernel</strong>. A kernel vulnerability, or an escape through a misconfigured capability, can break out of every namespace. Namespaces also say nothing about resource limits, so by themselves they don't stop a container from using all the CPU or memory.</p>
+  <table>
+    <tr><th>Property</th><th>Container</th><th>Virtual machine</th></tr>
+    <tr><td>Kernel</td><td>Shared with the host</td><td>Its own guest kernel</td></tr>
+    <tr><td>Startup</td><td>Milliseconds, just a process</td><td>Seconds, boots an OS</td></tr>
+    <tr><td>Overhead</td><td>Very low</td><td>Higher, but better isolated</td></tr>
+    <tr><td>Isolation strength</td><td>Weaker: shared kernel attack surface</td><td>Stronger: hypervisor boundary</td></tr>
+  </table>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    'Container' is not a kernel feature. It's a convention built on namespaces, cgroups, and a root filesystem. Once you see the parts, debugging container behavior becomes ordinary process debugging.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Treating a container as a lightweight VM</td><td>Assuming a separate kernel and strong isolation</td><td>Remember the shared kernel and limit privileges accordingly</td></tr>
+    <tr><td>Running containers as root with extra capabilities</td><td>An escape yields root on the host</td><td>Use user namespaces, drop capabilities, and avoid privileged mode</td></tr>
+    <tr><td>Believing <code>PID 1</code> in a container is just another process</td><td>Signals and zombies aren't handled as expected</td><td>Use a proper init process, such as <code>--init</code> or <code>tini</code>, to forward signals and reap children</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Use <code>unshare</code> to start a shell with new PID and UTS namespaces. Change the hostname inside it and confirm the host's is unchanged.</li>
+      <li>Find a containerized process from the host with <code>ps</code>, compare its PID with the one it sees inside, and inspect <code>/proc/&lt;pid&gt;/ns</code>.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Namespaces give a process its own view of PIDs, mounts, network, and more.</li>
+      <li>A container is namespaces, cgroups, a root filesystem, and security filters around a normal process.</li>
+      <li>Containers share the host kernel, so their isolation is weaker than a VM's.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 3.3 · Isolation & Virtualization — Lesson 1 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

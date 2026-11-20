@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>REST Principles &amp; Resource Modeling — Lesson 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.4 · designing apis</span> → lesson 01</p>
+  <h1>REST Principles &amp; Resource Modeling</h1>
+  <p class="lede">A well-modeled REST API uses nouns for resources and lets the HTTP methods carry the verbs, so clients, caches, and proxies understand it without documentation.</p>
+
+  <h2><span class="num">§1</span>Resources and URLs</h2>
+  <p>REST treats everything as a <strong>resource</strong> with a stable URL, and uses HTTP methods to act on it. URLs name things, and methods say what to do with them.</p>
+  <table>
+    <tr><th>Operation</th><th>Request</th><th>Typical status</th></tr>
+    <tr><td>List orders</td><td><code>GET /orders</code></td><td>200</td></tr>
+    <tr><td>Get one order</td><td><code>GET /orders/42</code></td><td>200, or 404</td></tr>
+    <tr><td>Create an order</td><td><code>POST /orders</code></td><td>201 with <code>Location: /orders/42</code></td></tr>
+    <tr><td>Replace an order</td><td><code>PUT /orders/42</code></td><td>200 or 204</td></tr>
+    <tr><td>Change part of an order</td><td><code>PATCH /orders/42</code></td><td>200 or 204</td></tr>
+    <tr><td>Delete an order</td><td><code>DELETE /orders/42</code></td><td>204</td></tr>
+    <tr><td>List a user's orders</td><td><code>GET /users/7/orders</code></td><td>200</td></tr>
+  </table>
+  <p>Collections are plural nouns, <code>/orders</code>, and items are addressed by ID, <code>/orders/42</code>. Verbs in the URL, such as <code>/getOrder</code> or <code>/deleteUser</code>, duplicate what the method already says.</p>
+
+  <h2><span class="num">§2</span>Design Guidelines</h2>
+  <ul>
+    <li><strong>Statelessness:</strong> each request carries everything needed, so any server instance can answer it and the API scales horizontally</li>
+    <li><strong>Representations:</strong> a resource can be sent in several formats, usually JSON, selected with <code>Accept</code> and <code>Content-Type</code></li>
+    <li><strong>Shallow nesting:</strong> <code>/users/7/orders</code> is fine; deeper chains such as <code>/a/1/b/2/c/3/d</code> are hard to use, so give deep items their own top-level URL</li>
+    <li><strong>Actions that don't fit CRUD:</strong> model them as resources, such as <code>POST /orders/42/cancellation</code>, or a clearly named sub-resource, rather than inventing a new method</li>
+    <li><strong>Consistent naming:</strong> pick one style for fields and paths (such as <code>snake_case</code>) and use it everywhere</li>
+  </ul>
+  <p>PUT replaces the entire resource, so omitted fields are cleared. PATCH changes only the fields supplied. Choose the one that matches what clients expect, and document the semantics.</p>
+
+  <h2><span class="num">§3</span>An Example</h2>
+  <pre>POST /orders HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+
+{"customer_id": 7, "items": [{"sku": "A-100", "qty": 2}]}
+
+HTTP/1.1 201 Created
+Location: /orders/42
+Content-Type: application/json
+
+{"id": 42, "customer_id": 7, "status": "pending", "items": [...]}</pre>
+  <p>True REST also includes hypermedia, with responses containing links to related actions. Most real-world 'REST' APIs skip that and stick to resources, methods, and status codes, and that's a reasonable place to start.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    Use HTTP the way it was designed and you inherit its infrastructure for free. Caches can cache your GETs, proxies can retry your idempotent calls, and any developer can guess how your API behaves.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Tunneling everything through POST</td><td>Loses caching, safe retries, and clear semantics</td><td>Use GET, PUT, PATCH, and DELETE where they apply</td></tr>
+    <tr><td>Verbs in URLs (<code>/createUser</code>)</td><td>Inconsistent, harder to learn and evolve</td><td>Use <code>POST /users</code></td></tr>
+    <tr><td>Exposing database structure directly as the API</td><td>Internal changes become breaking changes</td><td>Model resources around what clients need, not your tables</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Design the URLs and methods for a library API with books, members, and loans, including 'return a loan'.</li>
+      <li>Take three verb-style endpoints you know, and rewrite each as a resource and method.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Resources are nouns in URLs, and methods carry the verbs.</li>
+      <li>Statelessness and correct status codes let intermediaries do their jobs.</li>
+      <li>Keep nesting shallow and model non-CRUD actions as resources.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.4 · Designing APIs — Lesson 1 of 5</p>
+  </footer>
+</div>
+</body>
+</html>

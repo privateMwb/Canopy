@@ -1,0 +1,6 @@
+{
+  "title": "Data Structures & Algorithms",
+  "description": "Arrays to algorithmic thinking, the structures behind real systems.",
+  "order": 2,
+  "compileRoot": true
+}

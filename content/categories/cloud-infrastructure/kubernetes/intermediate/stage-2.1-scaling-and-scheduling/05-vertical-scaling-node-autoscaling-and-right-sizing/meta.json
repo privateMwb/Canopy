@@ -1,0 +1,5 @@
+{
+  "title": "Vertical Scaling, Node Autoscaling & Right-Sizing",
+  "description": "VPA, the cluster autoscaler, and fitting requests to reality.",
+  "order": 5
+}

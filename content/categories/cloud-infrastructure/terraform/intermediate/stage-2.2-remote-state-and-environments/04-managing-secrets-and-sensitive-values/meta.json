@@ -1,0 +1,5 @@
+{
+  "title": "Managing Secrets & Sensitive Values",
+  "description": "Keeping secrets out of code, plans, and state where possible.",
+  "order": 4
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HTTPS in Practice — Lesson 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F1; --card: #FFFFFF; --ink: #1C1F26; --muted: #63636B; --line: #E4E1D7;
+    --accent: #A16207; --accent-soft: #FEF08A; --code-bg: #14171A; --code-ink: #E8E6DF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  }
+  :root[data-theme="dark"] { --bg: #15171C; --card: #1C1F23; --ink: #EDEBE4; --muted: #9A9AA3; --line: #2D303A; --code-bg: #0E1013; --accent-soft: #2A2419; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  .crumb { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+  .crumb .accent { color: var(--accent); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 38px; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; line-height: 1.65; color: var(--muted); max-width: 58ch; margin: 0 0 40px; }
+  h2 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 21px; margin: 44px 0 14px; color: var(--ink); }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 13px; color: var(--accent); margin-right: 10px; }
+  p { font-size: 15px; line-height: 1.7; margin: 0 0 14px; }
+  p.tight { margin-bottom: 8px; }
+  strong { font-weight: 600; }
+  pre { background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .comment { color: #8A8F98; }
+  .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+  .callout .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13.5px; }
+  th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 500; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  ul, ol { padding-left: 20px; margin: 0 0 16px; }
+  li { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+  .exercise { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin: 20px 0; }
+  .exercise .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .exercise ol { margin-bottom: 0; }
+  .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 22px 24px; margin-top: 40px; }
+  .takeaways .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); display: block; margin-bottom: 10px; }
+  .takeaways ul { margin-bottom: 0; }
+  .takeaways li { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; }
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  @media (max-width: 480px) { .wrap { padding: 40px 18px 72px; } h1 { font-size: 29px; } pre { font-size: 12px; padding: 14px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb">intermediate → <span class="accent">stage 2.3 · tls & network security</span> → lesson 03</p>
+  <h1>HTTPS in Practice</h1>
+  <p class="lede">Having a certificate is only the start; redirects, HSTS, and sensible TLS settings decide whether a site is actually protected.</p>
+
+  <h2><span class="num">§1</span>Redirects and HSTS</h2>
+  <p>Users type <code>example.com</code> without a scheme, and browsers may try HTTP first. That first plain request can be intercepted and tampered with before any redirect to HTTPS. <strong>HSTS</strong> (HTTP Strict Transport Security) closes that gap: after one HTTPS visit, the browser remembers to use HTTPS only for that site.</p>
+  <pre><span class="comment"># Redirect all HTTP to HTTPS</span>
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/
+
+<span class="comment"># On HTTPS responses:</span>
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</pre>
+  <p><code>preload</code> submits the domain to a list built into browsers, protecting even the very first visit. HSTS is a commitment: if you later break HTTPS on the domain or a subdomain, browsers refuse to fall back, so enable it carefully and start with a short <code>max-age</code>.</p>
+
+  <h2><span class="num">§2</span>Mixed Content and Secure Cookies</h2>
+  <p>A page loaded over HTTPS that pulls in a script or image over plain HTTP undermines it, since an attacker can alter the insecure resource. Browsers block active mixed content, such as scripts, and often upgrade or warn on passive content like images.</p>
+  <ul>
+    <li>Use <code>https://</code> or scheme-relative URLs for every subresource</li>
+    <li>Mark cookies <code>Secure</code> so they never travel over HTTP</li>
+    <li>Consider <code>Content-Security-Policy: upgrade-insecure-requests</code> while migrating</li>
+  </ul>
+
+  <h2><span class="num">§3</span>Server TLS Settings</h2>
+  <ul>
+    <li><strong>Versions:</strong> enable TLS 1.3 and 1.2; disable 1.1 and older</li>
+    <li><strong>Ciphers:</strong> use modern AEAD suites with ephemeral key exchange; follow a maintained profile, such as Mozilla's recommended configurations, rather than inventing your own</li>
+    <li><strong>OCSP stapling:</strong> reduces latency and avoids leaking visitors' browsing to the CA</li>
+    <li><strong>ALPN with HTTP/2 (and HTTP/3):</strong> enable them for performance</li>
+    <li><strong>Session resumption:</strong> keep it on, and rotate ticket keys regularly to preserve forward secrecy</li>
+  </ul>
+  <pre>openssl s_client -connect example.com:443 -tls1_1 &lt;/dev/null     <span class="comment"># should fail on a hardened server</span>
+curl -sI https://example.com/ | grep -i strict-transport
+<span class="comment"># Third-party scanners (SSL Labs, testssl.sh) grade a whole configuration at once.</span></pre>
+  <p>TLS terminates wherever your certificate and key live, whether on a CDN, a load balancer, or the app itself. Traffic after that point may be plain text, so decide deliberately whether the internal leg also needs encryption, a topic that returns under zero trust in Stage 3.4.</p>
+
+  <div class="callout">
+    <span class="label">The key insight</span>
+    HTTPS protects the connection only if it's actually used. HSTS, secure cookies, and no mixed content ensure that nothing silently falls back to plain HTTP.
+  </div>
+
+  <h2><span class="num">§4</span>Common Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>What Happens</th><th>Fix</th></tr>
+    <tr><td>Redirecting to HTTPS but skipping HSTS</td><td>The first request is still exposed to interception</td><td>Send <code>Strict-Transport-Security</code> on HTTPS responses</td></tr>
+    <tr><td>Setting a long HSTS <code>max-age</code> before testing</td><td>A later HTTPS problem locks users out</td><td>Ramp up <code>max-age</code> gradually and test every subdomain</td></tr>
+    <tr><td>Loading scripts over HTTP on HTTPS pages</td><td>Browsers block them, or an attacker can alter them</td><td>Serve every subresource over HTTPS</td></tr>
+  </table>
+
+  <div class="exercise">
+    <span class="label">Practice</span>
+    <ol>
+      <li>Check a site's redirect and HSTS header with <code>curl -I http://...</code> and <code>curl -I https://...</code>.</li>
+      <li>Run a TLS scanner against a test server and fix the top two findings.</li>
+    </ol>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">Key takeaways</span>
+    <ul>
+      <li>Redirect HTTP to HTTPS and add HSTS so browsers stop attempting plain HTTP.</li>
+      <li>Avoid mixed content and mark cookies <code>Secure</code>.</li>
+      <li>Enable TLS 1.2 and 1.3 only, with modern ciphers from a maintained profile.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Stage 2.3 · TLS & Network Security — Lesson 3 of 4</p>
+  </footer>
+</div>
+</body>
+</html>

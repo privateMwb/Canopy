@@ -1,0 +1,5 @@
+{
+  "title": "Sanitizing & Securing User HTML",
+  "description": "XSS, allowlists, and the Sanitizer API.",
+  "order": 3
+}

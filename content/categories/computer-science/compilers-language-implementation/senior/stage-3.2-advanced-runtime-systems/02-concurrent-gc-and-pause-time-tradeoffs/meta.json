@@ -1,0 +1,5 @@
+{
+  "title": "Concurrent GC & Pause-Time Tradeoffs",
+  "description": "Tri-color marking, incremental collection, and trading throughput for latency.",
+  "order": 2
+}

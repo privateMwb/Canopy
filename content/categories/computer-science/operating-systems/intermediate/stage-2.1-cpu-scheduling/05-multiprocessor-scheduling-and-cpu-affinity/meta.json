@@ -1,0 +1,1 @@
+{"title": "Multiprocessor Scheduling & CPU Affinity", "description": "Per-core run queues, load balancing, and why migrating a thread has a cost.", "order": 5}

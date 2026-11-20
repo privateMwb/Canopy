@@ -1,0 +1,5 @@
+{
+  "title": "Stage 2.3 — Security & Operations",
+  "description": "Advanced IAM, encryption and secrets, auditing, secure delivery pipelines, fleet management, and backups.",
+  "order": 3
+}

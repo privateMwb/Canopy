@@ -1,0 +1,5 @@
+{
+  "title": "Connection Pooling Basics",
+  "description": "Why connections are expensive, and what a pooler like PgBouncer changes.",
+  "order": 3
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Dataclasses & Enums",
+  "description": "Replacing boilerplate classes with @dataclass, and naming fixed choices with Enum.",
+  "order": 4
+}
