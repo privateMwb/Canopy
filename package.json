@@ -1,0 +1,26 @@
+{
+  "name": "canopy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A self-updating study library: add a folder, run one script, it shows up on the page.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/privateMwb/Canopy.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build-manifest.js && node scripts/build-catalog.js",
+    "check": "node scripts/build-manifest.js --check && node scripts/build-catalog.js --check",
+    "validate": "node scripts/validate-content.js",
+    "lint": "oxlint",
+    "test": "node --test",
+    "serve": "node -e \"console.log('Serving frontend/ on http://localhost:8080 (Ctrl+C to stop)')\" && python3 -m http.server 8080 --directory frontend",
+    "verify": "npm run validate && npm run check && npm run lint && npm test"
+  },
+  "devDependencies": {
+    "oxlint": "^1.94.0"
+  }
+}

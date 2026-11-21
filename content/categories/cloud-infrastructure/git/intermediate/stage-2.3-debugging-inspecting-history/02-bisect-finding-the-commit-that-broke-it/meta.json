@@ -1,5 +1,0 @@
-{
-  "title": "Bisect: Finding the Commit That Broke It",
-  "description": "Binary search through history, including automated bisecting.",
-  "order": 2
-}

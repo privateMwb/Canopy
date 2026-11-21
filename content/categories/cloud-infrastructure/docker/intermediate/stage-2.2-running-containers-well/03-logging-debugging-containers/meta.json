@@ -1,5 +1,0 @@
-{
-  "title": "Logging & Debugging Containers",
-  "description": "Reading logs, inspecting state, and debugging minimal images.",
-  "order": 3
-}

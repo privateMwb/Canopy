@@ -1,5 +1,6 @@
 {
   "title": "Web Development",
   "description": "How the web works and how to build for it, from semantic HTML to full-stack apps that are fast and accessible.",
+  "tagline": "Semantic HTML to full-stack apps",
   "order": 3
 }

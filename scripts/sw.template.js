@@ -8,7 +8,7 @@
 
 const CACHE_NAME = "learning-library-__CACHE_VERSION__";
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 

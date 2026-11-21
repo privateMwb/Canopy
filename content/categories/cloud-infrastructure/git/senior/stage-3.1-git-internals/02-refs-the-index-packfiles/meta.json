@@ -1,5 +1,0 @@
-{
-  "title": "Refs, the Index & Packfiles",
-  "description": "Branches as files, the staging area as a data structure, and how storage is compacted.",
-  "order": 2
-}

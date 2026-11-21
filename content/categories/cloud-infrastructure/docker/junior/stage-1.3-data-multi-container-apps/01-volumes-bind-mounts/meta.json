@@ -1,5 +1,0 @@
-{
-  "title": "Volumes & Bind Mounts",
-  "description": "Keeping data when a container is replaced.",
-  "order": 1
-}

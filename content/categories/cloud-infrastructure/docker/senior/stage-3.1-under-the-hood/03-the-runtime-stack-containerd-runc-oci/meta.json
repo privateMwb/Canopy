@@ -1,5 +1,0 @@
-{
-  "title": "The Runtime Stack: containerd, runc & OCI",
-  "description": "What actually runs when you type docker run.",
-  "order": 3
-}

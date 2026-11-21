@@ -1,5 +1,0 @@
-{
-  "title": "Non-Root Users & Least Privilege",
-  "description": "Running as a normal user, read-only filesystems, and dropping capabilities.",
-  "order": 3
-}

@@ -1,5 +1,0 @@
-{
-  "title": "Large Repositories & Performance",
-  "description": "Partial and shallow clones, commit graphs, and slow operations.",
-  "order": 2
-}

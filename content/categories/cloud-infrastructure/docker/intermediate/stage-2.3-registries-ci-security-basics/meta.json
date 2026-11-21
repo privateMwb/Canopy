@@ -1,5 +1,0 @@
-{
-  "title": "Stage 2.3 — Registries, CI & Security Basics",
-  "description": "Registries and promotion, Docker in CI/CD, running as non-root, and scanning for vulnerabilities.",
-  "order": 3
-}

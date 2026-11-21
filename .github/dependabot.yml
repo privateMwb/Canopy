@@ -1,0 +1,43 @@
+# ============================================================
+# .github/dependabot.yml
+#
+# - github-actions: keeps workflow action versions current.
+# - npm: keeps the dev tooling (oxlint) in package.json current.
+#
+# Canopy has no runtime dependencies. The frontend loads JSZip from a
+# CDN with a pinned version (see frontend/index.html); bump that by hand.
+# ============================================================
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action/*"
+      pages:
+        patterns:
+          - "actions/upload-pages-artifact"
+          - "actions/deploy-pages"
+      actions-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm"
+    groups:
+      npm:
+        patterns:
+          - "*"

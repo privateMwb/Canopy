@@ -1,5 +1,0 @@
-{
-  "title": "Union Filesystems & Image Layers",
-  "description": "How layers are stored, shared, and described by the OCI image format.",
-  "order": 2
-}

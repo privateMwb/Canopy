@@ -1,5 +1,0 @@
-{
-  "title": "Repository Health & Recovery",
-  "description": "fsck, garbage collection, and repairing or cleaning a damaged repository.",
-  "order": 4
-}

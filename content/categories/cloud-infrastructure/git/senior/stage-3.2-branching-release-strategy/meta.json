@@ -1,5 +1,0 @@
-{
-  "title": "Stage 3.2 — Branching & Release Strategy",
-  "description": "Trunk-based development versus Git Flow, feature flags and release branches, monorepos, and release automation.",
-  "order": 2
-}

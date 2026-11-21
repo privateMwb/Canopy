@@ -1,5 +1,0 @@
-{
-  "title": "CI/CD Integration & Merge Queues",
-  "description": "Status checks, required builds, and keeping main green under load.",
-  "order": 1
-}

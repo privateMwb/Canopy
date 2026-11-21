@@ -6,9 +6,9 @@
 // The cache name is tied to the content version, so every time content
 // actually changes, old caches get swept away automatically on activate.
 
-const CACHE_NAME = "learning-library-b4686cebfd";
+const CACHE_NAME = "learning-library-8eb8630b95";
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 

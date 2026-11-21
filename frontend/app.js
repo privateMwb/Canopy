@@ -23,7 +23,7 @@ themeToggle.addEventListener("click", () => {
   document.documentElement.setAttribute("data-theme", next);
   try {
     localStorage.setItem("theme", next);
-  } catch (e) {
+  } catch {
     // private browsing / storage disabled — theme just won't persist across reloads
   }
   applyThemeToggleState();
@@ -34,18 +34,18 @@ themeToggle.addEventListener("click", () => {
 try {
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
     let saved = null;
-    try { saved = localStorage.getItem("theme"); } catch (err) {}
+    try { saved = localStorage.getItem("theme"); } catch {}
     if (saved !== "light" && saved !== "dark") {
       document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
       applyThemeToggleState();
     }
   });
-} catch (e) {}
+} catch {}
 
 applyThemeToggleState();
 
 let MANIFEST = null;
-let SITE = { title: "Library", description: "", footer: {} };
+let SITE = { title: "Canopy", description: "", footer: {} };
 let VERSION = "";
 let activeLetter = null;
 let searchQuery = "";
@@ -65,7 +65,7 @@ async function loadData() {
       const v = await versionRes.json();
       VERSION = v.version || "";
     }
-  } catch (e) {
+  } catch {
     VERSION = ""; // fine — just means no cache-busting this load
   }
 
@@ -102,7 +102,7 @@ async function openLessonInNewTab(node) {
   const newWin = window.open("", "_blank");
   if (newWin) {
     newWin.document.write(
-      `<title>${node.title}</title><p style="font-family:sans-serif;padding:48px;color:#666">Loading “${node.title}”…</p>`
+      `<title>${escapeHtml(node.title)}</title><p style="font-family:sans-serif;padding:48px;color:#666">Loading “${escapeHtml(node.title)}”…</p>`
     );
   }
   try {
@@ -118,7 +118,7 @@ async function openLessonInNewTab(node) {
     }
   } catch (err) {
     if (newWin) {
-      newWin.document.body.innerHTML = `Could not load this lesson — ${err.message || err}`;
+      newWin.document.body.textContent = `Could not load this lesson — ${err.message || err}`;
     }
   }
 }
@@ -149,13 +149,6 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[c]));
-}
-
-function formatUpdated(dateStr) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr + "T00:00:00");
-  if (isNaN(d)) return "";
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
 function findNode(path) {
@@ -422,9 +415,9 @@ const RELATED = {
 const I_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
 function readProgress() {
-  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || { paths: {}, last: {} }; } catch (e) { return { paths: {}, last: {} }; }
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || { paths: {}, last: {} }; } catch { return { paths: {}, last: {} }; }
 }
-function writeProgress(p) { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch (e) { /* private mode: progress just won't persist */ } }
+function writeProgress(p) { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch { /* private mode: progress just won't persist */ } }
 function recordOpen(fullPath) {
   const parts = (fullPath || "").split("/").filter(Boolean);
   if (parts.length < 3) return;
@@ -762,9 +755,9 @@ if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
 const SCROLL_KEY = "canopy-scroll";
 let scrollPositions = {};
-try { scrollPositions = JSON.parse(sessionStorage.getItem(SCROLL_KEY) || "{}"); } catch (e) {}
+try { scrollPositions = JSON.parse(sessionStorage.getItem(SCROLL_KEY) || "{}"); } catch {}
 function persistScroll() {
-  try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify(scrollPositions)); } catch (e) {}
+  try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify(scrollPositions)); } catch {}
 }
 const hashKey = (h) => h || "#/";
 let forwardNav = false;

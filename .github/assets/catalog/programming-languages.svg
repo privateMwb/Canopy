@@ -1,0 +1,18 @@
+<svg width="420" height="112" viewBox="0 0 420 112" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Programming Languages: 5 subjects, 283 lessons">
+  <defs>
+    <linearGradient id="p" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#111A18"/><stop offset="1" stop-color="#0B1110"/></linearGradient>
+    <radialGradient id="g" cx="0.12" cy="0.5" r="0.6"><stop offset="0" stop-color="#A3E635" stop-opacity="0.16"/><stop offset="1" stop-color="#A3E635" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect x="1" y="1" width="418" height="110" rx="18" fill="url(#p)" stroke="#1F2D2A" stroke-width="1.5"/>
+  <rect x="1" y="1" width="418" height="110" rx="18" fill="url(#g)"/>
+  <rect x="1.75" y="22" width="4" height="68" rx="2" fill="#A3E635"/>
+  <path d="M388 47 L398 56 L388 65" fill="none" stroke="#A3E635" stroke-opacity="0.8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="22" y="24" width="64" height="64" rx="16" fill="#0B1110" stroke="#A3E635" stroke-opacity="0.55" stroke-width="1.5"/>
+  <g transform="translate(54 56)"><g fill="none" stroke="#A3E635" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-6-8L-14 0L-6 8M6-8L14 0L6 8M2-11L-2 11"/></g></g>
+  <text x="106" y="44" font-family="Helvetica, Arial, 'Segoe UI', sans-serif" font-size="20" font-weight="700" fill="#F4F1EA">Programming Languages</text>
+  <text x="106" y="64" font-family="Helvetica, Arial, 'Segoe UI', sans-serif" font-size="13" fill="#B7C6C1">Five languages, junior to senior</text>
+  <rect x="106" y="76" width="82" height="22" rx="11" fill="#101716" stroke="#1F2D2A"/>
+  <text x="147" y="91" text-anchor="middle" font-family="Helvetica, Arial, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#A3E635">5 subjects</text>
+  <rect x="196" y="76" width="88" height="22" rx="11" fill="#101716" stroke="#1F2D2A"/>
+  <text x="240" y="91" text-anchor="middle" font-family="Helvetica, Arial, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#A3E635">283 lessons</text>
+</svg>

@@ -1,0 +1,17 @@
+# CODEOWNERS
+#
+# Who is automatically requested for review when a pull request touches
+# matching paths. The last matching pattern wins.
+
+# Default owner for everything in the repo.
+* @privateMwb
+
+# Build, deploy and security-sensitive paths. Lessons are opened with
+# document.write() in a same-origin window, so the code that loads them and
+# the rules that vet them deserve a second look.
+/.github/                       @privateMwb
+/scripts/                       @privateMwb
+/frontend/app.js                @privateMwb
+/frontend/sw.js                 @privateMwb
+/frontend/vercel.json           @privateMwb
+/SECURITY.md                    @privateMwb

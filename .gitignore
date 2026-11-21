@@ -1,0 +1,32 @@
+# ============================================================
+# .gitignore
+#
+# NOTE: frontend/manifest.json, version.json, sw.js, index.html's
+# asset stamps and everything under frontend/content/ are GENERATED
+# by `npm run build` but are deliberately COMMITTED, so the site can
+# be hosted straight from frontend/ with no build step. CI's
+# "Generated files in sync" check fails if they drift from content/.
+# ============================================================
+
+# --- Node ---------------------------------------------------
+node_modules/
+npm-debug.log*
+.npm/
+
+# --- Environment / secrets ----------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Test & tooling output ----------------------------------
+coverage/
+*.log
+.cache/
+
+# --- Editors / OS -------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db

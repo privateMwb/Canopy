@@ -29,16 +29,34 @@
  * every fetch (manifest, content files), so a stale cached copy on a static
  * host gets bypassed automatically the moment content actually changes.
  *
- * Run:  node scripts/build-manifest.js
- * Output: frontend/manifest.json, frontend/version.json, frontend/content/**
+ * Run:    node scripts/build-manifest.js
+ * Check:  node scripts/build-manifest.js --check
+ *         Builds into a temp copy of frontend/ and exits non-zero if the
+ *         committed manifest.json, version.json, sw.js, index.html or
+ *         content/** differ from what the source would produce. Used by CI.
+ * Output: frontend/manifest.json, frontend/version.json, frontend/sw.js,
+ *         frontend/index.html (asset stamps), frontend/content/**
  */
 
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const os = require("os");
+
+const CHECK = process.argv.includes("--check");
 
 const CONTENT_DIR = path.join(__dirname, "..", "content", "categories");
-const FRONTEND_DIR = path.join(__dirname, "..", "frontend");
+const REAL_FRONTEND_DIR = path.join(__dirname, "..", "frontend");
+// In --check mode everything is written to a throwaway copy of frontend/
+// (minus the generated content/ folder) so the real files are never touched.
+const CHECK_DIR = CHECK ? fs.mkdtempSync(path.join(os.tmpdir(), "canopy-check-")) : null;
+if (CHECK) {
+  fs.cpSync(REAL_FRONTEND_DIR, CHECK_DIR, {
+    recursive: true,
+    filter: (src) => path.relative(REAL_FRONTEND_DIR, src) !== "content",
+  });
+}
+const FRONTEND_DIR = CHECK ? CHECK_DIR : REAL_FRONTEND_DIR;
 const OUT_MANIFEST = path.join(FRONTEND_DIR, "manifest.json");
 const OUT_VERSION = path.join(FRONTEND_DIR, "version.json");
 const OUT_CONTENT_DIR = path.join(FRONTEND_DIR, "content");
@@ -72,7 +90,7 @@ function readRawMeta(dirPath) {
   if (!fs.existsSync(metaPath)) return {};
   try {
     return JSON.parse(fs.readFileSync(metaPath, "utf8"));
-  } catch (e) {
+  } catch {
     console.warn(`  ! Could not parse ${metaPath}, falling back to defaults`);
     return {};
   }
@@ -110,8 +128,10 @@ function formatDate(d) {
   return d.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
-// Hash every file under content/categories/ (path + mtime + size) into one
-// short version string — changes the instant any content actually changes.
+// Hash every file under content/categories/ (relative path + file contents)
+// into one short version string — changes the instant any content actually
+// changes. Contents, not mtimes: mtimes differ on every fresh git clone, which
+// would make the version (and everything stamped with it) non-reproducible.
 const versionHash = crypto.createHash("sha1");
 function hashWalk(dirPath) {
   const entries = fs.readdirSync(dirPath, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
@@ -120,8 +140,9 @@ function hashWalk(dirPath) {
     if (entry.isDirectory()) {
       hashWalk(full);
     } else {
-      const stat = fs.statSync(full);
-      versionHash.update(`${full}:${stat.mtimeMs}:${stat.size}\n`);
+      versionHash.update(`${path.relative(CONTENT_DIR, full)}\n`);
+      versionHash.update(fs.readFileSync(full));
+      versionHash.update("\n");
     }
   }
 }
@@ -168,7 +189,7 @@ function buildNode(dirPath, slug, indexAtLevel, depth, forcedColor, ancestorSlug
   }
 
   return {
-    slug, title, description: meta.description || "", accent, accentEnd,
+    slug, title, description: meta.description || "", tagline: meta.tagline || "", accent, accentEnd,
     icon: meta.icon || null,
     url: meta.url || null,
     hasContent,
@@ -230,4 +251,77 @@ function build() {
   log(categories, 0);
 }
 
+// ---------------------------------------------------------------------------
+// --check: compare the temp build against the committed files.
+// Ignores the fields that legitimately vary between machines: each node's
+// "updated" date (derived from file mtimes) and version.json's builtAt.
+// ---------------------------------------------------------------------------
+function stripUpdated(node) {
+  if (Array.isArray(node)) return node.map(stripUpdated);
+  if (node && typeof node === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(node)) if (k !== "updated") out[k] = stripUpdated(v);
+    return out;
+  }
+  return node;
+}
+
+function listFiles(dir, base = dir, acc = []) {
+  if (!fs.existsSync(dir)) return acc;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) listFiles(full, base, acc);
+    else acc.push(path.relative(base, full).split(path.sep).join("/"));
+  }
+  return acc.sort();
+}
+
+function check() {
+  const problems = [];
+  const read = (dir, f) => (fs.existsSync(path.join(dir, f)) ? fs.readFileSync(path.join(dir, f)) : null);
+
+  const jsonOf = (dir, f) => {
+    const b = read(dir, f);
+    return b ? JSON.parse(b.toString("utf8")) : null;
+  };
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+  if (!same(stripUpdated(jsonOf(REAL_FRONTEND_DIR, "manifest.json")), stripUpdated(jsonOf(FRONTEND_DIR, "manifest.json")))) {
+    problems.push("manifest.json is out of date");
+  }
+  const vReal = jsonOf(REAL_FRONTEND_DIR, "version.json");
+  const vNew = jsonOf(FRONTEND_DIR, "version.json");
+  if (!vReal || vReal.version !== vNew.version) problems.push("version.json is out of date");
+  for (const f of ["sw.js", "index.html"]) {
+    const a = read(REAL_FRONTEND_DIR, f);
+    const b = read(FRONTEND_DIR, f);
+    if (!a || !b || !a.equals(b)) problems.push(`${f} is out of date`);
+  }
+
+  const realContent = path.join(REAL_FRONTEND_DIR, "content");
+  const newContent = path.join(FRONTEND_DIR, "content");
+  const realFiles = listFiles(realContent);
+  const newFiles = listFiles(newContent);
+  const realSet = new Set(realFiles);
+  const newSet = new Set(newFiles);
+  for (const f of newFiles) if (!realSet.has(f)) problems.push(`content/${f} is missing`);
+  for (const f of realFiles) if (!newSet.has(f)) problems.push(`content/${f} is stale (no source lesson)`);
+  for (const f of newFiles) {
+    if (realSet.has(f) && !fs.readFileSync(path.join(realContent, f)).equals(fs.readFileSync(path.join(newContent, f)))) {
+      problems.push(`content/${f} differs from its source`);
+    }
+  }
+
+  fs.rmSync(CHECK_DIR, { recursive: true, force: true });
+  if (problems.length) {
+    console.error(`\nGenerated files are out of sync with content/ (${problems.length} problem${problems.length === 1 ? "" : "s"}):`);
+    problems.slice(0, 20).forEach((p) => console.error(`  - ${p}`));
+    if (problems.length > 20) console.error(`  ... and ${problems.length - 20} more`);
+    console.error("\nRun `node scripts/build-manifest.js` and commit the result.");
+    process.exit(1);
+  }
+  console.log("\nGenerated files are in sync with content/.");
+}
+
 build();
+if (CHECK) check();
