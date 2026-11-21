@@ -1,5 +1,0 @@
-{
-  "title": "CMD vs. ENTRYPOINT & Configuration",
-  "description": "Exec form, environment variables, and build arguments.",
-  "order": 3
-}

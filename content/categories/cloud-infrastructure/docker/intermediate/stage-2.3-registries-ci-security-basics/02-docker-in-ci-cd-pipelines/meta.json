@@ -1,5 +1,0 @@
-{
-  "title": "Docker in CI/CD Pipelines",
-  "description": "Building, testing, pushing, and caching in automation.",
-  "order": 2
-}

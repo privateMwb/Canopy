@@ -1,0 +1,34 @@
+# ============================================================
+# .github/workflows/content.yml
+# Validates everything under content/categories/: meta.json shape,
+# duplicate lesson/stage numbers, shelves that also hold a page,
+# empty folders, scripts and javascript: links in lessons.
+# See scripts/validate-content.js for the full rule list.
+# ============================================================
+
+name: Content
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate content
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Validate content
+        run: node scripts/validate-content.js

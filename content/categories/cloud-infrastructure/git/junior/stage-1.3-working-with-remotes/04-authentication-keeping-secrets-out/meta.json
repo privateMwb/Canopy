@@ -1,5 +1,0 @@
-{
-  "title": "Authentication & Keeping Secrets Out",
-  "description": "SSH keys, tokens, and what to do if you commit a secret.",
-  "order": 4
-}

@@ -1,0 +1,44 @@
+# ============================================================
+# .github/workflows/build.yml
+# Fails if the committed generated files have drifted from content/.
+#
+# frontend/manifest.json, version.json, sw.js, the asset stamps in
+# index.html and everything under frontend/content/ are produced by
+# scripts/build-manifest.js and committed so the site needs no build
+# step to host. `--check` rebuilds into a temp dir and compares, so
+# a forgotten `npm run build` is caught here instead of on the site.
+# The README catalog (scripts/build-catalog.js) is checked the same way.
+# No path filter: this is a required status check (see
+# .github/rulesets/main-protection.json), and a required check that
+# is skipped by a path filter blocks the pull request forever.
+# ============================================================
+
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Generated files in sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Check generated files
+        run: node scripts/build-manifest.js --check
+
+      - name: Check README catalog
+        run: node scripts/build-catalog.js --check

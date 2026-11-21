@@ -1,5 +1,0 @@
-{
-  "title": "Stage 2.3 — Debugging & Inspecting History",
-  "description": "Blame and log archaeology, bisect, submodules and large files, and signed commits.",
-  "order": 3
-}

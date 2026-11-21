@@ -1,5 +1,0 @@
-{
-  "title": "Namespaces & cgroups",
-  "description": "The two kernel features that create isolation and limits.",
-  "order": 1
-}

@@ -1,0 +1,67 @@
+# ============================================================
+# .github/workflows/deploy.yml
+# Publishes frontend/ to GitHub Pages on every push to main.
+#
+# One-time setup: Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions". (The "Deploy from a branch" option only
+# offers / and /docs, so it cannot serve frontend/.)
+#
+# The generated files are committed, so there is nothing to build
+# here -- but the sync check runs first, so a stale manifest can
+# never reach the live site.
+# ============================================================
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deployment at a time; a new push cancels an
+# in-flight one rather than queuing behind it.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Validate content
+        run: node scripts/validate-content.js
+
+      - name: Check generated files are in sync
+        run: node scripts/build-manifest.js --check
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: frontend
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

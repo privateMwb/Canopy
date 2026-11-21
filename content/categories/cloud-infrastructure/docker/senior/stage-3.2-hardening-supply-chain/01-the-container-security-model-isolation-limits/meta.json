@@ -1,5 +1,0 @@
-{
-  "title": "The Container Security Model & Isolation Limits",
-  "description": "A shared kernel, seccomp, rootless mode, and stronger sandboxes.",
-  "order": 1
-}

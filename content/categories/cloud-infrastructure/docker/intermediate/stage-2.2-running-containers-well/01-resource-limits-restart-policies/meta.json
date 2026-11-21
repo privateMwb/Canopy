@@ -1,5 +1,0 @@
-{
-  "title": "Resource Limits & Restart Policies",
-  "description": "Memory and CPU limits, and what happens when they are hit.",
-  "order": 1
-}

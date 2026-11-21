@@ -1,0 +1,57 @@
+# ============================================================
+# .github/workflows/release.yml
+# Publishes a GitHub Release whenever a v* tag is pushed, with the
+# site (frontend/) attached as a zip so it can be self-hosted.
+# Release notes are generated from the merged pull requests.
+# ============================================================
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to release (e.g. v1.0.0), for manual test runs"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Resolve tag
+        id: resolve_tag
+        run: echo "tag=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify the tree is releasable
+        run: |
+          node scripts/validate-content.js
+          node scripts/build-manifest.js --check
+
+      - name: Package the site
+        run: |
+          cd frontend
+          zip -qr "../canopy-site-${{ steps.resolve_tag.outputs.tag }}.zip" .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.resolve_tag.outputs.tag }}
+          generate_release_notes: true
+          files: canopy-site-${{ steps.resolve_tag.outputs.tag }}.zip

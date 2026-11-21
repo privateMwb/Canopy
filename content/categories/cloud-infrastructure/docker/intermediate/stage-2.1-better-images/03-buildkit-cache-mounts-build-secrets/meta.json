@@ -1,5 +1,0 @@
-{
-  "title": "BuildKit, Cache Mounts & Build Secrets",
-  "description": "Faster builds and passing secrets without leaking them into layers.",
-  "order": 3
-}
