@@ -22,6 +22,7 @@ Optional everywhere. Without one, the folder name is title-cased.
 |---|---|---|
 | `title` | string | Display name |
 | `description` | string | Subtitle on the card |
+| `tagline` | string | Categories only: a short line (up to 40 characters) shown on the category's card in the README |
 | `order` | number | Sort position among siblings |
 | `accent`, `accentEnd` | `#RRGGBB` | Card gradient colors (levels named junior/intermediate/senior get green/yellow/red automatically) |
 | `icon` | string | Icon key from `frontend/icons.js` |
@@ -31,7 +32,7 @@ Optional everywhere. Without one, the folder name is title-cased.
 
 Unknown keys are reported as warnings.
 
-A category or subject's `title` and `description` also appear in the README catalog, so write the description as one short sentence about what the subject covers.
+A category's `title`, `tagline` and `description` and a subject's `title` and `description` appear in the README catalog, so keep them short and write the description as one sentence about what it covers. The cards in `.github/assets/catalog/` and the pages in `docs/catalog/` are generated from them by `npm run build`.
 
 ## Lesson page format
 

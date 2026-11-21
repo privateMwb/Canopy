@@ -21,6 +21,7 @@
  *
  * WARNINGS (printed, exit code 0):
  *   - unknown meta.json keys (usually typos)
+ *   - a category "tagline" longer than the README card can show (40 characters)
  *   - two siblings share the same meta.json "order"
  *   - a lesson links to plain http://
  *
@@ -34,12 +35,13 @@ const path = require("path");
 const DEFAULT_CONTENT_DIR = path.join(__dirname, "..", "content", "categories");
 
 const KNOWN_META_KEYS = new Set([
-  "title", "description", "accent", "accentEnd", "icon", "order", "updated", "compileRoot", "url",
+  "title", "description", "tagline", "accent", "accentEnd", "icon", "order", "updated", "compileRoot", "url",
 ]);
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const SLUG = /^[a-z0-9][a-z0-9._-]*$/;
 const MIN_LESSON_BYTES = 200;
+const MAX_TAGLINE = 40;
 
 function readMeta(dir, rel, issues) {
   const file = path.join(dir, "meta.json");
@@ -59,8 +61,11 @@ function readMeta(dir, rel, issues) {
   for (const key of Object.keys(meta)) {
     if (!KNOWN_META_KEYS.has(key)) issues.warnings.push(`${rel}/meta.json: unknown key "${key}"`);
   }
-  for (const f of ["title", "description", "icon"]) {
+  for (const f of ["title", "description", "tagline", "icon"]) {
     if (f in meta && typeof meta[f] !== "string") bad(f, "a string");
+  }
+  if (typeof meta.tagline === "string" && meta.tagline.length > MAX_TAGLINE) {
+    issues.warnings.push(`${rel}/meta.json: "tagline" is ${meta.tagline.length} characters; the README card fits about ${MAX_TAGLINE}`);
   }
   for (const f of ["accent", "accentEnd"]) {
     if (f in meta && !(typeof meta[f] === "string" && HEX.test(meta[f]))) bad(f, "a #RRGGBB hex color");

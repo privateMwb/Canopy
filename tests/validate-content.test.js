@@ -84,6 +84,14 @@ test("duplicate stage numbers among siblings are an error", () => {
   assert.ok(errs.some((e) => /stages share number 1\.3/.test(e)));
 });
 
+test("tagline must be a string, and a long one is a warning", () => {
+  assert.ok(errorsOf({ "a/b/content.html": PAGE, "a/meta.json": { tagline: 5 } }).some((e) => /"tagline" must be a string/.test(e)));
+  const r = validateTree(tree({ "a/b/content.html": PAGE, "a/meta.json": { tagline: "x".repeat(60) } }));
+  assert.deepEqual(r.errors, []);
+  assert.ok(r.warnings.some((w) => /"tagline" is 60 characters/.test(w)));
+  assert.deepEqual(validateTree(tree({ "a/b/content.html": PAGE, "a/meta.json": { tagline: "Short and sweet" } })).warnings, []);
+});
+
 test("duplicate order values are a warning", () => {
   const r = validateTree(
     tree({

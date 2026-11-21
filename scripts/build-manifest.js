@@ -189,7 +189,7 @@ function buildNode(dirPath, slug, indexAtLevel, depth, forcedColor, ancestorSlug
   }
 
   return {
-    slug, title, description: meta.description || "", accent, accentEnd,
+    slug, title, description: meta.description || "", tagline: meta.tagline || "", accent, accentEnd,
     icon: meta.icon || null,
     url: meta.url || null,
     hasContent,

@@ -1,1 +1,6 @@
-{"title": "Computer Science", "description": "The broader subject tree — ML, languages, and whatever else gets added later.", "order": 1}
+{
+  "title": "Computer Science",
+  "description": "The broader subject tree — ML, languages, and whatever else gets added later.",
+  "tagline": "Algorithms, systems, networks, ML",
+  "order": 1
+}

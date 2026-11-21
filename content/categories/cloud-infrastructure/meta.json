@@ -1,5 +1,6 @@
 {
   "title": "Cloud & Infrastructure",
   "description": "Five core tools for shipping and running software, from version control and containers to Kubernetes, infrastructure as code, and the cloud.",
+  "tagline": "Git, containers, Kubernetes, cloud",
   "order": 5
 }

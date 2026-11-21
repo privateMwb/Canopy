@@ -17,7 +17,7 @@ content/categories/**         scripts/build-manifest.js            frontend/
 4. Picks colors: `accent` from `meta.json`, else a level color (junior/intermediate/senior), else a category or subject gradient.
 5. Copies each leaf `content.html` to `frontend/content/<path>.html`, after deleting the old copies so removed lessons don't linger.
 6. Writes `manifest.json`, `version.json` and `sw.js` (from `sw.template.js`), and stamps `?v=<hash>` onto the CSS/JS tags in `index.html`.
-7. `scripts/build-catalog.js` then renders the category/subject catalog from `manifest.json` into the README, between the `CATALOG` markers (`npm run build` runs both scripts).
+7. `scripts/build-catalog.js` then renders the catalog from `manifest.json`: a card image per category (`.github/assets/catalog/<slug>.svg`) linked from the README's "What's Inside", a page per category (`docs/catalog/<category>.md`, a table of its subjects) and a page per subject (`docs/catalog/<category>/<subject>.md`, a Stage | Lessons table per level). It uses plain links and Markdown tables only, with no `<details>` fold-outs, so it renders the same on desktop and in the GitHub mobile app. `npm run build` runs both scripts, and `--check` verifies the README, the cards and the pages.
 
 `--check` runs the same build into a temporary copy of `frontend/` and compares. It ignores each node's `updated` date and `builtAt`, which legitimately differ between machines. `scripts/validate-content.js` is separate and checks the source tree.
 

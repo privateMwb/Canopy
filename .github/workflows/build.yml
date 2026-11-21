@@ -40,5 +40,5 @@ jobs:
       - name: Check generated files
         run: node scripts/build-manifest.js --check
 
-      - name: Check README catalog
+      - name: Check README cards and catalog pages
         run: node scripts/build-catalog.js --check

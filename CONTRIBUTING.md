@@ -41,7 +41,7 @@ Read [docs/CONTENT.md](docs/CONTENT.md) first. The rules CI enforces:
 - No two siblings share a lesson number or a stage number.
 - A folder is either a page (`content.html`) or a shelf (subfolders), never both.
 - Lessons must not contain `<script>` tags, inline `on...=` handlers or `javascript:` links. The site opens lessons same-origin, so they run with the site's privileges.
-- Don't hand-edit anything under `frontend/content/` or `frontend/manifest.json`, or the catalog between the `CATALOG` markers in `README.md`; edit the source in `content/` (a subject's `meta.json` `title` / `description` feed the catalog) and rebuild.
+- Don't hand-edit anything under `frontend/content/` or `frontend/manifest.json`, the catalog between the `CATALOG` markers in `README.md`, or anything under `docs/catalog/` or `.github/assets/catalog/`; edit the source in `content/` (a subject's `meta.json` `title` / `description` feed the catalog) and rebuild.
 
 ## Code changes
 

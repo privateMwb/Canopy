@@ -16,7 +16,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - GitHub Actions: `build.yml` (sync check), `content.yml`, `lint.yml`, `test.yml` (Node 20 and 22), `codeql.yml`, `deploy.yml` (GitHub Pages), `release.yml` (tagged releases with the site zip).
 - `.github/`: `dependabot.yml`, `CODEOWNERS`, banner, divider and back-to-top assets, and two rulesets: `main-protection.json` (pull requests plus five required checks) and `release-tags.json` (protects `v*` tags from deletion and moves). A test keeps the required check names in sync with the workflow job names.
 - `.gitignore`, `.editorconfig`, `frontend/vercel.json` (security and cache headers).
-- `scripts/build-catalog.js`: generates the README's collapsible "What's Inside" catalog (category > subject > levels, stages and lesson titles, all closed until clicked) from `manifest.json`. `npm run build` updates it and `npm run check` / CI fail if it is stale.
+- `scripts/build-catalog.js`: generates the library catalog from `manifest.json`. The README's "What's Inside" is five tappable category cards (generated into `.github/assets/catalog/`). Each opens a generated category page with a table of its subjects, and each subject opens a page with a Stage | Lessons table per level (`docs/catalog/`). It uses plain links and tables, no `<details>` fold-outs, so it renders the same in the GitHub mobile app. `npm run build` updates it and `npm run check` / CI fail if anything is stale.
+- Optional category `tagline` in `meta.json` (up to 40 characters) for the card; the validator type-checks it and warns when it is too long.
 - README redesigned to match the Shrtn format: animated banner, divider and back-to-top SVGs in `.github/assets/`, grouped CI badges, a Table of Contents, per-section back-to-top links, diagrams and callouts.
 - A GitHub link in the site footer (`frontend/site.json`).
 
