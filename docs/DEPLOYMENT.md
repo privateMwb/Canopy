@@ -20,13 +20,16 @@ Publish the `frontend/` directory (Netlify, Cloudflare Pages, S3, nginx). Option
 
 ## Releases
 
-Tag a version and push it:
+1. Move the changelog's `[Unreleased]` entries under a new version heading, and make sure `package.json` has that version.
+2. Write the release notes in `.github/releases/v<version>.md`.
+3. Merge both through a pull request, then tag `main` and push the tag:
 
 ```bash
-git tag v0.1.0 && git push origin v0.1.0
+git checkout main && git pull
+git tag v1.0.0 && git push origin v1.0.0
 ```
 
-`release.yml` verifies the tree and creates a GitHub Release with generated notes and `canopy-site-<tag>.zip` (the contents of `frontend/`) attached.
+`release.yml` verifies the tree and creates a GitHub Release whose body is the notes file, with `canopy-site-<tag>.zip` (the contents of `frontend/`) attached. If no notes file exists for the tag, GitHub generates notes from the merged pull requests instead. A tag with a hyphen, such as `v0.2.0-rc.1`, is published as a pre-release.
 
 ## Recommended repository settings
 

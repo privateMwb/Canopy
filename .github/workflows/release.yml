@@ -2,7 +2,9 @@
 # .github/workflows/release.yml
 # Publishes a GitHub Release whenever a v* tag is pushed, with the
 # site (frontend/) attached as a zip so it can be self-hosted.
-# Release notes are generated from the merged pull requests.
+# Release notes come from .github/releases/<tag>.md when that file exists,
+# and are generated from the merged pull requests when it does not.
+# A tag containing a hyphen (v1.0.0-rc.1) is published as a pre-release.
 # ============================================================
 
 name: Release
@@ -43,6 +45,13 @@ jobs:
         run: |
           node scripts/validate-content.js
           node scripts/build-manifest.js --check
+          node scripts/build-catalog.js --check
+
+      - name: Find release notes
+        id: notes
+        run: |
+          file=".github/releases/${{ steps.resolve_tag.outputs.tag }}.md"
+          if [ -f "$file" ]; then echo "path=$file" >> "$GITHUB_OUTPUT"; else echo "path=" >> "$GITHUB_OUTPUT"; fi
 
       - name: Package the site
         run: |
@@ -53,5 +62,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.resolve_tag.outputs.tag }}
-          generate_release_notes: true
+          body_path: ${{ steps.notes.outputs.path }}
+          generate_release_notes: ${{ steps.notes.outputs.path == '' }}
+          prerelease: ${{ contains(steps.resolve_tag.outputs.tag, '-') }}
           files: canopy-site-${{ steps.resolve_tag.outputs.tag }}.zip

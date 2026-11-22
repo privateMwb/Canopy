@@ -6,15 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-22
+
 ### Added
 
 - Project documents: `LICENSE` (MIT), `CONTRIBUTING.md`, `SECURITY.md`, this changelog, and `docs/` (`CONTENT.md`, `ARCHITECTURE.md`, `DEPLOYMENT.md`). The README was rewritten.
 - `scripts/validate-content.js` (`npm run validate`): checks `meta.json` shape, duplicate lesson and stage numbers, shelves that also hold a page, empty folders, tiny lesson files, and `<script>`, inline handlers and `javascript:` links in lessons.
 - `node scripts/build-manifest.js --check` (`npm run check`): rebuilds into a temp copy and fails if the committed generated files are stale.
-- Test suite in `tests/` (`node:test`) for the validator and the build script.
+- Test suite in `tests/` (`node:test`) for the validator, the build script, the catalog and the rulesets.
 - `package.json` scripts (`build`, `check`, `validate`, `lint`, `test`, `serve`, `verify`) and an oxlint config (`.oxlintrc.json`).
 - GitHub Actions: `build.yml` (sync check), `content.yml`, `lint.yml`, `test.yml` (Node 20 and 22), `codeql.yml`, `deploy.yml` (GitHub Pages), `release.yml` (tagged releases with the site zip).
 - `.github/`: `dependabot.yml`, `CODEOWNERS`, banner, divider and back-to-top assets, and two rulesets: `main-protection.json` (pull requests plus five required checks) and `release-tags.json` (protects `v*` tags from deletion and moves). A test keeps the required check names in sync with the workflow job names.
+- Release notes for each version in `.github/releases/<tag>.md`, published as the GitHub Release body by `release.yml`.
 - `.gitignore`, `.editorconfig`, `frontend/vercel.json` (security and cache headers).
 - `scripts/build-catalog.js`: generates the library catalog from `manifest.json`. The README's "What's Inside" is five tappable category cards (generated into `.github/assets/catalog/`). Each opens a generated category page with a table of its subjects, and each subject opens a page with a Stage | Lessons table per level (`docs/catalog/`). It uses plain links and tables, no `<details>` fold-outs, so it renders the same in the GitHub mobile app. `npm run build` updates it and `npm run check` / CI fail if anything is stale.
 - Optional category `tagline` in `meta.json` (up to 40 characters) for the card; the validator type-checks it and warns when it is too long.
@@ -36,3 +39,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Removed
 
 - Two stray `content.html` files in `machine-learning/intermediate` and `machine-learning/senior`. The build never rendered them because those folders have subfolders (the shelf wins). They remain in git history.
+
+[Unreleased]: https://github.com/privateMwb/Canopy/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/privateMwb/Canopy/releases/tag/v1.0.0
