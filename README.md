@@ -52,8 +52,8 @@
 <br>
 
 > [!NOTE]
-> **Status: pre-release (`0.1.0`).** The library, the build, content validation, the test suite and the CI
-> workflows are in place. There is no tagged release and no live site yet: the Pages workflow is ready, but
+> **Status: v1.0.0.** The library, the build, content validation, the test suite and the CI workflows are
+> in place and passing on `main`. The site isn't published yet: the Pages workflow is ready, but
 > **GitHub Pages has to be switched to "GitHub Actions"** in the repository settings first (see
 > [Deployment](#deployment)). Everything below works locally today.
 
@@ -384,7 +384,7 @@ The site is the `frontend/` folder. It needs no build step on the host, because 
 
 ```bash
 # Releases: tag a version and push the tag
-git tag v0.1.0 && git push origin v0.1.0     # release.yml attaches canopy-site-<tag>.zip
+git tag v1.0.0 && git push origin v1.0.0     # release.yml publishes .github/releases/<tag>.md and attaches canopy-site-<tag>.zip
 ```
 
 > [!WARNING]
